@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeEventList.pas
-Версия            1.0
+Версия            1.1
 Создан            20.03.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Список объектов событий
@@ -11,43 +11,36 @@
 unit sgeEventList;
 
 {$mode objfpc}{$H+}
+{$ModeSwitch advancedrecords}
 
 interface
 
 uses
-  sgeErrors, sgeEventBase;
+  sgeErrors, sgeTemplateList, sgeEventBase;
 
 
 type
   //Запись для хранения одного элемента события
   TsgeEventListItem = record
-      Name: String;                                   //Имя события
-      Obj: TsgeEventBase;                             //Объект события
-      Prev: ^TsgeEventListItem;                       //Предыдущий элемент
-      Next: ^TsgeEventListItem;                       //Следующий элемент
+      Name: String;                                           //Имя события
+      Obj: TsgeEventBase;                                     //Объект события
+      class operator = (A, B: TsgeEventListItem): Boolean;
     end;
   PsgeEventListItem = ^TsgeEventListItem;
 
 
+  TsgeEventListTemplate = specialize TsgeTemplateList<TsgeEventListItem>;
+
+
   //Список событий
-  TsgeEventList = class
+  TsgeEventList = class(TsgeEventListTemplate)
   private
-    FCount: Integer;                                  //Количество объектов
-    FFirst: PsgeEventListItem;                        //Указатель на первый элемент
-    FLast: PsgeEventListItem;                         //Указатель на последний элемент
+    procedure ClearItem; override;
 
-    function  GetItem(Index: Integer): TsgeEventListItem;
   public
-    constructor Create;
-    destructor  Destroy; override;
-
     procedure Clear;
-
     procedure Add(Name: String; Obj: TsgeEventBase);
     procedure Delete(Index: Integer);
-
-    property Count: Integer read FCount;
-    property Item[Index: Integer]: TsgeEventListItem read GetItem;
   end;
 
 
@@ -56,64 +49,32 @@ implementation
 uses
   sgeSystemUtils;
 
-
 const
   _UNITNAME = 'EventList';
 
   Err_IndexOutOfBounds = 'IndexOutOfBounds';
 
 
-function TsgeEventList.GetItem(Index: Integer): TsgeEventListItem;
+
+class operator TsgeEventListItem. = (A, B: TsgeEventListItem): Boolean;
+begin
+  Result := (LowerCase(A.Name) = LowerCase(B.Name));
+end;
+
+
+
+procedure TsgeEventList.ClearItem;
 var
-  P: PsgeEventListItem;
-  Idx: Integer;
-begin
-  if (Index < 0) or (Index > FCount - 1) then
-    raise EsgeException.Create(_UNITNAME, Err_IndexOutOfBounds, sgeIntToStr(Index));
-
-  //Найти указатель по индексу
-  Idx := 0;
-  P := FFirst;
-  while P <> nil do
-    begin
-    if Idx = Index then
-      begin
-      Result := P^;
-      Break;
-      end;
-
-    Inc(Idx);
-    P := P^.Next;
-    end;
-end;
-
-
-constructor TsgeEventList.Create;
-begin
-  FCount := 0;
-  FFirst := nil;
-  FLast := nil;
-end;
-
-
-destructor TsgeEventList.Destroy;
-begin
-  Clear;
-end;
-
-
-procedure TsgeEventList.Clear;
-var
-  P, D: PsgeEventListItem;
+  P, D: PListItem;
 begin
   if FCount = 0 then Exit;
 
   //Пробежать по элементам
   P := FFirst;
-  while p <> nil do
+  while P <> nil do
     begin
-    //Прибить объект
-    if P^.Obj <> nil then P^.Obj.Free;
+    //Удалить объект
+    P^.Item.Obj.Free;
 
     //Освободить память
     D := P;
@@ -121,73 +82,47 @@ begin
     Dispose(D);
     end;
 
-  //Обнулить счётчик
+  //Поправить параметры
   FCount := 0;
   FFirst := nil;
   FLast := nil;
 end;
 
 
+procedure TsgeEventList.Clear;
+begin
+  ClearItem;
+end;
+
+
 procedure TsgeEventList.Add(Name: String; Obj: TsgeEventBase);
 var
-  P: PsgeEventListItem;
+  I: TsgeEventListItem;
 begin
   //Подготовить данные
-  New(P);
-  P^.Name := Name;
-  P^.Obj := Obj;
-  P^.Prev := nil;
-  P^.Next := nil;
+  I.Name := Name;
+  I.Obj := Obj;
 
   //Добавить элемент
-  if FCount = 0 then
-    begin
-    FFirst := P;
-    FLast := P;
-    end
-    else begin
-    FLast^.Next := P;
-    P^.Prev := FLast;
-    FLast := P;
-    end;
-
-  //Увеличить количество
-  Inc(FCount);
+  AddItem(I);
 end;
 
 
 procedure TsgeEventList.Delete(Index: Integer);
 var
-  P: PsgeEventListItem;
-  Idx: Integer;
+  P: PListItem;
 begin
   if (Index < 0) or (Index > FCount - 1) then
     raise EsgeException.Create(_UNITNAME, Err_IndexOutOfBounds, sgeIntToStr(Index));
 
   //Найти указатель на элемент
-  Idx := 0;
-  P := FFirst;
-  while P <> nil do
-    begin
-    if Idx = Index then Break;
-    Inc(Idx);
-    P := P^.Next;
-    end;
+  P := GetItemByIndex(Index);
 
-  //Удалить объект
-  if P^.Obj <> nil then P^.Obj.Free;
+  //Освободить память объекта
+  P^.Item.Obj.Free;
 
-  //Следующий элемент
-  if P^.Next <> nil then P^.Next^.Prev := P^.Prev else FLast := P^.Prev;
-
-  //Предыдущий элемент
-  if P^.Prev <> nil then P^.Prev^.Next := P^.Next else FFirst := P^.Next;
-
-  //Удалить память
-  Dispose(P);
-
-  //Уменьшить счётчик
-  Dec(FCount);
+  //Удалить элемент по указателю
+  DeleteItemByPointer(P);
 end;
 
 
