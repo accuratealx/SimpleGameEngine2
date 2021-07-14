@@ -22,7 +22,7 @@ uses
 type
   //Запись для хранения одного элемента события
   TsgeEventListItem = record
-      Name: String;                                           //Имя события
+      Name: ShortString;                                      //Имя события
       Obj: TsgeEventBase;                                     //Объект события
       class operator = (A, B: TsgeEventListItem): Boolean;
     end;
@@ -39,7 +39,7 @@ type
 
   public
     procedure Clear;
-    procedure Add(Name: String; Obj: TsgeEventBase);
+    procedure Add(Name: ShortString; Obj: TsgeEventBase);
     procedure Delete(Index: Integer);
   end;
 
@@ -95,7 +95,7 @@ begin
 end;
 
 
-procedure TsgeEventList.Add(Name: String; Obj: TsgeEventBase);
+procedure TsgeEventList.Add(Name: ShortString; Obj: TsgeEventBase);
 var
   I: TsgeEventListItem;
 begin

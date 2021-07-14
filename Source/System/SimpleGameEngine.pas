@@ -52,7 +52,7 @@ type
 
     //Обработчики событий
     procedure RegisterEventHandlers;                                //Подписать системные обработчики событий
-    procedure EventWindowClose(Obj: TsgeEventBase);                 //Закрытие окна
+    function  EventWindowClose(Obj: TsgeEventBase): Boolean;        //Закрытие окна
 
   public
     constructor Create; virtual;
@@ -101,7 +101,7 @@ begin
 end;
 
 
-procedure TSimpleGameEngine.EventWindowClose(Obj: TsgeEventBase);
+function TSimpleGameEngine.EventWindowClose(Obj: TsgeEventBase): Boolean;
 begin
   if CloseWindow then Stop;
 end;

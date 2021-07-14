@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine
 Файл              sgeEventBase.pas
-Версия            1.0
+Версия            1.1
 Создан            22.03.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс события: Базовое. Все события наследуются от этого класса
@@ -18,6 +18,10 @@ type
   //Базовый класс события
   TsgeEventBase = class
   end;
+
+
+  //Обработчик события
+  TsgeEventHandler = function(EventObj: TsgeEventBase): Boolean of object;
 
 
 implementation

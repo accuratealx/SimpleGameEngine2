@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeKeys.pas
-Версия            1.0
+Версия            1.1
 Создан            02.07.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Таблица кодов кнопок клавиатуры
@@ -13,9 +13,6 @@ unit sgeKeys;
 {$mode objfpc}{$H+}
 
 interface
-
-uses
-  Windows;
 
 const
   key_Back          = 8;

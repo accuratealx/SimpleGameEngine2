@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeExtensionGraphic.pas
-Версия            1.4
+Версия            1.5
 Создан            14.04.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс расширения: Графика
@@ -17,7 +17,7 @@ interface
 uses
   sgeTypes, sgeThread,
   sgeExtensionBase, sgeGraphicColor, sgeGraphicDrawList, sgeGraphicElementBase, sgeGraphicFPS,
-  sgeCounter, sgeScreenFade, sgeEventManager, sgeEventWindow,
+  sgeCounter, sgeScreenFade, sgeEventBase, sgeEventWindow,
   sgeGraphic, sgeGraphicBase, sgeExtensionWindow;
 
 
@@ -81,7 +81,7 @@ type
     procedure FadeCallBackProc(Time: TsgePassedTime);
 
     //Подписка на события
-    procedure Event_WindowResize(Obj: TsgeEventWindowSize);
+    function Event_WindowResize(Obj: TsgeEventWindowSize): Boolean;
 
   protected
     class function GetName: String; override;
@@ -321,8 +321,10 @@ begin
 end;
 
 
-procedure TsgeExtensionGraphic.Event_WindowResize(Obj: TsgeEventWindowSize);
+function TsgeExtensionGraphic.Event_WindowResize(Obj: TsgeEventWindowSize): Boolean;
 begin
+  Result := True;
+
   if FGraphic <> nil then
     begin
     FNewWidth := Obj.Width;
@@ -374,7 +376,7 @@ begin
     FFade := TsgeScreenFade.Create;
 
     //Установить обработчик изменения размеров окна
-    EventManager.Subscribe(Event_WindowSize, TsgeEventHandler(@Event_WindowResize));
+    EventManager.Subscribe(Event_WindowSize, TsgeEventHandler(@Event_WindowResize), $FFFF, True);
 
     //Установить метод отрисовки
     FThread.LoopProc := @SystemDraw;
