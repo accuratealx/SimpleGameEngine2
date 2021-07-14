@@ -14,7 +14,7 @@ unit sgeExtensionControllers;
 interface
 
 uses
-  sgeExtensionBase, sgeEventManager,
+  sgeExtensionBase,
   sgeThread, sgeControllerList, sgeController;
 
 

@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeEventSubscriberList.pas
-Версия            1.0
+Версия            1.1
 Создан            25.03.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс списка подписчиков
@@ -34,7 +34,7 @@ type
     procedure Clear;
 
     procedure Add(Subscriber: TsgeEventSubscriber);
-    procedure Add(Handler: TsgeEventHandler; Priority: Word = 0; Enable: Boolean = True);
+    function  Add(Handler: TsgeEventHandler; Priority: Word = 0; Enable: Boolean = True): TsgeEventSubscriber;
     procedure Delete(Index: Integer);
     procedure Delete(Handler: TsgeEventHandler);
     procedure Delete(Obj: TObject);
@@ -109,9 +109,10 @@ begin
 end;
 
 
-procedure TsgeEventSubscriberList.Add(Handler: TsgeEventHandler; Priority: Word; Enable: Boolean);
+function TsgeEventSubscriberList.Add(Handler: TsgeEventHandler; Priority: Word; Enable: Boolean): TsgeEventSubscriber;
 begin
-  Add(TsgeEventSubscriber.Create(Handler, Priority, Enable));
+  Result := TsgeEventSubscriber.Create(Handler, Priority, Enable);
+  Add(Result);
 end;
 
 

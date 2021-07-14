@@ -16,7 +16,7 @@ interface
 
 uses
   sgeTypes, sgeErrorManager, sgeNamedObjectList, sgeExtensionList, sgeEventManager, sgeEventBase, sgeEventWindow,
-  sgeExtensionWindow, sgeExtensionGraphic, sgeExtensionPackList, sgeExtensionFileSystem,
+  sgeExtensionWindow, sgeExtensionGraphic, sgeExtensionPackList, sgeExtensionFileSystem, sgeExtensionShell,
   sgeExtensionResourceList, sgeExtensionStartParameters, sgeExtensionSound, sgeExtensionControllers;
 
 
@@ -49,6 +49,7 @@ type
     FExtensionResourceList: TsgeExtensionResourceList;              //Расширение: Список ресурсов
     FExtensionSound: TsgeExtensionSound;                            //Расширение: Звуковая система
     FExtensionControllers: TsgeExtensionControllers;                //Расширение: Контроллеры
+    FExtensionShell: TsgeExtensionShell;                            //Расширение: Оболочка
 
     //Обработчики событий
     procedure RegisterEventHandlers;                                //Подписать системные обработчики событий
@@ -80,6 +81,7 @@ type
     property ExtResourceList: TsgeExtensionResourceList read FExtensionResourceList;
     property ExtSound: TsgeExtensionSound read FExtensionSound;
     property ExtControllers: TsgeExtensionControllers read FExtensionControllers;
+    property ExtShell: TsgeExtensionShell read FExtensionShell;
   end;
 
 
@@ -136,6 +138,7 @@ begin
     FExtensionSound := TsgeExtensionSound.Create(FObjectList);                      //Звуковая система
     FExtensionResourceList := TsgeExtensionResourceList.Create(FObjectList);        //Список ресурсов
     FExtensionControllers := TsgeExtensionControllers.Create(FObjectList);          //Контроллеры
+    FExtensionShell := TsgeExtensionShell.Create(FObjectList);                      //Оболочка
 
   except
     //Ошибка инициализации движка

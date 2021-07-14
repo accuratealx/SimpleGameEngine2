@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeEventSubscriberGroupList.pas
-Версия            1.1
+Версия            1.2
 Создан            12.07.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс списка групп подписчиков
@@ -15,7 +15,7 @@ unit sgeEventSubscriberGroupList;
 interface
 
 uses
-  sgeTemplateCollection, sgeEventBase, sgeEventSubscriberGroup;
+  sgeTemplateCollection, sgeEventBase, sgeEventSubscriber, sgeEventSubscriberGroup;
 
 type
   //Шаблон списка
@@ -34,7 +34,7 @@ type
     procedure Add(Name: String);
     procedure Delete(Index: Integer);
 
-    procedure Subscribe(EventName: ShortString; Handler: TsgeEventHandler; Priority: Word = 0; Enable: Boolean = True);
+    function  Subscribe(EventName: ShortString; Handler: TsgeEventHandler; Priority: Word = 0; Enable: Boolean = True): TsgeEventSubscriber;
 
     procedure UnSubscribe(EventName: ShortString; Handler: TsgeEventHandler);
     procedure UnSubscribe(EventName: ShortString; Obj: TObject);
@@ -108,7 +108,7 @@ begin
 end;
 
 
-procedure TsgeEventSubscriberGroupList.Subscribe(EventName: ShortString; Handler: TsgeEventHandler; Priority: Word; Enable: Boolean);
+function TsgeEventSubscriberGroupList.Subscribe(EventName: ShortString; Handler: TsgeEventHandler; Priority: Word; Enable: Boolean): TsgeEventSubscriber;
 var
   Idx: Integer;
 begin
@@ -123,7 +123,7 @@ begin
     end;
 
   //Добавить подписчика
-  FList[Idx].Subscribers.Add(Handler, Priority, Enable);
+  Result := FList[Idx].Subscribers.Add(Handler, Priority, Enable);
 end;
 
 

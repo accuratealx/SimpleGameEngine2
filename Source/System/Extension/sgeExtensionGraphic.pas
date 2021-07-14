@@ -170,11 +170,7 @@ begin
   if FAutoEraseBG then FGraphic.EraseBG;
 
   //Вывод елементов
-  try
-    DrawElements;
-  except
-    ErrorManager.ShowMessage('Ошибка при выводе элементов');
-  end;
+  DrawElements;
 
   //Вывод затемнения
   if FFade.Enable then DrawFade;

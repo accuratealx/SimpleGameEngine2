@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeEventManager.pas
-Версия            1.1
+Версия            1.2
 Создан            22.03.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс системы событий
@@ -16,7 +16,7 @@ interface
 
 uses
   sgeCriticalSection, sgeSystemEvent,
-  sgeEventBase, sgeEventList, sgeEventSubscriberGroupList;
+  sgeEventBase, sgeEventList, sgeEventSubscriber, sgeEventSubscriberGroupList;
 
 
 const
@@ -45,7 +45,7 @@ type
     procedure Publish(EventName: String; EventObj: TsgeEventBase = nil);    //Добавить событие в очередь
 
     //Подписка
-    procedure Subscribe(EventName: String; Handler: TsgeEventHandler; Priority: Word = 0; Enable: Boolean = True);
+    function Subscribe(EventName: String; Handler: TsgeEventHandler; Priority: Word = 0; Enable: Boolean = True): TsgeEventSubscriber;
 
     //Отписка
     procedure UnSubscribe(EventName: String; Handler: TsgeEventHandler);    //Отписаться от события по имени и обработчику
@@ -115,10 +115,10 @@ begin
 end;
 
 
-procedure TsgeEventManager.Subscribe(EventName: String; Handler: TsgeEventHandler; Priority: Word; Enable: Boolean);
+function TsgeEventManager.Subscribe(EventName: String; Handler: TsgeEventHandler; Priority: Word; Enable: Boolean): TsgeEventSubscriber;
 begin
   FCS.Enter;
-  FSubscriberGroupList.Subscribe(EventName, Handler, Priority, Enable);
+  Result := FSubscriberGroupList.Subscribe(EventName, Handler, Priority, Enable);
   FCS.Leave;
 end;
 
