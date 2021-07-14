@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGraphicElementLayerList.pas
-Версия            1.1
+Версия            1.2
 Создан            14.06.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Список слоёв элементов отисовки
@@ -16,19 +16,11 @@ unit sgeGraphicElementLayerList;
 interface
 
 uses
-  sgeGraphicElementList, sgeTemplateCollection, sgeGraphicElementBase;
+  sgeGraphicElementLayer, sgeTemplateCollection, sgeGraphicElementBase;
 
 
 type
-  //Слой
-  TsgeGraphicElementLayerItem = record
-    Name: String;                             //Имя слоя
-    Visible: Boolean;                         //Видимость
-    LayerIndex: Word;                         //Номер слоя
-    List: TsgeGraphicElementList;             //Список объектов
-  end;
-
-  TsgeGraphicElementLayerTemplate = specialize TsgeTemplateCollection<TsgeGraphicElementLayerItem>;
+  TsgeGraphicElementLayerTemplate = specialize TsgeTemplateCollection<TsgeGraphicElementLayer>;
 
 
   //Список слоёв
@@ -68,13 +60,13 @@ const
 procedure TsgeGraphicElementLayerList.Sort;
 var
   i, j, ci, cj: Integer;
-  El: TsgeGraphicElementLayerItem;
+  El: TsgeGraphicElementLayer;
 begin
   ci := Fcount - 1;
   cj := ci - 1;
   for i := 0 to ci do
     for j := 0 to cj - i do
-      if FList[j].LayerIndex > FList[j + 1].LayerIndex then
+      if FList[j].Index > FList[j + 1].Index then
         begin
         El := FList[j];
         FList[j] := FList[j + 1];
@@ -90,7 +82,7 @@ begin
   Result := -1;
 
   for i := 0 to FCount - 1 do
-    if FList[i].LayerIndex = Index then
+    if FList[i].Index = Index then
       begin
       Result := i;
       Break;
@@ -122,7 +114,7 @@ var
 begin
   //Удалить память объектов
   for i := 0 to FCount - 1 do
-    FList[i].List.Free;
+    FList[i].Free;
 
   //Обнулить массив
   inherited ClearItem;
@@ -146,19 +138,12 @@ end;
 
 
 procedure TsgeGraphicElementLayerList.AddLayer(Name: String; Index: Word);
-var
-  I: TsgeGraphicElementLayerItem;
 begin
+  //Проверить слой на существование
   if IndexOf(Name) <> - 1 then Exit;
 
-  //Создать слой
-  I.Name := Name;
-  I.Visible := True;
-  I.LayerIndex := Index;
-  I.List := TsgeGraphicElementList.Create;
-
   //Добавить слой
-  AddItem(I);
+  AddItem(TsgeGraphicElementLayer.Create(Name, Index, True));
 
   //Упорядочить
   Sort;
@@ -171,7 +156,7 @@ begin
     raise EsgeException.Create(_UNITNAME, Err_IndexOutOfBounds, sgeIntToStr(Index));
 
   //Удалить список элементов в слое
-  FList[Index].List.Free;
+  FList[Index].Free;
 
   //Удалить слой
   DeleteItem(Index);
@@ -211,7 +196,7 @@ begin
     end;
 
   //Добавить элемент в слой
-  FList[Idx].List.AddItem(DrawElement);
+  FList[Idx].Elements.Add(DrawElement);
 end;
 
 

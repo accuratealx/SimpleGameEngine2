@@ -111,7 +111,7 @@ implementation
 
 uses
   sgeErrors, sgeOSPlatform,
-  sgeEventGraphic, sgeGraphicElementLayerList;
+  sgeEventGraphic, sgeGraphicElementLayer;
 
 
 const
@@ -194,29 +194,29 @@ procedure TsgeExtensionGraphic.DrawElements;
 var
   I: Integer;
   El: TsgeGraphicElementBase;
-  Layer: TsgeGraphicElementLayerItem;
+  Layer: TsgeGraphicElementLayer;
 begin
   //Заблокировать список
   FDrawList.Lock;
 
   //Вывод слоёв
-  for I := 0 to FDrawList.LayerCount - 1 do
+  for I := 0 to FDrawList.LayerList.Count - 1 do
     begin
     //Ссылка на слой
-    Layer := FDrawList.Layer[I];
+    Layer := FDrawList.LayerList.Item[I];
 
     //Проверить видимость слоя
     if not Layer.Visible then Continue;
 
     //Обработать элементы в слое
-    El := Layer.List.GetFirst;
+    El := Layer.Elements.GetFirst;
     while El <> nil do
       begin
       //Удалить элемент
       if El.NeedDelete then
         begin
-        Layer.List.DeleteCurrentElement;
-        El := Layer.List.GetNext;
+        Layer.Elements.DeleteCurrentElement;
+        El := Layer.Elements.GetNext;
         Continue;
         end;
 
@@ -227,7 +227,7 @@ begin
       if El.Visible then El.Draw(FGraphic);
 
       //Следующий элемент
-      El := Layer.List.GetNext;
+      El := Layer.Elements.GetNext;
       end;
 
     end;

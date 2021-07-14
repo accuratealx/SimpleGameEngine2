@@ -15,7 +15,7 @@ unit sgeGraphicDrawList;
 interface
 
 uses
-  sgeCriticalSection, sgeGraphicElementLayerList, sgeGraphicElementBase;
+  sgeCriticalSection, sgeGraphicElementLayerList,  sgeGraphicElementBase;
 
 
 type
@@ -24,10 +24,6 @@ type
     FCS: TsgeCriticalSection;
     FList: TsgeGraphicElementLayerList;
 
-    function  GetLayerCount: Integer;
-    function  GetLayer(Index: Integer): TsgeGraphicElementLayerItem;
-    function  GetLayerVisible(Index: Integer): Boolean;
-    procedure SetLayerVisible(Index: Integer; AVisible: Boolean);
   public
     constructor Create;
     destructor  Destroy; override;
@@ -39,77 +35,13 @@ type
     procedure AddLayer(Name: String; Index: Word);
     procedure DeleteLayer(Name: String);
 
-    function  AddElement(Element: TsgeGraphicElementBase; LayerName: String = ''): TsgeGraphicElementBase;
+    procedure AddElement(Element: TsgeGraphicElementBase; LayerName: String = '');
 
-    property LayerCount: Integer read GetLayerCount;
-    property Layer[Index: Integer]: TsgeGraphicElementLayerItem read GetLayer;
-    property LayerVisible[Index: Integer]: Boolean read GetLayerVisible write SetLayerVisible;
+    property LayerList: TsgeGraphicElementLayerList read FList;
   end;
-
-
 
 
 implementation
-
-uses
-  sgeErrors, sgeSystemUtils;
-
-
-const
-  _UNITNAME = 'GraphicDrawList';
-
-  Err_IndexOutOfBounds = 'IndexOutOfBounds';
-
-
-
-function TsgeGraphicDrawList.GetLayerCount: Integer;
-begin
-  FCS.Enter;
-  Result := FList.Count;
-  FCS.Leave;
-end;
-
-
-function TsgeGraphicDrawList.GetLayer(Index: Integer): TsgeGraphicElementLayerItem;
-begin
-  FCS.Enter;
-  try
-
-    if (Index < 0) or (Index > FList.Count - 1) then
-      raise EsgeException.Create(_UNITNAME, Err_IndexOutOfBounds, sgeIntToStr(Index));
-
-    Result := FList.Item[Index];
-
-  finally
-    FCS.Leave;
-  end;
-end;
-
-
-function TsgeGraphicDrawList.GetLayerVisible(Index: Integer): Boolean;
-begin
-  FCS.Enter;
-  try
-
-    Result := FList.Visible[Index];
-
-  finally
-    FCS.Leave;
-  end;
-end;
-
-
-procedure TsgeGraphicDrawList.SetLayerVisible(Index: Integer; AVisible: Boolean);
-begin
-  FCS.Enter;
-  try
-
-    FList.Visible[Index] := AVisible;
-
-  finally
-    FCS.Leave;
-  end;
-end;
 
 
 constructor TsgeGraphicDrawList.Create;
@@ -176,12 +108,11 @@ begin
 end;
 
 
-function TsgeGraphicDrawList.AddElement(Element: TsgeGraphicElementBase; LayerName: String): TsgeGraphicElementBase;
+procedure TsgeGraphicDrawList.AddElement(Element: TsgeGraphicElementBase; LayerName: String);
 begin
   FCS.Enter;
   try
 
-    Result := Element;
     FList.AddElement(Element, LayerName);
 
   finally

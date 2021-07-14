@@ -29,9 +29,10 @@ type
   public
     procedure ClearItem; override;
 
+    procedure Add(Element: TsgeGraphicElementBase);
+
     function  GetFirst: TsgeGraphicElementBase;           //Взять первый элемент
     function  GetNext: TsgeGraphicElementBase;            //Следующий элемент
-
     procedure DeleteCurrentElement;                       //Удалить текущий элемент
   end;
 
@@ -62,6 +63,12 @@ begin
   FCount := 0;
   FFirst := nil;
   FLast := nil;
+end;
+
+
+procedure TsgeGraphicElementList.Add(Element: TsgeGraphicElementBase);
+begin
+  AddItem(Element);
 end;
 
 
