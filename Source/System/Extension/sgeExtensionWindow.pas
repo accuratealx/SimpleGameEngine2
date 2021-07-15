@@ -82,7 +82,6 @@ end;
 procedure TsgeExtensionWindow.CreateWindow;
 begin
   try
-
     //Создать окно
     FWindow := TsgeWindow.Create('SGEMainWindowClass', 'Simple Game Engine 2', 100, 100, 800, 600);
 
@@ -116,7 +115,7 @@ var
   Pos: TPoint;
   wp: WPARAM;
 begin
-  if GetMessage(Message, FWindow.Handle, 0, 0) then
+  if GetMessage(Message, 0, 0, 0) then
     begin
     //Отослать событие WM_Char
     TranslateMessage(Message);
@@ -354,7 +353,7 @@ begin
     FMouseOut := False;
 
     //Создать поток
-    FThread := TsgeThread.Create(@MessageProc, True, False);
+    FThread := TsgeThread.Create(nil, True, False);
 
     //Создать окно
     FThread.RunProcAndWait(@CreateWindow);
