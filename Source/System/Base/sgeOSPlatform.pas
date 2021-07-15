@@ -145,6 +145,11 @@ procedure sgeControllerConfigChanged;
 function  sgeGetMaxControllerCount: Byte;
 function  sgeControllerExist(ID: Byte): Boolean;
 
+
+//Буфер обмена
+function sgeCopyToClipboard(Str: String): Integer;
+function sgeCopyFromClipboard(var Str: String): Integer;
+
 var
   OneSecFrequency: Int64;
 
@@ -559,6 +564,148 @@ var
   J: TJOYINFO;
 begin
   Result := (joyGetPos(ID, @J) = JOYERR_NOERROR);
+end;
+
+
+{
+Описание
+  Вставить строку в буфер обмена
+Параметры
+  Str - Строка для вставки
+Результат
+  0 - Успешно
+  1 - Пустая строка
+  2 - Невозможно выделить память
+  3 - Невозможно заблокировать память
+  4 - Невозможно открыть буфер обмена
+  5 - Невозможно очистить буфер обмена
+  6 - Невозможно записать строку в буфер обмена
+  7 - Невозможно закрыть буфер обмена
+}
+function sgeCopyToClipboard(Str: String): Integer;
+var
+  ptr: Pointer;
+  Handle: HGLOBAL;
+  Size: Integer;
+  WS: WideString;
+begin
+  Result := 0;
+
+  if Str = '' then                            //Нечего передавать
+    begin
+    Result := 1;
+    Exit;
+    end;
+
+  WS := Str;                                  //В микрософте юникод 2 байтный, преобразовать
+
+  Size := (Length(WS) + 1) * 2;               //Определить длину на конце символ #0
+
+  Handle := GlobalAlloc(GMEM_MOVEABLE, Size); //Выделить память из глобальной кучи
+  if Handle = 0 then
+    begin
+    Result := 2;
+    Exit;
+    end;
+
+  ptr := GlobalLock(Handle);                  //Заблокировать память от перемещения
+  if ptr = nil then
+    begin
+    Result := 3;
+    GlobalFree(Handle);
+    Exit;
+    end;
+
+  Move(PWideChar(WS)^, ptr^, Size);           //Скопировать строку в глобальную память
+  GlobalUnlock(Handle);                       //Отменить блокировку памяти
+
+  if not OpenClipboard(0) then                //Открыть буфер обмена
+    begin
+    Result := 4;
+    GlobalFree(Handle);
+    Exit;
+    end;
+
+  if not EmptyClipboard then                  //Стереть данные в буфере обмена от других программ
+    begin
+    Result := 5;
+    GlobalFree(Handle);
+    Exit;
+    end;
+
+  if SetClipboardData(CF_UNICODETEXT, Handle) = 0 then  //Отдать в буфер обмена строку юникода
+    begin
+    Result := 6;
+    GlobalFree(Handle);
+    Exit;
+    end;
+
+  if not CloseClipboard then Result := 7;     //Закрыть буфер обмена
+end;
+
+
+{
+Описание
+  Скопировать строку из буфера обмена
+Параметры
+  Str - Строка для вставки
+Результат
+  0 - Успешно
+  1 - Невозможно открыть буфер обмена
+  2 - Невозможно прочитать строку из буфера обмена
+  3 - Невозможно закрыть буфер обмена
+  4 - Невозможно заблокировать память
+  5 - Невозможно узнать размер данных
+}
+function sgeCopyFromClipboard(var Str: String): Integer;
+var
+  Handle: HGLOBAL;
+  ptr: Pointer;
+  Size: Integer;
+  buf: array of Byte;
+begin
+  Result := 0;
+
+  if not OpenClipboard(0) then                //Открыть буфер обмена
+    begin
+    Result := 1;
+    Exit;
+    end;
+
+  Handle := GetClipboardData(CF_UNICODETEXT); //Взять указатель на глобальный блок памяти
+  if Handle = 0 then
+    begin
+    Result := 2;
+    Exit;
+    end;
+
+  if not CloseClipboard then                  //Закрыть буфер обмена
+    begin
+    Result := 3;
+    Exit;
+    end;
+
+  ptr := GlobalLock(Handle);                  //Заблокировать память от перемещения
+  if ptr = nil then
+    begin
+    Result := 4;
+    Exit;
+    end;
+
+  Size := GlobalSize(Handle);                 //Узнать размер данных
+  if Size = 0 then
+    begin
+    Result := 5;
+    Exit;
+    end;
+
+  SetLength(buf, Size);                       //Подготовить буфер для копирования
+  CopyMemory(@buf[0], ptr, Size);             //Скопировать юникодную строку в буфер
+  GlobalUnlock(Handle);                       //Отменить блоктровку памяти
+
+  Str := PWideChar(buf);                      //Преобразовать в строку Ansi
+
+  SetLength(buf, 0);
 end;
 
 
