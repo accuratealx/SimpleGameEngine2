@@ -17,7 +17,8 @@ interface
 uses
   sgeTypes, sgeErrorManager, sgeNamedObjectList, sgeExtensionList, sgeEventManager, sgeEventBase, sgeEventWindow,
   sgeExtensionWindow, sgeExtensionGraphic, sgeExtensionPackList, sgeExtensionFileSystem, sgeExtensionShell,
-  sgeExtensionResourceList, sgeExtensionStartParameters, sgeExtensionSound, sgeExtensionControllers;
+  sgeExtensionResourceList, sgeExtensionStartParameters, sgeExtensionSound, sgeExtensionControllers,
+  sgeExtensionVariables;
 
 
 const
@@ -42,6 +43,7 @@ type
 
     //Расширения
     FExtensionStartParameters: TsgeExtensionStartParameters;        //Расширение: Стартовые параметры
+    FExtensionVariables: TsgeExtensionVariables;                    //Расширение: Переменные
     FExtensionWindow: TsgeExtensionWindow;                          //Расширение: Окно
     FExtensionGraphic: TsgeExtensionGraphic;                        //Расширение: Графика
     FExtensionPackFiles: TsgeExtensionPackList;                     //Расширение: Файловые архивы
@@ -74,6 +76,7 @@ type
 
     //Расширения
     property ExtStartParameters: TsgeExtensionStartParameters read FExtensionStartParameters;
+    property ExtVariables: TsgeExtensionVariables read FExtensionVariables;
     property ExtWindow: TsgeExtensionWindow read FExtensionWindow;
     property ExtGraphic: TsgeExtensionGraphic read FExtensionGraphic;
     property ExtPackFiles: TsgeExtensionPackList read FExtensionPackFiles;
@@ -131,6 +134,7 @@ begin
   try
     //Создать расширения
     FExtensionStartParameters := TsgeExtensionStartParameters.Create(FObjectList);  //Стартовые параметры
+    FExtensionVariables := TsgeExtensionVariables.Create(FObjectList);              //Переменные
     FExtensionWindow := TsgeExtensionWindow.Create(FObjectList);                    //Окно
     FExtensionGraphic := TsgeExtensionGraphic.Create(FObjectList);                  //Графика
     FExtensionPackFiles :=   TsgeExtensionPackList.Create(FObjectList);             //Файловые архивы
@@ -190,6 +194,7 @@ begin
 
   //Очистить массив элементов графики
   FExtensionGraphic.DrawList.ClearLayers;
+  FExtensionGraphic.DrawShellproc := nil;
 
   //Разбудить основной поток
   FEventManager.Publish('');

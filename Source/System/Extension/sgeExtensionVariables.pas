@@ -1,0 +1,181 @@
+{
+Пакет             Simple Game Engine 2
+Файл              sgeExtensionVariables.pas
+Версия            1.0
+Создан            20.07.2021
+Автор             Творческий человек  (accuratealx@gmail.com)
+Описание          Класс расширения: Переменные
+}
+{$Include Defines.inc}
+
+unit sgeExtensionVariables;
+
+{$mode objfpc}{$H+}
+{$ModeSwitch duplicatelocals+}
+
+interface
+
+uses
+  sgeExtensionBase, sgeVariableList,
+  sgeVariableInteger, sgeVariableIntegerVirtual, sgeVariableSingle, sgeVariableSingleVirtual,
+  sgeVariableString, sgeVariableStringVirtual;
+
+
+const
+  Extension_Variables = 'Variables';
+
+
+type
+  TsgeExtensionVariables = class(TsgeExtensionBase)
+  private
+    FVariableList: TsgeVariableList;
+
+    procedure CheckVariableExist(VarName: ShortString);          //Проверить переменную на существование
+  protected
+    class function GetName: String; override;
+
+  public
+    constructor Create(ObjectList: TObject); override;
+    destructor  Destroy; override;
+
+    procedure Delete(Name: ShortString);
+
+    function AddInteger(Name: ShortString; Value: Integer; DefValue: Integer; ReadOnly: Boolean = False; MinValue: Integer = -MaxInt; MaxValue: Integer = MaxInt): TsgeVariableInteger;
+    function AddInteger(Name: ShortString; DefValue: Integer; Setter: TsgeVariableIntegerSetter; Getter: TsgeVariableIntegerGetter; MinValue: Integer = -MaxInt; MaxValue: Integer = MaxInt): TsgeVariableIntegerVirtual;
+
+    function AddSingle(Name: ShortString; Value: Single; DefValue: Single; ReadOnly: Boolean = False; MinValue: single = 1.5E-45; MaxValue: single = 3.4E38): TsgeVariableSingle;
+    function AddSingle(Name: ShortString; DefValue: Single; Getter: TsgeVariableSingleGetter; Setter: TsgeVariableSingleSetter = nil; MinValue: single = 1.5E-45; MaxValue: single = 3.4E38): TsgeVariableSingleVirtual;
+
+    function AddString(Name: ShortString; Value: String; DefValue: String; ReadOnly: Boolean = False): TsgeVariableString;
+    function AddString(Name: ShortString; DefValue: String; Getter: TsgeVariableStringGetter; Setter: TsgeVariableStringSetter = nil): TsgeVariableStringVirtual;
+
+    property Variables: TsgeVariableList read FVariableList;
+  end;
+
+
+implementation
+
+uses
+  sgeErrors;
+
+
+const
+  _UNITNAME = 'ExtensionVariables';
+
+  Err_VariableExist = 'VariableExist';
+
+
+procedure TsgeExtensionVariables.CheckVariableExist(VarName: ShortString);
+var
+  Idx: Integer;
+begin
+  Idx := FVariableList.IndexOf(VarName);
+  if Idx <> -1 then
+    raise EsgeException.Create(_UNITNAME, Err_VariableExist, VarName);
+end;
+
+
+class function TsgeExtensionVariables.GetName: String;
+begin
+  Result := Extension_Variables;
+end;
+
+
+constructor TsgeExtensionVariables.Create(ObjectList: TObject);
+begin
+  try
+    inherited Create(ObjectList);
+
+    FVariableList := TsgeVariableList.Create;
+
+  except
+    on E: EsgeException do
+      raise EsgeException.Create(_UNITNAME, Err_CantCreateExtension, '', E.Message);
+  end;
+end;
+
+
+destructor TsgeExtensionVariables.Destroy;
+begin
+  FVariableList.Free;
+
+  inherited Destroy;
+end;
+
+
+procedure TsgeExtensionVariables.Delete(Name: ShortString);
+begin
+  FVariableList.Delete(Name);
+end;
+
+
+function TsgeExtensionVariables.AddInteger(Name: ShortString; Value: Integer; DefValue: Integer; ReadOnly: Boolean; MinValue: Integer; MaxValue: Integer): TsgeVariableInteger;
+begin
+  //Проверить на существование
+  CheckVariableExist(Name);
+
+  //Добавить
+  Result := TsgeVariableInteger.Create(Name, Value, DefValue, ReadOnly, MinValue, MaxValue);
+  FVariableList.AddItem(Result);
+end;
+
+
+function TsgeExtensionVariables.AddInteger(Name: ShortString; DefValue: Integer; Setter: TsgeVariableIntegerSetter; Getter: TsgeVariableIntegerGetter; MinValue: Integer; MaxValue: Integer): TsgeVariableIntegerVirtual;
+begin
+  //Проверить на существование
+  CheckVariableExist(Name);
+
+  //Добавить
+  Result := TsgeVariableIntegerVirtual.Create(Name, DefValue, Getter, Setter, MinValue, MaxValue);
+  FVariableList.AddItem(Result);
+end;
+
+
+function TsgeExtensionVariables.AddSingle(Name: ShortString; Value: Single; DefValue: Single; ReadOnly: Boolean; MinValue: single; MaxValue: single): TsgeVariableSingle;
+begin
+  //Проверить на существование
+  CheckVariableExist(Name);
+
+  //Добавить
+  Result := TsgeVariableSingle.Create(Name, Value, DefValue, ReadOnly, MinValue, MaxValue);
+  FVariableList.AddItem(Result);
+end;
+
+
+function TsgeExtensionVariables.AddSingle(Name: ShortString; DefValue: Single; Getter: TsgeVariableSingleGetter; Setter: TsgeVariableSingleSetter; MinValue: single; MaxValue: single): TsgeVariableSingleVirtual;
+begin
+  //Проверить на существование
+  CheckVariableExist(Name);
+
+  //Добавить
+  Result := TsgeVariableSingleVirtual.Create(Name, DefValue, Getter, Setter, MinValue, MaxValue);
+  FVariableList.AddItem(Result);
+end;
+
+
+function TsgeExtensionVariables.AddString(Name: ShortString; Value: String; DefValue: String; ReadOnly: Boolean): TsgeVariableString;
+begin
+  //Проверить на существование
+  CheckVariableExist(Name);
+
+  //Добавить
+  Result := TsgeVariableString.Create(Name, Value, DefValue, ReadOnly);
+  FVariableList.AddItem(Result);
+end;
+
+
+function TsgeExtensionVariables.AddString(Name: ShortString; DefValue: String; Getter: TsgeVariableStringGetter; Setter: TsgeVariableStringSetter): TsgeVariableStringVirtual;
+begin
+  //Проверить на существование
+  CheckVariableExist(Name);
+
+  //Добавить
+  Result := TsgeVariableStringVirtual.Create(Name, DefValue, Getter, Setter);
+  FVariableList.AddItem(Result);
+end;
+
+
+
+end.
+
+
