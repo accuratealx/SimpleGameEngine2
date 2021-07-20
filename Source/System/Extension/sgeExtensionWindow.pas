@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeExtensionWindow.pas
-Версия            1.5
+Версия            1.6
 Создан            31.03.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс расширения: Окно
@@ -388,6 +388,8 @@ begin
 
   //Уничтожить поток
   FThread.Free;
+
+  inherited Destroy;
 end;
 
 
