@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeTemplateCollection.pas
-Версия            1.0
+Версия            1.1
 Создан            14.06.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс-шаблон: Коллекция объектов
@@ -22,7 +22,7 @@ type
 
     function GetItem(Index: Integer): T;
   public
-    constructor Create;
+    constructor Create; virtual;
     destructor  Destroy; override;
 
     //function  IndexOf(AItem: T): Integer;
