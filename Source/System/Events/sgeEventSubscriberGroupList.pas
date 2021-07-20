@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeEventSubscriberGroupList.pas
-Версия            1.2
+Версия            1.3
 Создан            12.07.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс списка групп подписчиков
@@ -15,6 +15,7 @@ unit sgeEventSubscriberGroupList;
 interface
 
 uses
+  sgeCriticalSection,
   sgeTemplateCollection, sgeEventBase, sgeEventSubscriber, sgeEventSubscriberGroup;
 
 type
@@ -25,10 +26,18 @@ type
   //Список групп подписчиков
   TsgeEventSubscriberGroupList = class(TsgeEventSubscriberGroupListTemplate)
   private
+    FCS: TsgeCriticalSection;
+
     procedure ClearItem; override;
 
   public
+    constructor Create; override;
+    destructor  Destroy; override;
+
     function IndexOf(Name: ShortString): Integer;
+
+    procedure Lock;
+    procedure Unlock;
 
     procedure Clear;
     procedure Add(Name: String);
@@ -67,44 +76,98 @@ begin
 end;
 
 
+constructor TsgeEventSubscriberGroupList.Create;
+begin
+  inherited Create;
+  FCS := TsgeCriticalSection.Create;
+end;
+
+
+destructor TsgeEventSubscriberGroupList.Destroy;
+begin
+  FCS.Free;
+  inherited Destroy;
+end;
+
+
 function TsgeEventSubscriberGroupList.IndexOf(Name: ShortString): Integer;
 var
   i: Integer;
 begin
-  Result := -1;
+  FCS.Enter;
+  try
 
-  Name := LowerCase(Name);
-  for i := 0 to FCount - 1 do
-    if Name = LowerCase(FList[i].Name) then
-      begin
-      Result := i;
-      Break;
-      end;
+    Result := -1;
+
+    Name := LowerCase(Name);
+    for i := 0 to FCount - 1 do
+      if Name = LowerCase(FList[i].Name) then
+        begin
+        Result := i;
+        Break;
+        end;
+
+  finally
+    FCS.Leave;
+  end;
+end;
+
+
+procedure TsgeEventSubscriberGroupList.Lock;
+begin
+  FCS.Enter;
+end;
+
+
+procedure TsgeEventSubscriberGroupList.Unlock;
+begin
+  FCS.Leave;
 end;
 
 
 procedure TsgeEventSubscriberGroupList.Clear;
 begin
-  ClearItem;
+  FCS.Enter;
+  try
+
+    ClearItem;
+
+  finally
+    FCS.Leave;
+  end;
 end;
 
 
 procedure TsgeEventSubscriberGroupList.Add(Name: String);
 begin
-  AddItem(TsgeEventSubscriberGroup.Create(Name));
+  FCS.Enter;
+  try
+
+    AddItem(TsgeEventSubscriberGroup.Create(Name));
+
+  finally
+    FCS.Leave;
+  end;
 end;
 
 
 procedure TsgeEventSubscriberGroupList.Delete(Index: Integer);
 begin
-  if (Index < 0) or (Index > FCount - 1) then
-    raise EsgeException.Create(_UNITNAME, Err_IndexOutOfBounds, sgeIntToStr(Index));
+  FCS.Enter;
+  try
 
-  //Удалить память объекта
-  FList[Index].Free;
+    if (Index < 0) or (Index > FCount - 1) then
+      raise EsgeException.Create(_UNITNAME, Err_IndexOutOfBounds, sgeIntToStr(Index));
 
-  //Удалить элемент
-  DeleteItem(Index);
+    //Удалить память объекта
+    FList[Index].Free;
+
+    //Удалить элемент
+    DeleteItem(Index);
+
+  finally
+    FCS.Leave;
+  end;
 end;
 
 
@@ -112,18 +175,25 @@ function TsgeEventSubscriberGroupList.Subscribe(EventName: ShortString; Handler:
 var
   Idx: Integer;
 begin
-  //Найти индекс группы
-  Idx := IndexOf(EventName);
+  FCS.Enter;
+  try
 
-  //Если нет группы, то создать
-  if Idx = -1 then
-    begin
-    Add(EventName);
-    Idx := FCount - 1;
-    end;
+    //Найти индекс группы
+    Idx := IndexOf(EventName);
 
-  //Добавить подписчика
-  Result := FList[Idx].Subscribers.Add(Handler, Priority, Enable);
+    //Если нет группы, то создать
+    if Idx = -1 then
+      begin
+      Add(EventName);
+      Idx := FCount - 1;
+      end;
+
+    //Добавить подписчика
+    Result := FList[Idx].Subscribers.Add(Handler, Priority, Enable);
+
+  finally
+    FCS.Leave;
+  end;
 end;
 
 
@@ -131,17 +201,24 @@ procedure TsgeEventSubscriberGroupList.UnSubscribe(EventName: ShortString; Handl
 var
   Idx: Integer;
 begin
-  //Поиск группы
-  Idx := IndexOf(EventName);
+  FCS.Enter;
+  try
 
-  //Группа не найдена
-  if Idx = -1 then Exit;
+    //Поиск группы
+    Idx := IndexOf(EventName);
 
-  //Удалить подписчика
-  FList[Idx].Subscribers.Delete(Handler);
+    //Группа не найдена
+    if Idx = -1 then Exit;
 
-  //Проверить на пустую группу
-  if FList[Idx].Subscribers.Count = 0 then Delete(Idx);
+    //Удалить подписчика
+    FList[Idx].Subscribers.Delete(Handler);
+
+    //Проверить на пустую группу
+    if FList[Idx].Subscribers.Count = 0 then Delete(Idx);
+
+  finally
+    FCS.Leave;
+  end;
 end;
 
 
@@ -149,17 +226,24 @@ procedure TsgeEventSubscriberGroupList.UnSubscribe(EventName: ShortString; Obj: 
 var
   Idx: Integer;
 begin
-  //Поиск группы
-  Idx := IndexOf(EventName);
+  FCS.Enter;
+  try
 
-  //Группа не найдена
-  if Idx = -1 then Exit;
+    //Поиск группы
+    Idx := IndexOf(EventName);
 
-  //Удалить подписчика
-  FList[Idx].Subscribers.Delete(Obj);
+    //Группа не найдена
+    if Idx = -1 then Exit;
 
-  //Проверить на пустую группу
-  if FList[Idx].Subscribers.Count = 0 then Delete(Idx);
+    //Удалить подписчика
+    FList[Idx].Subscribers.Delete(Obj);
+
+    //Проверить на пустую группу
+    if FList[Idx].Subscribers.Count = 0 then Delete(Idx);
+
+  finally
+    FCS.Leave;
+  end;
 end;
 
 
@@ -167,21 +251,28 @@ procedure TsgeEventSubscriberGroupList.UnSubscribe(Handler: TsgeEventHandler);
 var
   i: Integer;
 begin
-  i := -1;
-  while i < FCount - 1 do
-    begin
-    Inc(i);
+  FCS.Enter;
+  try
 
-    //Удалить подписчика в группе
-    FList[i].Subscribers.Delete(Handler);
-
-    //Проверить на пустую группу
-    if FList[i].Subscribers.Count = 0 then
+    i := -1;
+    while i < FCount - 1 do
       begin
-      Delete(i);
-      Dec(i)
+      Inc(i);
+
+      //Удалить подписчика в группе
+      FList[i].Subscribers.Delete(Handler);
+
+      //Проверить на пустую группу
+      if FList[i].Subscribers.Count = 0 then
+        begin
+        Delete(i);
+        Dec(i)
+        end;
       end;
-    end;
+
+  finally
+    FCS.Leave;
+  end;
 end;
 
 
@@ -189,21 +280,28 @@ procedure TsgeEventSubscriberGroupList.UnSubscribe(Obj: TObject);
 var
   i: Integer;
 begin
-  i := -1;
-  while i < FCount - 1 do
-    begin
-    Inc(i);
+  FCS.Enter;
+  try
 
-    //Удалить подписчика в группе по объекту
-    FList[i].Subscribers.Delete(Obj);
-
-    //Проверить на пустую группу
-    if FList[i].Subscribers.Count = 0 then
+    i := -1;
+    while i < FCount - 1 do
       begin
-      Delete(i);
-      Dec(i)
+      Inc(i);
+
+      //Удалить подписчика в группе по объекту
+      FList[i].Subscribers.Delete(Obj);
+
+      //Проверить на пустую группу
+      if FList[i].Subscribers.Count = 0 then
+        begin
+        Delete(i);
+        Dec(i)
+        end;
       end;
-    end;
+
+  finally
+    FCS.Leave;
+  end;
 end;
 
 
