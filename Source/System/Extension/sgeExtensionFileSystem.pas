@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeExtensionFileSystem.pas
-Версия            1.2
+Версия            1.3
 Создан            12.05.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс расширения: Файловая система
@@ -41,7 +41,6 @@ type
 
   public
     constructor Create(ObjectList: TObject); override;
-    destructor  Destroy; override;
 
     //Каталоги
     procedure ForceDirectories(Directory: String);
@@ -130,12 +129,6 @@ begin
     on E: EsgeException do
       raise EsgeException.Create(_UNITNAME, Err_CantCreateExtension, '', E.Message);
   end;
-end;
-
-
-destructor TsgeExtensionFileSystem.Destroy;
-begin
-
 end;
 
 
