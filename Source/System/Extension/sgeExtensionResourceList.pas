@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeExtensionResourceList.pas
-Версия            1.4
+Версия            1.5
 Создан            14.05.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс расширения: Список ресурсов
@@ -436,7 +436,7 @@ begin
     FResourceList := TsgeResourceList.Create;
 
     //Создать ресурсы по умолчанию
-    FDefault.Font := TsgeGraphicFont.Create('Arial', 12, []);
+    FDefault.Font := TsgeGraphicFont.Create('Courier New', 12, []);
     FDefault.Sprite := TsgeGraphicSprite.Create;
     FDefault.Frames := TsgeGraphicAnimationFrames.Create;
     FDefault.Frames.Add(FDefault.Sprite);
@@ -470,6 +470,8 @@ begin
 
   //Классы
   FResourceList.Free;
+
+  inherited Destroy;
 end;
 
 
