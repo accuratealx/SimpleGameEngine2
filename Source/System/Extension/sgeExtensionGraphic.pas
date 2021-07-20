@@ -34,6 +34,10 @@ type
   TsgeExtensionGraphicDrawControl = (gdcSync, gdcProgram);
 
 
+  //Метод
+  TsgeExtensionGraphicDrawProc = procedure of object;
+
+
   TsgeExtensionGraphic = class(TsgeExtensionBase)
   private
     //Ссылки на объекты
@@ -52,6 +56,7 @@ type
     FDrawControl: TsgeExtensionGraphicDrawControl;                //Способ ограничения кадров
     FMaxFPS: Word;                                                //Максимальное количество кадров в секунду
     FAutoEraseBG: Boolean;                                        //Автостирание фона перед выводом кадра
+    FDrawShellProc: TsgeExtensionGraphicDrawProc;                 //Ссылка на метод отрисовки оболочки
 
     //Вспомогательные параметры
     FDrawLastTime: Int64;
@@ -72,6 +77,7 @@ type
     procedure DrawElements;
     procedure DrawFPS;
     procedure DrawFade;
+    procedure DrawShell;
 
     //Свойства
     procedure SetDrawControl(AMetod: TsgeExtensionGraphicDrawControl);
@@ -102,6 +108,7 @@ type
     property MaxFPS: Word read FMaxFPS write SetMaxFPS;
     property DrawControl: TsgeExtensionGraphicDrawControl read FDrawControl write SetDrawControl;
     property AutoEraseBG: Boolean read FAutoEraseBG write FAutoEraseBG;
+    property DrawShellproc: TsgeExtensionGraphicDrawProc read FDrawShellProc write FDrawShellProc;
   end;
 
 
@@ -177,6 +184,9 @@ begin
 
   //Вывод FPS
   if FFPS.Enable then DrawFPS;
+
+  //Вывод оболочки
+  DrawShell;
 
   //Смена кадров
   case FGraphic.RenderBuffer of
@@ -285,6 +295,12 @@ begin
 
   //Восстановить графику
   FGraphic.PopAttrib;
+end;
+
+
+procedure TsgeExtensionGraphic.DrawShell;
+begin
+  if Assigned(FDrawShellProc) then DrawShellproc;
 end;
 
 
@@ -404,6 +420,8 @@ begin
   FFPS.Free;
   FFPSCounter.Free;
   FFade.Free;
+
+  inherited Destroy;
 end;
 
 procedure TsgeExtensionGraphic.Fade(Mode: TsgeExtensionFadeMode; Color: TsgeColor; Time: Cardinal);

@@ -15,7 +15,9 @@ unit sgeExtensionShell;
 interface
 
 uses
-  sgeExtensionBase, sgeEventWindow, sgeEventSubscriber;
+  sgeExtensionBase, sgeEventWindow, sgeEventSubscriber,
+  sgeLineEditor,
+  sgeExtensionGraphic, sgeExtensionResourceList;
 
 
 const
@@ -25,6 +27,13 @@ const
 type
   TsgeExtensionShell = class(TsgeExtensionBase)
   private
+    FExtGraphic: TsgeExtensionGraphic;
+    FExtResList: TsgeExtensionResourceList;
+
+  private
+    //Классы
+    FEditor: TsgeLineEditor;
+
     //Ссылки на объекты подписки
     FSubKeyDown: TsgeEventSubscriber;
     FSubKeyUp: TsgeEventSubscriber;
@@ -40,9 +49,10 @@ type
     function  Handler_KeyUp(EventObj: TsgeEventWindowKeyboard): Boolean;
     function  Handler_KeyChar(EventObj: TsgeEventWindowChar): Boolean;
 
+    procedure Draw;
+
     //Свойства
     procedure SetEnable(AEnable: Boolean);
-
   protected
     class function GetName: String; override;
 
@@ -58,7 +68,7 @@ type
 implementation
 
 uses
-  sgeErrors, sgeEventBase;
+  sgeErrors, sgeEventBase, sgeKeys, sgeGraphicColor;
 
 const
   _UNITNAME = 'ExtensionShell';
@@ -86,6 +96,14 @@ end;
 function TsgeExtensionShell.Handler_KeyDown(EventObj: TsgeEventWindowKeyboard): Boolean;
 begin
   Result := True;
+
+  //Обработать системные клавиши
+  case EventObj.Key of
+    keyEscape: Enable := False;
+
+    else
+      FEditor.ProcessKey(EventObj.Key, EventObj.KeyboardButtons);
+  end;
 end;
 
 
@@ -98,6 +116,26 @@ end;
 function TsgeExtensionShell.Handler_KeyChar(EventObj: TsgeEventWindowChar): Boolean;
 begin
   Result := True;
+
+  //Отослать в редактор
+  FEditor.ProcessChar(EventObj.Char, EventObj.KeyboardButtons);
+end;
+
+
+procedure TsgeExtensionShell.Draw;
+begin
+  if not FEnable then Exit;
+
+  //Тут мы рисуем оболочку на экране
+  with FExtGraphic.Graphic do
+    begin
+    PushAttrib;
+    Color := cGray;
+    DrawRect(0, 0, Width, FExtResList.Default.Font.Height + 10);
+    Color := cWhite;
+    DrawText(0, 0, FExtResList.Default.Font, FEditor.Line);
+    PopAttrib;
+    end;
 end;
 
 
@@ -109,7 +147,7 @@ begin
   //Поправить подписчиков событий
   FSubKeyDown.Enable := FEnable;
   FSubKeyUp.Enable := FEnable;
-  FSubKeyUp.Enable := FEnable;
+  FSubKeyChar.Enable := FEnable;
 end;
 
 
@@ -124,7 +162,12 @@ begin
   try
     inherited Create(ObjectList);
 
+    //Поиск указателей
+    FExtGraphic := TsgeExtensionGraphic(GetExtension(Extension_Graphic));
+    FExtResList := TsgeExtensionResourceList(GetExtension(Extension_ResourceList));
+
     //Создать объекты
+    FEditor := TsgeLineEditor.Create;
 
     //Задать параметры
     FEnable := False;
@@ -132,6 +175,8 @@ begin
     //Подписать обработчики
     RegisterEventHandlers;
 
+    //Установить метод отрисовки оболочки
+    FExtGraphic.DrawShellproc := @Draw;
   except
     on E: EsgeException do
       raise EsgeException.Create(_UNITNAME, Err_CantCreateExtension, '', E.Message);
@@ -144,6 +189,8 @@ begin
   //Отписать подписчиков
   UnRegisterEventHandlers;
 
+  //Удалить объекты
+  FEditor.Free;
 
   inherited Destroy;
 end;
