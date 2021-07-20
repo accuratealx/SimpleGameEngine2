@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeEventManager.pas
-Версия            1.2
+Версия            1.3
 Создан            22.03.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс системы событий
@@ -172,6 +172,9 @@ begin
     EventName := FEventList.Item[0].Name;
     EventObj := FEventList.Item[0].Obj;
 
+    //Заблокировать подписчиков
+    FSubscriberGroupList.Lock;
+
     //Найти группу
     Idx := FSubscriberGroupList.IndexOf(EventName);
 
@@ -189,10 +192,14 @@ begin
           //Вызвать обработчик
           if SubscriberList.Item[i].Handler(EventObj) then Break;
         except
+          raise;
           //Обработать ошибку
           //Отослать в ErrorManager
         end;
       end;
+
+    //Разблокировать подписчиков
+    FSubscriberGroupList.Unlock;
 
     //Удалить объект события
     FCS.Enter;
