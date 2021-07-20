@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeExtensionPackList.pas
-Версия            1.2
+Версия            1.3
 Создан            07.05.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс расширения: Файловые архивы
@@ -80,6 +80,8 @@ end;
 destructor TsgeExtensionPackList.Destroy;
 begin
   FPackList.Free;
+
+  inherited Destroy;
 end;
 
 
