@@ -2,71 +2,70 @@
 Пакет             Simple Game Engine 2
 Файл              sgeVariableBoolean.pas
 Версия            1.0
-Создан            18.07.2021
+Создан            22.07.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
-Описание          Класс переменной: Булевое значение
+Описание          Класс переменной: Булевая переменная
 }
 {$Include Defines.inc}
 
 unit sgeVariableBoolean;
 
 {$mode objfpc}{$H+}
+{$ModeSwitch duplicatelocals}
 
 interface
 
 uses
-  sgeVariableBase;
+  sgeVariableBooleanBase;
 
 
 type
-  TsgeVariableBoolean = class(TsgeVariableBase)
-  const
-    DefTrueValue = 'True';
-    DefFalseValue = 'False';
-
+  TsgeVariableBoolean = class(TsgeVariableBooleanBase)
   private
     FValue: Boolean;
-    FDefaultValue: Boolean;
-    FTrueValue: ShortString;
-    FFalseValue: ShortString;
 
-    function  GetStrValue: String; override;
-    procedure SetStrValue(Str: String); override;
+  protected
+    function  GetValue: Boolean; override;
+    procedure SetValue(AValue: Boolean); override;
+
   public
-    constructor Create(Value: Boolean; DefValue: Boolean; TrueValue: ShortString = 'True'; FalseValue: ShortString = 'False');
-
-    procedure SetDefaultValue; override;
-
-    property Value: Boolean read FValue write FValue;
-    property DefaultValue: Boolean read FDefaultValue write FDefaultValue;
+    constructor Create(Name: ShortString; Value: Boolean; DefValue: Boolean; ReadOnly: Boolean; TrueStr: ShortString = 'True'; FalseStr: ShortString = 'False');
   end;
 
 
 implementation
 
+uses
+  sgeErrors, sgeVariableBase;
 
-function TsgeVariableBoolean.GetStrValue: String;
+const
+  _UNITNAME = 'VariableBoolean';
+
+
+
+function TsgeVariableBoolean.GetValue: Boolean;
 begin
-
+  Result := FValue;
 end;
 
 
-procedure TsgeVariableBoolean.SetStrValue(Str: String);
+procedure TsgeVariableBoolean.SetValue(AValue: Boolean);
 begin
+  if FReadOnly then
+    raise EsgeException.Create(_UNITNAME, Err_VariableIsReadOnly);
 
+  FValue := AValue;
 end;
 
 
-constructor TsgeVariableBoolean.Create(Value: Boolean; DefValue: Boolean; TrueValue: ShortString; FalseValue: ShortString);
+constructor TsgeVariableBoolean.Create(Name: ShortString; Value: Boolean; DefValue: Boolean; ReadOnly: Boolean; TrueStr: ShortString; FalseStr: ShortString);
 begin
-  FValueType := vtBoolean;
+  inherited Create(Name, DefValue, ReadOnly, TrueStr, FalseStr);
+
+  SetValue(Value);
 end;
 
 
-procedure TsgeVariableBoolean.SetDefaultValue;
-begin
-  FValue := FDefaultValue;
-end;
 
 
 end.

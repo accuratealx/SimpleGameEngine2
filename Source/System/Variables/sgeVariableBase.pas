@@ -22,7 +22,7 @@ const
 
 type
   //Тип значения
-  TsgeVariableType = (vtUnknown, vtBoolean, vtInteger, vtSingle, vtString, vtStringList);
+  TsgeVariableType = (vtUnknown, vtBoolean, vtInteger, vtSingle, vtString);
 
 
   //Переменная

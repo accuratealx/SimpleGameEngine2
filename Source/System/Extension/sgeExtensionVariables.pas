@@ -18,7 +18,7 @@ interface
 uses
   sgeExtensionBase, sgeVariableList,
   sgeVariableInteger, sgeVariableIntegerVirtual, sgeVariableSingle, sgeVariableSingleVirtual,
-  sgeVariableString, sgeVariableStringVirtual;
+  sgeVariableString, sgeVariableStringVirtual, sgeVariableBoolean, sgeVariableBooleanVirtual;
 
 
 const
@@ -30,7 +30,7 @@ type
   private
     FVariableList: TsgeVariableList;
 
-    procedure CheckVariableExist(VarName: ShortString);          //Проверить переменную на существование
+    procedure CheckVariableExist(VarName: ShortString);
   protected
     class function GetName: String; override;
 
@@ -42,12 +42,12 @@ type
 
     function AddInteger(Name: ShortString; Value: Integer; DefValue: Integer; ReadOnly: Boolean = False; MinValue: Integer = -MaxInt; MaxValue: Integer = MaxInt): TsgeVariableInteger;
     function AddInteger(Name: ShortString; DefValue: Integer; Setter: TsgeVariableIntegerSetter; Getter: TsgeVariableIntegerGetter; MinValue: Integer = -MaxInt; MaxValue: Integer = MaxInt): TsgeVariableIntegerVirtual;
-
     function AddSingle(Name: ShortString; Value: Single; DefValue: Single; ReadOnly: Boolean = False; MinValue: single = 1.5E-45; MaxValue: single = 3.4E38): TsgeVariableSingle;
     function AddSingle(Name: ShortString; DefValue: Single; Getter: TsgeVariableSingleGetter; Setter: TsgeVariableSingleSetter = nil; MinValue: single = 1.5E-45; MaxValue: single = 3.4E38): TsgeVariableSingleVirtual;
-
     function AddString(Name: ShortString; Value: String; DefValue: String; ReadOnly: Boolean = False): TsgeVariableString;
     function AddString(Name: ShortString; DefValue: String; Getter: TsgeVariableStringGetter; Setter: TsgeVariableStringSetter = nil): TsgeVariableStringVirtual;
+    function AddBoolean(Name: ShortString; Value: Boolean; DefValue: Boolean; ReadOnly: Boolean = False; TrueStr: ShortString = 'True'; FalseStr: ShortString = 'False'): TsgeVariableBoolean;
+    function AddBoolean(Name: ShortString; DefValue: Boolean; Getter: TsgeVariableBooleanGetter; Setter: TsgeVariableBooleanSetter = nil; TrueStr: ShortString = 'True'; FalseStr: ShortString = 'False'): TsgeVariableBooleanVirtual;
 
     property Variables: TsgeVariableList read FVariableList;
   end;
@@ -171,6 +171,26 @@ begin
 
   //Добавить
   Result := TsgeVariableStringVirtual.Create(Name, DefValue, Getter, Setter);
+  FVariableList.AddItem(Result);
+end;
+
+function TsgeExtensionVariables.AddBoolean(Name: ShortString; Value: Boolean; DefValue: Boolean; ReadOnly: Boolean; TrueStr: ShortString; FalseStr: ShortString): TsgeVariableBoolean;
+begin
+  //Проверить на существование
+  CheckVariableExist(Name);
+
+  //Добавить
+  Result := TsgeVariableBoolean.Create(Name, Value, DefValue, ReadOnly, TrueStr, FalseStr);
+  FVariableList.AddItem(Result);
+end;
+
+function TsgeExtensionVariables.AddBoolean(Name: ShortString; DefValue: Boolean; Getter: TsgeVariableBooleanGetter; Setter: TsgeVariableBooleanSetter; TrueStr: ShortString; FalseStr: ShortString): TsgeVariableBooleanVirtual;
+begin
+  //Проверить на существование
+  CheckVariableExist(Name);
+
+  //Добавить
+  Result := TsgeVariableBooleanVirtual.Create(Name, DefValue, Getter, Setter, TrueStr, FalseStr);
   FVariableList.AddItem(Result);
 end;
 
