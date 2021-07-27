@@ -1,7 +1,7 @@
 ﻿{
 Пакет             Simple Game Engine 2
 Файл              sgeSystemUtils.pas
-Версия            1.4
+Версия            1.5
 Создан            24.02.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Вспомогательные Функции
@@ -25,7 +25,7 @@ function  sgeTryStrToInt(const S: string; out Int: Longint): boolean;
 
 function  sgeFloatToStr(Value: Extended): String;
 function  sgeStrToFloat(const S: String): Extended;
-function  sgeTryStrToFloat(const S: String; Out Value: {$ifdef WIN32} Extended {$else} Double {$endif}): Boolean;
+function  sgeTryStrToFloat(const S: String; Out Value: Double): Boolean;
 
 function  sgeCompareMem(P1, P2: Pointer; Length: PtrUInt): Boolean;
 
@@ -110,13 +110,16 @@ end;
 
 
 function sgeStrToFloat(const S: String): Extended;
+var
+  d: Double;
 begin
-  Result := 0;
-  sgeTryStrToFloat(S, Result);
+  d := 0;
+  sgeTryStrToFloat(S, d);
+  Result := d;
 end;
 
 
-function  sgeTryStrToFloat(const S: String; Out Value: {$ifdef WIN32} Extended {$else} Double {$endif}): Boolean;
+function sgeTryStrToFloat(const S: String; out Value: Double): Boolean;
 var
   E: Integer;
 Begin
