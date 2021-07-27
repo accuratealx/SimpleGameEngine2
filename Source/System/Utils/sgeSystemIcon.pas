@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeSystemIcon.pas
-Версия            1.0
+Версия            1.1
 Создан            26.07.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс системного значка *.ico для формы
@@ -30,7 +30,7 @@ type
 
     procedure DeleteIcon;
   public
-    constructor Create;
+    constructor Create(AType: TsgeSystemIconType = sitApplication);
     constructor CreateFromFile(FileName: String);
     constructor CreateFromHinstance(Name: String);
     destructor  Destroy; override;
@@ -66,9 +66,9 @@ begin
 end;
 
 
-constructor TsgeSystemIcon.Create;
+constructor TsgeSystemIcon.Create(AType: TsgeSystemIconType);
 begin
-  LoadDefault(sitApplication);
+  LoadDefault(AType);
 end;
 
 

@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeSystemCursor.pas
-Версия            1.0
+Версия            1.1
 Создан            26.07.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс системного сурсора *.cur, *.ani для формы
@@ -30,7 +30,7 @@ type
 
     procedure DeleteCursor;
   public
-    constructor Create;
+    constructor Create(AType: TsgeSystemCursorType = sctArrow);
     constructor CreateFromFile(FileName: String);
     constructor CreateFromHinstance(Name: String);
     destructor  Destroy; override;
@@ -66,9 +66,9 @@ begin
 end;
 
 
-constructor TsgeSystemCursor.Create;
+constructor TsgeSystemCursor.Create(AType: TsgeSystemCursorType);
 begin
-  LoadDefault(sctArrow);
+  LoadDefault(AType);
 end;
 
 
