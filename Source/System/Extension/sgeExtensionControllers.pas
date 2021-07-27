@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeExtensionControllers.pas
-Версия            1.1
+Версия            1.2
 Создан            20.05.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс расширения: Контроллеры
@@ -31,14 +31,14 @@ type
 
     //Параметры
     FEnable: Boolean;                                               //Активность потока
-    FDelay: Word;                                                   //Задержка между опросами контроллеров
+    FScanDelay: Word;                                               //Задержка между опросами контроллеров
     FAutoScan: Boolean;                                             //Автосканирование контроллеров
-    FScanInterval: Cardinal;                                        //Интервал сканирования новых контроллеров
+    FAutoScanInterval: Cardinal;                                    //Интервал сканирования новых контроллеров
 
     //Вспомогательные переменные
     FMaxControllerCount: Byte;
     FLastScanTime: Int64;
-    FScanDelay: Cardinal;
+    FInnerScanDelay: Cardinal;
     FIdx1, FIdx2: Byte;
 
     procedure Work;                                                 //Функция потока
@@ -61,9 +61,9 @@ type
 
     property ControllerList: TsgeControllerList read FControllerList;
     property Enable: Boolean read FEnable write SetEnable;
-    property Delay: Word read FDelay write FDelay;
+    property ScanDelay: Word read FScanDelay write FScanDelay;
     property AutoScan: Boolean read FAutoScan write FAutoScan;
-    property ScanInterval: Cardinal read FScanInterval write FScanInterval;
+    property AutoScanInterval: Cardinal read FAutoScanInterval write FAutoScanInterval;
   end;
 
 
@@ -88,7 +88,7 @@ begin
   if FAutoScan then ProcessScan;
 
   //Задержка между опросом
-  if FDelay <> 0 then sgeSleep(FDelay);
+  if FScanDelay <> 0 then sgeSleep(FScanDelay);
 end;
 
 
@@ -164,7 +164,7 @@ var
 begin
   //Определить время проверки сканирования
   CurrentTime := sgeGetCPUCounter;
-  if (CurrentTime - FLastScanTime) / OneSecFrequency <= FScanDelay  then Exit;
+  if (CurrentTime - FLastScanTime) / OneSecFrequency <= FInnerScanDelay  then Exit;
   FLastScanTime := CurrentTime;
 
 
@@ -233,9 +233,9 @@ end;
 
 procedure TsgeExtensionControllers.SetScanInterval(AInterval: Cardinal);
 begin
-  FScanInterval := AInterval;
+  FAutoScanInterval := AInterval;
 
-  FScanDelay := FScanInterval div 1000;
+  FInnerScanDelay := FAutoScanInterval div 1000;
 end;
 
 
@@ -256,10 +256,10 @@ begin
 
     //Параметры
     FEnable := False;
-    FDelay := 50;
+    FScanDelay := 50;
     FAutoScan := False;
     FMaxControllerCount := sgeGetMaxControllerCount;
-    FScanInterval := 5000;
+    FAutoScanInterval := 5000;
 
     //Определить контроллеры
     FThread.RunProcAndWait(@ScanControllers, tpemSuspend);
