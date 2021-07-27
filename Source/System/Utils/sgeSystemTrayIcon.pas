@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeTrayIcon.pas
-Версия            1.0
+Версия            1.1
 Создан            23.07.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Иконка для TrayMenu
@@ -93,7 +93,7 @@ implementation
 
 uses
   sgeErrors,
-  Win32Proc, LazUTF8, SysUtils;
+  SysUtils;
 
 const
   _UNITNAME = 'TrayIcon';
@@ -115,11 +115,11 @@ const
   NIF_MESSAGE = $00000001;
   NIF_ICON = $00000002;
   NIF_TIP = $00000004;
-  //NIF_STATE = $00000008;
+  NIF_STATE = $00000008;
   NIF_INFO = $00000010;
   NIF_GUID = $00000020;
-  //NIF_REALTIME = $00000040;
-  //NIF_SHOWTIP = $00000080;
+  NIF_REALTIME = $00000040;
+  NIF_SHOWTIP = $00000080;
 
 
   //Notify Icon Message
@@ -127,7 +127,7 @@ const
   NIM_MODIFY = $00000001;
   NIM_DELETE = $00000002;
   NIM_SETFOCUS = $00000003;
-  //NIM_SETVERSION = $00000004;
+  NIM_SETVERSION = $00000004;
 
 
 type
@@ -167,8 +167,6 @@ end;
 
 
 function GetIconData(Wnd: HANDLE; Icon: HICON; Hint: String): TsgeNotifyIconDataW;
-var
-  Hnt: WideString;
 begin
   //Подготовить структуру
   ZeroMemory(@Result, SizeOf(TsgeNotifyIconDataW));
@@ -181,10 +179,7 @@ begin
   Result.hWnd := Wnd;
   Result.hIcon := Icon;
   Result.uCallbackMessage := WM_TRAYICONMESSAGE;
-
-  //Подсказка
-  Hnt := Hint;
-  WideStrLCopy(@Result.szTip, PWideChar(Hnt), 127);
+  Result.szTip := PWideChar(WideString(Utf8ToAnsi(Hint)));
 end;
 
 
@@ -237,7 +232,6 @@ begin
     lpszClassName := PChar(s);                        //Уникальное имя класса
     hIconSm := 0;                                     //Ссылка на маленькую иконку
     end;
-
 
 
   //Регистрация окна
@@ -420,8 +414,8 @@ begin
   if not FVisible then Exit;
 
   //Подготовить строки
-  aCpt := UTF8ToUTF16(Caption);
-  aTxt := UTF8ToUTF16(Message);
+  aCpt := Utf8ToAnsi(Caption);
+  aTxt := Utf8ToAnsi(Message);
 
   //Заполнить начальную структуру
   ID := GetIconData(FHandle, FIcon, FHint);
@@ -429,8 +423,8 @@ begin
   //Подготовить данные для всплывающей подсказки
   ID.uFlags := NIF_INFO;
   ID.u.uTimeout := uTimeout;
-  WideStrLCopy(@ID.szInfo, PWideChar(aTxt), 255);
-  WideStrLCopy(@ID.szInfoTitle, PWideChar(aCpt), 63);
+  ID.szInfo := PWideChar(aTxt);       //255 символов максимум
+  ID.szInfoTitle := PWideChar(aCpt);  //63 символа максимум
   ID.dwInfoFlags := Ord(MessageType);
 
   //Вызвать подсказку
@@ -447,8 +441,8 @@ begin
   if not FVisible then Exit;
 
   //Подготовить строки
-  aCpt := UTF8ToUTF16(Caption);
-  aTxt := UTF8ToUTF16(Message);
+  aCpt := Utf8ToAnsi(Caption);
+  aTxt := Utf8ToAnsi(Message);
 
   //Заполнить начальную структуру
   ID := GetIconData(FHandle, FIcon, FHint);
@@ -456,8 +450,8 @@ begin
   //Подготовить данные для всплывающей подсказки
   ID.uFlags := NIF_INFO;
   ID.u.uTimeout := uTimeout;
-  WideStrLCopy(@ID.szInfo, PWideChar(aTxt), 255);
-  WideStrLCopy(@ID.szInfoTitle, PWideChar(aCpt), 63);
+  ID.szInfo := PWideChar(aTxt);       //255 символов максимум
+  ID.szInfoTitle := PWideChar(aCpt);  //63 символа максимум
   ID.hBalloonIcon := UserIcon;
   ID.dwInfoFlags := 4; //Пользовательская иконка (NIIF_USER = 4);
 
