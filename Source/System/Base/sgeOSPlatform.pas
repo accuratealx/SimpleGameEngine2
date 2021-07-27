@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeOSPlatform.pas
-Версия            1.4
+Версия            1.5
 Создан            27.04.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Функции взаимодействия с операционной системой
@@ -561,9 +561,13 @@ end;
 
 function sgeControllerExist(ID: Byte): Boolean;
 var
-  J: TJOYINFO;
+  J: TJOYINFOEX;
+  r: Integer;
 begin
-  Result := (joyGetPos(ID, @J) = JOYERR_NOERROR);
+  ZeroMemory(@J, SizeOf(J));
+  J.dwSize := SizeOf(J);
+  J.dwFlags := JOY_RETURNRAWDATA;
+  Result := (joyGetPosEx(ID, @J) = JOYERR_NOERROR);
 end;
 
 
