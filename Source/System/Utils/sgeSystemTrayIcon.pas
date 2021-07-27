@@ -213,9 +213,14 @@ end;
 
 
 procedure TsgeSystemTrayIcon.CreateWindow;
-const
-  tiClassName = 'sgeTrayIconHideWindow';
+var
+  GUID: TGUID;
+  s: String;
 begin
+  //Уникальный класс окна
+  CreateGUID(GUID);
+  s := GUIDToString(GUID);
+
   //Заполнить класс окна
   with FWindowClass do
     begin
@@ -229,13 +234,15 @@ begin
     hCursor := LoadCursor(0, IDC_ARROW);              //Загрузка стандартного курсора Win32
     hbrBackground := GetStockObject(BLACK_BRUSH);     //Заливка стандартной чёрной кистью
     lpszMenuName := nil;                              //Имя строки-ресурса системного меню
-    lpszClassName := PChar(tiClassName);              //Уникальное имя класса
+    lpszClassName := PChar(s);                        //Уникальное имя класса
     hIconSm := 0;                                     //Ссылка на маленькую иконку
     end;
 
+
+
   //Регистрация окна
   if RegisterClassEx(FWindowClass) = 0 then
-    raise EsgeException.Create(_UNITNAME, Err_CantRegisterWindowClass, tiClassName);
+    raise EsgeException.Create(_UNITNAME, Err_CantRegisterWindowClass, s);
 
   //Создание окна
   FHandle := Windows.CreateWindow(FWindowClass.lpszClassName, PChar(''), WS_OVERLAPPEDWINDOW, 0, 0, 100, 100, 0, 0, FWindowClass.hInstance, nil);
