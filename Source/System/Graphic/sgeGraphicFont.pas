@@ -164,6 +164,9 @@ begin
 
   //Запомнить новый шрифт
   FFont := Fnt;
+
+  //Костыль
+  glFinish;
 end;
 
 

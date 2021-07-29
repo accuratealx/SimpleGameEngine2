@@ -436,7 +436,7 @@ begin
     FResourceList := TsgeResourceList.Create;
 
     //Создать ресурсы по умолчанию
-    FDefault.Font := TsgeGraphicFont.Create('Courier New', 12, []);
+    FDefault.Font := TsgeGraphicFont.Create('System', 14, [gfaBold]);
     FDefault.Sprite := TsgeGraphicSprite.Create;
     FDefault.Frames := TsgeGraphicAnimationFrames.Create;
     FDefault.Frames.Add(FDefault.Sprite);

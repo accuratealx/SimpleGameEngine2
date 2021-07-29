@@ -60,7 +60,6 @@ type
     procedure ChangeTexture(AWidth, AHeight: Integer; Data: Pointer);
 
     procedure PreCreate;
-    procedure PostCreate;
   public
     constructor Create(FileName: String; TileCols: Word = 1; TileRows: Word = 1; MagFilter: TsgeGraphicSpriteFilter = gsfNearest; MinFilter: TsgeGraphicSpriteFilter = gsfNearest);
     constructor Create(Width, Height: Integer; BGColor: TsgeColor);
@@ -305,12 +304,6 @@ begin
 end;
 
 
-procedure TsgeGraphicSprite.PostCreate;
-begin
-  glFinish;
-end;
-
-
 constructor TsgeGraphicSprite.Create(FileName: String; TileCols: Word; TileRows: Word; MagFilter: TsgeGraphicSpriteFilter; MinFilter: TsgeGraphicSpriteFilter);
 begin
   PreCreate;
@@ -335,7 +328,8 @@ begin
   //Запомнить имя файла
   FFileName := FileName;
 
-  PostCreate;
+  //Костыль
+  glFinish;
 end;
 
 
@@ -359,7 +353,8 @@ begin
   //Залить цветом
   FillColor(BGColor);
 
-  PostCreate;
+  //Костыль
+  glFinish;
 end;
 
 
@@ -376,7 +371,8 @@ begin
   //Загрузить из памяти
   FromMemoryStream(Stream);
 
-  PostCreate;
+  //Костыль
+  glFinish;
 end;
 
 
@@ -400,7 +396,8 @@ begin
   //Залить цветом
   FillChessBoard(8);
 
-  PostCreate;
+  //Костыль
+  glFinish;
 end;
 
 
