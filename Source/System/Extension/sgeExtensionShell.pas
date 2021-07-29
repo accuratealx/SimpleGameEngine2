@@ -15,8 +15,9 @@ unit sgeExtensionShell;
 interface
 
 uses
+  sgeThread,
   sgeExtensionBase, sgeEventWindow, sgeEventSubscriber,
-  sgeLineEditor,
+  sgeShellCommandList, sgeLineEditor,
   sgeExtensionGraphic, sgeExtensionResourceList;
 
 
@@ -32,6 +33,8 @@ type
 
   private
     //Классы
+    FThread: TsgeThread;
+    FCommandList: TsgeShellCommandList;
     FEditor: TsgeLineEditor;
 
     //Ссылки на объекты подписки
@@ -167,6 +170,8 @@ begin
     FExtResList := TsgeExtensionResourceList(GetExtension(Extension_ResourceList));
 
     //Создать объекты
+    FThread := TsgeThread.Create;
+    FCommandList := TsgeShellCommandList.Create;
     FEditor := TsgeLineEditor.Create;
 
     //Задать параметры
@@ -190,7 +195,9 @@ begin
   UnRegisterEventHandlers;
 
   //Удалить объекты
+  FThread.Free;
   FEditor.Free;
+  FCommandList.Free;
 
   inherited Destroy;
 end;

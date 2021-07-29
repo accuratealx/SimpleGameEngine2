@@ -6,8 +6,8 @@
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Однострочный редактор текста
 }
-
 {$Include Defines.inc}
+
 unit sgeLineEditor;
 
 {$mode objfpc}{$H+}
