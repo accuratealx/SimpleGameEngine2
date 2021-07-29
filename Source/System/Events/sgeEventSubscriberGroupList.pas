@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeEventSubscriberGroupList.pas
-Версия            1.3
+Версия            1.4
 Создан            12.07.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс списка групп подписчиков
@@ -16,11 +16,11 @@ interface
 
 uses
   sgeCriticalSection,
-  sgeTemplateCollection, sgeEventBase, sgeEventSubscriber, sgeEventSubscriberGroup;
+  sgeTemplateObjectCollection, sgeEventBase, sgeEventSubscriber, sgeEventSubscriberGroup;
 
 type
   //Шаблон списка
-  TsgeEventSubscriberGroupListTemplate = specialize TsgeTemplateCollection<TsgeEventSubscriberGroup>;
+  TsgeEventSubscriberGroupListTemplate = specialize TsgeTemplateObjectCollection<TsgeEventSubscriberGroup>;
 
 
   //Список групп подписчиков
@@ -28,10 +28,8 @@ type
   private
     FCS: TsgeCriticalSection;
 
-    procedure ClearItem; override;
-
   public
-    constructor Create; override;
+    constructor Create; reintroduce;
     destructor  Destroy; override;
 
     function IndexOf(Name: ShortString): Integer;
@@ -62,18 +60,6 @@ const
 
   Err_IndexOutOfBounds = 'IndexOutOfBounds';
 
-
-procedure TsgeEventSubscriberGroupList.ClearItem;
-var
-  i: Integer;
-begin
-  //Удалить объекты
-  for i := 0 to FCount - 1 do
-    FList[i].Free;
-
-  //Обнулить массив
-  inherited ClearItem;
-end;
 
 
 constructor TsgeEventSubscriberGroupList.Create;
@@ -130,7 +116,7 @@ begin
   FCS.Enter;
   try
 
-    ClearItem;
+    inherited Clear;
 
   finally
     FCS.Leave;
@@ -143,7 +129,7 @@ begin
   FCS.Enter;
   try
 
-    AddItem(TsgeEventSubscriberGroup.Create(Name));
+    inherited Add(TsgeEventSubscriberGroup.Create(Name));
 
   finally
     FCS.Leave;
@@ -156,14 +142,7 @@ begin
   FCS.Enter;
   try
 
-    if (Index < 0) or (Index > FCount - 1) then
-      raise EsgeException.Create(_UNITNAME, Err_IndexOutOfBounds, sgeIntToStr(Index));
-
-    //Удалить память объекта
-    FList[Index].Free;
-
-    //Удалить элемент
-    DeleteItem(Index);
+    inherited Delete(Index);
 
   finally
     FCS.Leave;

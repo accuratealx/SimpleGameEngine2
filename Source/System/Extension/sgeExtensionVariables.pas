@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeExtensionVariables.pas
-Версия            1.0
+Версия            1.1
 Создан            20.07.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс расширения: Переменные
@@ -116,7 +116,7 @@ begin
 
   //Добавить
   Result := TsgeVariableInteger.Create(Name, Value, DefValue, ReadOnly, MinValue, MaxValue);
-  FVariableList.AddItem(Result);
+  FVariableList.Add(Result);
 end;
 
 
@@ -127,7 +127,7 @@ begin
 
   //Добавить
   Result := TsgeVariableIntegerVirtual.Create(Name, DefValue, Getter, Setter, MinValue, MaxValue);
-  FVariableList.AddItem(Result);
+  FVariableList.Add(Result);
 end;
 
 
@@ -138,7 +138,7 @@ begin
 
   //Добавить
   Result := TsgeVariableSingle.Create(Name, Value, DefValue, ReadOnly, MinValue, MaxValue);
-  FVariableList.AddItem(Result);
+  FVariableList.Add(Result);
 end;
 
 
@@ -149,7 +149,7 @@ begin
 
   //Добавить
   Result := TsgeVariableSingleVirtual.Create(Name, DefValue, Getter, Setter, MinValue, MaxValue);
-  FVariableList.AddItem(Result);
+  FVariableList.Add(Result);
 end;
 
 
@@ -160,7 +160,7 @@ begin
 
   //Добавить
   Result := TsgeVariableString.Create(Name, Value, DefValue, ReadOnly);
-  FVariableList.AddItem(Result);
+  FVariableList.Add(Result);
 end;
 
 
@@ -171,7 +171,7 @@ begin
 
   //Добавить
   Result := TsgeVariableStringVirtual.Create(Name, DefValue, Getter, Setter);
-  FVariableList.AddItem(Result);
+  FVariableList.Add(Result);
 end;
 
 function TsgeExtensionVariables.AddBoolean(Name: ShortString; Value: Boolean; DefValue: Boolean; ReadOnly: Boolean; TrueStr: ShortString; FalseStr: ShortString): TsgeVariableBoolean;
@@ -181,7 +181,7 @@ begin
 
   //Добавить
   Result := TsgeVariableBoolean.Create(Name, Value, DefValue, ReadOnly, TrueStr, FalseStr);
-  FVariableList.AddItem(Result);
+  FVariableList.Add(Result);
 end;
 
 function TsgeExtensionVariables.AddBoolean(Name: ShortString; DefValue: Boolean; Getter: TsgeVariableBooleanGetter; Setter: TsgeVariableBooleanSetter; TrueStr: ShortString; FalseStr: ShortString): TsgeVariableBooleanVirtual;
@@ -191,7 +191,7 @@ begin
 
   //Добавить
   Result := TsgeVariableBooleanVirtual.Create(Name, DefValue, Getter, Setter, TrueStr, FalseStr);
-  FVariableList.AddItem(Result);
+  FVariableList.Add(Result);
 end;
 
 

@@ -16,31 +16,29 @@ unit sgeGraphicElementLayerList;
 interface
 
 uses
-  sgeGraphicElementLayer, sgeTemplateCollection, sgeGraphicElementBase;
+  sgeGraphicElementLayer, sgeTemplateObjectCollection, sgeGraphicElementBase;
 
 
 type
-  TsgeGraphicElementLayerTemplate = specialize TsgeTemplateCollection<TsgeGraphicElementLayer>;
+  TsgeGraphicElementLayerTemplate = specialize TsgeTemplateObjectCollection<TsgeGraphicElementLayer>;
 
 
   //Список слоёв
   TsgeGraphicElementLayerList = class(TsgeGraphicElementLayerTemplate)
   private
     procedure Sort;
-    function  LayerIndexOf(Index: Word): Integer;                             //Найти индекс слоя по номеру
+    function  LayerIndexOf(Index: Word): Integer;                                         //Найти индекс слоя по номеру
 
     function  GetLayerVisible(Index: Integer): Boolean;
     procedure SetLayerVisible(Index: Integer; AVisible: Boolean);
   public
-    procedure ClearItem; override;
+    function  IndexOf(Name: String): Integer;                                             //Найти индекс слоя по имени
 
-    function  IndexOf(Name: String): Integer;                                 //Найти индекс слоя по имени
+    procedure AddLayer(Name: String; Index: Word);                                        //Добавить слой
+    procedure Delete(Index: Integer);
+    procedure Delete(Name: String);                                                       //Удалить слой
 
-    procedure AddLayer(Name: String; Index: Word);                            //Добавить слой
-    procedure Delete(Index: Integer);                                         //Удалить слой
-    procedure Delete(Name: String);                                           //Удалить слой
-
-    procedure AddElement(DrawElement: TsgeGraphicElementBase; LayerName: string = '');  //Добавить элемент
+    procedure AddElement(DrawElement: TsgeGraphicElementBase; LayerName: string = '');    //Добавить элемент
 
     property Visible[Index: Integer]: Boolean read GetLayerVisible write SetLayerVisible;
   end;
@@ -108,19 +106,6 @@ begin
 end;
 
 
-procedure TsgeGraphicElementLayerList.ClearItem;
-var
-  i: Integer;
-begin
-  //Удалить память объектов
-  for i := 0 to FCount - 1 do
-    FList[i].Free;
-
-  //Обнулить массив
-  inherited ClearItem;
-end;
-
-
 function TsgeGraphicElementLayerList.IndexOf(Name: String): Integer;
 var
   i: Integer;
@@ -143,23 +128,15 @@ begin
   if IndexOf(Name) <> - 1 then Exit;
 
   //Добавить слой
-  AddItem(TsgeGraphicElementLayer.Create(Name, Index, True));
+  Add(TsgeGraphicElementLayer.Create(Name, Index, True));
 
   //Упорядочить
   Sort;
 end;
 
-
 procedure TsgeGraphicElementLayerList.Delete(Index: Integer);
 begin
-  if (Index < 0) or (Index > FCount - 1) then
-    raise EsgeException.Create(_UNITNAME, Err_IndexOutOfBounds, sgeIntToStr(Index));
-
-  //Удалить список элементов в слое
-  FList[Index].Free;
-
-  //Удалить слой
-  DeleteItem(Index);
+  inherited Delete(Index);
 end;
 
 

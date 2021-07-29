@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeVariableList.pas
-Версия            1.0
+Версия            1.1
 Создан            20.07.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс списка переменных
@@ -15,39 +15,22 @@ unit sgeVariableList;
 interface
 
 uses
-  sgeTemplateCollection, sgeVariableBase;
+  sgeTemplateObjectCollection, sgeVariableBase;
 
 
 type
-  TsgeVariableListTemplate = specialize TsgeTemplateCollection<TsgeVariableBase>;
+  TsgeVariableListTemplate = specialize TsgeTemplateObjectCollection<TsgeVariableBase>;
 
 
   TsgeVariableList = class(TsgeVariableListTemplate)
-  private
-    procedure ClearItem; override;
   public
-    function IndexOf(Name: ShortString): Integer;
-
-    procedure Clear;
-
+    function  IndexOf(Name: ShortString): Integer;
     procedure Delete(Name: ShortString);
   end;
 
 
 implementation
 
-
-procedure TsgeVariableList.ClearItem;
-  var
-  i: Integer;
-begin
-  //Удалить объекты
-  for i := 0 to FCount - 1 do
-    FList[i].Free;
-
-  //Обнулить массив
-  inherited ClearItem;
-end;
 
 
 function TsgeVariableList.IndexOf(Name: ShortString): Integer;
@@ -66,12 +49,6 @@ begin
 end;
 
 
-procedure TsgeVariableList.Clear;
-begin
-  ClearItem;
-end;
-
-
 procedure TsgeVariableList.Delete(Name: ShortString);
 var
   Idx: Integer;
@@ -86,7 +63,7 @@ begin
   FList[Idx].Free;
 
   //Удалить переменную
-  DeleteItem(Idx);
+  inherited Delete(Idx);
 end;
 
 

@@ -74,7 +74,7 @@ procedure TsgeGraphicDrawList.ClearLayers;
 begin
   FCS.Enter;
 
-  FList.ClearItem;
+  FList.Clear;
 
   FCS.Leave;
 end;
