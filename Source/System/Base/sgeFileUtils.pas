@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeFileUtils.pas
-Версия            1.3
+Версия            1.4
 Создан            08.05.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Вспомогательные функции файловой системы
@@ -17,6 +17,9 @@ interface
 uses
   sgeStringList;
 
+
+const
+  sgeLineEnd = #13#10;
 
 
 function  sgeGetUniqueFileName: String;
