@@ -63,7 +63,14 @@ type
     constructor Create(ObjectList: TObject); override;
     destructor  Destroy; override;
 
+
+    procedure LogError(Txt: String);                      //Вывести в журнал ошибку
+
+
+    procedure DoCommand(Cmd: String);
+
     property Enable: Boolean read FEnable write SetEnable;
+    property CommandList: TsgeShellCommandList read FCommandList;
   end;
 
 
@@ -177,6 +184,9 @@ begin
     //Задать параметры
     FEnable := False;
 
+    //Установить обработчик ошибок
+    ErrorManager.ShellHandler := @LogError;
+
     //Подписать обработчики
     RegisterEventHandlers;
 
@@ -200,6 +210,18 @@ begin
   FCommandList.Free;
 
   inherited Destroy;
+end;
+
+
+procedure TsgeExtensionShell.LogError(Txt: String);
+begin
+
+end;
+
+
+procedure TsgeExtensionShell.DoCommand(Cmd: String);
+begin
+
 end;
 
 
