@@ -15,10 +15,10 @@ unit sgeExtensionShell;
 interface
 
 uses
-  sgeThread,
+  sgeThread, sgeSimpleCommand, sgeSimpleParameters,
   sgeExtensionBase, sgeEventWindow, sgeEventSubscriber,
-  sgeShellCommandList, sgeLineEditor,
-  sgeExtensionGraphic, sgeExtensionResourceList;
+  sgeShellCommandList, sgeLineEditor, sgeCommandHistory,
+  sgeExtensionGraphic, sgeExtensionResourceList, sgeExtensionVariables;
 
 
 const
@@ -30,20 +30,26 @@ type
   private
     FExtGraphic: TsgeExtensionGraphic;
     FExtResList: TsgeExtensionResourceList;
+    FExtVariables: TsgeExtensionVariables;
 
   private
     //Классы
     FThread: TsgeThread;
-    FCommandList: TsgeShellCommandList;
-    FEditor: TsgeLineEditor;
+    FCommandList: TsgeShellCommandList;                             //Список команд оболочки
+    FHistory: TsgeCommandHistory;                                   //История введённых команд
+    FEditor: TsgeLineEditor;                                        //Однострочный редактор
+    FAliases: TsgeSimpleParameters;                                 //Псевдонимы
 
     //Ссылки на объекты подписки
     FSubKeyDown: TsgeEventSubscriber;
     FSubKeyUp: TsgeEventSubscriber;
     FSubKeyChar: TsgeEventSubscriber;
 
-    //Поля
+    //Параметры
     FEnable: Boolean;
+    FWeakSeparator: Boolean;
+    FCurrentCommand: String;                                        //Вспомогательная переменная для потока
+    FCommandIsRunning: Boolean;
 
     //Обработчики событий
     procedure RegisterEventHandlers;
@@ -52,6 +58,16 @@ type
     function  Handler_KeyUp(EventObj: TsgeEventWindowKeyboard): Boolean;
     function  Handler_KeyChar(EventObj: TsgeEventWindowChar): Boolean;
 
+    //Вспомогательные методы
+    procedure RegisterDefaultAliases;                               //Добавить алиасы по умолчанию
+    function  SubstituteVariables(Str: String): String;             //Подставить здначеня переменных в строку
+    procedure RunCommand(Cmd: TsgeSimpleCommand);                   //Выполнение разобранной команды
+    procedure ExecuteCommand(Command: String);                      //Разбор строки на алиасы и выполнение
+
+    //Методы потока
+    procedure ProcessCommand;                                       //Функция разбора и выполнения команды
+
+    //Залипон
     procedure Draw;
 
     //Свойства
@@ -59,18 +75,17 @@ type
   protected
     class function GetName: String; override;
 
+    procedure ErrorHandler(Txt: String);                            //Вывести в журнал ошибку
   public
     constructor Create(ObjectList: TObject); override;
     destructor  Destroy; override;
 
-
-    procedure LogError(Txt: String);                      //Вывести в журнал ошибку
-
-
-    procedure DoCommand(Cmd: String);
+    procedure DoCommand(Cmd: String);                               //Выполнить команду
 
     property Enable: Boolean read FEnable write SetEnable;
+    property Aliases: TsgeSimpleParameters read FAliases;
     property CommandList: TsgeShellCommandList read FCommandList;
+    property WeakSeparator: Boolean read FWeakSeparator write FWeakSeparator;
   end;
 
 
@@ -78,12 +93,25 @@ type
 implementation
 
 uses
-  sgeErrors, sgeEventBase, sgeKeys, sgeGraphicColor;
+  sgeErrors, sgeEventBase, sgeSystemUtils, sgeStringUtils, sgeVariableBase, sgeShellCommand,
+  sgeKeys, sgeGraphicColor;
 
 const
   _UNITNAME = 'ExtensionShell';
 
+  Err_CommandStillRunning = 'CommandStillRunning';
+  Err_CommandNotFound     = 'CommandNotFound';
+  Err_EmptyPointer        = 'EmptyPointer';
+  Err_NotEnoughParameters = 'NotEnoughParameters';
+  Err_UnexpectedError     = 'UnexpectedError';
+  Err_CommandError        = 'CommandError';
+
+  //Приоритеты
   HandlerPriority = $FFFF;
+
+  //Настройки парсера
+  CommandSeparator = ';';
+  VariablePrefix = '@';
 
 
 
@@ -104,12 +132,43 @@ end;
 
 
 function TsgeExtensionShell.Handler_KeyDown(EventObj: TsgeEventWindowKeyboard): Boolean;
+var
+  s: String;
 begin
   Result := True;
 
   //Обработать системные клавиши
   case EventObj.Key of
+
+    //Закрыть оболочку
     keyEscape: Enable := False;
+
+    //Выполнить команду
+    keyEnter:
+      begin
+      //Проверить не выполняется ли ещё команда
+      if FCommandIsRunning then
+        begin
+        //Ошибка, команда ещё выполняется
+        ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_CommandStillRunning, FCurrentCommand));
+        Exit;
+        end;
+
+      //Подготовить команду
+      s := sgeTrim(FEditor.Line);
+      if s <> '' then
+        begin
+        //Стереть строку ввода
+        FEditor.Line := '';
+
+        //Записать в историю
+        FHistory.AddCommand(s);
+
+        //Выполнить команду
+        DoCommand(s);
+        end;
+      end
+
 
     else
       FEditor.ProcessKey(EventObj.Key, EventObj.KeyboardButtons);
@@ -129,6 +188,164 @@ begin
 
   //Отослать в редактор
   FEditor.ProcessChar(EventObj.Char, EventObj.KeyboardButtons);
+end;
+
+
+procedure TsgeExtensionShell.RegisterDefaultAliases;
+begin
+  FAliases.SetValue('Close', 'Stop');
+  FAliases.SetValue('Quit', 'Stop');
+  {FAliases.SetValue('Echo', 'Write');
+  FAliases.SetValue('Print', 'Write');
+  FAliases.SetValue('Echoc', 'Writec');
+  FAliases.SetValue('Printc', 'Writec');
+  FAliases.SetValue('Exec', 'Run');}
+end;
+
+
+function TsgeExtensionShell.SubstituteVariables(Str: String): String;
+var
+  i: Integer;
+  V: TsgeVariableBase;
+begin
+  Result := Str;
+  for i := 0 to FExtVariables.Variables.Count - 1 do
+    begin
+    V := FExtVariables.Variables.Item[i];
+    Result := sgeStringReplace(Result, VariablePrefix + V.Name, V.StrValue, [rfReplaceAll, rfIgnoreCase]);
+    end;
+end;
+
+
+procedure TsgeExtensionShell.RunCommand(Cmd: TsgeSimpleCommand);
+const
+  ModeEmpty = 0;
+  ModeCommand = 1;
+  ModeAutor = 2;
+var
+  Idx: Integer;
+  Mode: Byte;
+  CmdResult: String;
+  CmdProc: TsgeShellCommand;
+begin
+  //Прокрутить экран вниз
+  //if FJournalAutoScroll then FJournalOffset := 0;
+
+  //Определить режим работы
+  Mode := ModeEmpty;
+  if LowerCase(Cmd.Part[0]) = 'autor' then Mode := ModeAutor;
+  Idx := FCommandList.IndexOf(Cmd.Part[0]);
+  CmdProc := FCommandList.Item[Idx];
+  if CmdProc <> nil then Mode := ModeCommand;
+
+  //Обработать режим
+  case Mode of
+    ModeEmpty:
+      ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_CommandNotFound, Cmd.Part[0]));
+
+
+    ModeCommand:
+      begin
+      //Проверить указатель команды
+      if CmdProc.Proc = nil then
+        begin
+        ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_EmptyPointer, Cmd.Command));
+        Exit;
+        end;
+
+      //Проверить хватает ли параметров
+      if Cmd.Count < CmdProc.MinParamCount + 1 then
+        begin
+        ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_NotEnoughParameters, Cmd.Command));
+        Exit;
+        end;
+
+      //Выполнить команду
+      try
+        CmdResult := CmdProc.Proc(Cmd);
+      except
+        ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_UnexpectedError, Cmd.Command));
+      end;
+
+      //Проверить результат выполнения
+      if CmdResult <> '' then
+        ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_CommandError, Cmd.Command, CmdResult));
+      end;
+
+
+    //ModeAutor:
+    //  FJournal.Add(sgeGraphicColor_GetRandomColor, 'sge.ntlab.su  accuratealx@gmail.com');
+  end;
+
+end;
+
+
+procedure TsgeExtensionShell.ExecuteCommand(Command: String);
+var
+  Line, Cmd: TsgeSimpleCommand;
+  i, c, Idx: Integer;
+  Str: String;
+begin
+  try
+    //Разобрать строку на части по ;
+    Line := TsgeSimpleCommand.Create(Command, True, CommandSeparator);
+
+    //Выполнить части по очереди
+    c := Line.Count - 1;
+    for i := 0 to c do
+      begin
+      Str := sgeTrim(Line.Part[i]);
+
+      //Пустая строка
+      if Str = '' then Continue;
+
+      //Заметка
+      if Str[1] = '#' then Continue;
+
+      //Подставить параметры в строку
+      Str := SubstituteVariables(Str);
+
+      try
+        //Разобрать команду
+        Cmd := TsgeSimpleCommand.Create(Str, FWeakSeparator);
+
+        //Проверить на алиас
+        Idx := FAliases.IndexOf(Cmd.Part[0]);
+        if Idx <> -1 then
+          begin
+          //Подставить алиас
+          Str := sgeStringReplace(Str, FAliases.Parameter[Idx].Name, FAliases.Parameter[Idx].Value, [rfIgnoreCase]);
+
+          //Выполнить
+          ExecuteCommand(Str);
+          Continue;
+          end;
+
+        //Выполнить команду
+        RunCommand(Cmd);
+      finally
+        Cmd.Free;
+      end;
+
+
+      end;  //For
+
+  finally
+    Line.Free;
+  end;
+end;
+
+
+procedure TsgeExtensionShell.ProcessCommand;
+begin
+  //Установить флаг выполнения команды
+  FCommandIsRunning := True;
+
+  //Выполнить команду
+  ExecuteCommand(FCurrentCommand);
+
+  //Снять флаг выполнения команды
+  FCommandIsRunning := False;
 end;
 
 
@@ -167,6 +384,12 @@ begin
 end;
 
 
+procedure TsgeExtensionShell.ErrorHandler(Txt: String);
+begin
+  //Добавить в журнал строку с ошибкой
+end;
+
+
 constructor TsgeExtensionShell.Create(ObjectList: TObject);
 begin
   try
@@ -174,10 +397,13 @@ begin
 
     //Поиск указателей
     FExtGraphic := TsgeExtensionGraphic(GetExtension(Extension_Graphic));
+    FExtVariables := TsgeExtensionVariables(GetExtension(Extension_Variables));
     FExtResList := TsgeExtensionResourceList(GetExtension(Extension_ResourceList));
 
     //Создать объекты
     FThread := TsgeThread.Create;
+    FHistory := TsgeCommandHistory.Create;
+    FAliases := TsgeSimpleParameters.Create;
     FCommandList := TsgeShellCommandList.Create;
     FEditor := TsgeLineEditor.Create;
 
@@ -185,10 +411,13 @@ begin
     FEnable := False;
 
     //Установить обработчик ошибок
-    ErrorManager.ShellHandler := @LogError;
+    ErrorManager.ShellHandler := @ErrorHandler;
 
     //Подписать обработчики
     RegisterEventHandlers;
+
+    //Добавить стандартные алиасы
+    RegisterDefaultAliases;
 
     //Установить метод отрисовки оболочки
     FExtGraphic.DrawShellproc := @Draw;
@@ -207,21 +436,21 @@ begin
   //Удалить объекты
   FThread.Free;
   FEditor.Free;
+  FHistory.Free;
+  FAliases.Free;
   FCommandList.Free;
 
   inherited Destroy;
 end;
 
 
-procedure TsgeExtensionShell.LogError(Txt: String);
-begin
-
-end;
-
-
 procedure TsgeExtensionShell.DoCommand(Cmd: String);
 begin
+  //Запомнить текушую команду
+  FCurrentCommand := Cmd;
 
+  //Выполнить команду в другом потоке и заснуть
+  FThread.RunProc(@ProcessCommand, tpemSuspend);
 end;
 
 
