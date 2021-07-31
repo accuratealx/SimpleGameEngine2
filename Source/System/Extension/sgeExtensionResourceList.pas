@@ -481,7 +481,7 @@ begin
   if Result = nil then
     begin
     Result := FDefault.Font;
-    ErrorManager.LogError(sgeCreateErrorString(_UNITNAME, Err_ResourceNotFound, Name));
+    ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_ResourceNotFound, Name));
     end;
 end;
 
@@ -492,7 +492,7 @@ begin
   if Result = nil then
     begin
     Result := FDefault.Sprite;
-    ErrorManager.LogError(sgeCreateErrorString(_UNITNAME, Err_ResourceNotFound, Name));
+    ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_ResourceNotFound, Name));
     end;
 end;
 
@@ -503,7 +503,7 @@ begin
   if Result = nil then
     begin
     Result := FDefault.Frames;
-    ErrorManager.LogError(sgeCreateErrorString(_UNITNAME, Err_ResourceNotFound, Name));
+    ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_ResourceNotFound, Name));
     end;
 end;
 
@@ -514,7 +514,7 @@ begin
   if Result = nil then
     begin
     Result := FDefault.Animation;
-    ErrorManager.LogError(sgeCreateErrorString(_UNITNAME, Err_ResourceNotFound, Name));
+    ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_ResourceNotFound, Name));
     end;
 end;
 
@@ -525,7 +525,7 @@ begin
   if Result = nil then
     begin
     Result := FDefault.SoundBufer;
-    ErrorManager.LogError(sgeCreateErrorString(_UNITNAME, Err_ResourceNotFound, Name));
+    ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_ResourceNotFound, Name));
     end;
 end;
 
@@ -536,7 +536,7 @@ begin
   if Result = nil then
     begin
     Result := FDefault.StringList;
-    ErrorManager.LogError(sgeCreateErrorString(_UNITNAME, Err_ResourceNotFound, Name));
+    ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_ResourceNotFound, Name));
     end;
 end;
 
@@ -547,7 +547,7 @@ begin
   if Result = nil then
     begin
     Result := FDefault.Parameters;
-    ErrorManager.LogError(sgeCreateErrorString(_UNITNAME, Err_ResourceNotFound, Name));
+    ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_ResourceNotFound, Name));
     end;
 end;
 
@@ -558,7 +558,7 @@ begin
   if Result = nil then
     begin
     Result := FDefault.Container;
-    ErrorManager.LogError(sgeCreateErrorString(_UNITNAME, Err_ResourceNotFound, Name));
+    ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_ResourceNotFound, Name));
     end;
 end;
 
