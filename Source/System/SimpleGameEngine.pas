@@ -31,9 +31,9 @@ type
   //Основной класс движка
   TSimpleGameEngine = class
   private
-    FCursorPos: TsgeIntPoint;
     //Параметры
     FWorking: Boolean;                                              //Флаг работы
+    FDebug: Boolean;                                                //Режим отладки
 
     //Классы
     FObjectList: TsgeNamedObjectList;                               //Список объектов
@@ -53,10 +53,15 @@ type
     FExtensionControllers: TsgeExtensionControllers;                //Расширение: Контроллеры
     FExtensionShell: TsgeExtensionShell;                            //Расширение: Оболочка
 
+    //Свойства
+    procedure SetDebug(ADebug: Boolean);
+
+    //Вспомогательные методы
+    procedure ProcessSystemStartParameters;                         //Обработать стартовые параметры
+
     //Обработчики событий
     procedure RegisterEventHandlers;                                //Подписать системные обработчики событий
     function  EventWindowClose(Obj: TsgeEventBase): Boolean;        //Закрытие окна
-
   public
     constructor Create; virtual;
     destructor  Destroy; override;
@@ -66,7 +71,7 @@ type
     function  CloseWindow: Boolean; virtual;                        //Возможность закрытия окна
 
     //Свойства
-    property CursorPos: TsgeIntPoint read FCursorPos;
+    property Debug: Boolean read FDebug write SetDebug;
 
     //Объекты
     property ErrorManager: TsgeErrorManager read FErrorManager;
@@ -91,13 +96,33 @@ type
 implementation
 
 uses
-  sgeErrors, sgeSystemUtils;
+  sgeErrors, sgeSystemUtils, sgeOSPlatform, sgeDateUtils, sgeShellFunctions;
 
 
 const
   _UNITNAME = 'SimpleGameEngine';
 
   Err_CantCreateSimpleGameEngine = 'CantCreateSimpleGameEngine';
+
+  Ext_Journal = 'Journal';
+
+  spDebug = 'Debug';
+
+
+
+procedure TSimpleGameEngine.SetDebug(ADebug: Boolean);
+begin
+  FDebug := ADebug;
+
+  //Установить запись в журнал
+  FErrorManager.WriteToJournal := FDebug;
+end;
+
+
+procedure TSimpleGameEngine.ProcessSystemStartParameters;
+begin
+  if FExtensionStartParameters.Parameters.Exist[spDebug] then SetDebug(True);
+end;
 
 
 procedure TSimpleGameEngine.RegisterEventHandlers;
@@ -114,13 +139,16 @@ end;
 
 constructor TSimpleGameEngine.Create;
 var
-  s: String;
+  JFile: String;
 begin
   //Параметры
   FWorking := True;
 
+  //Уникальное имя журнала
+  JFile := sgeGetApplicationDirectory + 'Journals\' + sgeFormatDateTime('yyyy.mm.dd-hh.nn.ss', sgeNow) + '.' + Ext_Journal;
+
   //Классы
-  FErrorManager := TsgeErrorManager.Create;                         //Менеджер ошибок
+  FErrorManager := TsgeErrorManager.Create(JFile);                  //Менеджер ошибок
   FObjectList := TsgeNamedObjectList.Create;                        //Список объектов
   FExtensionList := TsgeExtensionList.Create;                       //Список расширений
   FEventManager := TsgeEventManager.Create;                         //Менеджер событий
@@ -134,6 +162,8 @@ begin
   try
     //Создать расширения
     FExtensionStartParameters := TsgeExtensionStartParameters.Create(FObjectList);  //Стартовые параметры
+    ProcessSystemStartParameters;                                                   //Обработать системные стартовые параметры
+
     FExtensionVariables := TsgeExtensionVariables.Create(FObjectList);              //Переменные
     FExtensionWindow := TsgeExtensionWindow.Create(FObjectList);                    //Окно
     FExtensionGraphic := TsgeExtensionGraphic.Create(FObjectList);                  //Графика
@@ -148,13 +178,14 @@ begin
     //Ошибка инициализации движка
     on E: EsgeException do
       begin
-      s := sgeCreateErrorString(_UNITNAME, Err_CantCreateSimpleGameEngine, '', E.Message);
-      FErrorManager.LogError(s);
-      FErrorManager.ShowMessage(s);
+      FErrorManager.ShowMessage := True;
+      FErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_CantCreateSimpleGameEngine, '', E.Message));
       Halt;
       end;
   end;
 
+  //Зарегестрировать функции оболочки
+  sgeShellFunctions_Init(Self);
 
   //Зарегестрировать системные обработчики событий
   RegisterEventHandlers;
