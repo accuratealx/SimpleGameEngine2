@@ -15,7 +15,7 @@ unit sgeEventManager;
 interface
 
 uses
-  sgeCriticalSection, sgeSystemEvent,
+  sgeErrors, sgeCriticalSection, sgeSystemEvent,
   sgeEventBase, sgeEventList, sgeEventSubscriber, sgeEventSubscriberGroupList;
 
 
@@ -33,6 +33,8 @@ type
 
     FEventList: TsgeEventList;                                              //Список событий
     FSubscriberGroupList: TsgeEventSubscriberGroupList;                     //Список подписчиков
+
+    FErrorHandler: TsgeErrorHandler;                                        //Внешний обрабочик ошибок
   public
     constructor Create;
     destructor  Destroy; override;
@@ -55,6 +57,9 @@ type
 
     //Доставка
     procedure DispatchEvents;                                               //Метод обработки событий
+
+    //Свойства
+    property ErrorHandler: TsgeErrorHandler read FErrorHandler write FErrorHandler;
   end;
 
 
@@ -63,6 +68,12 @@ implementation
 
 uses
   sgeEventSubscriberList;
+
+
+const
+  _UNITNAME = 'EventManager';
+
+  Err_DispatchError = 'DispatchError';
 
 
 constructor TsgeEventManager.Create;
@@ -185,17 +196,21 @@ begin
 
       //Доставить событие подписчикам
       for i := 0 to SubscriberList.Count - 1 do
-        try
+        begin
           //Пропуск неактивных
           if not SubscriberList.Item[i].Enable then Continue;
 
           //Вызвать обработчик
-          if SubscriberList.Item[i].Handler(EventObj) then Break;
-        except
-          raise;
-          //Обработать ошибку
-          //Отослать в ErrorManager
+          try
+            if SubscriberList.Item[i].Handler(EventObj) then Break;
+          except
+            on E: EsgeException do
+              if Assigned(FErrorHandler)
+                then FErrorHandler(sgeCreateErrorString(_UNITNAME, Err_DispatchError, '', E.Message));
+          end;
+
         end;
+
       end;
 
     //Разблокировать подписчиков

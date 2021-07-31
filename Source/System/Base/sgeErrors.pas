@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeErrors.pas
-Версия            1.5
+Версия            1.6
 Создан            24.02.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс ошибок
@@ -16,6 +16,11 @@ interface
 
 
 type
+  //Внешний обработчик ошибок
+  TsgeErrorHandler = procedure(Message: String) of object;
+
+
+  //Класс исключения
   EsgeException = class(TObject)
   private
     FMessage: String;

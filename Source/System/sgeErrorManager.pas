@@ -15,7 +15,7 @@ unit sgeErrorManager;
 interface
 
 uses
-  sgeCriticalSection, sgeJournal;
+  sgeErrors, sgeCriticalSection, sgeJournal;
 
 
 const
@@ -23,10 +23,6 @@ const
 
 
 type
-  //Внешний обработчик ошибок
-  TsgeErrorManagerHandler = procedure(Message: String) of object;
-
-
   TsgeErrorManager = class
   private
     //Классы
@@ -38,7 +34,7 @@ type
     FWriteToJournal: Boolean;
     FWriteToShell: Boolean;
 
-    FShellHandler: TsgeErrorManagerHandler;
+    FShellHandler: TsgeErrorHandler;
 
     procedure SetWriteToJournal(AEnable: Boolean);
   public
@@ -55,7 +51,7 @@ type
     property WriteToJournal: Boolean read FWriteToJournal write SetWriteToJournal;
     property WriteToShell: Boolean read FWriteToShell write FWriteToShell;
 
-    property ShellHandler: TsgeErrorManagerHandler read FShellHandler write FShellHandler;
+    property ShellHandler: TsgeErrorHandler read FShellHandler write FShellHandler;
   end;
 
 

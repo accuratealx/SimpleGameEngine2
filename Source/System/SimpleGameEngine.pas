@@ -152,6 +152,7 @@ begin
   FObjectList := TsgeNamedObjectList.Create;                        //Список объектов
   FExtensionList := TsgeExtensionList.Create;                       //Список расширений
   FEventManager := TsgeEventManager.Create;                         //Менеджер событий
+  FEventManager.ErrorHandler := @FErrorManager.ProcessError;
 
   //Добавить классы в список объектов
   FObjectList.Add(Object_ErrorManager, FErrorManager);
