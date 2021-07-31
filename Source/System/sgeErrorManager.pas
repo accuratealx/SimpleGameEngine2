@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeErrorManager.pas
-Версия            1.0
+Версия            1.1
 Создан            25.04.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс: Обработчик ошибок
@@ -15,8 +15,7 @@ unit sgeErrorManager;
 interface
 
 uses
-  sgeCriticalSection, sgeSystemConsole,
-  Windows, SysUtils;
+  sgeCriticalSection, sgeJournal;
 
 
 const
@@ -24,21 +23,39 @@ const
 
 
 type
+  //Внешний обработчик ошибок
+  TsgeErrorManagerHandler = procedure(Message: String) of object;
+
+
   TsgeErrorManager = class
   private
+    //Классы
     FCS: TsgeCriticalSection;
-    FConsole: TsgeSystemConsole;
+    FJournal: TsgeJournal;
 
+    //Параметры
+    FShowMessage: Boolean;
+    FWriteToJournal: Boolean;
+    FWriteToShell: Boolean;
+
+    FShellHandler: TsgeErrorManagerHandler;
+
+    procedure SetWriteToJournal(AEnable: Boolean);
   public
-    constructor Create;
+    constructor Create(JournalFile: String);
     destructor  Destroy; override;
 
-    procedure Clear;
+    procedure LogJournal(Message: String);                          //Записать в журнал
+    procedure LogMessage(Message: String);                          //Показать диалоговое окно
+    procedure LogShell(Message: String);                            //Записать в оболочку
 
-    procedure ShowMessage(Message: String);       //Показать диалоговое окно
+    procedure ProcessError(Error: String);                          //Обработать ошибку
 
-    procedure LogMessage(Message: String);        //Обработка сообщения
-    procedure LogError(Error: String);            //Обработка ошибки с разбором строк
+    property ShowMessage: Boolean read FShowMessage write FShowMessage;
+    property WriteToJournal: Boolean read FWriteToJournal write SetWriteToJournal;
+    property WriteToShell: Boolean read FWriteToShell write FWriteToShell;
+
+    property ShellHandler: TsgeErrorManagerHandler read FShellHandler write FShellHandler;
   end;
 
 
@@ -49,56 +66,81 @@ uses
   sgeOSPlatform;
 
 
-
-constructor TsgeErrorManager.Create;
+procedure TsgeErrorManager.SetWriteToJournal(AEnable: Boolean);
 begin
-  FCS := sgeCriticalSection.TsgeCriticalSection.Create;
+  FWriteToJournal := AEnable;
+  FJournal.Enable := FWriteToJournal;
+end;
 
-  FConsole := TsgeSystemConsole.Create;
-  FConsole.InputCodePage := CP_Windows1251;
-  FConsole.OutputCodePage := CP_Windows1251;
+
+constructor TsgeErrorManager.Create(JournalFile: String);
+begin
+  //Создать классы
+  FCS := sgeCriticalSection.TsgeCriticalSection.Create;
+  FJournal := TsgeJournal.Create(JournalFile);
+
+  //Задать параметры
+  FShowMessage := False;
+  FWriteToJournal := False;
+  FWriteToShell := True;
 end;
 
 
 destructor TsgeErrorManager.Destroy;
 begin
-  FConsole.Free;
-
+  FJournal.Free;
   FCS.Free;
 end;
 
 
-procedure TsgeErrorManager.Clear;
+procedure TsgeErrorManager.LogJournal(Message: String);
 begin
-  FConsole.Clear();
-end;
+  FCS.Enter;
+  try
 
+    FJournal.LogDetail(Message);
 
-procedure TsgeErrorManager.ShowMessage(Message: String);
-begin
-  sgeShowMessage(Message, 'Error', mtInfo);
+  finally
+    FCS.Leave;
+  end;
 end;
 
 
 procedure TsgeErrorManager.LogMessage(Message: String);
 begin
   FCS.Enter;
+  try
 
-  FConsole.TextColor := sccWhite;
-  FConsole.WriteLn(Message);
+    sgeShowMessage(Message, 'Error', mtInfo);
 
-  FCS.Leave;
+  finally
+    FCS.Leave;
+  end;
 end;
 
 
-procedure TsgeErrorManager.LogError(Error: String);
+procedure TsgeErrorManager.LogShell(Message: String);
 begin
   FCS.Enter;
+  try
 
-  FConsole.TextColor := sccRed;
-  FConsole.WriteLn(Error);
+    if Assigned(FShellHandler) then FShellHandler(Message);
 
-  FCS.Leave;
+  finally
+    FCS.Leave;
+  end;
+end;
+
+
+procedure TsgeErrorManager.ProcessError(Error: String);
+begin
+  //Переделать ошибку в человеческий вид
+  //Применить перевод
+
+  //Обработать ошибку
+  if FWriteToJournal then LogJournal(Error);
+  if FWriteToShell then LogShell(Error);
+  if FShowMessage then LogMessage(Error);
 end;
 
 
