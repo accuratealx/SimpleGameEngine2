@@ -15,8 +15,8 @@ unit sgeExtensionShell;
 interface
 
 uses
-  sgeThread, sgeSimpleCommand, sgeSimpleParameters,
-  sgeExtensionBase, sgeEventWindow, sgeEventSubscriber,
+  sgeThread, sgeSystemEvent, sgeSimpleCommand, sgeSimpleParameters,
+  sgeExtensionBase, sgeEventWindow, sgeEventSubscriber, sgeShellCommandQueue,
   sgeShellCommandList, sgeLineEditor, sgeCommandHistory,
   sgeExtensionGraphic, sgeExtensionResourceList, sgeExtensionVariables;
 
@@ -28,13 +28,20 @@ const
 type
   TsgeExtensionShell = class(TsgeExtensionBase)
   private
+    //Вспомогательные параметры
+    FCommandQueue: TsgeShellCommandQueue;                           //Очередь комманд на выполнение
+    FCommandIsRunning: Boolean;                                     //Флаг выполнения команды
+    FReadMode: Boolean;                                             //Флаг обработки команды Read, ReadLn
+
+  private
+    //Ссылки на расширения
     FExtGraphic: TsgeExtensionGraphic;
     FExtResList: TsgeExtensionResourceList;
     FExtVariables: TsgeExtensionVariables;
 
-  private
     //Классы
-    FThread: TsgeThread;
+    FEvent: TsgeSystemEvent;                                        //События для Read, ReadLn
+    FThread: TsgeThread;                                            //Поток обработки команд
     FCommandList: TsgeShellCommandList;                             //Список команд оболочки
     FHistory: TsgeCommandHistory;                                   //История введённых команд
     FEditor: TsgeLineEditor;                                        //Однострочный редактор
@@ -48,8 +55,6 @@ type
     //Параметры
     FEnable: Boolean;
     FWeakSeparator: Boolean;
-    FCurrentCommand: String;                                        //Вспомогательная переменная для потока
-    FCommandIsRunning: Boolean;
 
     //Обработчики событий
     procedure RegisterEventHandlers;
@@ -67,15 +72,20 @@ type
     //Методы потока
     procedure ProcessCommand;                                       //Функция разбора и выполнения команды
 
-    //Залипон
-    procedure Draw;
+    //Обработчик ошибок для ErrorManager
+    procedure ErrorHandler(Txt: String);                            //Вывести в журнал ошибку
 
     //Свойства
     procedure SetEnable(AEnable: Boolean);
+
+    //Залипон, УДАЛИТЬ
+    procedure Draw;
+
   protected
     class function GetName: String; override;
+    procedure SetReadMode;                                          //Установить флаг особого нажатия Enter
 
-    procedure ErrorHandler(Txt: String);                            //Вывести в журнал ошибку
+    property MyEvent: TsgeSystemEvent read FEvent;
   public
     constructor Create(ObjectList: TObject); override;
     destructor  Destroy; override;
@@ -85,6 +95,7 @@ type
     property Enable: Boolean read FEnable write SetEnable;
     property Aliases: TsgeSimpleParameters read FAliases;
     property CommandList: TsgeShellCommandList read FCommandList;
+    property Editor: TsgeLineEditor read FEditor;
     property WeakSeparator: Boolean read FWeakSeparator write FWeakSeparator;
   end;
 
@@ -146,11 +157,19 @@ begin
     //Выполнить команду
     keyEnter:
       begin
+      //Проверить на команду Read
+      if FReadMode then
+        begin
+        FReadMode := False;
+        FEvent.Up;
+        Exit;
+        end;
+
       //Проверить не выполняется ли ещё команда
       if FCommandIsRunning then
         begin
         //Ошибка, команда ещё выполняется
-        ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_CommandStillRunning, FCurrentCommand));
+        ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_CommandStillRunning));
         Exit;
         end;
 
@@ -341,11 +360,18 @@ begin
   //Установить флаг выполнения команды
   FCommandIsRunning := True;
 
-  //Выполнить команду
-  ExecuteCommand(FCurrentCommand);
+  //Выполнить накопленные команды
+  while FCommandQueue.Count > 0 do
+    ExecuteCommand(FCommandQueue.PullFirstCommand);
 
   //Снять флаг выполнения команды
   FCommandIsRunning := False;
+end;
+
+
+procedure TsgeExtensionShell.ErrorHandler(Txt: String);
+begin
+  //Добавить в журнал строку с ошибкой
 end;
 
 
@@ -378,15 +404,15 @@ begin
 end;
 
 
-class function TsgeExtensionShell.GetName: String;
+procedure TsgeExtensionShell.SetReadMode;
 begin
-  Result := Extension_Controllers;
+  FReadMode := True;
 end;
 
 
-procedure TsgeExtensionShell.ErrorHandler(Txt: String);
+class function TsgeExtensionShell.GetName: String;
 begin
-  //Добавить в журнал строку с ошибкой
+  Result := Extension_Controllers;
 end;
 
 
@@ -401,7 +427,9 @@ begin
     FExtResList := TsgeExtensionResourceList(GetExtension(Extension_ResourceList));
 
     //Создать объекты
+    FEvent := TsgeSystemEvent.Create(True, False);
     FThread := TsgeThread.Create;
+    FCommandQueue := TsgeShellCommandQueue.Create;
     FHistory := TsgeCommandHistory.Create;
     FAliases := TsgeSimpleParameters.Create;
     FCommandList := TsgeShellCommandList.Create;
@@ -409,6 +437,8 @@ begin
 
     //Задать параметры
     FEnable := False;
+    FWeakSeparator := True;
+    FReadMode := False;
 
     //Установить обработчик ошибок
     ErrorManager.ShellHandler := @ErrorHandler;
@@ -435,6 +465,8 @@ begin
 
   //Удалить объекты
   FThread.Free;
+  FEvent.Free;
+  FCommandQueue.Free;
   FEditor.Free;
   FHistory.Free;
   FAliases.Free;
@@ -446,10 +478,10 @@ end;
 
 procedure TsgeExtensionShell.DoCommand(Cmd: String);
 begin
-  //Запомнить текушую команду
-  FCurrentCommand := Cmd;
+  //Добавить команду в список
+  FCommandQueue.Add(Cmd);
 
-  //Выполнить команду в другом потоке и заснуть
+  //Установить обработчик для потока
   FThread.RunProc(@ProcessCommand, tpemSuspend);
 end;
 
