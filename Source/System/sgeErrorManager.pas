@@ -107,7 +107,7 @@ begin
   FCS.Enter;
   try
 
-    sgeShowMessage(Message, 'Error', mtInfo);
+    sgeShowMessage(Message, 'Error', mtError);
 
   finally
     FCS.Leave;
