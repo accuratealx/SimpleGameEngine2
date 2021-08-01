@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeExtensionVariables.pas
-Версия            1.1
+Версия            1.3
 Создан            20.07.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс расширения: Переменные
@@ -40,6 +40,7 @@ type
 
     procedure Delete(Name: ShortString);
 
+    //Добавление новых переменных
     function AddInteger(Name: ShortString; Value: Integer; DefValue: Integer; ReadOnly: Boolean = False; MinValue: Integer = -MaxInt; MaxValue: Integer = MaxInt): TsgeVariableInteger;
     function AddInteger(Name: ShortString; DefValue: Integer; Setter: TsgeVariableIntegerSetter; Getter: TsgeVariableIntegerGetter; MinValue: Integer = -MaxInt; MaxValue: Integer = MaxInt): TsgeVariableIntegerVirtual;
     function AddSingle(Name: ShortString; Value: Single; DefValue: Single; ReadOnly: Boolean = False; MinValue: single = 1.5E-45; MaxValue: single = 3.4E38): TsgeVariableSingle;
@@ -49,6 +50,13 @@ type
     function AddBoolean(Name: ShortString; Value: Boolean; DefValue: Boolean; ReadOnly: Boolean = False; TrueStr: ShortString = 'True'; FalseStr: ShortString = 'False'): TsgeVariableBoolean;
     function AddBoolean(Name: ShortString; DefValue: Boolean; Getter: TsgeVariableBooleanGetter; Setter: TsgeVariableBooleanSetter = nil; TrueStr: ShortString = 'True'; FalseStr: ShortString = 'False'): TsgeVariableBooleanVirtual;
 
+    //Изменить значение переменной
+    procedure SetInteger(Name: ShortString; Value: Integer);
+    procedure SetSingle(Name: ShortString; Value: Single);
+    procedure SetString(Name: ShortString; Value: String);
+    procedure SetBoolean(Name: ShortString; Value: Boolean);
+
+    //Классы
     property Variables: TsgeVariableList read FVariableList;
   end;
 
@@ -56,7 +64,7 @@ type
 implementation
 
 uses
-  sgeErrors;
+  sgeErrors, sgeSystemUtils;
 
 
 const
@@ -174,6 +182,7 @@ begin
   FVariableList.Add(Result);
 end;
 
+
 function TsgeExtensionVariables.AddBoolean(Name: ShortString; Value: Boolean; DefValue: Boolean; ReadOnly: Boolean; TrueStr: ShortString; FalseStr: ShortString): TsgeVariableBoolean;
 begin
   //Проверить на существование
@@ -184,6 +193,7 @@ begin
   FVariableList.Add(Result);
 end;
 
+
 function TsgeExtensionVariables.AddBoolean(Name: ShortString; DefValue: Boolean; Getter: TsgeVariableBooleanGetter; Setter: TsgeVariableBooleanSetter; TrueStr: ShortString; FalseStr: ShortString): TsgeVariableBooleanVirtual;
 begin
   //Проверить на существование
@@ -192,6 +202,42 @@ begin
   //Добавить
   Result := TsgeVariableBooleanVirtual.Create(Name, DefValue, Getter, Setter, TrueStr, FalseStr);
   FVariableList.Add(Result);
+end;
+
+
+procedure TsgeExtensionVariables.SetInteger(Name: ShortString; Value: Integer);
+var
+  Idx: Integer;
+begin
+  Idx := FVariableList.IndexOf(Name);
+  if Idx = -1 then AddInteger(Name, Value, 0, False) else FVariableList.Item[Idx].StrValue := sgeIntToStr(Value);
+end;
+
+
+procedure TsgeExtensionVariables.SetSingle(Name: ShortString; Value: Single);
+var
+  Idx: Integer;
+begin
+  Idx := FVariableList.IndexOf(Name);
+  if Idx = -1 then AddSingle(Name, Value, 0, False) else FVariableList.Item[Idx].StrValue := sgeFloatToStr(Value);
+end;
+
+
+procedure TsgeExtensionVariables.SetString(Name: ShortString; Value: String);
+var
+  Idx: Integer;
+begin
+  Idx := FVariableList.IndexOf(Name);
+  if Idx = -1 then AddString(Name, Value, '', False) else FVariableList.Item[Idx].StrValue := Value;
+end;
+
+
+procedure TsgeExtensionVariables.SetBoolean(Name: ShortString; Value: Boolean);
+var
+  Idx: Integer;
+begin
+  Idx := FVariableList.IndexOf(Name);
+  if Idx = -1 then AddBoolean(Name, Value, False, False) else FVariableList.Item[Idx].StrValue := sgeBoolToStr(Value);
 end;
 
 
