@@ -22,7 +22,7 @@ uses
 
 
 const
-  Extension_Controllers = 'Shell';
+  Extension_Shell = 'Shell';
 
 
 type
@@ -412,7 +412,7 @@ end;
 
 class function TsgeExtensionShell.GetName: String;
 begin
-  Result := Extension_Controllers;
+  Result := Extension_Shell;
 end;
 
 

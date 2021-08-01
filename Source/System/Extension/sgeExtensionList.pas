@@ -58,7 +58,7 @@ uses
   sgeErrors, sgeSystemUtils;
 
 const
-  _UNITNAME = 'NamedObjectList';
+  _UNITNAME = 'ExtensionList';
 
   Err_IndexOutOfBounds  = 'IndexOutOfBounds';
   Err_ObjectNotFound    = 'ObjectNotFound';
