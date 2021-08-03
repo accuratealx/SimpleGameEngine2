@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeEventWindow.pas
-Версия            1.2
+Версия            1.3
 Создан            02.05.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Классы событий: Окно
@@ -78,11 +78,13 @@ type
   private
     FKey: Byte;
     FKeyboardButtons: TsgeKeyboardButtons;
+    FFirstDown: Boolean;
   public
-    constructor Create(Key: Byte; KeyboardButtons: TsgeKeyboardButtons);
+    constructor Create(Key: Byte; KeyboardButtons: TsgeKeyboardButtons; FirstDown: Boolean);
 
     property Key: Byte read FKey;
     property KeyboardButtons: TsgeKeyboardButtons read FKeyboardButtons;
+    property FirstDown: Boolean read FFirstDown;
   end;
 
 
@@ -128,10 +130,11 @@ end;
 
 
 
-constructor TsgeEventWindowKeyboard.Create(Key: Byte; KeyboardButtons: TsgeKeyboardButtons);
+constructor TsgeEventWindowKeyboard.Create(Key: Byte; KeyboardButtons: TsgeKeyboardButtons; FirstDown: Boolean);
 begin
   FKey := Key;
   FKeyboardButtons := KeyboardButtons;
+  FFirstDown := FirstDown;
 end;
 
 

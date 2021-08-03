@@ -263,11 +263,11 @@ begin
 
 
     WM_KEYDOWN, WM_SYSKEYDOWN:
-      EventManager.Publish(Event_WindowKeyDown, TsgeEventWindowKeyboard.Create(wParam, GetKeyboardButtons));
+      EventManager.Publish(Event_WindowKeyDown, TsgeEventWindowKeyboard.Create(wParam, GetKeyboardButtons, (lParam shr 30) = 0));
 
 
     WM_KEYUP, WM_SYSKEYUP:
-      EventManager.Publish(Event_WindowKeyUp, TsgeEventWindowKeyboard.Create(wParam, GetKeyboardButtons));
+      EventManager.Publish(Event_WindowKeyUp, TsgeEventWindowKeyboard.Create(wParam, GetKeyboardButtons, False));
 
 
     WM_LBUTTONDOWN, WM_MBUTTONDOWN, WM_RBUTTONDOWN, WM_XBUTTONDOWN:
