@@ -15,10 +15,10 @@ unit SimpleGameEngine;
 interface
 
 uses
-  sgeTypes, sgeErrorManager, sgeNamedObjectList, sgeExtensionList, sgeEventManager, sgeEventBase, sgeEventWindow,
+  sgeErrorManager, sgeNamedObjectList, sgeExtensionList, sgeEventManager, sgeEventBase, sgeEventWindow,
   sgeExtensionWindow, sgeExtensionGraphic, sgeExtensionPackList, sgeExtensionFileSystem, sgeExtensionShell,
   sgeExtensionResourceList, sgeExtensionStartParameters, sgeExtensionSound, sgeExtensionControllers,
-  sgeExtensionVariables;
+  sgeExtensionVariables, sgeExtensionKeyCommand;
 
 
 const
@@ -52,6 +52,7 @@ type
     FExtensionSound: TsgeExtensionSound;                            //Расширение: Звуковая система
     FExtensionControllers: TsgeExtensionControllers;                //Расширение: Контроллеры
     FExtensionShell: TsgeExtensionShell;                            //Расширение: Оболочка
+    FExtensionKeyCommand: TsgeExtensionKeyCommand;                  //Расширение: Команды на клавишах
 
     //Свойства
     procedure SetDebug(ADebug: Boolean);
@@ -90,13 +91,14 @@ type
     property ExtSound: TsgeExtensionSound read FExtensionSound;
     property ExtControllers: TsgeExtensionControllers read FExtensionControllers;
     property ExtShell: TsgeExtensionShell read FExtensionShell;
+    property ExtKeyCommand: TsgeExtensionKeyCommand read FExtensionKeyCommand;
   end;
 
 
 implementation
 
 uses
-  sgeErrors, sgeSystemUtils, sgeOSPlatform, sgeDateUtils, sgeShellFunctions;
+  sgeErrors, sgeOSPlatform, sgeDateUtils, sgeShellFunctions;
 
 
 const
@@ -174,6 +176,7 @@ begin
     FExtensionResourceList := TsgeExtensionResourceList.Create(FObjectList);        //Список ресурсов
     FExtensionControllers := TsgeExtensionControllers.Create(FObjectList);          //Контроллеры
     FExtensionShell := TsgeExtensionShell.Create(FObjectList);                      //Оболочка
+    FExtensionKeyCommand := TsgeExtensionKeyCommand.Create(FObjectList);            //Команда на кнопках
 
   except
     //Ошибка инициализации движка
