@@ -9,13 +9,13 @@
       <PathDelim Value="\"/>
       <SearchPaths>
         <IncludeFiles Value="..\Source\System"/>
-        <OtherUnitFiles Value="..\Source\ThirdParty\GDIPlus;..\Source\ThirdParty\OpenAL;..\Source\ThirdParty\OpenGL;..\Source\System;..\Source\System\Base;..\Source\System\Controllers;..\Source\System\Events;..\Source\System\Extension;..\Source\System\Graphic;..\Source\System\PackFiles;..\Source\System\Shell;..\Source\System\Sound;..\Source\System\Templates;..\Source\System\Utils;..\Source\System\Variables"/>
+        <OtherUnitFiles Value="..\Source\ThirdParty\GDIPlus;..\Source\ThirdParty\OpenAL;..\Source\ThirdParty\OpenGL;..\Source\System;..\Source\System\Base;..\Source\System\Controllers;..\Source\System\Events;..\Source\System\Extension;..\Source\System\Graphic;..\Source\System\PackFiles;..\Source\System\Shell;..\Source\System\Sound;..\Source\System\Templates;..\Source\System\Utils;..\Source\System\Variables;..\Source\System\KeyCommand"/>
         <UnitOutputDirectory Value="..\~Tmp\lib\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
     </CompilerOptions>
     <Description Value="Simple Game Engine 2"/>
     <Version Major="1"/>
-    <Files Count="113">
+    <Files Count="121">
       <Item1>
         <Filename Value="..\Source\ThirdParty\GDIPlus\GDIPAPI.pas"/>
         <UnitName Value="GDIPAPI"/>
@@ -313,161 +313,193 @@
         <UnitName Value="sgeGraphicElementText"/>
       </Item74>
       <Item75>
-        <Filename Value="..\Source\System\Graphic\sgeGraphicElementTextShadow.pas"/>
-        <UnitName Value="sgeGraphicElementTextShadow"/>
-      </Item75>
-      <Item76>
         <Filename Value="..\Source\System\Graphic\sgeGraphicFont.pas"/>
         <UnitName Value="sgeGraphicFont"/>
-      </Item76>
-      <Item77>
+      </Item75>
+      <Item76>
         <Filename Value="..\Source\System\Graphic\sgeGraphicFPS.pas"/>
         <UnitName Value="sgeGraphicFPS"/>
-      </Item77>
-      <Item78>
+      </Item76>
+      <Item77>
         <Filename Value="..\Source\System\Graphic\sgeGraphicSprite.pas"/>
         <UnitName Value="sgeGraphicSprite"/>
-      </Item78>
-      <Item79>
+      </Item77>
+      <Item78>
         <Filename Value="..\Source\System\Graphic\sgeGraphicSpriteGDIPLoader.pas"/>
         <UnitName Value="sgeGraphicSpriteGDIPLoader"/>
-      </Item79>
-      <Item80>
+      </Item78>
+      <Item79>
         <Filename Value="..\Source\System\Graphic\sgeGraphicSpriteLoader.pas"/>
         <UnitName Value="sgeGraphicSpriteLoader"/>
-      </Item80>
-      <Item81>
+      </Item79>
+      <Item80>
         <Filename Value="..\Source\System\Graphic\sgeGraphicUtils.pas"/>
         <UnitName Value="sgeGraphicUtils"/>
-      </Item81>
-      <Item82>
+      </Item80>
+      <Item81>
         <Filename Value="..\Source\System\Graphic\sgeScreenFade.pas"/>
         <UnitName Value="sgeScreenFade"/>
-      </Item82>
-      <Item83>
+      </Item81>
+      <Item82>
         <Filename Value="..\Source\System\PackFiles\sgePackFile.pas"/>
         <Type Value="Include"/>
-      </Item83>
-      <Item84>
+      </Item82>
+      <Item83>
         <Filename Value="..\Source\System\PackFiles\sgePackFileList.pas"/>
         <UnitName Value="sgePackFileList"/>
-      </Item84>
-      <Item85>
+      </Item83>
+      <Item84>
         <Filename Value="..\Source\System\PackFiles\sgePackFileReader.pas"/>
         <UnitName Value="sgePackFileReader"/>
-      </Item85>
-      <Item86>
+      </Item84>
+      <Item85>
         <Filename Value="..\Source\System\PackFiles\sgePackFileWriter.pas"/>
         <UnitName Value="sgePackFileWriter"/>
+      </Item85>
+      <Item86>
+        <Filename Value="..\Source\System\Shell\sgeLineEditor.pas"/>
+        <Type Value="Include"/>
       </Item86>
       <Item87>
-        <Filename Value="..\Source\System\Shell\sgeLineEditor.pas"/>
+        <Filename Value="..\Source\System\Sound\sgeSound.pas"/>
         <Type Value="Include"/>
       </Item87>
       <Item88>
-        <Filename Value="..\Source\System\Sound\sgeSound.pas"/>
-        <Type Value="Include"/>
-      </Item88>
-      <Item89>
         <Filename Value="..\Source\System\Sound\sgeSoundBuffer.pas"/>
         <UnitName Value="sgeSoundBuffer"/>
-      </Item89>
-      <Item90>
+      </Item88>
+      <Item89>
         <Filename Value="..\Source\System\Sound\sgeSoundBufferLoader.pas"/>
         <UnitName Value="sgeSoundBufferLoader"/>
-      </Item90>
-      <Item91>
+      </Item89>
+      <Item90>
         <Filename Value="..\Source\System\Sound\sgeSoundBufferWavLoader.pas"/>
         <UnitName Value="sgeSoundBufferWavLoader"/>
-      </Item91>
-      <Item92>
+      </Item90>
+      <Item91>
         <Filename Value="..\Source\System\Sound\sgeSoundSource.pas"/>
         <UnitName Value="sgeSoundSource"/>
-      </Item92>
-      <Item93>
+      </Item91>
+      <Item92>
         <Filename Value="..\Source\System\Templates\sgeTemplateCollection.pas"/>
         <UnitName Value="sgeTemplateCollection"/>
-      </Item93>
-      <Item94>
+      </Item92>
+      <Item93>
         <Filename Value="..\Source\System\Templates\sgeTemplateList.pas"/>
         <UnitName Value="sgeTemplateList"/>
-      </Item94>
-      <Item95>
-        <Filename Value="..\Source\System\Utils\sgeSystemConsole.pas"/>
-        <Type Value="Include"/>
-      </Item95>
-      <Item96>
+      </Item93>
+      <Item94>
         <Filename Value="..\Source\System\Utils\sgeSystemCursor.pas"/>
         <UnitName Value="sgeSystemCursor"/>
-      </Item96>
-      <Item97>
+      </Item94>
+      <Item95>
         <Filename Value="..\Source\System\Utils\sgeSystemIcon.pas"/>
         <UnitName Value="sgeSystemIcon"/>
-      </Item97>
-      <Item98>
+      </Item95>
+      <Item96>
         <Filename Value="..\Source\System\Utils\sgeSystemTimeEvent.pas"/>
         <UnitName Value="sgeSystemTimeEvent"/>
-      </Item98>
-      <Item99>
+      </Item96>
+      <Item97>
         <Filename Value="..\Source\System\Utils\sgeSystemTrayIcon.pas"/>
         <UnitName Value="sgeSystemTrayIcon"/>
-      </Item99>
-      <Item100>
+      </Item97>
+      <Item98>
         <Filename Value="..\Source\System\Variables\sgeVariableBase.pas"/>
         <Type Value="Include"/>
-      </Item100>
-      <Item101>
+      </Item98>
+      <Item99>
         <Filename Value="..\Source\System\Variables\sgeVariableBoolean.pas"/>
         <UnitName Value="sgeVariableBoolean"/>
-      </Item101>
-      <Item102>
+      </Item99>
+      <Item100>
         <Filename Value="..\Source\System\Variables\sgeVariableBooleanBase.pas"/>
         <UnitName Value="sgeVariableBooleanBase"/>
-      </Item102>
-      <Item103>
+      </Item100>
+      <Item101>
         <Filename Value="..\Source\System\Variables\sgeVariableBooleanVirtual.pas"/>
         <UnitName Value="sgeVariableBooleanVirtual"/>
-      </Item103>
-      <Item104>
+      </Item101>
+      <Item102>
         <Filename Value="..\Source\System\Variables\sgeVariableInteger.pas"/>
         <UnitName Value="sgeVariableInteger"/>
-      </Item104>
-      <Item105>
+      </Item102>
+      <Item103>
         <Filename Value="..\Source\System\Variables\sgeVariableIntegerBase.pas"/>
         <UnitName Value="sgeVariableIntegerBase"/>
-      </Item105>
-      <Item106>
+      </Item103>
+      <Item104>
         <Filename Value="..\Source\System\Variables\sgeVariableIntegerVirtual.pas"/>
         <UnitName Value="sgeVariableIntegerVirtual"/>
-      </Item106>
-      <Item107>
+      </Item104>
+      <Item105>
         <Filename Value="..\Source\System\Variables\sgeVariableList.pas"/>
         <UnitName Value="sgeVariableList"/>
-      </Item107>
-      <Item108>
+      </Item105>
+      <Item106>
         <Filename Value="..\Source\System\Variables\sgeVariableSingle.pas"/>
         <UnitName Value="sgeVariableSingle"/>
-      </Item108>
-      <Item109>
+      </Item106>
+      <Item107>
         <Filename Value="..\Source\System\Variables\sgeVariableSingleBase.pas"/>
         <UnitName Value="sgeVariableSingleBase"/>
-      </Item109>
-      <Item110>
+      </Item107>
+      <Item108>
         <Filename Value="..\Source\System\Variables\sgeVariableSingleVirtual.pas"/>
         <UnitName Value="sgeVariableSingleVirtual"/>
-      </Item110>
-      <Item111>
+      </Item108>
+      <Item109>
         <Filename Value="..\Source\System\Variables\sgeVariableString.pas"/>
         <UnitName Value="sgeVariableString"/>
-      </Item111>
-      <Item112>
+      </Item109>
+      <Item110>
         <Filename Value="..\Source\System\Variables\sgeVariableStringBase.pas"/>
         <UnitName Value="sgeVariableStringBase"/>
-      </Item112>
-      <Item113>
+      </Item110>
+      <Item111>
         <Filename Value="..\Source\System\Variables\sgeVariableStringVirtual.pas"/>
         <UnitName Value="sgeVariableStringVirtual"/>
+      </Item111>
+      <Item112>
+        <Filename Value="..\Source\System\Templates\sgeTemplateObjectCollection.pas"/>
+        <UnitName Value="sgeTemplateObjectCollection"/>
+      </Item112>
+      <Item113>
+        <Filename Value="..\Source\System\Shell\sgeShellFunctions.pas"/>
+        <UnitName Value="sgeShellFunctions"/>
       </Item113>
+      <Item114>
+        <Filename Value="..\Source\System\sgeJournal.pas"/>
+        <UnitName Value="sgeJournal"/>
+      </Item114>
+      <Item115>
+        <Filename Value="..\Source\System\Shell\sgeShellCommand.pas"/>
+        <UnitName Value="sgeShellCommand"/>
+      </Item115>
+      <Item116>
+        <Filename Value="..\Source\System\Shell\sgeShellCommandList.pas"/>
+        <UnitName Value="sgeShellCommandList"/>
+      </Item116>
+      <Item117>
+        <Filename Value="..\Source\System\Shell\sgeCommandHistory.pas"/>
+        <UnitName Value="sgeCommandHistory"/>
+      </Item117>
+      <Item118>
+        <Filename Value="..\Source\System\Utils\sgeSystemConsole.pas"/>
+        <UnitName Value="sgeSystemConsole"/>
+      </Item118>
+      <Item119>
+        <Filename Value="..\Source\System\Extension\sgeExtensionKeyCommand.pas"/>
+        <UnitName Value="sgeExtensionKeyCommand"/>
+      </Item119>
+      <Item120>
+        <Filename Value="..\Source\System\Shell\sgeShellCommandQueue.pas"/>
+        <UnitName Value="sgeShellCommandQueue"/>
+      </Item120>
+      <Item121>
+        <Filename Value="..\Source\System\KeyCommand\sgeKeyCommandKeyboard.pas"/>
+        <UnitName Value="sgeKeyCommandKeyboard"/>
+      </Item121>
     </Files>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)"/>

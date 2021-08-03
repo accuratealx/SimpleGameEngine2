@@ -27,18 +27,20 @@ uses
   sgeGraphicElementLayer, sgeGraphicElementLayerList, sgeGraphicElementList, 
   sgeGraphicElementRectangle, sgeGraphicElementRectangleGradient, 
   sgeGraphicElementSprite, sgeGraphicElementSpritePart, 
-  sgeGraphicElementSpriteTile, sgeGraphicElementText, 
-  sgeGraphicElementTextShadow, sgeGraphicFont, sgeGraphicFPS, 
-  sgeGraphicSprite, sgeGraphicSpriteGDIPLoader, sgeGraphicSpriteLoader, 
-  sgeGraphicUtils, sgeScreenFade, sgePackFileList, sgePackFileReader, 
-  sgePackFileWriter, sgeSoundBuffer, sgeSoundBufferLoader, 
+  sgeGraphicElementSpriteTile, sgeGraphicElementText, sgeGraphicFont, 
+  sgeGraphicFPS, sgeGraphicSprite, sgeGraphicSpriteGDIPLoader, 
+  sgeGraphicSpriteLoader, sgeGraphicUtils, sgeScreenFade, sgePackFileList, 
+  sgePackFileReader, sgePackFileWriter, sgeSoundBuffer, sgeSoundBufferLoader, 
   sgeSoundBufferWavLoader, sgeSoundSource, sgeTemplateCollection, 
   sgeTemplateList, sgeSystemCursor, sgeSystemIcon, sgeSystemTimeEvent, 
   sgeSystemTrayIcon, sgeVariableBoolean, sgeVariableBooleanBase, 
   sgeVariableBooleanVirtual, sgeVariableInteger, sgeVariableIntegerBase, 
   sgeVariableIntegerVirtual, sgeVariableList, sgeVariableSingle, 
   sgeVariableSingleBase, sgeVariableSingleVirtual, sgeVariableString, 
-  sgeVariableStringBase, sgeVariableStringVirtual;
+  sgeVariableStringBase, sgeVariableStringVirtual, 
+  sgeTemplateObjectCollection, sgeShellFunctions, sgeJournal, sgeShellCommand, 
+  sgeShellCommandList, sgeCommandHistory, sgeSystemConsole, 
+  sgeExtensionKeyCommand, sgeShellCommandQueue, sgeKeyCommandKeyboard;
 
 implementation
 
