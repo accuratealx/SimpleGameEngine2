@@ -254,7 +254,7 @@ begin
   Mode := ModeEmpty;
   if LowerCase(Cmd.Part[0]) = 'autor' then Mode := ModeAutor;
   Idx := FCommandList.IndexOf(Cmd.Part[0]);
-  CmdProc := FCommandList.Item[Idx];
+  if Idx <> -1 then CmdProc := FCommandList.Item[Idx];
   if CmdProc <> nil then Mode := ModeCommand;
 
   //Обработать режим
