@@ -17,7 +17,7 @@ interface
 
 type
   //Команды одной кнопки
-  TsgeKeyCommandKeyBoardButton = class
+  TsgeKeyCommandKeyboardButton = class
   public
     Up: String;
     Down: String;
@@ -30,10 +30,11 @@ type
     MAX_BUTTONS = $FF;
 
   private
-    FList: array[0..MAX_BUTTONS] of TsgeKeyCommandKeyBoardButton;
+    FList: array[0..MAX_BUTTONS] of TsgeKeyCommandKeyboardButton;
 
-    function GetKey(Index: Byte): TsgeKeyCommandKeyBoardButton;
-    function GetNamedKey(Name: ShortString): TsgeKeyCommandKeyBoardButton;
+    function GetCount: Byte;
+    function GetKey(Index: Byte): TsgeKeyCommandKeyboardButton;
+    function GetNamedKey(Name: ShortString): TsgeKeyCommandKeyboardButton;
   public
     constructor Create;
     destructor  Destroy; override;
@@ -45,8 +46,9 @@ type
     procedure Delete(Index: Byte);
     procedure Delete(Name: ShortString);
 
-    property Key[Index: Byte]: TsgeKeyCommandKeyBoardButton read GetKey;
-    property NamedKey[Name: ShortString]: TsgeKeyCommandKeyBoardButton read GetNamedKey;
+    property Count: Byte read GetCount;
+    property Key[Index: Byte]: TsgeKeyCommandKeyboardButton read GetKey;
+    property NamedKey[Name: ShortString]: TsgeKeyCommandKeyboardButton read GetNamedKey;
   end;
 
 
@@ -323,14 +325,19 @@ const
 
 
 
+function TsgeKeyCommandKeyboard.GetCount: Byte;
+begin
+  Result := MAX_BUTTONS;
+end;
 
-function TsgeKeyCommandKeyboard.GetKey(Index: Byte): TsgeKeyCommandKeyBoardButton;
+
+function TsgeKeyCommandKeyboard.GetKey(Index: Byte): TsgeKeyCommandKeyboardButton;
 begin
   Result := FList[Index];
 end;
 
 
-function TsgeKeyCommandKeyboard.GetNamedKey(Name: ShortString): TsgeKeyCommandKeyBoardButton;
+function TsgeKeyCommandKeyboard.GetNamedKey(Name: ShortString): TsgeKeyCommandKeyboardButton;
 var
   Idx: Integer;
 begin
@@ -347,7 +354,7 @@ var
   i: Integer;
 begin
   for i := 0 to MAX_BUTTONS do
-    FList[i] := TsgeKeyCommandKeyBoardButton.Create;
+    FList[i] := TsgeKeyCommandKeyboardButton.Create;
 end;
 
 
@@ -387,7 +394,7 @@ var
   i: Integer;
 begin
   for i := 0 to MAX_BUTTONS do
-    Delete(i)
+    Delete(i);
 end;
 
 
