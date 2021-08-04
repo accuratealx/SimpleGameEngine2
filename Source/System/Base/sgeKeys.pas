@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeKeys.pas
-Версия            1.1
+Версия            1.2
 Создан            02.07.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Таблица кодов кнопок клавиатуры
@@ -15,6 +15,7 @@ unit sgeKeys;
 interface
 
 const
+  //Клавиатура
   keyBack         = 8;
   keyTab          = 9;
   keyEnter        = 13;
@@ -124,7 +125,13 @@ const
   keyCloseBracket = 221;  // ]
   keyQuote        = 222;  // "
 
-
+  //Мышь
+  mouseLeft       = 0;
+  mouseMiddle     = 1;
+  mouseRight      = 2;
+  mouseX1         = 3;
+  mouseX2         = 4;
+  mouseWheel      = 5;
 
 implementation
 
