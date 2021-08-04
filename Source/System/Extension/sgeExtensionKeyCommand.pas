@@ -105,9 +105,8 @@ end;
 
 procedure TsgeExtensionKeyCommand.UnRegisterEventHandlers;
 begin
-  EventManager.UnSubscribe(Event_WindowKeyDown, TsgeEventHandler(@Handler_KeyDown));
-  EventManager.UnSubscribe(Event_WindowKeyUp, TsgeEventHandler(@Handler_KeyUp));
-  EventManager.UnSubscribe(Event_WindowChar, TsgeEventHandler(@Handler_KeyChar));
+  //Отписаться от всех событий
+  EventManager.UnSubscribe(Self);
 end;
 
 
