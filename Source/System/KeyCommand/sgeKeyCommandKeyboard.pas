@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeKeyCommandKeyboard.pas
-Версия            1.0
+Версия            1.1
 Создан            03.08.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Команды на кнопках: Клавиатура
@@ -14,27 +14,21 @@ unit sgeKeyCommandKeyboard;
 
 interface
 
+uses
+  sgeKeyCommandTypes;
+
 
 type
-  //Команды одной кнопки
-  TsgeKeyCommandKeyboardButton = class
-  public
-    Up: String;
-    Down: String;
-  end;
-
-
-  //Список команд клавиатуры
   TsgeKeyCommandKeyboard = class
   const
     MAX_BUTTONS = $FF;
 
   private
-    FList: array[0..MAX_BUTTONS] of TsgeKeyCommandKeyboardButton;
+    FList: array[0..MAX_BUTTONS] of TsgeKeyCommandAction;
 
     function GetCount: Byte;
-    function GetKey(Index: Byte): TsgeKeyCommandKeyboardButton;
-    function GetNamedKey(Name: ShortString): TsgeKeyCommandKeyboardButton;
+    function GetKey(Index: Byte): TsgeKeyCommandAction;
+    function GetNamedKey(Name: ShortString): TsgeKeyCommandAction;
   public
     constructor Create;
     destructor  Destroy; override;
@@ -47,8 +41,8 @@ type
     procedure Delete(Name: ShortString);
 
     property Count: Byte read GetCount;
-    property Key[Index: Byte]: TsgeKeyCommandKeyboardButton read GetKey;
-    property NamedKey[Name: ShortString]: TsgeKeyCommandKeyboardButton read GetNamedKey;
+    property Key[Index: Byte]: TsgeKeyCommandAction read GetKey;
+    property NamedKey[Name: ShortString]: TsgeKeyCommandAction read GetNamedKey;
   end;
 
 
@@ -321,8 +315,6 @@ const
 
   _UNITNAME = 'KeyCommandKeyboard';
 
-  Err_KeyNotFound = 'KeyNotFound';
-
 
 
 function TsgeKeyCommandKeyboard.GetCount: Byte;
@@ -331,13 +323,13 @@ begin
 end;
 
 
-function TsgeKeyCommandKeyboard.GetKey(Index: Byte): TsgeKeyCommandKeyboardButton;
+function TsgeKeyCommandKeyboard.GetKey(Index: Byte): TsgeKeyCommandAction;
 begin
   Result := FList[Index];
 end;
 
 
-function TsgeKeyCommandKeyboard.GetNamedKey(Name: ShortString): TsgeKeyCommandKeyboardButton;
+function TsgeKeyCommandKeyboard.GetNamedKey(Name: ShortString): TsgeKeyCommandAction;
 var
   Idx: Integer;
 begin
@@ -354,7 +346,7 @@ var
   i: Integer;
 begin
   for i := 0 to MAX_BUTTONS do
-    FList[i] := TsgeKeyCommandKeyboardButton.Create;
+    FList[i] := TsgeKeyCommandAction.Create;
 end;
 
 
