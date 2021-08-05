@@ -40,7 +40,11 @@ uses
   sgeVariableStringBase, sgeVariableStringVirtual, 
   sgeTemplateObjectCollection, sgeShellFunctions, sgeJournal, sgeShellCommand, 
   sgeShellCommandList, sgeCommandHistory, sgeSystemConsole, 
-  sgeExtensionKeyCommand, sgeShellCommandQueue, sgeKeyCommandKeyboard;
+  sgeExtensionKeyCommand, sgeShellCommandQueue, sgeKeyCommandKeyboard, 
+  sgeKeyCommandMouse, sgeKeyCommandJoystick, sgeKeyCommandJoystickButtonInfo, 
+  sgeKeyCommandJoystickInfo, sgeKeyCommandJoystickAxisInfo, 
+  sgeKeyCommandTypes, sgeKeyCommandJoystickPadInfo, 
+  sgeKeyCommandJoystickAxisTiltInfo;
 
 implementation
 

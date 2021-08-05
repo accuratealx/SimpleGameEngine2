@@ -15,7 +15,7 @@
     </CompilerOptions>
     <Description Value="Simple Game Engine 2"/>
     <Version Major="1"/>
-    <Files Count="121">
+    <Files Count="129">
       <Item1>
         <Filename Value="..\Source\ThirdParty\GDIPlus\GDIPAPI.pas"/>
         <UnitName Value="GDIPAPI"/>
@@ -500,6 +500,38 @@
         <Filename Value="..\Source\System\KeyCommand\sgeKeyCommandKeyboard.pas"/>
         <UnitName Value="sgeKeyCommandKeyboard"/>
       </Item121>
+      <Item122>
+        <Filename Value="..\Source\System\KeyCommand\sgeKeyCommandMouse.pas"/>
+        <UnitName Value="sgeKeyCommandMouse"/>
+      </Item122>
+      <Item123>
+        <Filename Value="..\Source\System\KeyCommand\sgeKeyCommandJoystick.pas"/>
+        <UnitName Value="sgeKeyCommandJoystick"/>
+      </Item123>
+      <Item124>
+        <Filename Value="..\Source\System\KeyCommand\sgeKeyCommandJoystickButtonInfo.pas"/>
+        <UnitName Value="sgeKeyCommandJoystickButtonInfo"/>
+      </Item124>
+      <Item125>
+        <Filename Value="..\Source\System\KeyCommand\sgeKeyCommandJoystickInfo.pas"/>
+        <UnitName Value="sgeKeyCommandJoystickInfo"/>
+      </Item125>
+      <Item126>
+        <Filename Value="..\Source\System\KeyCommand\sgeKeyCommandJoystickAxisInfo.pas"/>
+        <UnitName Value="sgeKeyCommandJoystickAxisInfo"/>
+      </Item126>
+      <Item127>
+        <Filename Value="..\Source\System\KeyCommand\sgeKeyCommandTypes.pas"/>
+        <UnitName Value="sgeKeyCommandTypes"/>
+      </Item127>
+      <Item128>
+        <Filename Value="..\Source\System\KeyCommand\sgeKeyCommandJoystickPadInfo.pas"/>
+        <UnitName Value="sgeKeyCommandJoystickPadInfo"/>
+      </Item128>
+      <Item129>
+        <Filename Value="..\Source\System\KeyCommand\sgeKeyCommandJoystickAxisTiltInfo.pas"/>
+        <UnitName Value="sgeKeyCommandJoystickAxisTiltInfo"/>
+      </Item129>
     </Files>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)"/>
