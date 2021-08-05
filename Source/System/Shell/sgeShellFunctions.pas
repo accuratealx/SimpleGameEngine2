@@ -53,7 +53,7 @@ end;
 
 {
 Описание:
-  Записать значение строки ввода в переменную
+  Скопировать значение строки ввода в переменную
 Синтаксис:
   Read <VariableName>
 Параметры:
@@ -88,7 +88,7 @@ end;
 
 {
 Описание:
-  Записать значение строки ввода в переменную и удалить ввод
+  Вырезать значение строки ввода в переменную
 Синтаксис:
   ReadLn <VariableName>
 Параметры:
@@ -131,6 +131,22 @@ end;
 
 
 
+function sgeTEST(Command: TsgeSimpleCommand): String;
+{var
+  s: String;}
+begin
+  Result := '';
+
+  //Сообщение
+  //s := Command.GetTail(1);
+
+  //Вывести диалог
+  //SGE.ExtWindow.Window.Caption := s;
+end;
+
+
+
+
 
 /////////////////////////////////////////////////////////////
 //                  Регистрация команд                     //
@@ -148,6 +164,8 @@ begin
     Add('ReadLn', @sgeSystem_ReadLn, 0, Group_System);
 
     Add('ShowMessage', @sgeDialogs_ShowMessage, 0, Group_Dialog);
+
+    Add('TEST', @sgeTEST, 0, 'TEST');
     end;
 end;
 
