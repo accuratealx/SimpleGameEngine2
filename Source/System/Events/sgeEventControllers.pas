@@ -24,19 +24,30 @@ const
   Event_ControllerDetach        = 'Controller.Detach';
   Event_ControllerButtonUp      = 'Controller.ButtonUp';
   Event_ControllerButtonDown    = 'Controller.ButtonDown';
-  Event_ControllerAxis          = 'Controller.Axis';
   Event_ControllerPov           = 'Controller.Pov';
+  Event_ControllerAxis          = 'Controller.Axis';
 
+  Event_ControllerPovUp         = 'Controller.PovUp';
+  Event_ControllerPovRight      = 'Controller.PovRight';
+  Event_ControllerPovDown       = 'Controller.PovDown';
+  Event_ControllerPovLeft       = 'Controller.PovLeft';
 
 
 type
   //Типы осей
-  TsgeControllerAxisType = (axisX, axisY, axisU, axisV, axisR, axisZ);
+  TsgeControllerAxisType = (catX, catY, catU, catV, catR, catZ);
+
+
+  //Тип наклона оси
+  TsgeControllerAxisTilt = (catMin, catMax);
 
 
   //Тип крестовины
   TsgeControllerPovType = (cptVirtual, cptDirection, cptDegree);
 
+
+  //Напрвление крестовины
+  TsgeControllerPovDirection = (cpdUp, cpdRight, cpdDown, cpdLeft);
 
 
   TsgeEventController = class(TsgeEventBase)
