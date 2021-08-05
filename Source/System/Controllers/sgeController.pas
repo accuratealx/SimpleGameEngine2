@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeController.pas
-Версия            1.7
+Версия            1.8
 Создан            20.05.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс работы с контроллером
@@ -34,7 +34,6 @@ type
   TsgeControllerPovInfo = record
     X: SmallInt;                      //Состояние X [-1, 0, 1]
     Y: SmallInt;                      //Состояние Y [-1, 0, 1]
-    Angle: Integer;                   //Угол в градусах
   end;
 
 
@@ -195,7 +194,6 @@ begin
     Info.Axis[I] := FAxisSettings[I].MiddleValue;
 
   //Крестовина
-  Info.Pov.Angle := -1;
   Info.Pov.X := 0;
   Info.Pov.Y := 0;
 
@@ -314,10 +312,10 @@ end;
 procedure TsgeController.GetInfo;
 const
   PovMultiplier = 100;
-  A = Pi / 180;
+  dA = Pi / 180;
 
 var
-  i, c, X, Y: Integer;
+  i, c, X, Y, A: Integer;
   Mask: Cardinal;
   InfoEx: TJOYINFOEX;
   B: PsgeControllerButtonInfo;
@@ -377,33 +375,30 @@ begin
 
     //Вернуть значение POV
     case X + Y of
-      2 : FCurrentInfo.Pov.Angle := 0;
-      3 : FCurrentInfo.Pov.Angle := 45;
-      1 : FCurrentInfo.Pov.Angle := 90;
-      9 : FCurrentInfo.Pov.Angle := 135;
-      8 : FCurrentInfo.Pov.Angle := 180;
-      12: FCurrentInfo.Pov.Angle := 225;
-      4 : FCurrentInfo.Pov.Angle := 270;
-      6 : FCurrentInfo.Pov.Angle := 315;
-      else FCurrentInfo.Pov.Angle := -1;
+      2 : A := 0;
+      3 : A := 45;
+      1 : A := 90;
+      9 : A := 135;
+      8 : A := 180;
+      12: A := 225;
+      4 : A := 270;
+      6 : A := 315;
+      else A := -1;
     end;
     end else
-      if InfoEx.dwPOV = $FFFF then FCurrentInfo.Pov.Angle := -1 else FCurrentInfo.Pov.Angle := InfoEx.dwPOV div PovMultiplier;
+      if InfoEx.dwPOV = $FFFF then A := -1 else A := InfoEx.dwPOV div PovMultiplier;
 
   //Направление осей Pov
   FCurrentInfo.Pov.X := 0;
   FCurrentInfo.Pov.Y := 0;
-  if FCurrentInfo.Pov.Angle <> -1 then
+  if A <> -1 then
     begin
     //Подготовить нормальный угол
-    Angle := (360 - FCurrentInfo.Pov.Angle) mod 360;  //Преобразовать угол против часовой стрелки
-    Angle := (Angle + 90) mod 360;                    //Поворот на 90 градусов по часовой стрелке
-
-    //Запомнить нормальзованный угол
-    FCurrentInfo.Pov.Angle := Round(Angle);
+    Angle := (360 - A) mod 360;     //Преобразовать угол против часовой стрелки
+    Angle := (Angle + 90) mod 360;  //Поворот на 90 градусов по часовой стрелке
 
     //Принадлежность к оси
-    Angle := Angle * A;
+    Angle := Angle * dA;
     FCurrentInfo.Pov.X := Sign(RoundTo(Cos(Angle), -2));
     FCurrentInfo.Pov.Y := Sign(RoundTo(Sin(Angle), -2));
     end;
