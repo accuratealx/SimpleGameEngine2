@@ -24,14 +24,10 @@ const
   Event_ControllerDetach        = 'Controller.Detach';
   Event_ControllerButtonUp      = 'Controller.ButtonUp';
   Event_ControllerButtonDown    = 'Controller.ButtonDown';
-  Event_ControllerPov           = 'Controller.Pov';
-  Event_ControllerAxis          = 'Controller.Axis';
-
   Event_ControllerPovUp         = 'Controller.PovUp';
-  Event_ControllerPovRight      = 'Controller.PovRight';
   Event_ControllerPovDown       = 'Controller.PovDown';
-  Event_ControllerPovLeft       = 'Controller.PovLeft';
 
+  Event_ControllerAxis          = 'Controller.Axis';
 
 type
   //Типы осей
@@ -63,18 +59,12 @@ type
 
   TsgeEventControllerPOV = class(TsgeEventController)
   private
-    FPovType: TsgeControllerPovType;
-    FAngle: Integer;
-    FX: SmallInt;
-    FY: SmallInt;
+    FDirection: TsgeControllerPovDirection;
 
   public
-    constructor Create(ID: Byte; PovType: TsgeControllerPovType; Angle: Integer; X, Y: SmallInt); reintroduce;
+    constructor Create(ID: Byte; Direction: TsgeControllerPovDirection); reintroduce;
 
-    property PovType: TsgeControllerPovType read FPovType;
-    property Angle: Integer read FAngle;
-    property X: SmallInt read FX;
-    property Y: SmallInt read FY;
+    property Direction: TsgeControllerPovDirection read FDirection;
   end;
 
 
@@ -116,14 +106,11 @@ end;
 
 
 
-constructor TsgeEventControllerPOV.Create(ID: Byte; PovType: TsgeControllerPovType; Angle: Integer; X, Y: SmallInt);
+constructor TsgeEventControllerPOV.Create(ID: Byte; Direction: TsgeControllerPovDirection);
 begin
   inherited Create(ID);
 
-  FPovType := PovType;
-  FAngle := Angle;
-  FX := X;
-  FY := Y;
+  FDirection := Direction;
 end;
 
 
