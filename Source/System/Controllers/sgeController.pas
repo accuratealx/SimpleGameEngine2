@@ -280,12 +280,12 @@ begin
   SetLength(FCurrentInfo.Buttons, FButtonCount);
 
   //Задать начальные настройки осей
-  SetAxisDefaultSettings(FAxisSettings[axisX], Caps.wXmin, Caps.wXmax);
-  SetAxisDefaultSettings(FAxisSettings[axisY], Caps.wYmin, Caps.wYmax);
-  SetAxisDefaultSettings(FAxisSettings[axisU], Caps.wUmin, Caps.wUmax);
-  SetAxisDefaultSettings(FAxisSettings[axisV], Caps.wVmin, Caps.wVmax);
-  SetAxisDefaultSettings(FAxisSettings[axisR], Caps.wRmin, Caps.wRmax);
-  SetAxisDefaultSettings(FAxisSettings[axisZ], Caps.wZmin, Caps.wZmax);
+  SetAxisDefaultSettings(FAxisSettings[catX], Caps.wXmin, Caps.wXmax);
+  SetAxisDefaultSettings(FAxisSettings[catY], Caps.wYmin, Caps.wYmax);
+  SetAxisDefaultSettings(FAxisSettings[catU], Caps.wUmin, Caps.wUmax);
+  SetAxisDefaultSettings(FAxisSettings[catV], Caps.wVmin, Caps.wVmax);
+  SetAxisDefaultSettings(FAxisSettings[catR], Caps.wRmin, Caps.wRmax);
+  SetAxisDefaultSettings(FAxisSettings[catZ], Caps.wZmin, Caps.wZmax);
 
   //Сбросить значение показателей
   Reset;
@@ -370,10 +370,10 @@ begin
     //Определить состояние осей
     X := 0;
     Y := 0;
-    if InfoEx.wYpos = FAxisSettings[axisY].MaxValue then Y := 1;
-    if InfoEx.wXpos = FAxisSettings[axisX].MaxValue then X := 2;
-    if InfoEx.wYpos = FAxisSettings[axisY].MinValue then Y := 4;
-    if InfoEx.wXpos = FAxisSettings[axisX].MinValue then X := 8;
+    if InfoEx.wYpos = FAxisSettings[catY].MaxValue then Y := 1;
+    if InfoEx.wXpos = FAxisSettings[catX].MaxValue then X := 2;
+    if InfoEx.wYpos = FAxisSettings[catY].MinValue then Y := 4;
+    if InfoEx.wXpos = FAxisSettings[catX].MinValue then X := 8;
 
     //Вернуть значение POV
     case X + Y of
@@ -411,12 +411,12 @@ begin
 
 
   //************************** Значение осей **************************
-  SetAxisValue(axisX, InfoEx.wXpos);
-  SetAxisValue(axisY, InfoEx.wYpos);
-  if FUAxisExist then SetAxisValue(axisU, InfoEx.dwUpos) else SetDefaultAxisValue(axisU);
-  if FVAxisExist then SetAxisValue(axisV, InfoEx.dwVpos) else SetDefaultAxisValue(axisV);
-  if FRAxisExist then SetAxisValue(axisR, InfoEx.dwRpos) else SetDefaultAxisValue(axisR);
-  if FZAxisExist then SetAxisValue(axisZ, InfoEx.wZpos)  else SetDefaultAxisValue(axisZ);
+  SetAxisValue(catX, InfoEx.wXpos);
+  SetAxisValue(catY, InfoEx.wYpos);
+  if FUAxisExist then SetAxisValue(catU, InfoEx.dwUpos) else SetDefaultAxisValue(catU);
+  if FVAxisExist then SetAxisValue(catV, InfoEx.dwVpos) else SetDefaultAxisValue(catV);
+  if FRAxisExist then SetAxisValue(catR, InfoEx.dwRpos) else SetDefaultAxisValue(catR);
+  if FZAxisExist then SetAxisValue(catZ, InfoEx.wZpos)  else SetDefaultAxisValue(catZ);
   //************************** Значение осей **************************
 
 
