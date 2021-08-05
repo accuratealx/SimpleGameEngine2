@@ -17,7 +17,8 @@ interface
 
 uses
   sgeTypes, sgeExtensionBase, sgeExtensionShell, sgeEventBase, sgeEventSubscriber,
-  sgeEventWindow, sgeKeyCommandKeyboard, sgeKeyCommandMouse;
+  sgeEventWindow,
+  sgeKeyCommandKeyboard, sgeKeyCommandMouse, sgeKeyCommandJoystick;
 
 
 const
@@ -33,6 +34,7 @@ type
     //Объекты
     FKeyboard: TsgeKeyCommandKeyboard;                    //Кнопки клавиатуры
     FMouse: TsgeKeyCommandMouse;                          //Кнопки мыши
+    FJoystick: TsgeKeyCommandJoystick;                    //Кнопки, крестовина, оси джойстиков
 
     //Вспомогательные переменные
     FBlockCharEvent: Boolean;
@@ -60,6 +62,7 @@ type
 
     property Keyboard: TsgeKeyCommandKeyboard read FKeyboard;
     property Mouse: TsgeKeyCommandMouse read FMouse;
+    property Joystick: TsgeKeyCommandJoystick read FJoystick;
   end;
 
 
@@ -245,6 +248,7 @@ begin
     //Создать объекты
     FKeyboard := TsgeKeyCommandKeyboard.Create;
     FMouse := TsgeKeyCommandMouse.Create;
+    FJoystick := TsgeKeyCommandJoystick.Create;
 
     //Подписать обработчики
     RegisterEventHandlers;
@@ -262,6 +266,7 @@ begin
   UnRegisterEventHandlers;
 
   //Удалить объекты
+  FJoystick.Free;
   FMouse.Free;
   FKeyboard.Free;
 
