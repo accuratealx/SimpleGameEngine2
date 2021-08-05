@@ -14,26 +14,21 @@ unit sgeKeyCommandMouse;
 
 interface
 
+uses
+  sgeKeyCommandTypes;
+
+
 type
-  //Команды одной кнопки
-  TsgeKeyCommandMouseButton = class
-  public
-    Up: String;
-    Down: String;
-  end;
-
-
-  //Список команд мышки
   TsgeKeyCommandMouse = class
   const
     MAX_BUTTONS = 5;
 
   private
-    FList: array[0..MAX_BUTTONS] of TsgeKeyCommandMouseButton;
+    FList: array[0..MAX_BUTTONS] of TsgeKeyCommandAction;
 
     function GetCount: Byte;
-    function GetKey(Index: Byte): TsgeKeyCommandMouseButton;
-    function GetNamedKey(Name: ShortString): TsgeKeyCommandMouseButton;
+    function GetKey(Index: Byte): TsgeKeyCommandAction;
+    function GetNamedKey(Name: ShortString): TsgeKeyCommandAction;
   public
     constructor Create;
     destructor  Destroy; override;
@@ -46,8 +41,8 @@ type
     procedure Delete(Name: ShortString);
 
     property Count: Byte read GetCount;
-    property Key[Index: Byte]: TsgeKeyCommandMouseButton read GetKey;
-    property NamedKey[Name: ShortString]: TsgeKeyCommandMouseButton read GetNamedKey;
+    property Key[Index: Byte]: TsgeKeyCommandAction read GetKey;
+    property NamedKey[Name: ShortString]: TsgeKeyCommandAction read GetNamedKey;
   end;
 
 
@@ -70,9 +65,6 @@ const
 
   _UNITNAME = 'KeyCommandKeyboard';
 
-  Err_IndexOutOfBounds  = 'IndexOutOfBounds';
-  Err_KeyNotFound       = 'KeyNotFound';
-
 
 
 function TsgeKeyCommandMouse.GetCount: Byte;
@@ -81,16 +73,16 @@ begin
 end;
 
 
-function TsgeKeyCommandMouse.GetKey(Index: Byte): TsgeKeyCommandMouseButton;
+function TsgeKeyCommandMouse.GetKey(Index: Byte): TsgeKeyCommandAction;
 begin
-  if (Index < 0) or (Index > MAX_BUTTONS) then
+  if (Index > MAX_BUTTONS) then
     raise EsgeException.Create(_UNITNAME, Err_IndexOutOfBounds, sgeIntToStr(Index));
 
   Result := FList[Index];
 end;
 
 
-function TsgeKeyCommandMouse.GetNamedKey(Name: ShortString): TsgeKeyCommandMouseButton;
+function TsgeKeyCommandMouse.GetNamedKey(Name: ShortString): TsgeKeyCommandAction;
 var
   Idx: Integer;
 begin
@@ -107,7 +99,7 @@ var
   i: Integer;
 begin
   for i := 0 to MAX_BUTTONS do
-    FList[i] := TsgeKeyCommandMouseButton.Create;
+    FList[i] := TsgeKeyCommandAction.Create;
 end;
 
 
@@ -153,7 +145,7 @@ end;
 
 procedure TsgeKeyCommandMouse.Delete(Index: Byte);
 begin
-  if (Index < 0) or (Index > MAX_BUTTONS) then
+  if (Index > MAX_BUTTONS) then
     raise EsgeException.Create(_UNITNAME, Err_IndexOutOfBounds, sgeIntToStr(Index));
 
   FList[Index].Up := '';
