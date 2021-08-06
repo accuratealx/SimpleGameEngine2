@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeExtensionVariables.pas
-Версия            1.3
+Версия            1.4
 Создан            20.07.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс расширения: Переменные
@@ -94,7 +94,7 @@ begin
   try
     inherited Create(ObjectList);
 
-    FVariableList := TsgeVariableList.Create;
+    FVariableList := TsgeVariableList.Create(True);
 
   except
     on E: EsgeException do
