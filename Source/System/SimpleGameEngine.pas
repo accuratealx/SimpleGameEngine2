@@ -22,6 +22,8 @@ uses
 
 
 const
+  Object_SGE = 'ObjectSGE';
+
   //Имена событий
   Event_KernelCreate  = 'Kernel.Create';
   Event_KernelDestroy = 'Kernel.Destroy';
@@ -157,6 +159,7 @@ begin
   FEventManager.ErrorHandler := @FErrorManager.ProcessError;
 
   //Добавить классы в список объектов
+  FObjectList.Add(Object_SGE, Self);
   FObjectList.Add(Object_ErrorManager, FErrorManager);
   FObjectList.Add(Object_ObjecttList, FObjectList);
   FObjectList.Add(Object_EventManager, FEventManager);
