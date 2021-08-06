@@ -31,8 +31,15 @@ type
     FWindow: TsgeWindow;                                                                //Класс окна
     FThread: TsgeThread;                                                                //Поток выборки собщений системы
 
-    //Вспомогательные поля
+    //Параметры
+    FFullScreen: Boolean;                                                               //Флаг работы в полный экран
+
+    //Вспомогательные параметры
     FMouseOut: Boolean;                                                                 //Мышь за границей окна
+    FWindowStyle: TsgeWindowStyle;
+
+    //Свойства
+    procedure SetFullScreen(AFullScreen: Boolean);
 
     //Методы потока
     procedure CreateWindow;                                                             //Создать окно
@@ -54,6 +61,7 @@ type
     destructor  Destroy; override;
 
     property Window: TsgeWindow read FWindow;
+    property FullScreen: Boolean read FFullScreen write SetFullScreen;
   end;
 
 
@@ -76,6 +84,24 @@ const
 function sgeWndProc(hWnd: HWND; Msg: UINT; wParam: WPARAM; lParam: LPARAM): LRESULT; stdcall;
 begin
   Result := _Self.WndProc(hWnd, Msg, wParam, lParam);
+end;
+
+
+procedure TsgeExtensionWindow.SetFullScreen(AFullScreen: Boolean);
+begin
+  if FFullScreen = AFullScreen then Exit;
+
+  FFullScreen := AFullScreen;
+  if FFullScreen then
+    begin
+    FWindowStyle := FWindow.Style;  //Запомнить стиль окна
+    FWindow.Style := [];            //Убрать Заголовок
+    FWindow.Maximize;               //Развернуть на весь экран
+    end
+    else begin
+    FWindow.Restore;                //Вернуть в исходное состояние
+    FWindow.Style := FWindowStyle;  //Вернуть стиль окна
+    end;
 end;
 
 
