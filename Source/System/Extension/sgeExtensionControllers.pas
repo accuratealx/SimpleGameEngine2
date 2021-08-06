@@ -190,9 +190,7 @@ begin
 
           //Изменение значения
           if Joy.CurrentInfo.Axis[I].Value <> Joy.LastInfo.Axis[I].Value then
-            begin
             EventManager.Publish(Event_ControllerAxisValue, TsgeEventControllerAxisValue.Create(Idx, I,  Joy.CurrentInfo.Axis[I].Value, Joy.LastInfo.Axis[I].Value));
-            end;
           end;
 
 
