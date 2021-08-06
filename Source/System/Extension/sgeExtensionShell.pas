@@ -28,24 +28,18 @@ const
 type
   TsgeExtensionShell = class(TsgeExtensionBase)
   private
-    //Вспомогательные параметры
-    FCommandQueue: TsgeShellCommandQueue;                           //Очередь комманд на выполнение
-    FCommandIsRunning: Boolean;                                     //Флаг выполнения команды
-    FReadMode: Boolean;                                             //Флаг обработки команды Read, ReadLn
-
-  private
     //Ссылки на расширения
     FExtGraphic: TsgeExtensionGraphic;
     FExtResList: TsgeExtensionResourceList;
     FExtVariables: TsgeExtensionVariables;
 
     //Классы
-    FEvent: TsgeSystemEvent;                                        //События для Read, ReadLn
     FThread: TsgeThread;                                            //Поток обработки команд
     FCommandList: TsgeShellCommandList;                             //Список команд оболочки
     FHistory: TsgeCommandHistory;                                   //История введённых команд
     FEditor: TsgeLineEditor;                                        //Однострочный редактор
     FAliases: TsgeSimpleParameters;                                 //Псевдонимы
+    FCommandQueue: TsgeShellCommandQueue;                           //Очередь комманд на выполнение
 
     //Ссылки на объекты подписки
     FSubKeyDown: TsgeEventSubscriber;
@@ -55,6 +49,9 @@ type
     //Параметры
     FEnable: Boolean;
     FWeakSeparator: Boolean;
+
+    //Вспомогательные параметры
+    FCommandIsRunning: Boolean;                                     //Флаг выполнения команды
 
     //Обработчики событий
     procedure RegisterEventHandlers;
@@ -81,11 +78,18 @@ type
     //Залипон, УДАЛИТЬ
     procedure Draw;
 
+    //Системные переменные
+    procedure RegisterVariables;
+    procedure Variable_SetEnable(AEnable: Boolean);
+    function  Variable_GetEnable: Boolean;
   protected
-    class function GetName: String; override;
-    procedure SetReadMode;                                          //Установить флаг особого нажатия Enter
+    //Специальные команды
+    FReadMode: Boolean;                                             //Флаг обработки команды Read, ReadLn
+    FReadKeyMode: Boolean;                                          //Флаг обработки команды ReadKey
+    FreadKeyChar: Byte;                                             //Код символа нажатия
+    FEvent: TsgeSystemEvent;                                        //События для Read, ReadLn
 
-    property MyEvent: TsgeSystemEvent read FEvent;
+    class function GetName: String; override;
   public
     constructor Create(ObjectList: TObject); override;
     destructor  Destroy; override;
@@ -147,6 +151,15 @@ var
 begin
   Result := True;
 
+  //Проверить на команду ReadKey
+  if FReadKeyMode then
+    begin
+    FreadKeyChar := EventObj.Key; //Запомнить код клавиши
+    FEvent.Up;                    //Сказать потоку что нажали кнопку
+    Exit;
+    end;
+
+
   //Обработать системные клавиши
   case EventObj.Key of
 
@@ -156,7 +169,7 @@ begin
     //Выполнить команду
     keyEnter:
       begin
-      //Проверить на команду Read
+      //Проверить на команду Read, ReadLn
       if FReadMode then
         begin
         FReadMode := False;
@@ -185,7 +198,15 @@ begin
         //Выполнить команду
         DoCommand(s);
         end;
-      end
+      end;
+
+
+      //Установить предыдущую команду в поле редактора
+      keyUp: FEditor.Line := FHistory.GetPreviousCommand;
+
+
+      //Установить следующую команду в поле редактора
+      keyDown: FEditor.Line := FHistory.GetNextCommand;
 
 
     else
@@ -203,6 +224,13 @@ end;
 function TsgeExtensionShell.Handler_KeyChar(EventObj: TsgeEventWindowChar): Boolean;
 begin
   Result := True;
+
+  //Проверить на команду ReadKey
+  if FReadKeyMode then
+    begin
+    FReadKeyMode := False;
+    Exit;
+    end;
 
   //Отослать в редактор
   FEditor.ProcessChar(EventObj.Char, EventObj.KeyboardButtons);
@@ -391,6 +419,24 @@ begin
 end;
 
 
+procedure TsgeExtensionShell.RegisterVariables;
+begin
+  FExtVariables.AddBoolean('Shell.Enable', False, @Variable_GetEnable, @Variable_SetEnable, 'On', 'Off');
+end;
+
+
+procedure TsgeExtensionShell.Variable_SetEnable(AEnable: Boolean);
+begin
+  Enable := AEnable;
+end;
+
+
+function TsgeExtensionShell.Variable_GetEnable: Boolean;
+begin
+  Result := Enable;
+end;
+
+
 procedure TsgeExtensionShell.SetEnable(AEnable: Boolean);
 begin
   //Запомнить состояние
@@ -400,12 +446,6 @@ begin
   FSubKeyDown.Enable := FEnable;
   FSubKeyUp.Enable := FEnable;
   FSubKeyChar.Enable := FEnable;
-end;
-
-
-procedure TsgeExtensionShell.SetReadMode;
-begin
-  FReadMode := True;
 end;
 
 
@@ -438,6 +478,7 @@ begin
     FEnable := False;
     FWeakSeparator := True;
     FReadMode := False;
+    FReadKeyMode := False;
 
     //Установить обработчик ошибок
     ErrorManager.ShellHandler := @ErrorHandler;
@@ -447,6 +488,9 @@ begin
 
     //Добавить стандартные алиасы
     RegisterDefaultAliases;
+
+    //Зарегестрировать переменные
+    RegisterVariables;
 
     //Установить метод отрисовки оболочки
     FExtGraphic.DrawShellproc := @Draw;
