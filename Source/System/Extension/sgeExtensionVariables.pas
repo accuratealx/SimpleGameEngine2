@@ -38,8 +38,6 @@ type
     constructor Create(ObjectList: TObject); override;
     destructor  Destroy; override;
 
-    procedure Delete(Name: ShortString);
-
     //Добавление новых переменных
     function AddInteger(Name: ShortString; Value: Integer; DefValue: Integer; ReadOnly: Boolean = False; MinValue: Integer = -MaxInt; MaxValue: Integer = MaxInt): TsgeVariableInteger;
     function AddInteger(Name: ShortString; DefValue: Integer; Setter: TsgeVariableIntegerSetter; Getter: TsgeVariableIntegerGetter; MinValue: Integer = -MaxInt; MaxValue: Integer = MaxInt): TsgeVariableIntegerVirtual;
@@ -108,12 +106,6 @@ begin
   FVariableList.Free;
 
   inherited Destroy;
-end;
-
-
-procedure TsgeExtensionVariables.Delete(Name: ShortString);
-begin
-  FVariableList.Delete(Name);
 end;
 
 
