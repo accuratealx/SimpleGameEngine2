@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeController.pas
-Версия            1.8
+Версия            1.10
 Создан            20.05.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс работы с контроллером
@@ -23,6 +23,7 @@ type
   //Настройки Оси контроллера
   TsgeControllerAxisSettings = record
     DeviceRange: Cardinal;            //Диапазон значений оси устройства
+    DeviceMiddleValue: Cardinal;      //Значение середины оси устройства
     Step: Single;                     //Минимальный шаг приращения
     MiddleValue: Integer;             //Среднее значение
     MinValue: Integer;                //Наименьшее значение оси
@@ -46,10 +47,17 @@ type
   PsgeControllerButtonInfo = ^TsgeControllerButtonInfo;
 
 
+  //Ось контроллера
+  TsgeControllerAxisInfo = record
+    RawValue: Cardinal;               //Реальное значение оси
+    Value: Integer;                   //Значение с учётом диапазона
+  end;
+
+
   //Текущее значение кнопок, осей и крестовины контроллера
   TsgeControllerInfo = record
     Pov: TsgeControllerPovInfo;
-    Axis: array[TsgeControllerAxisType] of Integer;
+    Axis: array[TsgeControllerAxisType] of TsgeControllerAxisInfo;
     Buttons: array of TsgeControllerButtonInfo;
   end;
 
@@ -88,6 +96,10 @@ type
     procedure ZeroInfo(var Info: TsgeControllerInfo); //Обнулить значения кнопок
     procedure SetAxisSettings(var AxisSettings: TsgeControllerAxisSettings; MinVal, MaxVal: Integer);
     procedure SetAxisDefaultSettings(var AxisSettings: TsgeControllerAxisSettings; MinVal, MaxVal: Integer);
+
+  protected
+    function GetAxisRawMiddleValue(Axis: TsgeControllerAxisType): Cardinal; //Вернуть сырое среднее значение оси контроллера
+
   public
     constructor Create(ID: Byte);
     destructor  Destroy; override;
@@ -191,7 +203,10 @@ var
 begin
   //Значение осей
   for I := Low(Info.Axis) to High(Info.Axis) do
-    Info.Axis[I] := FAxisSettings[I].MiddleValue;
+    begin
+    Info.Axis[I].RawValue := FAxisSettings[I].DeviceMiddleValue;
+    Info.Axis[I].Value := FAxisSettings[I].MiddleValue;
+    end;
 
   //Крестовина
   Info.Pov.X := 0;
@@ -231,11 +246,20 @@ begin
   AxisSettings.MinValue := -d;
   AxisSettings.MaxValue := d;
 
+  //Среднее значение оси устройства
+  AxisSettings.DeviceMiddleValue := MinVal + d;
+
   //Шаг
-  AxisSettings.Step := AxisSettings.DeviceRange / AxisSettings.DeviceRange;
+  AxisSettings.Step := 1;
 
   //Среднее значение
   AxisSettings.MiddleValue := Round(AxisSettings.MinValue + d * AxisSettings.Step);
+end;
+
+
+function TsgeController.GetAxisRawMiddleValue(Axis: TsgeControllerAxisType): Cardinal;
+begin
+  Result := FAxisSettings[Axis].DeviceMiddleValue;
 end;
 
 
@@ -324,13 +348,15 @@ var
   //Установить значение оси
   procedure SetAxisValue(Axis: TsgeControllerAxisType; Value: DWord);
   begin
-    FCurrentInfo.Axis[Axis] := Round(FAxisSettings[Axis].MinValue + Value * FAxisSettings[Axis].Step);
+    FCurrentInfo.Axis[Axis].RawValue := Value;
+    FCurrentInfo.Axis[Axis].Value := Round(FAxisSettings[Axis].MinValue + Value * FAxisSettings[Axis].Step);
   end;
 
   //Установить значение оси на ноль
   procedure SetDefaultAxisValue(Axis: TsgeControllerAxisType);
   begin
-    FCurrentInfo.Axis[Axis] := FAxisSettings[Axis].MiddleValue;
+    FCurrentInfo.Axis[Axis].RawValue := FAxisSettings[Axis].DeviceMiddleValue;
+    FCurrentInfo.Axis[Axis].Value := FAxisSettings[Axis].MiddleValue;
   end;
 
 begin
