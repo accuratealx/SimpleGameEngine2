@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeOSPlatform.pas
-Версия            1.6
+Версия            1.8
 Создан            27.04.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Функции взаимодействия с операционной системой
@@ -31,8 +31,12 @@ const
   FileOffsetCurrent = 1;
   FileOffsetEnd = 2;
 
-  //Время ожидания
+  //Время ожидания WaitForSingleObject
   INFINITE = $FFFFFFFF;
+  WAIT_OBJECT_0 = 0;
+  WAIT_ABANDONED = $80;
+  WAIT_TIMEOUT = $102;
+  WAIT_FAILED = $FFFFFFFF;
 
   //Приоритеты потоков
   THREAD_PRIORITY_IDLE          = -(15);
@@ -88,7 +92,7 @@ function  GetLastOSErrorMessage: String;
 
 
 //Ожидание события от объекта ядра
-procedure sgeWaitForSingleObject(Handle: THandle; TimeoutMSec: DWord = 0);
+function sgeWaitForSingleObject(Handle: THandle; TimeoutMSec: DWord = 0): DWord;
 
 
 //События
@@ -354,9 +358,9 @@ begin
 end;
 
 
-procedure sgeWaitForSingleObject(Handle: THandle; TimeoutMSec: DWord);
+function sgeWaitForSingleObject(Handle: THandle; TimeoutMSec: DWord): DWord;
 begin
-  Windows.WaitForSingleObject(Handle, TimeoutMSec)
+  Result := Windows.WaitForSingleObject(Handle, TimeoutMSec);
 end;
 
 
