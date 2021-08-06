@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeErrorManager.pas
-Версия            1.1
+Версия            1.2
 Создан            25.04.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс: Обработчик ошибок
@@ -15,7 +15,7 @@ unit sgeErrorManager;
 interface
 
 uses
-  sgeErrors, sgeCriticalSection, sgeJournal;
+  sgeErrors, sgeCriticalSection, sgeJournal, sgeSimpleParameters;
 
 
 const
@@ -27,7 +27,8 @@ type
   private
     //Классы
     FCS: TsgeCriticalSection;
-    FJournal: TsgeJournal;
+    FJournal: TsgeJournal;                                          //Класс протоколирования в файл
+    FLanguage: TsgeSimpleParameters;                                //Таблица с языком
 
     //Параметры
     FShowMessage: Boolean;
@@ -35,6 +36,8 @@ type
     FWriteToShell: Boolean;
 
     FShellHandler: TsgeErrorHandler;
+
+    function GetLocalizedString(ErrorMessage: String): String;      //Перевести ошибку
 
     procedure SetWriteToJournal(AEnable: Boolean);
   public
@@ -47,6 +50,7 @@ type
 
     procedure ProcessError(Error: String);                          //Обработать ошибку
 
+    property Language: TsgeSimpleParameters read FLanguage;
     property ShowMessage: Boolean read FShowMessage write FShowMessage;
     property WriteToJournal: Boolean read FWriteToJournal write SetWriteToJournal;
     property WriteToShell: Boolean read FWriteToShell write FWriteToShell;
@@ -59,7 +63,53 @@ type
 implementation
 
 uses
-  sgeOSPlatform;
+  sgeOSPlatform, sgeStringList, sgeSimpleCommand;
+
+
+function TsgeErrorManager.GetLocalizedString(ErrorMessage: String): String;
+var
+  Lines: TsgeStringList;
+  Line: TsgeSimpleCommand;
+  i: Integer;
+  aUnitName, ErrorText, Info, S: String;
+begin
+  Lines := TsgeStringList.Create;
+  Line := TsgeSimpleCommand.Create('', False, ';');
+
+  //Разобрать на строки
+  Lines.FromString(ErrorMessage);
+
+  //Просмотреть строки
+  for i := 0 to Lines.Count - 1 do
+    begin
+    //Разобрать на части ошибку
+    Line.Command := Lines.Part[i];
+
+    //Получить части
+    if Line.Count >= 1 then aUnitName := Line.Part[0] else aUnitName := '';
+    if Line.Count >= 2 then ErrorText := Line.Part[1] else ErrorText := '';
+    if Line.Count >= 3 then Info := Line.Part[2] else Info := '';
+
+    //Перевод модуля
+    if aUnitName <> '' then aUnitName := FLanguage.GetValue('Unit:' + aUnitName, aUnitName);
+
+    //Перевод ошибки
+    if ErrorText <> '' then ErrorText := FLanguage.GetValue('Error:' + ErrorText, ErrorText);
+
+    //Изменить строку по формату Имя модуля   Имя модуля: Строка ошибки (Пояснение)
+    S := UnitName;
+    if ErrorText <> '' then S := S + ': ' + ErrorText;
+    if Info <> '' then S := S + ' (' + Info + ')';
+    Lines.Part[i] := S;
+    end;
+
+  //Вернуть результат
+  Result := Lines.ToString;
+
+  //Почистить память
+  Line.Free;
+  Lines.Free;
+end;
 
 
 procedure TsgeErrorManager.SetWriteToJournal(AEnable: Boolean);
@@ -74,6 +124,7 @@ begin
   //Создать классы
   FCS := sgeCriticalSection.TsgeCriticalSection.Create;
   FJournal := TsgeJournal.Create(JournalFile);
+  FLanguage := TsgeSimpleParameters.Create;
 
   //Задать параметры
   FShowMessage := False;
@@ -84,6 +135,7 @@ end;
 
 destructor TsgeErrorManager.Destroy;
 begin
+  FLanguage.Free;
   FJournal.Free;
   FCS.Free;
 end;
@@ -130,8 +182,8 @@ end;
 
 procedure TsgeErrorManager.ProcessError(Error: String);
 begin
-  //Переделать ошибку в человеческий вид
-  //Применить перевод
+  //Переводим ошибку
+  Error := GetLocalizedString(Error);
 
   //Обработать ошибку
   if FWriteToJournal then LogJournal(Error);
