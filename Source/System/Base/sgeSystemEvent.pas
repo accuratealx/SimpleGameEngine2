@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeSystemEvent.pas
-Версия            1.1
+Версия            1.2
 Создан            27.03.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс системного события
@@ -13,6 +13,9 @@ unit sgeSystemEvent;
 {$mode objfpc}{$H+}
 
 interface
+
+uses
+  sgeOSPlatform;
 
 
 type
@@ -26,14 +29,14 @@ type
     procedure Up;         //Поднять флаг
     procedure Down;       //Опустить флаг
 
-    procedure Wait;       //Ожидание изменения состояния
+    procedure Wait(Timeout: Cardinal = INFINITE);  //Ожидание изменения состояния
   end;
 
 
 implementation
 
 uses
-  sgeErrors, sgeOSPlatform;
+  sgeErrors;
 
 
 const
@@ -69,9 +72,9 @@ begin
 end;
 
 
-procedure TsgeSystemEvent.Wait;
+procedure TsgeSystemEvent.Wait(Timeout: Cardinal);
 begin
-  sgeWaitForSingleObject(FHandle, INFINITE);
+  sgeWaitForSingleObject(FHandle, Timeout);
 end;
 
 
