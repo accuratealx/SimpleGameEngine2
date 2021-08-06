@@ -20,7 +20,6 @@ uses
 
 
 const
-  //Имя объекта
   Object_ObjecttList = 'ObjectList';
 
 
