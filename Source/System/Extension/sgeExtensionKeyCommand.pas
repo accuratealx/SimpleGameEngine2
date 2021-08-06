@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeExtensionKeyCommand.pas
-Версия            1.1
+Версия            1.2
 Создан            01.08.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс расширения: Команда на кнопках
@@ -40,23 +40,23 @@ type
     FBlockCharEvent: Boolean;
 
     function GetMouseButtonIndex(Buttons: TsgeMouseButtons): Byte;  //Вернуть номер кнопки мышки из множества
+    function CommandHandler(const Command: String): Boolean;        //Проверить команду и выполнить
 
     //Обработчики событий
     procedure RegisterEventHandlers;
     procedure UnRegisterEventHandlers;
-
     function  Handler_KeyDown(EventObj: TsgeEventWindowKeyboard): Boolean;
     function  Handler_KeyUp(EventObj: TsgeEventWindowKeyboard): Boolean;
     function  Handler_KeyChar(EventObj: TsgeEventWindowChar): Boolean;
-
     function  Handler_MouseDown(EventObj: TsgeEventWindowMouse): Boolean;
     function  Handler_MouseUp(EventObj: TsgeEventWindowMouse): Boolean;
     function  Handler_MouseWheel(EventObj: TsgeEventWindowMouse): Boolean;
-
     function  Handler_JoystickButtonDown(EventObj: TsgeEventControllerButton): Boolean;
     function  Handler_JoystickButtonUp(EventObj: TsgeEventControllerButton): Boolean;
     function  Handler_JoystickPadDown(EventObj: TsgeEventControllerPOV): Boolean;
     function  Handler_JoystickPadUp(EventObj: TsgeEventControllerPOV): Boolean;
+    function  Handler_JoystickAxisDown(EventObj: TsgeEventControllerAxis): Boolean;
+    function  Handler_JoystickAxisUp(EventObj: TsgeEventControllerAxis): Boolean;
 
   protected
     class function GetName: String; override;
@@ -79,7 +79,7 @@ uses
 const
   _UNITNAME = 'ExtensionKeyCommand';
 
-  //Приоритеты
+  //Приоритет
   HandlerPriority = $FFFE;
 
 
@@ -92,6 +92,23 @@ begin
   if (mbRight in Buttons) then Result := 2;
   if (mbExtra1 in Buttons) then Result := 3;
   if (mbExtra2 in Buttons) then Result := 4;
+end;
+
+
+function TsgeExtensionKeyCommand.CommandHandler(const Command: String): Boolean;
+begin
+  //Результат по умолчанию
+  Result := False;
+
+  //Проверить команду
+  if Command <> '' then
+    begin
+    //Дальше не передавать этот объект
+    Result := True;
+
+    //Выполнить команду
+    FExtShell.DoCommand(Command);
+    end;
 end;
 
 
@@ -112,6 +129,8 @@ begin
   EventManager.Subscribe(Event_ControllerButtonUp, TsgeEventHandler(@Handler_JoystickButtonUp), HandlerPriority, True);
   EventManager.Subscribe(Event_ControllerPovDown, TsgeEventHandler(@Handler_JoystickPadDown), HandlerPriority, True);
   EventManager.Subscribe(Event_ControllerPovUp, TsgeEventHandler(@Handler_JoystickPadUp), HandlerPriority, True);
+  EventManager.Subscribe(Event_ControllerAxisDown, TsgeEventHandler(@Handler_JoystickAxisDown), HandlerPriority, True);
+  EventManager.Subscribe(Event_ControllerAxisUp, TsgeEventHandler(@Handler_JoystickAxisUp), HandlerPriority, True);
 end;
 
 
@@ -126,43 +145,24 @@ function TsgeExtensionKeyCommand.Handler_KeyDown(EventObj: TsgeEventWindowKeyboa
 var
   Command: String;
 begin
-  //Значение по умолчанию
-  Result := False;
-
   //Проверить команду на кнопке
   Command := FKeyboard.Key[EventObj.Key].Down;
   if Command <> '' then
     begin
-    //Дальше не передавать этот объект
-    Result := True;
-
-    //Заблокировать следующее событие WM_CHAR
-    FBlockCharEvent := True;
-
-    //Выполнить команду
-    if EventObj.FirstDown then FExtShell.DoCommand(Command);
+    Result := True;                                           //Дальше не передавать этот объект
+    FBlockCharEvent := True;                                  //Заблокировать следующее событие WM_CHAR
+    if EventObj.FirstDown then FExtShell.DoCommand(Command);  //Выполнить команду
     end
-    else FBlockCharEvent := False;
+    else begin
+    FBlockCharEvent := False;
+    Result := False;
+    end;
 end;
 
 
 function TsgeExtensionKeyCommand.Handler_KeyUp(EventObj: TsgeEventWindowKeyboard): Boolean;
-var
-  Command: String;
 begin
-  //Значение по умолчанию
-  Result := False;
-
-  //Проверить команду на кнопке
-  Command := FKeyboard.Key[EventObj.Key].Up;
-  if Command <> '' then
-    begin
-    //Дальше не передавать этот объект
-    Result := True;
-
-    //Выполнить команду
-    FExtShell.DoCommand(Command);
-    end;
+  Result := CommandHandler(FKeyboard.Key[EventObj.Key].Up);
 end;
 
 
@@ -174,38 +174,14 @@ end;
 
 
 function TsgeExtensionKeyCommand.Handler_MouseDown(EventObj: TsgeEventWindowMouse): Boolean;
-var
-  Command: String;
 begin
-  Result := False;
-
-  Command := FMouse.Key[GetMouseButtonIndex(EventObj.MouseButtons)].Down;
-  if Command <> '' then
-    begin
-    //Дальше не передавать этот объект
-    Result := True;
-
-    //Выполнить команду
-    FExtShell.DoCommand(Command);
-    end;
+  Result := CommandHandler(FMouse.Key[GetMouseButtonIndex(EventObj.MouseButtons)].Down);
 end;
 
 
 function TsgeExtensionKeyCommand.Handler_MouseUp(EventObj: TsgeEventWindowMouse): Boolean;
-var
-  Command: String;
 begin
-  Result := False;
-
-  Command := FMouse.Key[GetMouseButtonIndex(EventObj.MouseButtons)].Up;
-  if Command <> '' then
-    begin
-    //Дальше не передавать этот объект
-    Result := True;
-
-    //Выполнить команду
-    FExtShell.DoCommand(Command);
-    end;
+  Result := CommandHandler(FMouse.Key[GetMouseButtonIndex(EventObj.MouseButtons)].Up);
 end;
 
 
@@ -217,8 +193,6 @@ var
   Command: String;
   KeyMethod: Byte;
 begin
-  Result := False;
-
   //Определить направление
   if EventObj.Delta > 0 then KeyMethod := ckmUp else KeyMethod := ckmDown;
 
@@ -229,86 +203,43 @@ begin
   end;
 
   //Обработать команду
-  if Command <> '' then
-    begin
-    //Дальше не передавать этот объект
-    Result := True;
-
-    //Выполнить команду
-    FExtShell.DoCommand(Command);
-    end;
+  Result := CommandHandler(Command);
 end;
 
 
 function TsgeExtensionKeyCommand.Handler_JoystickButtonDown(EventObj: TsgeEventControllerButton): Boolean;
-var
-  Command: String;
 begin
-  Result := False;
-
-  Command := FJoystick.Item[EventObj.ID].Buttons.Item[EventObj.ButtonID].Down;
-  if Command <> '' then
-    begin
-    //Дальше не передавать этот объект
-    Result := True;
-
-    //Выполнить команду
-    FExtShell.DoCommand(Command);
-    end;
+  Result := CommandHandler(FJoystick.Item[EventObj.ID].Buttons.Item[EventObj.ButtonID].Down);
 end;
 
 
 function TsgeExtensionKeyCommand.Handler_JoystickButtonUp(EventObj: TsgeEventControllerButton): Boolean;
-var
-  Command: String;
 begin
-  Result := False;
-
-  Command := FJoystick.Item[EventObj.ID].Buttons.Item[EventObj.ButtonID].Up;
-  if Command <> '' then
-    begin
-    //Дальше не передавать этот объект
-    Result := True;
-
-    //Выполнить команду
-    FExtShell.DoCommand(Command);
-    end;
+  Result := CommandHandler(FJoystick.Item[EventObj.ID].Buttons.Item[EventObj.ButtonID].Up);
 end;
 
 
 function TsgeExtensionKeyCommand.Handler_JoystickPadDown(EventObj: TsgeEventControllerPOV): Boolean;
-var
-  Command: String;
 begin
-  Result := False;
-
-  Command := FJoystick.Item[EventObj.ID].Pad.Item[EventObj.Direction].Down;
-  if Command <> '' then
-    begin
-    //Дальше не передавать этот объект
-    Result := True;
-
-    //Выполнить команду
-    FExtShell.DoCommand(Command);
-    end;
+  Result := CommandHandler(FJoystick.Item[EventObj.ID].Pad.Item[EventObj.Direction].Down);
 end;
 
 
 function TsgeExtensionKeyCommand.Handler_JoystickPadUp(EventObj: TsgeEventControllerPOV): Boolean;
-var
-  Command: String;
 begin
-  Result := False;
+  Result := CommandHandler(FJoystick.Item[EventObj.ID].Pad.Item[EventObj.Direction].Up);
+end;
 
-  Command := FJoystick.Item[EventObj.ID].Pad.Item[EventObj.Direction].Up;
-  if Command <> '' then
-    begin
-    //Дальше не передавать этот объект
-    Result := True;
 
-    //Выполнить команду
-    FExtShell.DoCommand(Command);
-    end;
+function TsgeExtensionKeyCommand.Handler_JoystickAxisDown(EventObj: TsgeEventControllerAxis): Boolean;
+begin
+  Result := CommandHandler(FJoystick.Item[EventObj.ID].Axis.Item[EventObj.Axis].Tilt[EventObj.Tilt].Down);
+end;
+
+
+function TsgeExtensionKeyCommand.Handler_JoystickAxisUp(EventObj: TsgeEventControllerAxis): Boolean;
+begin
+  Result := CommandHandler(FJoystick.Item[EventObj.ID].Axis.Item[EventObj.Axis].Tilt[EventObj.Tilt].Up);
 end;
 
 
