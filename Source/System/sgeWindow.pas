@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeWindow.pas
-Версия            1.1
+Версия            1.2
 Создан            22.04.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание					Окно на WinAPI
@@ -42,10 +42,6 @@ type
     FButtons: TsgeWindowButtons;        //Кнопки
     FClipCursor: Boolean;               //Держать курсор
     FStyle: TsgeWindowStyle;            //Стиль
-
-
-    //Вспомогательные параметры
-    //FOldStyle: TsgeWindowStyle;
 
     function  GetHWNDPos: HWND;
 
@@ -98,7 +94,6 @@ type
     procedure Restore;
     procedure Update;
     procedure SetWindowProc(Proc: Pointer);
-    procedure FullScreen;
     procedure Center(APos: TsgeWindowCenterPos = wcpClientArea);
 
     property DC: HDC read GetDC;
@@ -594,23 +589,6 @@ procedure TsgeWindow.SetWindowProc(Proc: Pointer);
 begin
   if Proc = nil then Exit;
   Windows.SetWindowLongPtr(FHandle, GWLP_WNDPROC,  LONG_PTR(Proc));
-end;
-
-
-procedure TsgeWindow.FullScreen;
-begin
-  if not GetVisible then Exit;            //Пока окно невидимо изменение состояния не сработает
-
-  {if Windows.IsZoomed(FHandle) = LongBool(1) then
-    begin
-    Restore;
-    Style := FOldStyle;
-    end
-    else begin
-    FOldStyle := Style;
-    Style := [];
-    Maximize;
-    end;}
 end;
 
 
