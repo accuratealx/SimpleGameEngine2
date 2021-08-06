@@ -69,6 +69,8 @@ type
     constructor Create; virtual;
     destructor  Destroy; override;
 
+    procedure AttachDefaultCommand;                                 //Привязать на кнопки стандартные действия
+
     procedure Run;                                                  //Запустить приложение
     procedure Stop;                                                 //Остановить приложение
     function  CloseWindow: Boolean; virtual;                        //Возможность закрытия окна
@@ -100,7 +102,7 @@ type
 implementation
 
 uses
-  sgeErrors, sgeOSPlatform, sgeDateUtils, sgeShellFunctions;
+  sgeErrors, sgeKeys, sgeOSPlatform, sgeDateUtils, sgeShellFunctions;
 
 
 const
@@ -167,10 +169,11 @@ begin
 
   try
     //Создать расширения
+    FExtensionVariables := TsgeExtensionVariables.Create(FObjectList);              //Переменные
+
     FExtensionStartParameters := TsgeExtensionStartParameters.Create(FObjectList);  //Стартовые параметры
     ProcessSystemStartParameters;                                                   //Обработать системные стартовые параметры
 
-    FExtensionVariables := TsgeExtensionVariables.Create(FObjectList);              //Переменные
     FExtensionWindow := TsgeExtensionWindow.Create(FObjectList);                    //Окно
     FExtensionGraphic := TsgeExtensionGraphic.Create(FObjectList);                  //Графика
     FExtensionPackFiles :=   TsgeExtensionPackList.Create(FObjectList);             //Файловые архивы
@@ -215,6 +218,14 @@ begin
   FExtensionList.Free;
   FObjectList.Free;
   FEventManager.Free;
+end;
+
+
+procedure TSimpleGameEngine.AttachDefaultCommand;
+begin
+  //Открыть оболочку на тильду
+  FExtensionKeyCommand.Keyboard.Key[keyEscape].Down := 'Stop';
+  FExtensionKeyCommand.Keyboard.Key[keyTilde].Down := 'Variable.Set Shell.Enable On';
 end;
 
 
