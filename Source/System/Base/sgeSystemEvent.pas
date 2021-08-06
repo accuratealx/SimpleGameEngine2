@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeSystemEvent.pas
-Версия            1.2
+Версия            1.4
 Создан            27.03.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс системного события
@@ -19,6 +19,11 @@ uses
 
 
 type
+  //Тип результата Wait
+  TsgeSystemEventWaitResult = (sewrEvent, sewrTimeOut, sewrAbandoned, sewrError);
+
+
+
   TsgeSystemEvent = class
   private
     FHandle: THandle;
@@ -29,7 +34,7 @@ type
     procedure Up;         //Поднять флаг
     procedure Down;       //Опустить флаг
 
-    procedure Wait(Timeout: Cardinal = INFINITE);  //Ожидание изменения состояния
+    function Wait(Timeout: Cardinal = INFINITE): TsgeSystemEventWaitResult; //Ожидание сигнала
   end;
 
 
@@ -72,9 +77,14 @@ begin
 end;
 
 
-procedure TsgeSystemEvent.Wait(Timeout: Cardinal);
+function TsgeSystemEvent.Wait(Timeout: Cardinal): TsgeSystemEventWaitResult;
 begin
-  sgeWaitForSingleObject(FHandle, Timeout);
+  case sgeWaitForSingleObject(FHandle, Timeout) of
+    WAIT_OBJECT_0 : Result := sewrEvent;
+    WAIT_ABANDONED: Result := sewrAbandoned;
+    WAIT_TIMEOUT  : Result := sewrTimeOut;
+    WAIT_FAILED   : Result := sewrError;
+  end;
 end;
 
 
