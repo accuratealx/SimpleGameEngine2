@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeEventControllers.pas
-Версия            1.1
+Версия            1.2
 Создан            22.05.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Классы событий: Контроллеры
@@ -20,14 +20,16 @@ uses
 
 
 const
-  Event_ControllerAttach        = 'Controller.Attach';
-  Event_ControllerDetach        = 'Controller.Detach';
-  Event_ControllerButtonUp      = 'Controller.ButtonUp';
-  Event_ControllerButtonDown    = 'Controller.ButtonDown';
-  Event_ControllerPovUp         = 'Controller.PovUp';
-  Event_ControllerPovDown       = 'Controller.PovDown';
+  Event_ControllerAttach      = 'Controller.Attach';
+  Event_ControllerDetach      = 'Controller.Detach';
+  Event_ControllerButtonUp    = 'Controller.ButtonUp';
+  Event_ControllerButtonDown  = 'Controller.ButtonDown';
+  Event_ControllerPovUp       = 'Controller.PovUp';
+  Event_ControllerPovDown     = 'Controller.PovDown';
+  Event_ControllerAxisDown    = 'Controller.AxisDown';
+  Event_ControllerAxisUp      = 'Controller.AxisUp';
+  Event_ControllerAxisValue   = 'Controller.AxisValue';
 
-  Event_ControllerAxis          = 'Controller.Axis';
 
 type
   //Типы осей
@@ -42,10 +44,11 @@ type
   TsgeControllerPovType = (cptVirtual, cptDirection, cptDegree);
 
 
-  //Напрвление крестовины
+  //Направление крестовины
   TsgeControllerPovDirection = (cpdUp, cpdRight, cpdDown, cpdLeft);
 
 
+  //Базовый класс
   TsgeEventController = class(TsgeEventBase)
   private
     FID: Byte;
@@ -56,11 +59,21 @@ type
   end;
 
 
+  //Нажатие кнопки
+  TsgeEventControllerButton = class(TsgeEventController)
+  private
+    FButtonID: Byte;
+  public
+    constructor Create(ID: Byte; ButtonID: Byte); reintroduce;
 
+    property ButtonID: Byte read FButtonID;
+  end;
+
+
+  //Нажатие крестовины
   TsgeEventControllerPOV = class(TsgeEventController)
   private
     FDirection: TsgeControllerPovDirection;
-
   public
     constructor Create(ID: Byte; Direction: TsgeControllerPovDirection); reintroduce;
 
@@ -68,8 +81,21 @@ type
   end;
 
 
-
+  //Отклонение оси
   TsgeEventControllerAxis = class(TsgeEventController)
+  private
+    FAxis: TsgeControllerAxisType;
+    FTilt: TsgeControllerAxisTilt;
+  public
+    constructor Create(ID: Byte; Axis: TsgeControllerAxisType; Tilt: TsgeControllerAxisTilt); reintroduce;
+
+    property Axis: TsgeControllerAxisType read FAxis;
+    property Tilt: TsgeControllerAxisTilt read FTilt;
+  end;
+
+
+  //Изменение значения оси
+  TsgeEventControllerAxisValue = class(TsgeEventController)
   private
     FAxis : TsgeControllerAxisType;
     FValue: Integer;
@@ -85,18 +111,9 @@ type
 
 
 
-  TsgeEventControllerButton = class(TsgeEventController)
-  private
-    FButtonID: Byte;
-  public
-    constructor Create(ID: Byte; ButtonID: Byte); reintroduce;
-
-    property ButtonID: Byte read FButtonID;
-  end;
-
-
 
 implementation
+
 
 
 constructor TsgeEventController.Create(ID: Byte);
@@ -106,31 +123,37 @@ end;
 
 
 
+constructor TsgeEventControllerButton.Create(ID: Byte; ButtonID: Byte);
+begin
+  inherited Create(ID);
+  FButtonID := ButtonID;
+end;
+
+
+
 constructor TsgeEventControllerPOV.Create(ID: Byte; Direction: TsgeControllerPovDirection);
 begin
   inherited Create(ID);
-
   FDirection := Direction;
 end;
 
 
 
-constructor TsgeEventControllerAxis.Create(ID: Byte; Axis: TsgeControllerAxisType; Value, PrevValue: Integer);
+constructor TsgeEventControllerAxis.Create(ID: Byte; Axis: TsgeControllerAxisType; Tilt: TsgeControllerAxisTilt);
 begin
   inherited Create(ID);
-
   FAxis := Axis;
-  FValue := Value;
-  FPrevValue := PrevValue;
+  FTilt := Tilt;
 end;
 
 
 
-constructor TsgeEventControllerButton.Create(ID: Byte; ButtonID: Byte);
+constructor TsgeEventControllerAxisValue.Create(ID: Byte; Axis: TsgeControllerAxisType; Value, PrevValue: Integer);
 begin
   inherited Create(ID);
-
-  FButtonID := ButtonID;
+  FAxis := Axis;
+  FValue := Value;
+  FPrevValue := PrevValue;
 end;
 
 
