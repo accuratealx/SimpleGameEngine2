@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeExtensionGraphic.pas
-Версия            1.5
+Версия            1.6
 Создан            14.04.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс расширения: Графика
@@ -34,10 +34,6 @@ type
   TsgeExtensionGraphicDrawControl = (gdcSync, gdcProgram);
 
 
-  //Метод
-  TsgeExtensionGraphicDrawProc = procedure of object;
-
-
   TsgeExtensionGraphic = class(TsgeExtensionBase)
   private
     //Ссылки на объекты
@@ -56,7 +52,6 @@ type
     FDrawControl: TsgeExtensionGraphicDrawControl;                //Способ ограничения кадров
     FMaxFPS: Word;                                                //Максимальное количество кадров в секунду
     FAutoEraseBG: Boolean;                                        //Автостирание фона перед выводом кадра
-    FDrawShellProc: TsgeExtensionGraphicDrawProc;                 //Ссылка на метод отрисовки оболочки
 
     //Вспомогательные параметры
     FDrawLastTime: Int64;
@@ -77,7 +72,6 @@ type
     procedure DrawElements;
     procedure DrawFPS;
     procedure DrawFade;
-    procedure DrawShell;
 
     //Свойства
     procedure SetDrawControl(AMetod: TsgeExtensionGraphicDrawControl);
@@ -108,7 +102,6 @@ type
     property MaxFPS: Word read FMaxFPS write SetMaxFPS;
     property DrawControl: TsgeExtensionGraphicDrawControl read FDrawControl write SetDrawControl;
     property AutoEraseBG: Boolean read FAutoEraseBG write FAutoEraseBG;
-    property DrawShellproc: TsgeExtensionGraphicDrawProc read FDrawShellProc write FDrawShellProc;
   end;
 
 
@@ -184,9 +177,6 @@ begin
 
   //Вывод FPS
   if FFPS.Enable then DrawFPS;
-
-  //Вывод оболочки
-  DrawShell;
 
   //Смена кадров
   case FGraphic.RenderBuffer of
@@ -295,12 +285,6 @@ begin
 
   //Восстановить графику
   FGraphic.PopAttrib;
-end;
-
-
-procedure TsgeExtensionGraphic.DrawShell;
-begin
-  if Assigned(FDrawShellProc) then DrawShellproc;
 end;
 
 
