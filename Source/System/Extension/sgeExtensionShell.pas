@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeExtensionShell.pas
-Версия            1.0
+Версия            1.1
 Создан            14.07.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс расширения: Оболочка
@@ -18,7 +18,8 @@ uses
   sgeThread, sgeSystemEvent, sgeSimpleCommand, sgeSimpleParameters,
   sgeExtensionBase, sgeEventWindow, sgeEventSubscriber, sgeShellCommandQueue,
   sgeShellCommandList, sgeLineEditor, sgeCommandHistory,
-  sgeExtensionGraphic, sgeExtensionResourceList, sgeExtensionVariables;
+  sgeExtensionGraphic, sgeExtensionResourceList, sgeExtensionVariables,
+  sgeGraphicSprite, sgeGraphicElementSpriteCashed;
 
 
 const
@@ -32,6 +33,7 @@ type
     FExtGraphic: TsgeExtensionGraphic;
     FExtResList: TsgeExtensionResourceList;
     FExtVariables: TsgeExtensionVariables;
+    FElementSprite: TsgeGraphicElementSpriteCashed;                 //Указатель на элемент отрисовки
 
     //Классы
     FThread: TsgeThread;                                            //Поток обработки команд
@@ -40,6 +42,8 @@ type
     FEditor: TsgeLineEditor;                                        //Однострочный редактор
     FAliases: TsgeSimpleParameters;                                 //Псевдонимы
     FCommandQueue: TsgeShellCommandQueue;                           //Очередь комманд на выполнение
+    FCanvas: TsgeGraphicSprite;                                     //Холст для отрисовки оболочки
+
 
     //Ссылки на объекты подписки
     FSubKeyDown: TsgeEventSubscriber;
@@ -74,9 +78,6 @@ type
 
     //Свойства
     procedure SetEnable(AEnable: Boolean);
-
-    //Залипон, УДАЛИТЬ
-    procedure Draw;
 
     //Системные переменные
     procedure RegisterVariables;
@@ -402,7 +403,7 @@ begin
 end;
 
 
-procedure TsgeExtensionShell.Draw;
+{procedure TsgeExtensionShell.Draw;
 begin
   if not FEnable then Exit;
 
@@ -416,7 +417,7 @@ begin
     DrawText(0, 0, FExtResList.Default.Font, FEditor.Line);
     PopAttrib;
     end;
-end;
+end;}
 
 
 procedure TsgeExtensionShell.RegisterVariables;
@@ -441,6 +442,9 @@ procedure TsgeExtensionShell.SetEnable(AEnable: Boolean);
 begin
   //Запомнить состояние
   FEnable := AEnable;
+
+  //Поправить элемент отрисовки
+  FElementSprite.Visible := FEnable;
 
   //Поправить подписчиков событий
   FSubKeyDown.Enable := FEnable;
@@ -492,8 +496,19 @@ begin
     //Зарегестрировать переменные
     RegisterVariables;
 
-    //Установить метод отрисовки оболочки
-    FExtGraphic.DrawShellproc := @Draw;
+    //Создать холст
+    FCanvas := TsgeGraphicSprite.Create(500, 300);
+
+    //Создать слой отрисовки
+    FExtGraphic.DrawList.AddLayer(Extension_Shell, $FF);
+
+    //Создать элемент отрисовки
+    FElementSprite := TsgeGraphicElementSpriteCashed.Create(0, 0, FCanvas.Width, FCanvas.Height, FCanvas);
+    FElementSprite.Visible := False;
+
+    //Добавить элемент в список отрисовки
+    FExtGraphic.DrawList.AddElement(FElementSprite, Extension_Shell);
+
   except
     on E: EsgeException do
       raise EsgeException.Create(_UNITNAME, Err_CantCreateExtension, '', E.Message);
@@ -505,6 +520,12 @@ destructor TsgeExtensionShell.Destroy;
 begin
   //Отписать подписчиков
   UnRegisterEventHandlers;
+
+  //Удалить элемент отрисовки
+  FElementSprite.Delete;
+
+  //Удалить холст
+  FCanvas.Free;
 
   //Удалить объекты
   FThread.Free;
