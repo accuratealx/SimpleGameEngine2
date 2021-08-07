@@ -243,7 +243,6 @@ begin
 
   //Очистить массив элементов графики
   FExtensionGraphic.DrawList.ClearLayers;
-  FExtensionGraphic.DrawShellproc := nil;
 
   //Разбудить основной поток
   FEventManager.Publish('');
