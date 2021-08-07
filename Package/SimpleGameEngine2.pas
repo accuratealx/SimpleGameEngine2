@@ -44,7 +44,7 @@ uses
   sgeKeyCommandMouse, sgeKeyCommandJoystick, sgeKeyCommandJoystickButtonInfo, 
   sgeKeyCommandJoystickInfo, sgeKeyCommandJoystickAxisInfo, 
   sgeKeyCommandTypes, sgeKeyCommandJoystickPadInfo, 
-  sgeKeyCommandJoystickAxisTiltInfo;
+  sgeKeyCommandJoystickAxisTiltInfo, sgeGraphicElementSpriteCashed;
 
 implementation
 

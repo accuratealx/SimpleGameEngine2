@@ -15,7 +15,7 @@
     </CompilerOptions>
     <Description Value="Simple Game Engine 2"/>
     <Version Major="1"/>
-    <Files Count="129">
+    <Files Count="130">
       <Item1>
         <Filename Value="..\Source\ThirdParty\GDIPlus\GDIPAPI.pas"/>
         <UnitName Value="GDIPAPI"/>
@@ -532,6 +532,10 @@
         <Filename Value="..\Source\System\KeyCommand\sgeKeyCommandJoystickAxisTiltInfo.pas"/>
         <UnitName Value="sgeKeyCommandJoystickAxisTiltInfo"/>
       </Item129>
+      <Item130>
+        <Filename Value="..\Source\System\Graphic\sgeGraphicElementSpriteCashed.pas"/>
+        <UnitName Value="sgeGraphicElementSpriteCashed"/>
+      </Item130>
     </Files>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)"/>
