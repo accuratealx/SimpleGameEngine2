@@ -102,7 +102,7 @@ type
 implementation
 
 uses
-  sgeErrors, sgeKeys, sgeOSPlatform, sgeDateUtils, sgeShellFunctions;
+  sgeErrors, sgeKeys, sgeOSPlatform, sgeDateUtils, sgeShellCommands;
 
 
 const
@@ -195,7 +195,7 @@ begin
   end;
 
   //Зарегестрировать функции оболочки
-  sgeShellFunctions_Init(Self);
+  sgeShellCommands_Init(Self);
 
   //Зарегестрировать системные обработчики событий
   RegisterEventHandlers;

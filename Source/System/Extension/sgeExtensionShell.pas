@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeExtensionShell.pas
-Версия            1.1
+Версия            1.2
 Создан            14.07.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс расширения: Оболочка
@@ -109,7 +109,7 @@ type
 implementation
 
 uses
-  sgeErrors, sgeEventBase, sgeSystemUtils, sgeStringUtils, sgeVariableBase, sgeShellCommand,
+  sgeErrors, sgeTypes, sgeEventBase, sgeSystemUtils, sgeStringUtils, sgeVariableBase, sgeShellCommand,
   sgeKeys, sgeGraphicColor;
 
 const
@@ -117,7 +117,6 @@ const
 
   Err_CommandStillRunning = 'CommandStillRunning';
   Err_CommandNotFound     = 'CommandNotFound';
-  Err_EmptyPointer        = 'EmptyPointer';
   Err_NotEnoughParameters = 'NotEnoughParameters';
   Err_UnexpectedError     = 'UnexpectedError';
   Err_CommandError        = 'CommandError';
@@ -210,6 +209,15 @@ begin
       keyDown: FEditor.Line := FHistory.GetNextCommand;
 
 
+      //Очистить журнал оболочки
+      keyL:
+        if (kbCtrl in KeyboardButtons) then ;
+
+
+      //Остановить выполнение команды
+      keyPause:
+        if (kbCtrl in EventObj.KeyboardButtons) then ;
+
     else
       FEditor.ProcessKey(EventObj.Key, EventObj.KeyboardButtons);
   end;
@@ -270,10 +278,9 @@ const
   ModeCommand = 1;
   ModeAutor = 2;
 var
-  Idx: Integer;
   Mode: Byte;
   CmdResult: String;
-  CmdProc: TsgeShellCommand;
+  Command: TsgeShellCommand;
 begin
   //Прокрутить экран вниз
   //if FJournalAutoScroll then FJournalOffset := 0;
@@ -281,9 +288,8 @@ begin
   //Определить режим работы
   Mode := ModeEmpty;
   if LowerCase(Cmd.Part[0]) = 'autor' then Mode := ModeAutor;
-  Idx := FCommandList.IndexOf(Cmd.Part[0]);
-  if Idx <> -1 then CmdProc := FCommandList.Item[Idx];
-  if CmdProc <> nil then Mode := ModeCommand;
+  Command := FCommandList.IndexOf(Cmd.Part[0]);
+  if Command <> nil then Mode := ModeCommand;
 
   //Обработать режим
   case Mode of
@@ -293,15 +299,8 @@ begin
 
     ModeCommand:
       begin
-      //Проверить указатель команды
-      if CmdProc.Proc = nil then
-        begin
-        ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_EmptyPointer, Cmd.Command));
-        Exit;
-        end;
-
       //Проверить хватает ли параметров
-      if Cmd.Count < CmdProc.MinParamCount + 1 then
+      if Cmd.Count < Command.MinParamCount + 1 then
         begin
         ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_NotEnoughParameters, Cmd.Command));
         Exit;
@@ -309,7 +308,7 @@ begin
 
       //Выполнить команду
       try
-        CmdResult := CmdProc.Proc(Cmd);
+        CmdResult := Command.Execute(Cmd);
       except
         ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_UnexpectedError, Cmd.Command));
       end;
@@ -401,23 +400,6 @@ procedure TsgeExtensionShell.ErrorHandler(Txt: String);
 begin
   //Добавить в журнал строку с ошибкой
 end;
-
-
-{procedure TsgeExtensionShell.Draw;
-begin
-  if not FEnable then Exit;
-
-  //Тут мы рисуем оболочку на экране
-  with FExtGraphic.Graphic do
-    begin
-    PushAttrib;
-    Color := cGray;
-    DrawRect(0, 0, Width, FExtResList.Default.Font.Height + 10);
-    Color := cWhite;
-    DrawText(0, 0, FExtResList.Default.Font, FEditor.Line);
-    PopAttrib;
-    end;
-end;}
 
 
 procedure TsgeExtensionShell.RegisterVariables;
