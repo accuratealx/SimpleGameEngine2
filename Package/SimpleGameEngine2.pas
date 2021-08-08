@@ -38,13 +38,20 @@ uses
   sgeVariableIntegerVirtual, sgeVariableList, sgeVariableSingle, 
   sgeVariableSingleBase, sgeVariableSingleVirtual, sgeVariableString, 
   sgeVariableStringBase, sgeVariableStringVirtual, 
-  sgeTemplateObjectCollection, sgeShellFunctions, sgeJournal, sgeShellCommand, 
-  sgeShellCommandList, sgeCommandHistory, sgeSystemConsole, 
+  sgeTemplateObjectCollection, sgeShellCommand_System_Read, sgeJournal, 
+  sgeShellCommand, sgeShellCommandList, sgeCommandHistory, sgeSystemConsole, 
   sgeExtensionKeyCommand, sgeShellCommandQueue, sgeKeyCommandKeyboard, 
   sgeKeyCommandMouse, sgeKeyCommandJoystick, sgeKeyCommandJoystickButtonInfo, 
   sgeKeyCommandJoystickInfo, sgeKeyCommandJoystickAxisInfo, 
   sgeKeyCommandTypes, sgeKeyCommandJoystickPadInfo, 
-  sgeKeyCommandJoystickAxisTiltInfo, sgeGraphicElementSpriteCashed;
+  sgeKeyCommandJoystickAxisTiltInfo, sgeGraphicElementSpriteCashed, 
+  sgeShellCommandParameterBase, sgeShellCommandParameterString, 
+  sgeShellCommandParameterList, sgeShellCommandParameterInteger, 
+  sgeShellCommandParameterFloat, sgeShellCommand_System_ReadLn, 
+  sgeShellCommands, sgeShellCommand_System_ReadKey, 
+  sgeShellCommand_Variable_Clear, sgeShellCommand_Dialog_Message, 
+  sgeShellCommand_Variable_Delete, sgeShellCommand_Variable_Set, 
+  sgeShellCommand_System_Stop;
 
 implementation
 

@@ -9,13 +9,13 @@
       <PathDelim Value="\"/>
       <SearchPaths>
         <IncludeFiles Value="..\Source\System"/>
-        <OtherUnitFiles Value="..\Source\ThirdParty\GDIPlus;..\Source\ThirdParty\OpenAL;..\Source\ThirdParty\OpenGL;..\Source\System;..\Source\System\Base;..\Source\System\Controllers;..\Source\System\Events;..\Source\System\Extension;..\Source\System\Graphic;..\Source\System\PackFiles;..\Source\System\Shell;..\Source\System\Sound;..\Source\System\Templates;..\Source\System\Utils;..\Source\System\Variables;..\Source\System\KeyCommand"/>
+        <OtherUnitFiles Value="..\Source\ThirdParty\GDIPlus;..\Source\ThirdParty\OpenAL;..\Source\ThirdParty\OpenGL;..\Source\System;..\Source\System\Base;..\Source\System\Controllers;..\Source\System\Events;..\Source\System\Extension;..\Source\System\Graphic;..\Source\System\PackFiles;..\Source\System\Shell;..\Source\System\Sound;..\Source\System\Templates;..\Source\System\Utils;..\Source\System\Variables;..\Source\System\KeyCommand;..\Source\System\ShellCommands"/>
         <UnitOutputDirectory Value="..\~Tmp\lib\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
     </CompilerOptions>
     <Description Value="Simple Game Engine 2"/>
     <Version Major="1"/>
-    <Files Count="130">
+    <Files Count="143">
       <Item1>
         <Filename Value="..\Source\ThirdParty\GDIPlus\GDIPAPI.pas"/>
         <UnitName Value="GDIPAPI"/>
@@ -465,8 +465,8 @@
         <UnitName Value="sgeTemplateObjectCollection"/>
       </Item112>
       <Item113>
-        <Filename Value="..\Source\System\Shell\sgeShellFunctions.pas"/>
-        <UnitName Value="sgeShellFunctions"/>
+        <Filename Value="..\Source\System\ShellCommands\sgeShellCommand_System_Read.pas"/>
+        <UnitName Value="sgeShellCommand_System_Read"/>
       </Item113>
       <Item114>
         <Filename Value="..\Source\System\sgeJournal.pas"/>
@@ -536,6 +536,58 @@
         <Filename Value="..\Source\System\Graphic\sgeGraphicElementSpriteCashed.pas"/>
         <UnitName Value="sgeGraphicElementSpriteCashed"/>
       </Item130>
+      <Item131>
+        <Filename Value="..\Source\System\Shell\sgeShellCommandParameterBase.pas"/>
+        <UnitName Value="sgeShellCommandParameterBase"/>
+      </Item131>
+      <Item132>
+        <Filename Value="..\Source\System\Shell\sgeShellCommandParameterString.pas"/>
+        <UnitName Value="sgeShellCommandParameterString"/>
+      </Item132>
+      <Item133>
+        <Filename Value="..\Source\System\Shell\sgeShellCommandParameterList.pas"/>
+        <UnitName Value="sgeShellCommandParameterList"/>
+      </Item133>
+      <Item134>
+        <Filename Value="..\Source\System\Shell\sgeShellCommandParameterInteger.pas"/>
+        <UnitName Value="sgeShellCommandParameterInteger"/>
+      </Item134>
+      <Item135>
+        <Filename Value="..\Source\System\Shell\sgeShellCommandParameterFloat.pas"/>
+        <UnitName Value="sgeShellCommandParameterFloat"/>
+      </Item135>
+      <Item136>
+        <Filename Value="..\Source\System\ShellCommands\sgeShellCommand_System_ReadLn.pas"/>
+        <UnitName Value="sgeShellCommand_System_ReadLn"/>
+      </Item136>
+      <Item137>
+        <Filename Value="..\Source\System\ShellCommands\sgeShellCommands.pas"/>
+        <UnitName Value="sgeShellCommands"/>
+      </Item137>
+      <Item138>
+        <Filename Value="..\Source\System\ShellCommands\sgeShellCommand_System_ReadKey.pas"/>
+        <UnitName Value="sgeShellCommand_System_ReadKey"/>
+      </Item138>
+      <Item139>
+        <Filename Value="..\Source\System\ShellCommands\sgeShellCommand_Variable_Clear.pas"/>
+        <UnitName Value="sgeShellCommand_Variable_Clear"/>
+      </Item139>
+      <Item140>
+        <Filename Value="..\Source\System\ShellCommands\sgeShellCommand_Dialog_Message.pas"/>
+        <UnitName Value="sgeShellCommand_Dialog_Message"/>
+      </Item140>
+      <Item141>
+        <Filename Value="..\Source\System\ShellCommands\sgeShellCommand_Variable_Delete.pas"/>
+        <UnitName Value="sgeShellCommand_Variable_Delete"/>
+      </Item141>
+      <Item142>
+        <Filename Value="..\Source\System\ShellCommands\sgeShellCommand_Variable_Set.pas"/>
+        <UnitName Value="sgeShellCommand_Variable_Set"/>
+      </Item142>
+      <Item143>
+        <Filename Value="..\Source\System\ShellCommands\sgeShellCommand_System_Stop.pas"/>
+        <UnitName Value="sgeShellCommand_System_Stop"/>
+      </Item143>
     </Files>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)"/>
