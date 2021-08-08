@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeShellCommandList.pas
-Версия            1.1
+Версия            1.4
 Создан            30.07.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс списка команд оболочки
@@ -35,10 +35,10 @@ type
     procedure Lock;
     procedure UnLock;
 
-    function  IndexOf(Name: ShortString): Integer;
+    function  IndexOf(Name: ShortString): TsgeShellCommand;
 
     procedure Clear;
-    procedure Add(Name: ShortString; Proc: TsgeShellCommandProc; MinParamCount: Word; Group: ShortString);
+    procedure Add(Command: TsgeShellCommand);
     procedure Delete(Index: Integer);
     procedure Insert(Index: Integer; Item: TsgeShellCommand);
   end;
@@ -86,22 +86,18 @@ begin
 end;
 
 
-function TsgeShellCommandList.IndexOf(Name: ShortString): Integer;
+function TsgeShellCommandList.IndexOf(Name: ShortString): TsgeShellCommand;
 var
   i: Integer;
 begin
   FCS.Enter;
   try
+    Result := nil;
 
-    Result := -1;
-
+    //Поиск по формату Group.Name
     Name := LowerCase(Name);
     for i := 0 to FCount - 1 do
-      if LowerCase(FList[i].Name) = Name then
-        begin
-        Result := i;
-        Break;
-        end;
+      if LowerCase(FList[i].Group + '.' + FList[i].Name) = Name then Exit(FList[i]);
 
   finally
     FCS.Leave;
@@ -122,12 +118,12 @@ begin
 end;
 
 
-procedure TsgeShellCommandList.Add(Name: ShortString; Proc: TsgeShellCommandProc; MinParamCount: Word; Group: ShortString);
+procedure TsgeShellCommandList.Add(Command: TsgeShellCommand);
 begin
   FCS.Enter;
   try
 
-    inherited Add(TsgeShellCommand.Create(Name, Proc, MinParamCount, Group));
+    inherited Add(Command);
 
   finally
     FCS.Leave;
