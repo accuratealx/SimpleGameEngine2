@@ -15,42 +15,99 @@ unit sgeShellCommand;
 interface
 
 uses
-  sgeSimpleCommand;
+  sgeSimpleCommand, sgeShellCommandParameterList;
+
+const
+  //Группы
+  Group_System    = 'System';
+  Group_Shell     = 'Shell';
+  Group_Variables = 'Variable';
+  Group_Dialog    = 'Dialog';
+
+  //Ошибки
+  _UNITNAME = 'ShellCommand';
+
+  Err_VariableIsReadOnly = 'VariableIsReadOnly';
 
 
 type
-  //Функция вызова команды
-  TsgeShellCommandProc = function(Command: TsgeSimpleCommand): String;
-
-
   //Класс команды
   TsgeShellCommand = class
-  private
+  protected
+    FSGE: TObject;
+
+    //Классы
+    FParameters: TsgeShellCommandParameterList;
+
+    //Параметры
     FName: ShortString;
     FGroup: ShortString;
-    FMinParamCount: Word;
-    FProc: TsgeShellCommandProc;
+    FMinParamCount: Byte;
+
+    constructor Create(SGEObject: TObject; Name: ShortString; Group: ShortString = '');
   public
-    constructor Create(Name: ShortString; Proc: TsgeShellCommandProc; MinParamCount: Word = 0; Group: ShortString = '');
+    destructor Destroy; override;
+    procedure AfterConstruction; override;
+
+    function Execute(Command: TsgeSimpleCommand): String; virtual;
 
     property Name: ShortString read FName;
     property Group: ShortString read FGroup;
-    property MinParamCount: Word read FMinParamCount;
-    property Proc: TsgeShellCommandProc read FProc;
+    property MinParamCount: Byte read FMinParamCount;
+    property Parameters: TsgeShellCommandParameterList read FParameters;
   end;
 
 
 
 implementation
 
+uses
+  SimpleGameEngine;
 
-constructor TsgeShellCommand.Create(Name: ShortString; Proc: TsgeShellCommandProc; MinParamCount: Word; Group: ShortString);
+
+
+constructor TsgeShellCommand.Create(SGEObject: TObject; Name: ShortString; Group: ShortString);
+var
+  SGE: TSimpleGameEngine absolute SGEObject;
 begin
+  //Сохранить указатель
+  FSGE := SGEObject;
+
+  //Создать список параметров
+  FParameters := TsgeShellCommandParameterList.Create(True);
+
+  //Задать параметры
   FName := Name;
   FGroup := Group;
-  FProc := Proc;
-  FMinParamCount := MinParamCount;
+
+  //Зарегестрировать команду
+  SGE.ExtShell.CommandList.Add(Self);
 end;
+
+
+destructor TsgeShellCommand.Destroy;
+begin
+  //Удалить список параметров
+  FParameters.Free;
+end;
+
+
+procedure TsgeShellCommand.AfterConstruction;
+var
+  i: Integer;
+begin
+  //Посчитать минимальное количество параметров
+  for i := 0 to FParameters.Count - 1 do
+    if FParameters.Item[i].Required then Inc(FMinParamCount);
+end;
+
+
+function TsgeShellCommand.Execute(Command: TsgeSimpleCommand): String;
+begin
+  //Заглушка
+  Result := '';
+end;
+
 
 
 end.
