@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeWindow.pas
-Версия            1.2
+Версия            1.3
 Создан            22.04.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание					Окно на WinAPI
@@ -545,6 +545,7 @@ end;
 procedure TsgeWindow.Show;
 begin
   Windows.ShowWindow(FHandle, SW_SHOWNORMAL);
+  Windows.SetForegroundWindow(FHandle);
 end;
 
 
