@@ -23,7 +23,7 @@ type
   Описание:
     Изменить значение переменной
   Синтаксис:
-    Variable.Set [Name] [Value]
+    Variable.Set [VariableName] [Value]
   Параметры:
     Name - Имя переменной
     Value - Новое значение

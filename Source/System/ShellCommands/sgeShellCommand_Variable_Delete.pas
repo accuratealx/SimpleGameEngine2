@@ -23,7 +23,7 @@ type
   Описание:
     Удалить переменную
   Синтаксис:
-    Variable.Delete [Name]
+    Variable.Delete [VariableName]
   Параметры:
     Name - Имя переменной
   }

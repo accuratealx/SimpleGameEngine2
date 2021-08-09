@@ -224,7 +224,7 @@ end;
 procedure TSimpleGameEngine.AttachDefaultCommand;
 begin
   //Открыть оболочку на тильду
-  FExtensionKeyCommand.Keyboard.Key[keyEscape].Down := 'Stop';
+  FExtensionKeyCommand.Keyboard.Key[keyEscape].Down := 'System.Stop';
   FExtensionKeyCommand.Keyboard.Key[keyTilde].Down := 'Variable.Set Shell.Enable On';
 end;
 
