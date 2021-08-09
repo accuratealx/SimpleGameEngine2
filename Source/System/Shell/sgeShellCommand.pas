@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeShellCommandBase.pas
-Версия            1.0
+Версия            1.1
 Создан            30.07.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Базовый класс команды оболочки
@@ -49,6 +49,7 @@ type
     destructor Destroy; override;
     procedure AfterConstruction; override;
 
+    function GetFullName: String;
     function Execute(Command: TsgeSimpleCommand): String; virtual;
 
     property Name: ShortString read FName;
@@ -99,6 +100,14 @@ begin
   //Посчитать минимальное количество параметров
   for i := 0 to FParameters.Count - 1 do
     if FParameters.Item[i].Required then Inc(FMinParamCount);
+end;
+
+
+function TsgeShellCommand.GetFullName: String;
+const
+  SEPARATOR = '.';
+begin
+  if FGroup <> '' then Result := FGroup + SEPARATOR + FName else Result := FName;
 end;
 
 
