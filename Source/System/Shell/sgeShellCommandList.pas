@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeShellCommandList.pas
-Версия            1.4
+Версия            1.5
 Создан            30.07.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс списка команд оболочки
@@ -24,18 +24,23 @@ type
 
 
   TsgeShellCommandList = class(TsgeShellCommandListTemplate)
+  type
+    TMatchType = (mtName, mtGroup);
   private
     FCS: TsgeCriticalSection;
 
     function GetItem(Index: Integer): TsgeShellCommand;
   public
-    constructor Create;
+    constructor Create(FreeObjects: Boolean = True); override;
     destructor  Destroy; override;
 
     procedure Lock;
     procedure UnLock;
 
-    function  IndexOf(Name: ShortString): TsgeShellCommand;
+    function  IndexOf(Command: TsgeShellCommand): Integer;
+
+    //Вернуть список подходящих команд
+    procedure GetMatchCommandList(Name: ShortString; MatchType: TMatchType; List: TsgeShellCommandList);
 
     procedure Clear;
     procedure Add(Command: TsgeShellCommand);
@@ -45,6 +50,14 @@ type
 
 
 implementation
+
+uses
+  sgeErrors;
+
+const
+  _UNITNAME = 'ShellCommandList';
+
+  Err_CommandAlreadyExist = 'CommandAlreadyExist';
 
 
 function TsgeShellCommandList.GetItem(Index: Integer): TsgeShellCommand;
@@ -60,9 +73,9 @@ begin
 end;
 
 
-constructor TsgeShellCommandList.Create;
+constructor TsgeShellCommandList.Create(FreeObjects: Boolean);
 begin
-  inherited Create(True);
+  inherited Create(FreeObjects);
   FCS := TsgeCriticalSection.Create;
 end;
 
@@ -86,22 +99,45 @@ begin
 end;
 
 
-function TsgeShellCommandList.IndexOf(Name: ShortString): TsgeShellCommand;
+function TsgeShellCommandList.IndexOf(Command: TsgeShellCommand): Integer;
 var
   i: Integer;
+  CommandName: String;
 begin
   FCS.Enter;
   try
-    Result := nil;
+    Result := -1;
 
-    //Поиск по формату Group.Name
-    Name := LowerCase(Name);
+    CommandName := LowerCase(Command.GetFullName);
     for i := 0 to FCount - 1 do
-      if LowerCase(FList[i].Group + '.' + FList[i].Name) = Name then Exit(FList[i]);
+      if CommandName = LowerCase(FList[i].GetFullName) then Exit(i);
 
   finally
     FCS.Leave;
   end;
+end;
+
+
+procedure TsgeShellCommandList.GetMatchCommandList(Name: ShortString; MatchType: TMatchType; List: TsgeShellCommandList);
+var
+  i: Integer;
+  S: String;
+begin
+  //Подготовить имя команды
+  Name := LowerCase(Name);
+
+  //Просмотреть список команд
+  for i := 0 to FCount - 1 do
+    begin
+    //Определить имя
+    case MatchType of
+      mtName  : S := FList[i].Name;
+      mtGroup : S := FList[i].GetFullName;
+    end;
+
+    //Проверить на совпадение
+    if LowerCase(S) = Name then List.Add(FList[i]);
+    end;
 end;
 
 
@@ -122,6 +158,10 @@ procedure TsgeShellCommandList.Add(Command: TsgeShellCommand);
 begin
   FCS.Enter;
   try
+
+    //Проверить команду на существование
+    if IndexOf(Command) <> -1 then
+      raise EsgeException.Create(_UNITNAME, Err_CommandAlreadyExist, Command.GetFullName);
 
     inherited Add(Command);
 
