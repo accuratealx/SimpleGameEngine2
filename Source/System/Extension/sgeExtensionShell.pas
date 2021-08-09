@@ -69,6 +69,7 @@ type
     function  SubstituteVariables(Str: String): String;             //Подставить здначеня переменных в строку
     procedure RunCommand(Cmd: TsgeSimpleCommand);                   //Выполнение разобранной команды
     procedure ExecuteCommand(Command: String);                      //Разбор строки на алиасы и выполнение
+    procedure RepaintCanvas;                                        //Перерисовать холст
 
     //Методы потока
     procedure ProcessCommand;                                       //Функция разбора и выполнения команды
@@ -120,6 +121,7 @@ const
   Err_NotEnoughParameters = 'NotEnoughParameters';
   Err_UnexpectedError     = 'UnexpectedError';
   Err_CommandError        = 'CommandError';
+  Err_MultipleCommand     = 'MultipleCommand';
 
   //Приоритеты
   HandlerPriority = $FFFF;
@@ -211,7 +213,7 @@ begin
 
       //Очистить журнал оболочки
       keyL:
-        if (kbCtrl in KeyboardButtons) then ;
+        if (kbCtrl in EventObj.KeyboardButtons) then ;
 
 
       //Остановить выполнение команды
@@ -248,8 +250,8 @@ end;
 
 procedure TsgeExtensionShell.RegisterDefaultAliases;
 begin
-  FAliases.SetValue('Close', 'Stop');
-  FAliases.SetValue('Quit', 'Stop');
+  FAliases.SetValue('Close', 'System.Stop');
+  FAliases.SetValue('Quit', 'System.Stop');
   {FAliases.SetValue('Echo', 'Write');
   FAliases.SetValue('Print', 'Write');
   FAliases.SetValue('Echoc', 'Writec');
@@ -277,21 +279,67 @@ const
   ModeEmpty = 0;
   ModeCommand = 1;
   ModeAutor = 2;
-var
-  Mode: Byte;
-  CmdResult: String;
-  Command: TsgeShellCommand;
-begin
-  //Прокрутить экран вниз
-  //if FJournalAutoScroll then FJournalOffset := 0;
 
+  MatchError = 0;
+  MatchOneCommand = 1;
+  MatchDuplicate = 2;
+var
+  Mode, Match: Byte;
+  i, c: Integer;
+  CmdResult, S: String;
+  Command: TsgeShellCommand;
+  MatchList: TsgeShellCommandList;
+begin
   //Определить режим работы
   Mode := ModeEmpty;
   if LowerCase(Cmd.Part[0]) = 'autor' then Mode := ModeAutor;
-  Command := FCommandList.IndexOf(Cmd.Part[0]);
+
+  //Найти имена команд без имени группы
+  MatchList := TsgeShellCommandList.Create(False);
+  FCommandList.GetMatchCommandList(Cmd.Part[0], mtName, MatchList); //Получить список
+
+  //Определить результат поиска
+  Match := MatchError;                                              //Нет команды
+  if MatchList.Count = 1 then Match := MatchOneCommand;             //Одна команда
+  if MatchList.Count > 1 then Match := MatchDuplicate;              //Больше одной
+
+  //Обработать результат поиска без групп
+  case Match of
+    MatchError:
+      begin
+      //Найти список команд с полным именем
+      FCommandList.GetMatchCommandList(Cmd.Part[0], mtGroup, MatchList);
+
+      //Если есть хоть одна запись, то запомнить указатель
+      if MatchList.Count = 1 then Command := MatchList.Item[0];
+      end;
+
+    MatchOneCommand:
+      Command := MatchList.Item[0];
+
+    MatchDuplicate:
+      begin
+      //Подготовить список найденных комманд для ошибки
+      c := MatchList.Count - 1;
+      for i := 0 to c do
+        begin
+        S := S + MatchList.Item[i].GetFullName;
+        if i <> c then S := S + ', ';
+        end;
+
+      //Обработать ошибку
+      ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_MultipleCommand, S));
+      Exit;
+      end;
+  end;
+
+  //Почистить память
+  MatchList.Free;
+
+  //Проверить указатель команды
   if Command <> nil then Mode := ModeCommand;
 
-  //Обработать режим
+  //Обработать режим работы
   case Mode of
     ModeEmpty:
       ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_CommandNotFound, Cmd.Part[0]));
@@ -379,6 +427,16 @@ begin
   finally
     Line.Free;
   end;
+end;
+
+
+procedure TsgeExtensionShell.RepaintCanvas;
+begin
+  //Проверить размеры
+  //Нарисовать оболочку
+
+  //Обновить графический примитив
+  FElementSprite.Update;
 end;
 
 
@@ -479,7 +537,7 @@ begin
     RegisterVariables;
 
     //Создать холст
-    FCanvas := TsgeGraphicSprite.Create(500, 300);
+    FCanvas := TsgeGraphicSprite.Create(500, 300, sgeGetColor(0, 0, 1, 0.5));
 
     //Создать слой отрисовки
     FExtGraphic.DrawList.AddLayer(Extension_Shell, $FF);
