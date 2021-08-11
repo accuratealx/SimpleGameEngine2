@@ -1360,7 +1360,7 @@ begin
   BytesPerLine := FWidth * 3;
 
   //Определить количество байт для выравнивания
-  Trash := 4 mod (BytesPerLine mod 4);
+  Trash := (BytesPerLine mod 4) mod 4;
 
   //Определить размер данных с мусором
   Size := (BytesPerLine + Trash) * FHeight;
