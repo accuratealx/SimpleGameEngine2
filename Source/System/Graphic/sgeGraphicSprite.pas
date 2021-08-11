@@ -73,6 +73,9 @@ type
     procedure LoadFromFile(FileName: String);
     procedure FromMemoryStream(Stream: TsgeMemoryStream);
 
+    procedure SaveToStream(Stream: TsgeMemoryStream);
+    procedure SaveToFile(FileName: String);
+
     procedure Reload;
 
     property GLHandle: GLuint read FGLHandle;
@@ -99,13 +102,15 @@ implementation
 
 uses
   sgeErrors,
-  sgeGraphicSpriteGDIPLoader;
+  sgeGraphicSpriteGDIPLoader,
+  Windows;
 
 
 const
   _UNITNAME = 'GraphicSprite';
 
   Err_CantReadFile        = 'CantReadFile';
+  Err_CantWriteFile       = 'CantWriteFile';
   Err_CantLoadFromStream  = 'CantLoadFromStream';
 
 
@@ -544,6 +549,88 @@ begin
 
   finally
     Loader.Free;
+  end;
+end;
+
+
+procedure TsgeGraphicSprite.SaveToStream(Stream: TsgeMemoryStream);
+var
+  BFH: TBitmapFileHeader;
+  BIH: TBITMAPINFOHEADER;
+  BytesPerLine, Trash, Size, szFileHeader, szInfoHeader: Integer;
+  DATA: array of Byte;
+begin
+  //Байтов в одной строке
+  BytesPerLine := FWidth * 3;
+
+  //Определить количество байт для выравнивания
+  Trash := 4 mod (BytesPerLine mod 4);
+
+  //Определить размер данных с мусором
+  Size := (BytesPerLine + Trash) * FHeight;
+
+  //Чтение данных из OpenGL
+  SetLength(DATA, Size);                                                //Буфер для OpenGL
+  glBindTexture(GL_TEXTURE_2D, FGLHandle);                              //Привязать текстуру
+  glGetTexImage(GL_TEXTURE_2D, 0, GL_BGR, GL_UNSIGNED_BYTE, @DATA[0]);  //Скопировать цвета в буфер
+  glBindTexture(GL_TEXTURE_2D, 0);                                      //Отвязать текстуру
+
+  //Определить размеры структур
+  szFileHeader := SizeOf(TBitmapFileHeader);
+  szInfoHeader := SizeOf(TBITMAPINFOHEADER);
+
+  //Описатель BMP файла
+  ZeroMemory(@BFH, szFileHeader);
+  BFH.bfType := $4D42;                                      //Волшебное слово от микрософта - BM
+  BFH.bfReserved1 := 0;
+  BFH.bfReserved2 := 0;
+  BFH.bfOffBits := szFileHeader + szInfoHeader;             //Смещение от начала файла до самих данных
+  BFH.bfSize := BFH.bfOffBits + Size;                       //Размер файла целиком со структурами и мусором
+
+  //Описатель BMP
+  ZeroMemory(@BIH, szInfoHeader);
+  BIH.biSize := szInfoHeader;                               //Размер этой структуры. Интересно зачем
+  BIH.biWidth := FWidth;                                    //Ширина битмапа
+  BIH.biHeight := FHeight;                                  //Высота битмапа
+  BIH.biPlanes := 1;                                        //Сколько слоёв
+  BIH.biBitCount := 24;                                     //Бит на пиксель
+  BIH.biCompression := BI_RGB;                              //Без сжатия
+  BIH.biSizeImage := 0;                                     //Не используется без сжатия
+  BIH.biXPelsPerMeter := 0;                                 //Разрешение по X
+  BIH.biYPelsPerMeter := 0;                                 //Разрешение по Y
+  BIH.biClrUsed := 0;                                       //Сколько цветов в таблице индексов
+  BIH.biClrImportant := 0;                                  //0 - все индексы цветов доступны
+
+  //Записать в поток
+  Stream.Size := 0;                                         //Обнулить память
+  Stream.Write(BFH, 0, SizeOf(BFH));                        //Заголовок файла
+  Stream.Write(BIH, szFileHeader, SizeOf(BIH));             //Описание битмапа
+  Stream.Write(DATA[0], szFileHeader + szInfoHeader, Size); //Записать данные
+
+  //Очистить буфер
+  SetLength(DATA, 0);
+end;
+
+procedure TsgeGraphicSprite.SaveToFile(FileName: String);
+var
+  ms: TsgeMemoryStream;
+begin
+  try
+    ms := TsgeMemoryStream.Create;
+
+    //Взять данные
+    SaveToStream(ms);
+
+    //Записать в файл
+    try
+      ms.SaveToFile(FileName);
+    except
+      on E:EsgeException do
+        raise EsgeException.Create(_UNITNAME, Err_CantWriteFile, '', E.Message);
+    end;
+
+  finally
+    ms.Free;
   end;
 end;
 
