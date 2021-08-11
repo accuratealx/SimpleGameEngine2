@@ -493,7 +493,6 @@ begin
       glBindFramebuffer(GL_FRAMEBUFFER, FFrameBuffer);                                                        //Установить временный буфер для вывода
       glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, FRenderSprite.GLHandle, 0); //Связать буфер кадра текстурой
       SetView(FRenderSprite.Width, FRenderSprite.Height);                                                     //Изменить размеры области вывода на размеры спрайта
-
       end;
   end;
 
@@ -832,7 +831,7 @@ end;
 procedure TsgeGraphic.ShareList(Context: HGLRC);
 begin
   //Расшарить ресурсы между контекстами
-  if not wglShareLists(FGLContext, Context) then
+  if not wglShareLists(Context, FGLContext) then
     raise EsgeException.Create(_UNITNAME, Err_CantShareContext);
 end;
 
@@ -1361,7 +1360,7 @@ begin
   BytesPerLine := FWidth * 3;
 
   //Определить количество байт для выравнивания
-  Trash := 4 - (BytesPerLine mod 4);
+  Trash := 4 mod (BytesPerLine mod 4);
 
   //Определить размер данных с мусором
   Size := (BytesPerLine + Trash) * FHeight;
@@ -1379,6 +1378,7 @@ begin
   szInfoHeader := SizeOf(TBITMAPINFOHEADER);
 
   //Описатель BMP файла
+  ZeroMemory(@BFH, szFileHeader);
   BFH.bfType := $4D42;                                      //Волшебное слово от микрософта - BM
   BFH.bfReserved1 := 0;
   BFH.bfReserved2 := 0;
@@ -1386,6 +1386,7 @@ begin
   BFH.bfSize := BFH.bfOffBits + Size;                       //Размер файла целиком со структурами и мусором
 
   //Описатель BMP
+  ZeroMemory(@BIH, szInfoHeader);
   BIH.biSize := szInfoHeader;                               //Размер этой структуры. Интересно зачем
   BIH.biWidth := FWidth;                                    //Ширина битмапа
   BIH.biHeight := FHeight;                                  //Высота битмапа
