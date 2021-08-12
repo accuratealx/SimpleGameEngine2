@@ -70,6 +70,7 @@ type
     destructor  Destroy; override;
 
     procedure AttachDefaultCommand;                                 //Привязать на кнопки стандартные действия
+    procedure ScreenShot(FileName: String = '');                    //Сохранить снимок окна в BMP
 
     procedure Run;                                                  //Запустить приложение
     procedure Stop;                                                 //Остановить приложение
@@ -102,13 +103,15 @@ type
 implementation
 
 uses
-  sgeErrors, sgeKeys, sgeOSPlatform, sgeDateUtils, sgeShellCommands;
+  sgeErrors, sgeKeys, sgeMemoryStream,
+  sgeOSPlatform, sgeDateUtils, sgeFileUtils, sgeShellCommands;
 
 
 const
   _UNITNAME = 'SimpleGameEngine';
 
   Err_CantCreateSimpleGameEngine = 'CantCreateSimpleGameEngine';
+  Err_CantCreateScreenShot = 'CantCreateScreenShot';
 
   Ext_Journal = 'Journal';
 
@@ -226,6 +229,39 @@ begin
   //Открыть оболочку на тильду
   FExtensionKeyCommand.Keyboard.Key[keyEscape].Down := 'System.Stop';
   FExtensionKeyCommand.Keyboard.Key[keyTilde].Down := 'Variable.Set Shell.Enable On';
+end;
+
+
+procedure TSimpleGameEngine.ScreenShot(FileName: String);
+const
+  ShotExt = '.bmp';
+var
+  s: String;
+  MS: TsgeMemoryStream;
+begin
+  //Подготовить имя файла
+  if FileName = '' then s := sgeGetUniqueFileName else s := FileName;
+  s := s + ShotExt;
+
+  //Подготовить каталог
+  sgeForceDirectories(FExtensionFileSystem.ScreenshotDir);
+
+  MS := TsgeMemoryStream.Create;
+  try
+    try
+      //Запросить снимок экрана
+      FExtensionGraphic.Graphic.ScreenShot(MS);
+
+      //Сохранить в файл
+      MS.SaveToFile(FExtensionFileSystem.ScreenshotDir + s);
+    except
+      on E: EsgeException do
+        raise EsgeException.Create(_UNITNAME, Err_CantCreateScreenShot, '', E.Message);
+    end;
+
+  finally
+    MS.Free;
+  end;
 end;
 
 
