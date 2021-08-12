@@ -564,7 +564,7 @@ begin
   BytesPerLine := FWidth * 3;
 
   //Определить количество байт для выравнивания
-  Trash := (BytesPerLine mod 4) mod 4;
+  Trash := BytesPerLine mod 4;
 
   //Определить размер данных с мусором
   Size := (BytesPerLine + Trash) * FHeight;
@@ -582,8 +582,6 @@ begin
   //Описатель BMP файла
   ZeroMemory(@BFH, szFileHeader);
   BFH.bfType := $4D42;                                      //Волшебное слово от микрософта - BM
-  BFH.bfReserved1 := 0;
-  BFH.bfReserved2 := 0;
   BFH.bfOffBits := szFileHeader + szInfoHeader;             //Смещение от начала файла до самих данных
   BFH.bfSize := BFH.bfOffBits + Size;                       //Размер файла целиком со структурами и мусором
 
@@ -595,11 +593,8 @@ begin
   BIH.biPlanes := 1;                                        //Сколько слоёв
   BIH.biBitCount := 24;                                     //Бит на пиксель
   BIH.biCompression := BI_RGB;                              //Без сжатия
-  BIH.biSizeImage := 0;                                     //Не используется без сжатия
-  BIH.biXPelsPerMeter := 0;                                 //Разрешение по X
-  BIH.biYPelsPerMeter := 0;                                 //Разрешение по Y
-  BIH.biClrUsed := 0;                                       //Сколько цветов в таблице индексов
-  BIH.biClrImportant := 0;                                  //0 - все индексы цветов доступны
+  BIH.biXPelsPerMeter := 3780;                                 //Разрешение по X
+  BIH.biYPelsPerMeter := 3780;                                 //Разрешение по Y
 
   //Записать в поток
   Stream.Size := 0;                                         //Обнулить память
