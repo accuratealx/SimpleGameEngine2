@@ -57,6 +57,8 @@ type
     FDrawLastTime: Int64;
     FDrawCurrentTime: Int64;
     FDrawDelay: Int64;
+
+    //FChangeViewArea: Boolean;
     FNewWidth: Integer;
     FNewHeight: Integer;
 
@@ -319,8 +321,12 @@ end;
 
 function TsgeExtensionGraphic.Event_WindowResize(Obj: TsgeEventWindowSize): Boolean;
 begin
-  Result := True;
+  Result := False;
 
+  //Изменить размер контекста основного потока
+  FContext.ChangeViewArea(FNewWidth, FNewHeight);
+
+  //Запомнить новые размеры
   if FGraphic <> nil then
     begin
     FNewWidth := Obj.Width;
@@ -350,10 +356,9 @@ begin
     FExtWindow := TsgeExtensionWindow(GetExtension(Extension_Window));
 
     //Контекст графики
-    FGraphic := TsgeGraphic.Create(FExtWindow.Window.DC, FExtWindow.Window.Width, FExtWindow.Window.Height);  //Создать основной контекст графики
-    FContext := TsgeGraphicBase.Create(FExtWindow.Window.DC, 0, 0);                 //Создать контекст для основного потока
+    FGraphic := TsgeGraphic.Create(FExtWindow.Window.DC, FExtWindow.Window.Width, FExtWindow.Window.Height);      //Создать основной контекст графики
+    FContext := TsgeGraphicBase.Create(FExtWindow.Window.DC, FExtWindow.Window.Width, FExtWindow.Window.Height);  //Создать контекст для основного потока
     FGraphic.ShareList(FContext.Context);                                           //Расшарить ресурсы между контекстами
-    FContext.Activate;                                                              //Активировать контекст основного потока
 
     //Создать поток
     FThread := TsgeThread.Create(nil, True, False);
@@ -364,6 +369,9 @@ begin
     //Проверить создание графики на ошибку
     if FThread.Exception <> nil then
       raise EsgeException.Create(FThread.Exception.Message);
+
+    //Активировать контекст основного потока
+    FContext.Activate;
 
     //Создать объекты
     FDrawList := TsgeGraphicDrawList.Create;
