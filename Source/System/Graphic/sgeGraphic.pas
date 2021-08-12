@@ -107,7 +107,6 @@ type
     procedure SetLineStipple(AStipple: Boolean);
     function  GetLineStipple: Boolean;
 
-    procedure SetView(AWidth, AHeight: Integer);
     procedure SetRenderSprite(ASprite: TsgeGraphicSprite);
     procedure SetRenderPlace(APlace: TsgeGraphicRenderPlace);
 
@@ -127,7 +126,6 @@ type
     procedure Init;                                                   //Задать начальные параметры
     procedure ShareList(Context: HGLRC);                              //Объеденить ресурсы с контекстом
 
-    procedure ChangeViewArea(AWidth, AHeight: Integer);
     procedure Reset;
     procedure SwapBuffers;
     procedure Finish;
@@ -452,17 +450,6 @@ end;
 function TsgeGraphic.GetLineStipple: Boolean;
 begin
   Result := glIsEnabled(GL_LINE_STIPPLE);
-end;
-
-
-procedure TsgeGraphic.SetView(AWidth, AHeight: Integer);
-begin
-  glViewport(0, 0, AWidth, AHeight);      //Задать область вывода
-  glMatrixMode(GL_PROJECTION);            //Выбрать матрицу проекций
-  glLoadIdentity;                         //Изменить проекцию на эталонную
-  glOrtho(0, AWidth, AHeight, 0, -1, 1);  //Изменить проекцию на ортографическую
-  glMatrixMode(GL_MODELVIEW);             //Выбрать матрицу модели
-  glLoadIdentity;                         //Изменить проекцию на эталонную
 end;
 
 
@@ -833,20 +820,6 @@ begin
   //Расшарить ресурсы между контекстами
   if not wglShareLists(Context, FGLContext) then
     raise EsgeException.Create(_UNITNAME, Err_CantShareContext);
-end;
-
-
-procedure TsgeGraphic.ChangeViewArea(AWidth, AHeight: Integer);
-begin
-  //Запомнить размеры окна
-  if AWidth < 1 then AWidth := 1;
-  FWidth := AWidth;
-
-  if AHeight < 1 then AHeight := 1;
-  FHeight := AHeight;
-
-  //Установить область вывода
-  SetView(FWidth, FHeight);
 end;
 
 
@@ -1360,7 +1333,7 @@ begin
   BytesPerLine := FWidth * 3;
 
   //Определить количество байт для выравнивания
-  Trash := (BytesPerLine mod 4) mod 4;
+  Trash := BytesPerLine mod 4;
 
   //Определить размер данных с мусором
   Size := (BytesPerLine + Trash) * FHeight;
@@ -1380,8 +1353,6 @@ begin
   //Описатель BMP файла
   ZeroMemory(@BFH, szFileHeader);
   BFH.bfType := $4D42;                                      //Волшебное слово от микрософта - BM
-  BFH.bfReserved1 := 0;
-  BFH.bfReserved2 := 0;
   BFH.bfOffBits := szFileHeader + szInfoHeader;             //Смещение от начала файла до самих данных
   BFH.bfSize := BFH.bfOffBits + Size;                       //Размер файла целиком со структурами и мусором
 
@@ -1393,11 +1364,8 @@ begin
   BIH.biPlanes := 1;                                        //Сколько слоёв
   BIH.biBitCount := 24;                                     //Бит на пиксель
   BIH.biCompression := BI_RGB;                              //Без сжатия
-  BIH.biSizeImage := 0;                                     //Не используется без сжатия
-  BIH.biXPelsPerMeter := 0;                                 //Разрешение по X
-  BIH.biYPelsPerMeter := 0;                                 //Разрешение по Y
-  BIH.biClrUsed := 0;                                       //Сколько цветов в таблице индексов
-  BIH.biClrImportant := 0;                                  //0 - все индексы цветов доступны
+  BIH.biXPelsPerMeter := 3780;                              //Разрешение по X
+  BIH.biYPelsPerMeter := 3780;                              //Разрешение по Y
 
   //Записать в поток
   Stream.Size := 0;                                         //Обнулить память

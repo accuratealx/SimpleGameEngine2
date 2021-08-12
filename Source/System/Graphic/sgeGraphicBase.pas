@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGraphicBase.pas
-Версия            1.0
+Версия            1.1
 Создан            02.05.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Базовый класс графики. Создание контекста.
@@ -24,12 +24,15 @@ type
     FGLContext: HGLRC;                                              //Контекст OpenGL
     FWidth: Integer;                                                //Ширина окна
     FHeight: Integer;                                               //Высота окна
+
+    procedure SetView(AWidth, AHeight: Integer);
   public
     constructor Create(DC: HDC; Width, Height: Integer); virtual;
     destructor  Destroy; override;
 
     procedure Activate;
     procedure Deactivate;
+    procedure ChangeViewArea(AWidth, AHeight: Integer);
 
     property Context: HGLRC read FGLContext;
     property Width: Integer read FWidth;
@@ -51,6 +54,18 @@ const
   Err_CantSetPixelFormat        = 'CantSetPixelFormat';
   Err_CantCreateContext         = 'CantCreateContext';
   Err_CantActivateContext       = 'CantActivateContext';
+
+
+
+procedure TsgeGraphicBase.SetView(AWidth, AHeight: Integer);
+begin
+  glViewport(0, 0, AWidth, AHeight);      //Задать область вывода
+  glMatrixMode(GL_PROJECTION);            //Выбрать матрицу проекций
+  glLoadIdentity;                         //Изменить проекцию на эталонную
+  glOrtho(0, AWidth, AHeight, 0, -1, 1);  //Изменить проекцию на ортографическую
+  glMatrixMode(GL_MODELVIEW);             //Выбрать матрицу модели
+  glLoadIdentity;                         //Изменить проекцию на эталонную
+end;
 
 
 constructor TsgeGraphicBase.Create(DC: HDC; Width, Height: Integer);
@@ -123,6 +138,20 @@ end;
 procedure TsgeGraphicBase.Deactivate;
 begin
   wglMakeCurrent(0, 0);
+end;
+
+
+procedure TsgeGraphicBase.ChangeViewArea(AWidth, AHeight: Integer);
+begin
+  //Запомнить размеры окна
+  if AWidth < 1 then AWidth := 1;
+  FWidth := AWidth;
+
+  if AHeight < 1 then AHeight := 1;
+  FHeight := AHeight;
+
+  //Установить область вывода
+  SetView(FWidth, FHeight);
 end;
 
 
