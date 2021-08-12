@@ -31,6 +31,7 @@ type
 
     //Переменные
     FMainDir: String;
+    FScreenshotDir: String;
 
 
     //Поиск файла в списке архивов
@@ -58,6 +59,7 @@ type
     Procedure FindFiles(Directory: String; List: TsgeStringList; Ext: String = '');
 
     property MainDir: String read FMainDir;
+    property ScreenshotDir: String read FScreenshotDir;
   end;
 
 
@@ -121,6 +123,7 @@ begin
 
     //Параметры по умолчанию
     FMainDir := sgeGetApplicationDirectory;
+    FScreenshotDir := FMainDir + 'Screenshot\';
 
     //Получить ссылки на объекты
     FExtPackList := TsgeExtensionPackList(GetExtension(Extension_PackList));
