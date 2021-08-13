@@ -22,9 +22,9 @@ uses
   sgeExtensionPackList, sgeExtensionResourceList, sgeExtensionShell, 
   sgeExtensionSound, sgeExtensionStartParameters, sgeExtensionVariables, 
   sgeExtensionWindow, sgeGraphicAnimation, sgeGraphicAnimationFrames, 
-  sgeGraphicBase, sgeGraphicColor, sgeGraphicDrawList, 
-  sgeGraphicElementAnimation, sgeGraphicElementBase, sgeGraphicElementCircle, 
-  sgeGraphicElementLayer, sgeGraphicElementLayerList, sgeGraphicElementList, 
+  sgeGraphicColor, sgeGraphicDrawList, sgeGraphicElementAnimation, 
+  sgeGraphicElementBase, sgeGraphicElementCircle, sgeGraphicElementLayer, 
+  sgeGraphicElementLayerList, sgeGraphicElementList, 
   sgeGraphicElementRectangle, sgeGraphicElementRectangleGradient, 
   sgeGraphicElementSprite, sgeGraphicElementSpritePart, 
   sgeGraphicElementSpriteTile, sgeGraphicElementText, sgeGraphicFont, 
@@ -51,7 +51,8 @@ uses
   sgeShellCommands, sgeShellCommand_System_ReadKey, 
   sgeShellCommand_Variable_Clear, sgeShellCommand_Dialog_Message, 
   sgeShellCommand_Variable_Delete, sgeShellCommand_Variable_Set, 
-  sgeShellCommand_System_Stop;
+  sgeShellCommand_System_Sleep, sgeShellLine, sgeShellLineItem, 
+  sgeShellLineList, sgeShellCommand_System_Write, sgeShellCommand_System_Stop;
 
 implementation
 
