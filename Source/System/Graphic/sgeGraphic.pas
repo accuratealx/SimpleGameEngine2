@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGraphic.pas
-Версия            1.3
+Версия            1.4
 Создан            27.04.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс графики
@@ -17,7 +17,7 @@ interface
 
 uses
   sgeTypes, sgeMemoryStream,
-  sgeGraphicBase, sgeGraphicColor, sgeGraphicSprite,  sgeGraphicFont, sgeGraphicAnimation,
+  sgeGraphicColor, sgeGraphicSprite,  sgeGraphicFont, sgeGraphicAnimation,
   Windows;
 
 
@@ -74,13 +74,18 @@ type
 
 
   //Класс графики
-  TsgeGraphic = class(TsgeGraphicBase)
+  TsgeGraphic = class
   private
-    FRenderBuffer: TsgeGraphicRenderBuffer;                 //Активный буфер
-    FRenderPlace: TsgeGraphicRenderPlace;                   //Место отрисовки
-    FRenderSprite: TsgeGraphicSprite;                       //Спрайт вывода
-    FFrameBuffer: Cardinal;                                 //Кадровый буфер
-    FDrawOptions: TsgeGraphicDrawOptions;                   //Настройки вывода спрайтов
+    FDC: HDC;                                                       //Хэндл окна
+    FGLContext: HGLRC;                                              //Контекст OpenGL
+    FWidth: Integer;                                                //Ширина окна
+    FHeight: Integer;                                               //Высота окна
+
+    FRenderBuffer: TsgeGraphicRenderBuffer;                         //Активный буфер
+    FRenderPlace: TsgeGraphicRenderPlace;                           //Место отрисовки
+    FRenderSprite: TsgeGraphicSprite;                               //Спрайт вывода
+    FFrameBuffer: Cardinal;                                         //Кадровый буфер
+    FDrawOptions: TsgeGraphicDrawOptions;                           //Настройки вывода спрайтов
 
     function  GetInfo(Index: TsgeGraphicInfo): String;
     procedure SetColor(AColor: TsgeColor);
@@ -110,6 +115,8 @@ type
     procedure SetRenderSprite(ASprite: TsgeGraphicSprite);
     procedure SetRenderPlace(APlace: TsgeGraphicRenderPlace);
 
+    procedure SetView(AWidth, AHeight: Integer);
+
     //Вспомогательные функции вывода
     procedure FillSprite(const Rect, SpriteRect: TsgeFloatRect);                                                    //Вывести примитив со спрайтом
     procedure FillSpriteSegment(const Rect, SpriteRect, SpriteMetric: TsgeFloatRect; const Metric: TsgeIntRect);    //Вывести примитив со спрайтом по частям
@@ -120,11 +127,15 @@ type
     function  GetRectByCoordinateType(const Rect: TsgeFloatRect; const CoordType: TsgeGraphicCoordinateType): TsgeFloatRect;  //Вернуть координаты прямоугольника с учётом типа
 
   public
-    constructor Create(DC: HDC; Width, Height: Integer); override;
+    constructor Create(DC: HDC; Width, Height: Integer);
     destructor  Destroy; override;
 
     procedure Init;                                                   //Задать начальные параметры
     procedure ShareList(Context: HGLRC);                              //Объеденить ресурсы с контекстом
+
+    procedure Activate;
+    procedure Deactivate;
+    procedure ChangeViewArea(AWidth, AHeight: Integer);
 
     procedure Reset;
     procedure SwapBuffers;
@@ -199,6 +210,9 @@ type
     procedure ScreenShot(Stream: TsgeMemoryStream);
 
     //Свойства
+    property Context: HGLRC read FGLContext;
+    property Width: Integer read FWidth;
+    property Height: Integer read FHeight;
     property Info[Index: TsgeGraphicInfo]: String read GetInfo;
     property Color: TsgeColor read GetColor write SetColor;
     property BGColor: TsgeColor read GetBGColor write SetBGColor;
@@ -251,6 +265,11 @@ uses
 const
   _UNITNAME = 'Graphic';
 
+  Err_CantLoadOpenGLLib         = 'CantLoadOpenGLLib';
+  Err_CantSelectPixelFormal     = 'CantSelectPixelFormal';
+  Err_CantSetPixelFormat        = 'CantSetPixelFormat';
+  Err_CantCreateContext         = 'CantCreateContext';
+  Err_CantActivateContext       = 'CantActivateContext';
   Err_VerticalSyncNotSupported  = 'VerticalSyncNotSupported';
   Err_CantShareContext          = 'CantShareContext';
   Err_SpriteIsEmpty             = 'SpriteIsEmpty';
@@ -484,6 +503,17 @@ begin
   end;
 
   FRenderPlace := APlace;
+end;
+
+
+procedure TsgeGraphic.SetView(AWidth, AHeight: Integer);
+begin
+  glViewport(0, 0, AWidth, AHeight);      //Задать область вывода
+  glMatrixMode(GL_PROJECTION);            //Выбрать матрицу проекций
+  glLoadIdentity;                         //Изменить проекцию на эталонную
+  glOrtho(0, AWidth, AHeight, 0, -1, 1);  //Изменить проекцию на ортографическую
+  glMatrixMode(GL_MODELVIEW);             //Выбрать матрицу модели
+  glLoadIdentity;                         //Изменить проекцию на эталонную
 end;
 
 
@@ -778,9 +808,55 @@ end;
 
 
 constructor TsgeGraphic.Create(DC: HDC; Width, Height: Integer);
+var
+  PFD: TPIXELFORMATDESCRIPTOR;
+  PixelFormat: Integer;
 begin
-  //Содать контекст
-  inherited Create(DC, Width, Height);
+  //Запомнить размеры
+  FWidth := Width;
+  FHeight := Height;
+
+  //Загрузить библиотеку
+  if GL_LibHandle = nil then InitOpenGL;
+
+  //Проверить загрузилась ли Opengl32.dll
+  if not Assigned(GL_LibHandle) then
+    raise EsgeException.Create(_UNITNAME, Err_CantLoadOpenGLLib);
+
+  //Прочитать адреса функций
+  ReadOpenGLCore;
+
+  //Запомнить DC WIndows
+  FDC := DC;
+
+  //Заполнить Pixel format
+  ZeroMemory(@PFD, SizeOf(PFD));
+  with PFD do
+    begin
+    nSize := SizeOf(PFD);
+    dwFlags := PFD_SUPPORT_OPENGL or PFD_DOUBLEBUFFER or PFD_DRAW_TO_WINDOW or PFD_TYPE_RGBA; //Поддержка OpenGL, двойной буфер, рисуем на окне, альфаканал
+    iPixelType := PFD_TYPE_RGBA;  //Формат цвета 32 бита на точку
+    iLayerType := PFD_MAIN_PLANE; //Основная плоскость
+    cColorBits := 24;             //Количество бит для одного цвета без альфаканала
+    end;
+
+  //Попросить Windows подобрать запрошенный формат пикселя
+  PixelFormat := ChoosePixelFormat(FDC, @PFD);
+
+  //Проверить подобрался ли формат пикселя
+  if PixelFormat = 0 then
+    raise EsgeException.Create(_UNITNAME, Err_CantSelectPixelFormal);
+
+  //Попробовать установить нужный формат пикселя и проверить
+  if SetPixelFormat(FDC, PixelFormat, @PFD) = LongBool(0) then
+    raise EsgeException.Create(_UNITNAME, Err_CantSetPixelFormat);
+
+  //Создать контекст OpenGL
+  FGLContext := wglCreateContext(FDC);
+
+  //Проверить создался ли контекст
+  if FGLContext = 0 then
+    raise EsgeException.Create(_UNITNAME, Err_CantCreateContext);
 
   //Настройки вывода по умолчанию
   FDrawOptions := DefaultDrawOptions;
@@ -794,7 +870,8 @@ begin
   glDeleteFramebuffers(1, @FFrameBuffer);
 
   //Удалить контекст
-  inherited Destroy;
+  Deactivate;                             //Отменить выбор контекста
+  wglDeleteContext(FGLContext);           //Удалить контекст
 end;
 
 
@@ -818,8 +895,35 @@ end;
 procedure TsgeGraphic.ShareList(Context: HGLRC);
 begin
   //Расшарить ресурсы между контекстами
-  if not wglShareLists(Context, FGLContext) then
+  if not wglShareLists(FGLContext, Context) then
     raise EsgeException.Create(_UNITNAME, Err_CantShareContext);
+end;
+
+
+procedure TsgeGraphic.Activate;
+begin
+  if not wglMakeCurrent(FDC, FGLContext) then
+    raise EsgeException.Create(_UNITNAME, Err_CantActivateContext);
+end;
+
+
+procedure TsgeGraphic.Deactivate;
+begin
+  wglMakeCurrent(0, 0);
+end;
+
+
+procedure TsgeGraphic.ChangeViewArea(AWidth, AHeight: Integer);
+begin
+  //Запомнить размеры окна
+  if AWidth < 1 then AWidth := 1;
+  FWidth := AWidth;
+
+  if AHeight < 1 then AHeight := 1;
+  FHeight := AHeight;
+
+  //Установить область вывода
+  SetView(FWidth, FHeight);
 end;
 
 
