@@ -26,6 +26,7 @@ uses
   sgeShellCommand_System_ReadLn,
   sgeShellCommand_System_ReadKey,
   sgeShellCommand_System_Sleep,
+  sgeShellCommand_System_Write,
 
   sgeShellCommand_Variable_Set,
   sgeShellCommand_Variable_Delete,
@@ -42,6 +43,7 @@ begin
   TsgeShellCommand_System_ReadLn.Create(SGEObject);
   TsgeShellCommand_System_ReadKey.Create(SGEObject);
   TsgeShellCommand_System_Sleep.Create(SGEObject);
+  TsgeShellCommand_System_Write.Create(SGEObject);
 
   TsgeShellCommand_Variable_Set.Create(SGEObject);
   TsgeShellCommand_Variable_Delete.Create(SGEObject);

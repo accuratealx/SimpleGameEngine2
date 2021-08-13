@@ -15,11 +15,10 @@ unit sgeExtensionShell;
 interface
 
 uses
-  sgeThread, sgeSystemEvent, sgeSimpleCommand, sgeSimpleParameters,
-  sgeExtensionBase, sgeEventWindow, sgeEventSubscriber, sgeShellCommandQueue,
-  sgeShellCommandList, sgeLineEditor, sgeCommandHistory,
-  sgeExtensionGraphic, sgeExtensionResourceList, sgeExtensionVariables,
-  sgeGraphicSprite, sgeGraphicElementSpriteCashed;
+  sgeThread, sgeSystemEvent, sgeSimpleCommand, sgeSimpleParameters, sgeGraphic, sgeGraphicColor,
+  sgeGraphicFont, sgeExtensionBase, sgeEventWindow, sgeEventSubscriber, sgeShellCommandQueue,
+  sgeShellCommandList, sgeLineEditor, sgeCommandHistory, sgeShellLineList, sgeExtensionGraphic,
+  sgeExtensionResourceList, sgeExtensionVariables, sgeGraphicSprite, sgeGraphicElementSpriteCashed;
 
 
 const
@@ -27,9 +26,13 @@ const
 
 
 type
+  //Тип текста
+  TsgeShellMessageType = (smtError, smtText, smtNote);
+
+
   TsgeExtensionShell = class(TsgeExtensionBase)
   private
-    //Ссылки на расширения
+    //Ссылки
     FExtGraphic: TsgeExtensionGraphic;
     FExtResList: TsgeExtensionResourceList;
     FExtVariables: TsgeExtensionVariables;
@@ -37,22 +40,32 @@ type
 
     //Классы
     FThread: TsgeThread;                                            //Поток обработки команд
+    FCommandQueue: TsgeShellCommandQueue;                           //Очередь комманд на выполнение
     FCommandList: TsgeShellCommandList;                             //Список команд оболочки
-    FHistory: TsgeCommandHistory;                                   //История введённых команд
+    FCommandHistory: TsgeCommandHistory;                            //История введённых команд
+    FJournal: TsgeShellLineList;                                    //Журнал
     FEditor: TsgeLineEditor;                                        //Однострочный редактор
     FAliases: TsgeSimpleParameters;                                 //Псевдонимы
-    FCommandQueue: TsgeShellCommandQueue;                           //Очередь комманд на выполнение
     FCanvas: TsgeGraphicSprite;                                     //Холст для отрисовки оболочки
-
+    FFont: TsgeGraphicFont;                                         //Шрифт
 
     //Ссылки на объекты подписки
-    FSubKeyDown: TsgeEventSubscriber;
-    FSubKeyUp: TsgeEventSubscriber;
-    FSubKeyChar: TsgeEventSubscriber;
+    FSubKeyDown : TsgeEventSubscriber;
+    FSubKeyUp   : TsgeEventSubscriber;
+    FSubKeyChar : TsgeEventSubscriber;
 
     //Параметры
     FEnable: Boolean;
     FWeakSeparator: Boolean;
+    FJournalLines: Byte;                                            //Количество строк журнала
+
+    FBGColor: TsgeColor;                                            //Цвет фона
+    FEditorTextColor: TsgeColor;                                    //Цвет текста строки редактора
+    FEditorSelectColor: TsgeColor;                                  //Цвет выделения строки редактора
+    FEditorCursorColor: TsgeColor;                                  //Цвет курсора строки редактора
+    FErrorColor: TsgeColor;                                         //Цвет ошибки
+    FTextColor: TsgeColor;                                          //Цвет простого текста
+    FNoteColor: TsgeColor;                                          //Цвет заметки
 
     //Вспомогательные параметры
     FCommandIsRunning: Boolean;                                     //Флаг выполнения команды
@@ -60,6 +73,7 @@ type
     //Обработчики событий
     procedure RegisterEventHandlers;
     procedure UnRegisterEventHandlers;
+    function  Event_WindowResize(Obj: TsgeEventWindowSize): Boolean;
     function  Handler_KeyDown(EventObj: TsgeEventWindowKeyboard): Boolean;
     function  Handler_KeyUp(EventObj: TsgeEventWindowKeyboard): Boolean;
     function  Handler_KeyChar(EventObj: TsgeEventWindowChar): Boolean;
@@ -69,7 +83,7 @@ type
     function  SubstituteVariables(Str: String): String;             //Подставить здначеня переменных в строку
     procedure RunCommand(Cmd: TsgeSimpleCommand);                   //Выполнение разобранной команды
     procedure ExecuteCommand(Command: String);                      //Разбор строки на алиасы и выполнение
-    procedure RepaintCanvas;                                        //Перерисовать холст
+    procedure RepaintCanvas(Graphic: TsgeGraphic);                  //Перерисовать холст
 
     //Методы потока
     procedure ProcessCommand;                                       //Функция разбора и выполнения команды
@@ -86,6 +100,7 @@ type
     function  Variable_GetEnable: Boolean;
   protected
     //Специальные команды
+    FStopExecuting: Boolean;                                        //Флаг прерывания работы скрипта
     FReadMode: Boolean;                                             //Флаг обработки команды Read, ReadLn
     FReadKeyMode: Boolean;                                          //Флаг обработки команды ReadKey
     FreadKeyChar: Byte;                                             //Код символа нажатия
@@ -96,13 +111,31 @@ type
     constructor Create(ObjectList: TObject); override;
     destructor  Destroy; override;
 
-    procedure DoCommand(Cmd: String);                               //Выполнить команду
+    //Добавить строку в журнал
+    procedure LogMessage(Text: String; MsgType: TsgeShellMessageType = smtText);
 
-    property Enable: Boolean read FEnable write SetEnable;
+    //Выполнить команду
+    procedure DoCommand(Cmd: String);
+    procedure Stop;
+
+    //Классы
     property Aliases: TsgeSimpleParameters read FAliases;
     property CommandList: TsgeShellCommandList read FCommandList;
+    property CommandHistory: TsgeCommandHistory read FCommandHistory;
     property Editor: TsgeLineEditor read FEditor;
+
+    //Параметры
+    property Enable: Boolean read FEnable write SetEnable;
+    property Journal: TsgeShellLineList read FJournal;
     property WeakSeparator: Boolean read FWeakSeparator write FWeakSeparator;
+
+    property BGColor: TsgeColor read FBGColor write FBGColor;
+    property EditorTextColor: TsgeColor read FEditorTextColor write FEditorTextColor;
+    property EditorSelectColor: TsgeColor read FEditorSelectColor write FEditorSelectColor;
+    property EditorCursorColor: TsgeColor read FEditorCursorColor write FEditorCursorColor;
+    property ErrorColor: TsgeColor read FErrorColor write FErrorColor;
+    property TextColor: TsgeColor read FTextColor write FTextColor;
+    property NoteColor: TsgeColor read FNoteColor write FNoteColor;
   end;
 
 
@@ -110,8 +143,9 @@ type
 implementation
 
 uses
-  sgeErrors, sgeTypes, sgeEventBase, sgeSystemUtils, sgeStringUtils, sgeVariableBase, sgeShellCommand,
-  sgeKeys, sgeGraphicColor;
+  sgeErrors, sgeTypes, sgeStringList, sgeEventBase, sgeSystemUtils, sgeStringUtils,
+  sgeVariableBase, sgeShellCommand, sgeKeys, sgeShellLine, sgeShellLineItem,
+  Math;
 
 const
   _UNITNAME = 'ExtensionShell';
@@ -137,6 +171,8 @@ begin
   FSubKeyDown := EventManager.Subscribe(Event_WindowKeyDown, TsgeEventHandler(@Handler_KeyDown), HandlerPriority, False);
   FSubKeyUp := EventManager.Subscribe(Event_WindowKeyUp, TsgeEventHandler(@Handler_KeyUp), HandlerPriority, False);
   FSubKeyChar := EventManager.Subscribe(Event_WindowChar, TsgeEventHandler(@Handler_KeyChar), HandlerPriority, False);
+
+  EventManager.Subscribe(Event_WindowSize, TsgeEventHandler(@Event_WindowResize), $FFFE, True);
 end;
 
 
@@ -144,6 +180,13 @@ procedure TsgeExtensionShell.UnRegisterEventHandlers;
 begin
   //Отписаться от всех событий
   EventManager.UnSubscribe(Self);
+end;
+
+
+function TsgeExtensionShell.Event_WindowResize(Obj: TsgeEventWindowSize): Boolean;
+begin
+  Result := False;
+  RepaintCanvas(FExtGraphic.Graphic);
 end;
 
 
@@ -195,7 +238,7 @@ begin
         FEditor.Line := '';
 
         //Записать в историю
-        FHistory.AddCommand(s);
+        FCommandHistory.AddCommand(s);
 
         //Выполнить команду
         DoCommand(s);
@@ -204,25 +247,32 @@ begin
 
 
       //Установить предыдущую команду в поле редактора
-      keyUp: FEditor.Line := FHistory.GetPreviousCommand;
+      keyUp: FEditor.Line := FCommandHistory.GetPreviousCommand;
 
 
       //Установить следующую команду в поле редактора
-      keyDown: FEditor.Line := FHistory.GetNextCommand;
+      keyDown: FEditor.Line := FCommandHistory.GetNextCommand;
 
 
       //Очистить журнал оболочки
       keyL:
-        if (kbCtrl in EventObj.KeyboardButtons) then ;
+        if (kbCtrl in EventObj.KeyboardButtons) then
+          begin
+          FJournal.Clear;
+          RepaintCanvas(FExtGraphic.Graphic);
+          end;
 
 
       //Остановить выполнение команды
       keyPause:
-        if (kbCtrl in EventObj.KeyboardButtons) then ;
+        if (kbCtrl in EventObj.KeyboardButtons) then Stop;
 
     else
       FEditor.ProcessKey(EventObj.Key, EventObj.KeyboardButtons);
   end;
+
+  //Перерисовать оболочку
+  RepaintCanvas(FExtGraphic.Graphic);
 end;
 
 
@@ -245,6 +295,9 @@ begin
 
   //Отослать в редактор
   FEditor.ProcessChar(EventObj.Char, EventObj.KeyboardButtons);
+
+  //Перерисовать
+  RepaintCanvas(FExtGraphic.Graphic);
 end;
 
 
@@ -381,6 +434,9 @@ var
   Str: String;
 begin
   try
+    //Проверить флаг аварийной остановки потока
+    //if FStopExecuting then Exit;
+
     //Разобрать строку на части по ;
     Line := TsgeSimpleCommand.Create(Command, True, CommandSeparator);
 
@@ -430,12 +486,169 @@ begin
 end;
 
 
-procedure TsgeExtensionShell.RepaintCanvas;
+procedure TsgeExtensionShell.RepaintCanvas(Graphic: TsgeGraphic);
+const
+  Indent = 5;
+var
+  W, H, JEnd, JBegin, LineH, CharW, JournalH, MaxCharWidth, i, j, DrawChar, C, CharToCut, ItemW, XOffset: Integer;
+  X, Y, Y1, Y2, X1, X2: Single;
+  Line: TsgeShellLine;
+  Item: TsgeShellLineItem;
+  s: String;
 begin
-  //Проверить размеры
-  //Нарисовать оболочку
+  //Расчёты
+  W := FExtGraphic.Graphic.Width;                                   //Ширина спрайта
+  LineH := FFont.Height;                                            //Высота строки текста
+  CharW := FFont.GetStringWidth('W');                               //Ширина символа
+  JournalH := LineH * FJournalLines;                                //Высота журнала
+  H := JournalH + LineH + Indent * 3;                               //Высота оболочки
+  MaxCharWidth := Floor((W - Indent * 2) / CharW);                  //Максимум символов по ширине
+  XOffset := 0;
+
+
+  //Проверить размеры холста и поправить
+  if (FCanvas.Width <> W) or (FCanvas.Height <> H) then FCanvas.SetSize(W, H);
+
+
+  //Подготовить спрайт для вывода
+  with Graphic do
+    begin
+    PushAttrib;                                                     //Сохранить параметры
+    RenderSprite := FCanvas;                                        //Установить спрайт для вывода
+    RenderPlace := grpSprite;                                       //Переключить режим вывода
+    ResetDrawOptions;                                               //Сбросить настройки вывода
+    end;
+
+
+  //Залить фоновым цветом
+  with Graphic do
+    begin
+    ColorBlend := False;                                            //Отключить смешивание цветов
+    PoligonMode := gpmFill;                                         //Установить режим заливки полигонов
+    Color := FBGColor;                                              //Установить фоновый цвет
+    DrawRect(0, 0, FCanvas.Width, FCanvas.Height);                  //Вывести прямоугольник
+    ColorBlend := True;                                             //Включить смештвание цветов
+    end;
+
+
+  //Вывод фоновой картинки если есть
+
+
+  //Координаты Начала вывода строки редактора
+  X := Indent;
+  Y := H - Indent - LineH;
+
+  //Вывод спецсимвола ожидания ввода
+  with Graphic do
+    begin
+    if FReadMode or FReadKeyMode then
+      begin
+      Color := FEditorTextColor;
+      DrawText(X, Y, FFont, '?');
+      XOffset := CharW;
+      end;
+    end;
+
+
+  //Вывод строки редактора
+  with Graphic do
+    begin
+    Color := FEditorTextColor;                                      //Установить цвет текста
+    DrawText(X + XOffset, Y, FFont, FEditor.Line);                  //Вывод
+    end;
+
+
+  //Границы высоты выделения строки редактора
+  Y1 := Y + 2;
+  Y2 := H - Indent + 4;
+
+
+  //Выделение строки редактора
+  with Graphic do
+    if FEditor.SelectCount > 0 then
+      begin
+      X1 := Indent + XOffset + FFont.GetStringWidth(FEditor.GetTextBeforePos(FEditor.SelectBeginPos));
+      X2 := Indent + XOffset + FFont.GetStringWidth(FEditor.GetTextBeforePos(FEditor.SelectEndPos));
+      ResetDrawOptions;
+      Color := FEditorSelectColor;
+      doCoordinateType := gctClassic;
+      DrawRect(X1, Y1, X2, Y2);
+      end;
+
+
+  //Курсор строки редактора
+  with Graphic do
+    begin
+    X1 := Indent + XOffset + FFont.GetStringWidth(FEditor.GetTextBeforePos(FEditor.CursorPos));
+    Color := FEditorCursorColor;
+    DrawLine(X1, Y1, X1, Y2);
+    end;
+
+
+  //Вывод журнала оболочки
+  with Graphic do
+    begin
+    //Расчёты
+    JEnd := FJournal.Count - 1;
+    JBegin := FJournal.Count - Min(FJournal.Count, FJournalLines);
+    Y := Indent + JournalH - LineH;
+
+    for i := JEnd downto JBegin do
+      begin
+      Line := FJournal.Item[i];                                     //Ссылка на строку
+      Y1 := Y - (JEnd - i) * LineH;                                 //Координата Y строки
+      DrawChar := 0;                                                //Выведено символов в строке
+
+      //Вывод элементов
+      for j := 0 to Line.Count - 1 do
+        begin
+        Item := Line.Item[j];                                       //Ссылка на элемент
+        if DrawChar >= MaxCharWidth then Break;                     //Проверить на переполнение вывода
+        C := DrawChar + Length(Item.Text);                          //Длина текста с предыдущим выводом
+        s := Item.Text;
+        X1 := Indent + DrawChar * CharW;                            //Координата X элемента строки
+
+        //Если текст вылез за границу спрайта, то обрезать
+        if C > MaxCharWidth then
+          begin
+          CharToCut := C - MaxCharWidth + 3;                        //Сколько отрезать от вывода
+          Delete(s, Length(s) - CharToCut + 1, CharToCut);          //Отрезать лишний текст
+          s := s + '...';                                           //Для красоты
+          end;
+
+        //Вывод фона
+        ItemW := Length(s);
+        Color := Item.BGColor;
+        doCoordinateType := gctClassic;
+        DrawRect(X1, Y1 + 2, X1 + ItemW * CharW, Y1 + LineH + 4);
+
+        //Вывод текста
+        Color := Item.Color;
+        DrawText(X1, Y1, FFont, s);
+
+        //Сместить начало вывода нового символа
+        Inc(DrawChar, ItemW);
+        end;
+      end;
+    end;
+
+
+  //Восстановить графику
+  with Graphic do
+    begin
+    RenderPlace := grpScreen;                                       //Изменить вывод на экран
+    RenderSprite := nil;                                            //Отвязать спрайт от вывода
+    PopAttrib;                                                      //Восстановить параметры
+    end;
+
+
+  //Выполнить действия над спрайтом
+  Graphic.Finish;
+
 
   //Обновить графический примитив
+  FElementSprite.W := W;
+  FElementSprite.H := H;
   FElementSprite.Update;
 end;
 
@@ -447,7 +660,17 @@ begin
 
   //Выполнить накопленные команды
   while FCommandQueue.Count > 0 do
+    begin
+    //Проверить флаг аварийного завершения работы потока
+    {if FStopExecuting then
+      begin
+      FStopExecuting := False;
+      Break;
+      end;}
+
+    //Выполнить следующую команду
     ExecuteCommand(FCommandQueue.PullFirstCommand);
+    end;
 
   //Снять флаг выполнения команды
   FCommandIsRunning := False;
@@ -455,8 +678,17 @@ end;
 
 
 procedure TsgeExtensionShell.ErrorHandler(Txt: String);
+var
+  List: TsgeStringList;
+  i: Integer;
 begin
-  //Добавить в журнал строку с ошибкой
+  //Разобрать ошибку на строки
+  List := TsgeStringList.Create;
+  List.FromString(Txt);
+
+  //Добавить в журнал строки, первая ошибка
+  for i := 0 to List.Count - 1 do
+    if i = 0 then LogMessage(List.Part[i], smtError) else LogMessage('  ' + List.Part[i], smtError);
 end;
 
 
@@ -513,16 +745,27 @@ begin
     FEvent := TsgeSystemEvent.Create(True, False);
     FThread := TsgeThread.Create;
     FCommandQueue := TsgeShellCommandQueue.Create;
-    FHistory := TsgeCommandHistory.Create;
+    FCommandHistory := TsgeCommandHistory.Create;
+    FJournal := TsgeShellLineList.Create;
     FAliases := TsgeSimpleParameters.Create;
     FCommandList := TsgeShellCommandList.Create;
     FEditor := TsgeLineEditor.Create;
+    FFont := TsgeGraphicFont.Create('Courier New', 16, [gfaBold]);
 
     //Задать параметры
     FEnable := False;
     FWeakSeparator := True;
     FReadMode := False;
     FReadKeyMode := False;
+    FJournalLines := 12;
+
+    FBGColor            := sgeRGBAToColor(128, 0, 128, 128);
+    FEditorTextColor    := sgeRGBAToColor(255, 255, 255, 255);
+    FEditorCursorColor  := sgeRGBAToColor(255, 255, 255, 255);
+    FEditorSelectColor  := sgeChangeColorAlpha(FEditorCursorColor, 0.5);
+    FErrorColor         := sgeRGBAToColor(255, 0, 0, 255);
+    FTextColor          := sgeRGBAToColor(255, 255, 255, 255);
+    FNoteColor          := sgeRGBAToColor(255, 255, 255, 127);
 
     //Установить обработчик ошибок
     ErrorManager.ShellHandler := @ErrorHandler;
@@ -537,7 +780,7 @@ begin
     RegisterVariables;
 
     //Создать холст
-    FCanvas := TsgeGraphicSprite.Create(500, 300, sgeGetColor(0, 0, 1, 0.5));
+    FCanvas := TsgeGraphicSprite.Create(500, 300);
 
     //Создать слой отрисовки
     FExtGraphic.DrawList.AddLayer(Extension_Shell, $FF);
@@ -549,6 +792,8 @@ begin
     //Добавить элемент в список отрисовки
     FExtGraphic.DrawList.AddElement(FElementSprite, Extension_Shell);
 
+    //Перерисовать оболочку
+    RepaintCanvas(FExtGraphic.Graphic);
   except
     on E: EsgeException do
       raise EsgeException.Create(_UNITNAME, Err_CantCreateExtension, '', E.Message);
@@ -569,14 +814,35 @@ begin
 
   //Удалить объекты
   FThread.Free;
+  FFont.Free;
   FEvent.Free;
   FCommandQueue.Free;
   FEditor.Free;
-  FHistory.Free;
+  FJournal.Free;
+  FCommandHistory.Free;
   FAliases.Free;
   FCommandList.Free;
 
   inherited Destroy;
+end;
+
+
+procedure TsgeExtensionShell.LogMessage(Text: String; MsgType: TsgeShellMessageType);
+var
+  Color: TsgeColor;
+begin
+  //Определить цвет строки
+  case MsgType of
+    smtText : Color := FTextColor;
+    smtError: Color := FErrorColor;
+    smtNote : Color := FNoteColor;
+  end;
+
+  //Добавить строку в журнал
+  FJournal.Add(Text, Color);
+
+  //Перерисовать оболочку
+  RepaintCanvas(FExtGraphic.Graphic);
 end;
 
 
@@ -587,6 +853,13 @@ begin
 
   //Установить обработчик для потока
   FThread.RunProc(@ProcessCommand, tpemSuspend);
+end;
+
+
+procedure TsgeExtensionShell.Stop;
+begin
+  FStopExecuting := True;
+  FEvent.Up;
 end;
 
 
