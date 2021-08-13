@@ -18,7 +18,7 @@ uses
   sgeTypes, sgeThread,
   sgeExtensionBase, sgeGraphicColor, sgeGraphicDrawList, sgeGraphicElementBase, sgeGraphicFPS,
   sgeCounter, sgeScreenFade, sgeEventBase, sgeEventWindow,
-  sgeGraphic, sgeGraphicBase, sgeExtensionWindow;
+  sgeGraphic, sgeExtensionWindow;
 
 
 const
@@ -40,18 +40,18 @@ type
     FExtWindow: TsgeExtensionWindow;
 
     //Классы
-    FDrawList: TsgeGraphicDrawList;                               //Класс слоёв отрисовки
-    FGraphic: TsgeGraphic;                                        //Основной класс графики
-    FThread: TsgeThread;                                          //Поток основного класса графики
-    FContext: TsgeGraphicBase;                                    //Дополнительный контекст для связки ресурсов из разных потоков
-    FFPS: TsgeGraphicFPS;                                         //Настройки вывода FPS
-    FFPSCounter: TsgeCounter;                                     //Счётчик FPS
-    FFade: TsgeScreenFade;                                        //Затемнение экрана
+    FDrawList: TsgeGraphicDrawList;                                 //Класс слоёв отрисовки
+    FGraphicInner: TsgeGraphic;                                     //Класс графики для потока рендера сцены
+    FGraphic: TsgeGraphic;                                          //Класс графики для основного потока
+    FThread: TsgeThread;                                            //Поток основного класса графики
+    FFPS: TsgeGraphicFPS;                                           //Настройки вывода FPS
+    FFPSCounter: TsgeCounter;                                       //Счётчик FPS
+    FFade: TsgeScreenFade;                                          //Затемнение экрана
 
     //Перменные
-    FDrawControl: TsgeExtensionGraphicDrawControl;                //Способ ограничения кадров
-    FMaxFPS: Word;                                                //Максимальное количество кадров в секунду
-    FAutoEraseBG: Boolean;                                        //Автостирание фона перед выводом кадра
+    FDrawControl: TsgeExtensionGraphicDrawControl;                  //Способ ограничения кадров
+    FMaxFPS: Word;                                                  //Максимальное количество кадров в секунду
+    FAutoEraseBG: Boolean;                                          //Автостирание фона перед выводом кадра
 
     //Вспомогательные параметры
     FDrawLastTime: Int64;
@@ -86,6 +86,8 @@ type
     function Event_WindowResize(Obj: TsgeEventWindowSize): Boolean;
 
   protected
+    FGraphicShell: TsgeGraphic;                                     //Класс графики для потока оболочки
+
     class function GetName: String; override;
 
   public
@@ -122,26 +124,26 @@ const
 
 procedure TsgeExtensionGraphic.InitGraphic;
 begin
-  FGraphic.Init;
-  FGraphic.Activate;
+  FGraphicInner.Init;
+  FGraphicInner.Activate;
 end;
 
 
 procedure TsgeExtensionGraphic.DoneGraphic;
 begin
-  FGraphic.Deactivate;
+  FGraphicInner.Deactivate;
 end;
 
 
 procedure TsgeExtensionGraphic.ChangeSize;
 begin
-  FGraphic.ChangeViewArea(FNewWidth, FNewHeight);
+  FGraphicInner.ChangeViewArea(FNewWidth, FNewHeight);
 end;
 
 
 procedure TsgeExtensionGraphic.ChangeDrawControl;
 begin
-  FGraphic.VerticalSync := FDrawControl = gdcSync;
+  FGraphicInner.VerticalSync := FDrawControl = gdcSync;
 end;
 
 
@@ -182,8 +184,8 @@ begin
 
   //Смена кадров
   case FGraphic.RenderBuffer of
-    grbBack : FGraphic.SwapBuffers;
-    grbFront: FGraphic.Finish;
+    grbBack : FGraphicInner.SwapBuffers;
+    grbFront: FGraphicInner.Finish;
   end;
 end;
 
@@ -222,7 +224,7 @@ begin
       if El.NeedUpdate then El.ApplySettings;
 
       //Нарисовать элемент
-      if El.Visible then El.Draw(FGraphic);
+      if El.Visible then El.Draw(FGraphicInner);
 
       //Следующий элемент
       El := Layer.Elements.GetNext;
@@ -266,27 +268,27 @@ begin
   Y := Y + FFPS.YOffset;
 
   //Вывод FPS
-  FGraphic.Color := FFPS.Color;
-  FGraphic.DrawText(X, Y, FFPS.Font, s);
+  FGraphicInner.Color := FFPS.Color;
+  FGraphicInner.DrawText(X, Y, FFPS.Font, s);
 end;
 
 
 procedure TsgeExtensionGraphic.DrawFade;
 begin
   //Подготовить графику
-  FGraphic.PushAttrib;
-  FGraphic.ResetDrawOptions;
-  FGraphic.PoligonMode := gpmFill;
-  FGraphic.ColorBlend := True;
+  FGraphicInner.PushAttrib;
+  FGraphicInner.ResetDrawOptions;
+  FGraphicInner.PoligonMode := gpmFill;
+  FGraphicInner.ColorBlend := True;
 
   //Вывод
-  FGraphic.Color := FFade.GetColor;
-  FGraphic.doCoordinateType := gctClassic;
-  FGraphic.DrawRect(0, 0, FGraphic.Width, FGraphic.Height);
-  FGraphic.ResetDrawOptions;
+  FGraphicInner.Color := FFade.GetColor;
+  FGraphicInner.doCoordinateType := gctClassic;
+  FGraphicInner.DrawRect(0, 0, FGraphic.Width, FGraphic.Height);
+  FGraphicInner.ResetDrawOptions;
 
   //Восстановить графику
-  FGraphic.PopAttrib;
+  FGraphicInner.PopAttrib;
 end;
 
 
@@ -323,16 +325,15 @@ function TsgeExtensionGraphic.Event_WindowResize(Obj: TsgeEventWindowSize): Bool
 begin
   Result := False;
 
-  //Изменить размер контекста основного потока
-  FContext.ChangeViewArea(FNewWidth, FNewHeight);
+  //Сохранить новые размеры
+  FNewWidth := Obj.Width;
+  FNewHeight := Obj.Height;
 
-  //Запомнить новые размеры
-  if FGraphic <> nil then
-    begin
-    FNewWidth := Obj.Width;
-    FNewHeight := Obj.Height;
-    FThread.RunProc(@ChangeSize);
-    end;
+  //Изменить размер контекста основного потока
+  FGraphic.ChangeViewArea(FNewWidth, FNewHeight);
+
+  //Изменить размер контекста внутреннего потока
+  if FGraphicInner <> nil then FThread.RunProc(@ChangeSize);
 end;
 
 
@@ -356,9 +357,13 @@ begin
     FExtWindow := TsgeExtensionWindow(GetExtension(Extension_Window));
 
     //Контекст графики
-    FGraphic := TsgeGraphic.Create(FExtWindow.Window.DC, FExtWindow.Window.Width, FExtWindow.Window.Height);      //Создать основной контекст графики
-    FContext := TsgeGraphicBase.Create(FExtWindow.Window.DC, FExtWindow.Window.Width, FExtWindow.Window.Height);  //Создать контекст для основного потока
-    FGraphic.ShareList(FContext.Context);                                           //Расшарить ресурсы между контекстами
+    FGraphicInner := TsgeGraphic.Create(FExtWindow.Window.DC, FExtWindow.Window.Width, FExtWindow.Window.Height);
+    FGraphicShell := TsgeGraphic.Create(FExtWindow.Window.DC, FExtWindow.Window.Width, FExtWindow.Window.Height);
+    FGraphic := TsgeGraphic.Create(FExtWindow.Window.DC, FExtWindow.Window.Width, FExtWindow.Window.Height);
+
+    //Расшарить ресурсы между контекстами
+    FGraphicInner.ShareList(FGraphic.Context);
+    FGraphicInner.ShareList(FGraphicShell.Context);
 
     //Создать поток
     FThread := TsgeThread.Create(nil, True, False);
@@ -371,7 +376,8 @@ begin
       raise EsgeException.Create(FThread.Exception.Message);
 
     //Активировать контекст основного потока
-    FContext.Activate;
+    FGraphic.Init;
+    FGraphic.Activate;
 
     //Создать объекты
     FDrawList := TsgeGraphicDrawList.Create;
@@ -406,8 +412,9 @@ begin
 
   //Удалить объекты
   FThread.Free;
+  FGraphicShell.Free;
   FGraphic.Free;
-  FContext.Free;
+  FGraphicInner.Free;
   FDrawList.Free;
   FFPS.Free;
   FFPSCounter.Free;
