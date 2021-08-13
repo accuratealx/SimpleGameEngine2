@@ -46,7 +46,7 @@ begin
   inherited AfterConstruction;
 
   //Создать спрайт
-  FSprite := TsgeGraphicSprite.Create(0, 0);
+  FSprite := TsgeGraphicSprite.Create(200, 200);
 
   //Обновить данные
   UpdateData;
@@ -78,21 +78,25 @@ begin
   //Проверить на обновление
   if FRedraw then
     begin
-    FRedraw := False; //Убрат флаг обновления
+    //Убрат флаг обновления
+    FRedraw := False;
 
     //Проверить размеры
     if (FSprite.Width <> FNewData.Sprite.Width) or (FSprite.Height <> FNewData.Sprite.Height) then
       FSprite.SetSize(FNewData.Sprite.Width, FNewData.Sprite.Height);
 
     //Залить прозрачным цветом
-    Graphic.ColorBlend := False;        //Убрать смешивание цветов
-    Graphic.RenderSprite := FSprite;    //Установить спрайт для вывода
-    Graphic.RenderPlace := grpSprite;   //Переключить режим вывода на спрайт
-    Graphic.Color := cTransparent;      //Задать прозрачный цвет
+    Graphic.PushAttrib;                                             //Сохранить параметры
+    Graphic.ColorBlend := False;                                    //Убрать смешивание цветов
+    Graphic.RenderSprite := FSprite;                                //Установить спрайт для вывода
+    Graphic.RenderPlace := grpSprite;                               //Переключить режим вывода на спрайт
+    Graphic.PoligonMode := gpmFill;                                 //Включить заливку у полигонов
+    Graphic.ResetDrawOptions;                                       //Сбросить настройки вывода
     Graphic.DrawSprite(0, 0, FSprite.Width, FSprite.Height, FNewData.Sprite); //Скопировать спрайт на себя
-    Graphic.RenderPlace := grpScreen;   //Переключить режим вывода на экран
-    Graphic.RenderSprite := nil;        //Убрать спрайт из вывода
-    Graphic.ColorBlend := True;         //Восстановить смешивание цветов
+    Graphic.RenderPlace := grpScreen;                               //Переключить режим вывода на экран
+    Graphic.RenderSprite := nil;                                    //Убрать спрайт из вывода
+    Graphic.ColorBlend := True;                                     //Восстановить смешивание цветов
+    Graphic.PopAttrib;                                              //Восстановить параметры
     end;
 
   //Вывести спрайт
