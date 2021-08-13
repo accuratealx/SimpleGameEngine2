@@ -97,7 +97,7 @@ begin
     if ErrorText <> '' then ErrorText := FLanguage.GetValue('Error:' + ErrorText, ErrorText);
 
     //Изменить строку по формату Имя модуля   Имя модуля: Строка ошибки (Пояснение)
-    S := UnitName;
+    S := aUnitName;
     if ErrorText <> '' then S := S + ': ' + ErrorText;
     if Info <> '' then S := S + ' (' + Info + ')';
     Lines.Part[i] := S;
