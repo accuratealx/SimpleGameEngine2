@@ -67,11 +67,14 @@ begin
 
   //Определить время ожидания
   Timeout := INFINITE;
-  if Command.Count > 3 then
+  if Command.Count > 2 then
     sgeTryStrToInt(Command.Part[2], Timeout);
 
   //Поднять флаг чтения символа
   TsgeExtensionShellHack(SGE.ExtShell).FReadKeyMode := True;
+
+  //Перерисовать оболочку
+  TsgeExtensionShellHack(SGE.ExtShell).RepaintThread;
 
   //Ждать пока пользователь не нажмет на Enter
   case TsgeExtensionShellHack(SGE.ExtShell).FEvent.Wait(Timeout) of
@@ -90,6 +93,9 @@ begin
       TsgeExtensionShellHack(SGE.ExtShell).FReadKeyMode := False;     //Опустить флаг чтения символа
       end;
   end;
+
+  //Перерисовать оболочку
+  TsgeExtensionShellHack(SGE.ExtShell).RepaintThread;
 end;
 
 

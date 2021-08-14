@@ -131,7 +131,7 @@ end;
 
 procedure TsgeExtensionGraphic.DoneGraphic;
 begin
-  FGraphicInner.Deactivate;
+  FGraphicInner.Done;
 end;
 
 
@@ -390,7 +390,6 @@ begin
 
     //Установить метод отрисовки
     FThread.LoopProc := @SystemDraw;
-
   except
     on E: EsgeException do
       raise EsgeException.Create(_UNITNAME, Err_CantCreateExtension, '', E.Message);
@@ -413,6 +412,7 @@ begin
   //Удалить объекты
   FThread.Free;
   FGraphicShell.Free;
+  FGraphic.Done;
   FGraphic.Free;
   FGraphicInner.Free;
   FDrawList.Free;

@@ -38,7 +38,10 @@ type
 implementation
 
 uses
-  SimpleGameEngine;
+  SimpleGameEngine, sgeExtensionShell;
+
+type
+  TsgeExtensionShellHack = class(TsgeExtensionShell);
 
 
 
@@ -59,6 +62,7 @@ begin
   SGE := TSimpleGameEngine(FSGE);
 
   SGE.ExtShell.LogMessage(Command.GetTail(1));
+  TsgeExtensionShellHack(SGE.ExtShell).RepaintThread;
 end;
 
 

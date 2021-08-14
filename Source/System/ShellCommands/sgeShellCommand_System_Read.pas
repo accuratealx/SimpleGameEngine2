@@ -64,6 +64,9 @@ begin
   //Изменить флажок в оболочке, что бы при вводе поднять флаг события
   TsgeExtensionShellHack(SGE.ExtShell).FreadMode := True;
 
+  //Перерисовать оболочку
+  TsgeExtensionShellHack(SGE.ExtShell).RepaintThread;
+
   //Ждать пока пользователь не нажмет на Enter
   TsgeExtensionShellHack(SGE.ExtShell).FEvent.Wait;
 
