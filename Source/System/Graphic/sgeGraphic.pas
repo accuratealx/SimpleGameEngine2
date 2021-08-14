@@ -130,7 +130,8 @@ type
     constructor Create(DC: HDC; Width, Height: Integer);
     destructor  Destroy; override;
 
-    procedure Init;                                                   //Задать начальные параметры
+    procedure Init;                                                   //Инициализация
+    procedure Done;                                                   //Финализация
     procedure ShareList(Context: HGLRC);                              //Объеденить ресурсы с контекстом
 
     procedure Activate;
@@ -866,11 +867,6 @@ end;
 
 destructor TsgeGraphic.Destroy;
 begin
-   //Удалить буфер кадра
-  glDeleteFramebuffers(1, @FFrameBuffer);
-
-  //Удалить контекст
-  Deactivate;                             //Отменить выбор контекста
   wglDeleteContext(FGLContext);           //Удалить контекст
 end;
 
@@ -889,6 +885,16 @@ begin
   SetTexturing(True);                                         //Включить текстурирование
   SetColorBlend(True);                                        //Включить смешивание цветов
   Deactivate;                                                 //Отменить выбор контекста
+end;
+
+
+procedure TsgeGraphic.Done;
+begin
+  //Удалить буфер кадра
+  glDeleteFramebuffers(1, @FFrameBuffer);
+
+  //Освободить контекст
+  wglMakeCurrent(0, 0);
 end;
 
 
