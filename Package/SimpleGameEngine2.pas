@@ -52,7 +52,8 @@ uses
   sgeShellCommand_Variable_Clear, sgeShellCommand_Dialog_Message, 
   sgeShellCommand_Variable_Delete, sgeShellCommand_Variable_Set, 
   sgeShellCommand_System_Sleep, sgeShellLine, sgeShellLineItem, 
-  sgeShellLineList, sgeShellCommand_System_Write, sgeShellCommand_System_Stop;
+  sgeShellLineList, sgeShellCommand_System_Write, 
+  sgeShellCommand_System_Screenshot, sgeShellCommand_System_Stop;
 
 implementation
 

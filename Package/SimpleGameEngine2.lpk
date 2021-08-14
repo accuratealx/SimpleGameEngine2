@@ -15,7 +15,7 @@
     </CompilerOptions>
     <Description Value="Simple Game Engine 2"/>
     <Version Major="1"/>
-    <Files Count="147">
+    <Files Count="148">
       <Item1>
         <Filename Value="..\Source\ThirdParty\GDIPlus\GDIPAPI.pas"/>
         <UnitName Value="GDIPAPI"/>
@@ -601,9 +601,13 @@
         <UnitName Value="sgeShellCommand_System_Write"/>
       </Item146>
       <Item147>
+        <Filename Value="..\Source\System\ShellCommands\sgeShellCommand_System_Screenshot.pas"/>
+        <UnitName Value="sgeShellCommand_System_Screenshot"/>
+      </Item147>
+      <Item148>
         <Filename Value="..\Source\System\ShellCommands\sgeShellCommand_System_Stop.pas"/>
         <UnitName Value="sgeShellCommand_System_Stop"/>
-      </Item147>
+      </Item148>
     </Files>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)"/>
