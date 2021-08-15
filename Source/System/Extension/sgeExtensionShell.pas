@@ -15,7 +15,7 @@ unit sgeExtensionShell;
 interface
 
 uses
-  sgeThread, sgeSystemEvent, sgeSimpleCommand, sgeSimpleParameters, sgeGraphic, sgeGraphicColor,
+  sgeTypes, sgeThread, sgeSystemEvent, sgeSimpleCommand, sgeSimpleParameters, sgeGraphic, sgeGraphicColor,
   sgeGraphicFont, sgeExtensionBase, sgeEventWindow, sgeEventSubscriber, sgeShellCommandQueue,
   sgeShellCommandList, sgeLineEditor, sgeCommandHistory, sgeShellLineList, sgeExtensionGraphic,
   sgeExtensionResourceList, sgeExtensionVariables, sgeGraphicSprite, sgeGraphicElementSpriteCashed;
@@ -59,6 +59,8 @@ type
     FWeakSeparator: Boolean;
     FJournalLines: Byte;                                            //Количество строк журнала
 
+    FBGSprite: TsgeGraphicSprite;                                   //Фоновый спрайт
+
     FBGColor: TsgeColor;                                            //Цвет фона
     FEditorTextColor: TsgeColor;                                    //Цвет текста строки редактора
     FEditorSelectColor: TsgeColor;                                  //Цвет выделения строки редактора
@@ -84,6 +86,7 @@ type
 
     //Вспомогательные методы
     procedure RegisterDefaultAliases;                               //Добавить алиасы по умолчанию
+    function  FitSprite(ShellW, ShellH: Single; ImageW, ImageH: Single): TsgeFloatRect; //Взять координаты вывода фонового спрайта
     function  SubstituteVariables(Str: String): String;             //Подставить здначеня переменных в строку
     procedure RunCommand(Cmd: TsgeSimpleCommand);                   //Выполнение разобранной команды
     procedure ExecuteCommand(Command: String);                      //Разбор строки на алиасы и выполнение
@@ -101,6 +104,7 @@ type
 
     //Свойства
     procedure SetEnable(AEnable: Boolean);
+    procedure SetBGSprite(ASprite: TsgeGraphicSprite);
 
     //Системные переменные
     procedure RegisterVariables;
@@ -138,6 +142,7 @@ type
     property Journal: TsgeShellLineList read FJournal;
     property WeakSeparator: Boolean read FWeakSeparator write FWeakSeparator;
 
+    property BGSprite: TsgeGraphicSprite read FBGSprite write SetBGSprite;
     property BGColor: TsgeColor read FBGColor write FBGColor;
     property EditorTextColor: TsgeColor read FEditorTextColor write FEditorTextColor;
     property EditorSelectColor: TsgeColor read FEditorSelectColor write FEditorSelectColor;
@@ -152,9 +157,8 @@ type
 implementation
 
 uses
-  sgeErrors, sgeTypes, sgeStringList, sgeEventBase, sgeSystemUtils, sgeStringUtils,
-  sgeVariableBase, sgeShellCommand, sgeKeys, sgeShellLine, sgeShellLineItem,
-  Math;
+  sgeErrors, sgeStringList, sgeEventBase, sgeSystemUtils, sgeStringUtils,
+  sgeVariableBase, sgeShellCommand, sgeKeys, sgeShellLine, sgeShellLineItem, sgeMathUtils;
 
 const
   _UNITNAME = 'ExtensionShell';
@@ -323,6 +327,34 @@ begin
   FAliases.SetValue('Echo', 'System.Write');
   FAliases.SetValue('Print', 'System.Write');
   //FAliases.SetValue('Exec', 'Run');
+end;
+
+
+function TsgeExtensionShell.FitSprite(ShellW, ShellH: Single; ImageW, ImageH: Single): TsgeFloatRect;
+{var
+  scrR, imgR: Double;
+  D: Single;}
+begin
+  {scrR := ScreenW / ScreenH;
+  imgR := ImageW / ImageH;
+
+  if scrR > imgR then
+    begin
+    D := ScreenH * ImageW / ImageH;
+
+    Result.Y1 := 0;
+    Result.Y2 := ScreenH;
+    Result.X1 := (ScreenW / 2) - (D / 2);
+    Result.X2 := Result.X1 + D;
+    end else
+    begin
+    D := ScreenW * ImageH / ImageW;
+
+    Result.X1 := 0;
+    Result.X2 := ScreenW;
+    Result.Y1 := (ScreenH / 2) - (D / 2);
+    Result.Y2 := Result.Y1 + D;
+    end;}
 end;
 
 
@@ -504,6 +536,7 @@ var
   X, Y, Y1, Y2, X1, X2: Single;
   Line: TsgeShellLine;
   Item: TsgeShellLineItem;
+  Rct: TsgeFloatRect;
   s: String;
 begin
   //Расчёты
@@ -512,7 +545,7 @@ begin
   CharW := FFont.GetStringWidth('W');                               //Ширина символа
   JournalH := LineH * FJournalLines;                                //Высота журнала
   H := JournalH + LineH + Indent * 3;                               //Высота оболочки
-  MaxCharWidth := Floor((W - Indent * 2) / CharW);                  //Максимум символов по ширине
+  MaxCharWidth := sgeFloor((W - Indent * 2) / CharW);               //Максимум символов по ширине
   XOffset := 0;
 
 
@@ -539,6 +572,12 @@ begin
 
 
     //Вывод фоновой картинки если есть
+    if Assigned(FBGSprite) then
+      begin
+      Rct := FitSprite(W, H, FBGSprite.Width, FBGSprite.Height);
+      ResetDrawOptions;
+      DrawSprite(Rct, FBGSprite);
+      end;
 
 
     //Координаты Начала вывода строки редактора
@@ -588,7 +627,7 @@ begin
 
     //Вывод журнала оболочки
     JEnd := FJournal.Count - 1;
-    JBegin := FJournal.Count - Min(FJournal.Count, FJournalLines);
+    JBegin := FJournal.Count - sgeMin(FJournal.Count, FJournalLines);
     Y := Indent + JournalH - LineH;
 
     for i := JEnd downto JBegin do
@@ -745,6 +784,16 @@ begin
   FSubKeyDown.Enable := FEnable;
   FSubKeyUp.Enable := FEnable;
   FSubKeyChar.Enable := FEnable;
+end;
+
+
+procedure TsgeExtensionShell.SetBGSprite(ASprite: TsgeGraphicSprite);
+begin
+  //Сохранить спрайт
+  FBGSprite := ASprite;
+
+  //Перерисовать оболочку
+  RepaintInner;
 end;
 
 
