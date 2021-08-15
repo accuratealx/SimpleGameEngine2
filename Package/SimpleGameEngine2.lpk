@@ -15,7 +15,7 @@
     </CompilerOptions>
     <Description Value="Simple Game Engine 2"/>
     <Version Major="1"/>
-    <Files Count="148">
+    <Files Count="149">
       <Item1>
         <Filename Value="..\Source\ThirdParty\GDIPlus\GDIPAPI.pas"/>
         <UnitName Value="GDIPAPI"/>
@@ -125,8 +125,8 @@
         <UnitName Value="sgeStringList"/>
       </Item27>
       <Item28>
-        <Filename Value="..\Source\System\Base\sgeStringUtils.pas"/>
-        <UnitName Value="sgeStringUtils"/>
+        <Filename Value="..\Source\System\Base\sgeMathUtils.pas"/>
+        <UnitName Value="sgeMathUtils"/>
       </Item28>
       <Item29>
         <Filename Value="..\Source\System\Base\sgeSystemEvent.pas"/>
@@ -608,6 +608,10 @@
         <Filename Value="..\Source\System\ShellCommands\sgeShellCommand_System_Stop.pas"/>
         <UnitName Value="sgeShellCommand_System_Stop"/>
       </Item148>
+      <Item149>
+        <Filename Value="..\Source\System\Base\sgeStringUtils.pas"/>
+        <UnitName Value="sgeStringUtils"/>
+      </Item149>
     </Files>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)"/>

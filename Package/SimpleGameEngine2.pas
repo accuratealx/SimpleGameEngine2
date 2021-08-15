@@ -13,7 +13,7 @@ uses
   SimpleGameEngine, sgeCriticalSection, sgeDateUtils, sgeErrors, sgeFile, 
   sgeFileUtils, sgeKeys, sgeMemoryStream, sgeMetaInfoList, sgeOSPlatform, 
   sgeSimpleCommand, sgeSimpleContainer, sgeSimpleParameters, 
-  sgeStartParameters, sgeStringList, sgeStringUtils, sgeSystemEvent, 
+  sgeStartParameters, sgeStringList, sgeMathUtils, sgeSystemEvent, 
   sgeSystemUtils, sgeThread, sgeTypes, sgeControllerList, sgeEventControllers, 
   sgeEventGraphic, sgeEventList, sgeEventManager, sgeEventSubscriber, 
   sgeEventSubscriberGroup, sgeEventSubscriberGroupList, 
@@ -53,7 +53,8 @@ uses
   sgeShellCommand_Variable_Delete, sgeShellCommand_Variable_Set, 
   sgeShellCommand_System_Sleep, sgeShellLine, sgeShellLineItem, 
   sgeShellLineList, sgeShellCommand_System_Write, 
-  sgeShellCommand_System_Screenshot, sgeShellCommand_System_Stop;
+  sgeShellCommand_System_Screenshot, sgeShellCommand_System_Stop, 
+  sgeStringUtils;
 
 implementation
 
