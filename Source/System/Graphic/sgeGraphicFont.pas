@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGraphicFont.pas
-Версия            1.0
+Версия            1.1
 Создан            05.05.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс битового шрифта для вывода посредством OpenGL.
@@ -45,6 +45,7 @@ type
   TsgeGraphicFont = class
   private
     FGLHandle: GLuint;
+    FSize: Word;
     FHeight: Word;
     FName: String;
     FAttrib: TsgeGraphicFontAttrib;
@@ -65,6 +66,7 @@ type
 
     property GLHandle: GLuint read FGLHandle;
     property Height: Word read FHeight write SetHeight;
+    property Size: Word read FSize;
     property Name: String read FName write SetName;
     property Attrib: TsgeGraphicFontAttrib read FAttrib write SetAttrib;
   end;
@@ -126,23 +128,26 @@ var
   ErrStr: String;
 begin
   //Параметры шрифта
-  ErrStr := FName + ' ' + sgeIntToStr(FHeight) + ' ' + sgeFontAttribToString(FAttrib);
+  ErrStr := FName + ' ' + sgeIntToStr(FSize) + ' ' + sgeFontAttribToString(FAttrib);
+
+  //Запомнить высоту шрифта
+  FSize := FHeight * GetDeviceCaps(FDC, LOGPIXELSY) div 72;
 
   //Структура логического шрифта
-  LogFont.lfHeight := -FHeight;                   //Высота
-  LogFont.lfWidth := 0;                           //Автоподбор ширины
-  LogFont.lfEscapement := 0;                      //Угол в десятых долях между вектором спуска и осью x устройства
-  LogFont.lfOrientation := 0;                     //Угол в градусах
+  LogFont.lfHeight := -(FSize);                                     //Высота
+  LogFont.lfWidth := 0;                                             //Автоподбор ширины
+  LogFont.lfEscapement := 0;                                        //Угол в десятых долях между вектором спуска и осью x устройства
+  LogFont.lfOrientation := 0;                                       //Угол в градусах
   if (gfaBold in FAttrib) then LogFont.lfWeight := FW_BOLD else LogFont.lfWeight := FW_NORMAL; //Толщина шрифта
   if (gfaItalic in FAttrib) then LogFont.lfItalic := 1 else LogFont.lfItalic := 0;             //Наклон
   if (gfaUnderline in FAttrib) then LogFont.lfUnderline := 1 else LogFont.lfUnderline := 0;    //Подчёркивание
   if (gfaStrikeOut in FAttrib) then LogFont.lfStrikeOut := 1 else LogFont.lfStrikeOut := 0;    //Перечёркивание
-  LogFont.lfCharSet := DEFAULT_CHARSET;           //Набор символов
-  LogFont.lfOutPrecision := OUT_TT_PRECIS;        //Точность вывода
-  LogFont.lfClipPrecision := CLIP_DEFAULT_PRECIS; //Точность отсечения
-  LogFont.lfQuality := DRAFT_QUALITY;             //Качество вывода (ANTIALIASED_QUALITY)
-  LogFont.lfPitchAndFamily := DEFAULT_PITCH;      //Настройки вида шрифта, если не найдено точное совпадение
-  LogFont.lfFaceName := PAnsiChar(FName);         //Имя шрифта
+  LogFont.lfCharSet := DEFAULT_CHARSET;                             //Набор символов
+  LogFont.lfOutPrecision := OUT_TT_PRECIS;                          //Точность вывода
+  LogFont.lfClipPrecision := CLIP_DEFAULT_PRECIS;                   //Точность отсечения
+  LogFont.lfQuality := DRAFT_QUALITY;                               //Качество вывода (ANTIALIASED_QUALITY)
+  LogFont.lfPitchAndFamily := DEFAULT_PITCH;                        //Настройки вида шрифта, если не найдено точное совпадение
+  LogFont.lfFaceName := PAnsiChar(FName);                           //Имя шрифта
 
   //Создать шрифт и проверить
   Fnt := CreateFontIndirect(LogFont);
@@ -197,10 +202,10 @@ end;
 
 constructor TsgeGraphicFont.Create(Name: String; Height: Word; Attrib: TsgeGraphicFontAttrib);
 begin
-  if Height < 1 then Height := 1; //Поправить размер
-  FHeight := Height;              //Запомнить высоту шрифта
-  FName := Name;                  //Запомнить имя шрифта
-  FAttrib := Attrib;              //Атрибуты шрифта
+  if Height < 1 then Height := 1;                                   //Поправить размер
+  FHeight := Height;                                                //Запомнить размер
+  FName := Name;                                                    //Запомнить имя шрифта
+  FAttrib := Attrib;                                                //Атрибуты шрифта
 
   //Выделить 256 дисплейных списков и проверить
   FGLHandle := glGenLists(256);
