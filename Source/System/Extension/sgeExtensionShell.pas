@@ -387,7 +387,10 @@ var
   CmdResult, S: String;
   Command: TsgeShellCommand;
   MatchList: TsgeShellCommandList;
+  JLine: TsgeShellLine;
 begin
+  Command := nil;
+
   //Определить режим работы
   Mode := ModeEmpty;
   if LowerCase(Cmd.Part[0]) = 'autor' then Mode := ModeAutor;
@@ -465,8 +468,13 @@ begin
       end;
 
 
-    //ModeAutor:
-    //  FJournal.Add(sgeGraphicColor_GetRandomColor, 'sge.ntlab.su  accuratealx@gmail.com');
+    ModeAutor:
+      begin
+      S := Utf8ToAnsi('Творческий Человек  [accuratealx@gmail.com]');
+      JLine := FJournal.Add;
+      for i := 1 to Length(S) do
+        JLine.Add(S[i], sgeGetRandomColor, cBlack);
+      end;
   end;
 
 end;
@@ -501,6 +509,9 @@ begin
         //Разобрать команду
         Cmd := TsgeSimpleCommand.Create(Str, FWeakSeparator);
 
+        //Проверить пусто
+        if Cmd.Count = 0 then Continue;
+
         //Проверить на алиас
         Idx := FAliases.IndexOf(Cmd.Part[0]);
         if Idx <> -1 then
@@ -531,6 +542,7 @@ end;
 procedure TsgeExtensionShell.PaintCanvas(Graphic: TsgeGraphic);
 const
   Indent = 5;
+  JournalLineIndent = 1;
 var
   W, H, JEnd, JBegin, LineH, CharW, JournalH, MaxCharWidth, i, j, DrawChar, C, CharToCut, ItemW, XOffset: Integer;
   X, Y, Y1, Y2, X1, X2: Single;
@@ -541,9 +553,9 @@ var
 begin
   //Расчёты
   W := FExtGraphic.Graphic.Width;                                   //Ширина спрайта
-  LineH := FFont.Height;                                            //Высота строки текста
+  LineH := FFont.GetStringHeight('W');                              //Высота строки текста
   CharW := FFont.GetStringWidth('W');                               //Ширина символа
-  JournalH := LineH * FJournalLines;                                //Высота журнала
+  JournalH := (LineH + JournalLineIndent * 2) * FJournalLines;      //Высота журнала
   H := JournalH + LineH + Indent * 3;                               //Высота оболочки
   MaxCharWidth := sgeFloor((W - Indent * 2) / CharW);               //Максимум символов по ширине
   XOffset := 0;
@@ -581,7 +593,7 @@ begin
 
     //Координаты Начала вывода строки редактора
     X := Indent;
-    Y := H - Indent - LineH;
+    Y := H - Indent - LineH + JournalLineIndent;
 
 
     //Вывод спецсимвола ожидания ввода
@@ -602,8 +614,8 @@ begin
 
 
     //Границы высоты выделения строки редактора
-    Y1 := Y + 2;
-    Y2 := H - Indent + 4;
+    Y1 := Y - 2;
+    Y2 := H - Indent + 2;
 
 
     //Выделение строки редактора
@@ -630,7 +642,7 @@ begin
     for i := JEnd downto JBegin do
       begin
       Line := FJournal.Item[i];                                     //Ссылка на строку
-      Y1 := Y - (JEnd - i) * LineH;                                 //Координата Y строки
+      Y1 := Y - (JEnd - i) * (LineH + JournalLineIndent * 2);       //Координата Y строки
       DrawChar := 0;                                                //Выведено символов в строке
 
       //Вывод элементов
@@ -653,12 +665,11 @@ begin
         //Вывод фона
         ItemW := Length(s);
         Color := Item.BGColor;
-        doCoordinateType := gctClassic;
-        DrawRect(X1, Y1 + 2, X1 + ItemW * CharW, Y1 + LineH + 4);
+        DrawRect(X1, Y1 - 1, X1 + ItemW * CharW, Y1 + LineH + 1);
 
         //Вывод текста
         Color := Item.Color;
-        DrawText(X1, Y1, FFont, s);
+        DrawText(X1, Y1 + JournalLineIndent + 1, FFont, s);
 
         //Сместить начало вывода нового символа
         Inc(DrawChar, ItemW);
@@ -825,7 +836,7 @@ begin
     FAliases := TsgeSimpleParameters.Create;
     FCommandList := TsgeShellCommandList.Create;
     FEditor := TsgeLineEditor.Create;
-    FFont := TsgeGraphicFont.Create('Courier New', 16, [gfaBold]);
+    FFont := TsgeGraphicFont.Create('Lucida Console', 12, [gfaBold]);
 
     //Задать параметры
     FEnable := False;
