@@ -331,30 +331,30 @@ end;
 
 
 function TsgeExtensionShell.FitSprite(ShellW, ShellH: Single; ImageW, ImageH: Single): TsgeFloatRect;
-{var
+var
   scrR, imgR: Double;
-  D: Single;}
+  D: Single;
 begin
-  {scrR := ScreenW / ScreenH;
+  scrR := ShellW / ShellH;
   imgR := ImageW / ImageH;
 
-  if scrR > imgR then
+  if scrR < imgR then
     begin
-    D := ScreenH * ImageW / ImageH;
+    D := ShellH * ImageW / ImageH;
 
     Result.Y1 := 0;
-    Result.Y2 := ScreenH;
-    Result.X1 := (ScreenW / 2) - (D / 2);
+    Result.Y2 := ShellH;
+    Result.X1 := (ShellW / 2) - (D / 2);
     Result.X2 := Result.X1 + D;
     end else
     begin
-    D := ScreenW * ImageH / ImageW;
+    D := ShellW * ImageH / ImageW;
 
     Result.X1 := 0;
-    Result.X2 := ScreenW;
-    Result.Y1 := (ScreenH / 2) - (D / 2);
+    Result.X2 := ShellW;
+    Result.Y1 := (ShellH / 2) - (D / 2);
     Result.Y2 := Result.Y1 + D;
-    end;}
+    end;
 end;
 
 
@@ -560,7 +560,7 @@ begin
     RenderSprite := FCanvas;                                        //Установить спрайт для вывода
     RenderPlace := grpSprite;                                       //Переключить режим вывода
     ResetDrawOptions;                                               //Сбросить настройки вывода
-
+    doCoordinateType := gctClassic;
 
 
     //Залить фоновым цветом
@@ -575,7 +575,6 @@ begin
     if Assigned(FBGSprite) then
       begin
       Rct := FitSprite(W, H, FBGSprite.Width, FBGSprite.Height);
-      ResetDrawOptions;
       DrawSprite(Rct, FBGSprite);
       end;
 
@@ -612,9 +611,7 @@ begin
       begin
       X1 := Indent + XOffset + FFont.GetStringWidth(FEditor.GetTextBeforePos(FEditor.SelectBeginPos));
       X2 := Indent + XOffset + FFont.GetStringWidth(FEditor.GetTextBeforePos(FEditor.SelectEndPos));
-      ResetDrawOptions;
       Color := FEditorSelectColor;
-      doCoordinateType := gctClassic;
       DrawRect(X1, Y1, X2, Y2);
       end;
 
