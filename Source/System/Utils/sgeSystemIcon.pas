@@ -55,7 +55,7 @@ uses
 const
   _UNITNAME = 'SystemIcon';
 
-  Err_FileReadError = 'FileReadError';
+  Err_CantReadFile          = 'CantReadFile';
   Err_CantLoadFromHinstance = 'CantLoadFromHinstance';
 
 
@@ -97,7 +97,7 @@ var
 begin
   H := LoadImage(0, PChar(FileName), IMAGE_ICON, 0, 0, LR_LOADFROMFILE or LR_DEFAULTSIZE);
   if H = 0 then
-    raise EsgeException.Create(_UNITNAME, Err_FileReadError, FileName);
+    raise EsgeException.Create(_UNITNAME, Err_CantReadFile, FileName);
 
   DeleteIcon;
   FHandle := H;

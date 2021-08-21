@@ -62,7 +62,7 @@ uses
   sgeErrors, sgeGraphicUtils;
 
 const
-  _UNITNAME = 'sgeGraphicElementAnimation';
+  _UNITNAME = 'GraphicElementAnimation';
 
   Err_FramesIsEmpty = 'FramesIsEmpty';
   Err_FramesNoSprite = 'FramesNoSprite';

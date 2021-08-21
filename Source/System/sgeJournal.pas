@@ -51,7 +51,7 @@ uses
 
 
 const
-  _UNITNAME = 'sgeJournal';
+  _UNITNAME = 'Journal';
 
   Err_FileWriteError = 'FileWriteError';
 

@@ -61,7 +61,7 @@ uses
 
 
 const
-  _UNITNAME = 'sgeEvent';
+  _UNITNAME = 'SystemTimeEvent';
 
   Err_CantStartEvent = 'CantStartEvent';
 

@@ -55,7 +55,7 @@ uses
 const
   _UNITNAME = 'SystemCursor';
 
-  Err_FileReadError = 'FileReadError';
+  Err_CantReadFile          = 'CantReadFile';
   Err_CantLoadFromHinstance = 'CantLoadFromHinstance';
 
 
@@ -97,7 +97,7 @@ var
 begin
   H := LoadCursorFromFile(PChar(FileName));
   if H = 0 then
-    raise EsgeException.Create(_UNITNAME, Err_FileReadError, FileName);
+    raise EsgeException.Create(_UNITNAME, Err_CantReadFile, FileName);
 
   DeleteCursor;
   FHandle := H;

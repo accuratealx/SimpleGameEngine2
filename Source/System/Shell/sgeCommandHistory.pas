@@ -55,10 +55,11 @@ uses
 
 
 const
-  _UNITNAME = 'sgeCommandHistory';
+  _UNITNAME = 'CommandHistory';
 
-  Err_FileWriteError  = 'FileWriteError';
-  Err_FileReadError   = 'FileReadError';
+  Err_CantWriteFile = 'CantWriteFile';
+  Err_CantReadFile  = 'CantReadFile';
+
 
 
 procedure TsgeCommandHistory.SetMaxLines(ALines: Word);
@@ -139,7 +140,7 @@ begin
   try
     FCommands.SaveToFile(FileName);
   except
-    raise EsgeException.Create(_UNITNAME, Err_FileWriteError, FileName);
+    raise EsgeException.Create(_UNITNAME, Err_CantWriteFile, FileName);
   end;
 end;
 
@@ -149,7 +150,7 @@ begin
   try
     FCommands.LoadFromFile(FileName);
   except
-    raise EsgeException.Create(_UNITNAME, Err_FileReadError, FileName);
+    raise EsgeException.Create(_UNITNAME, Err_CantReadFile, FileName);
   end;
 
   FCurrentIndex := FCommands.Count;
