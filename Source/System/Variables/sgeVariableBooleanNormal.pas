@@ -4,11 +4,11 @@
 Версия            1.0
 Создан            22.07.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
-Описание          Класс переменной: Булевая переменная
+Описание          Класс переменной: Булевая переменная: Значение
 }
 {$Include Defines.inc}
 
-unit sgeVariableBoolean;
+unit sgeVariableBooleanNormal;
 
 {$mode objfpc}{$H+}
 {$ModeSwitch duplicatelocals}
@@ -20,7 +20,7 @@ uses
 
 
 type
-  TsgeVariableBoolean = class(TsgeVariableBooleanBase)
+  TsgeVariableBooleanNormal = class(TsgeVariableBooleanBase)
   private
     FValue: Boolean;
 
@@ -39,17 +39,17 @@ uses
   sgeErrors, sgeVariableBase;
 
 const
-  _UNITNAME = 'VariableBoolean';
+  _UNITNAME = 'VariableBooleanNormal';
 
 
 
-function TsgeVariableBoolean.GetValue: Boolean;
+function TsgeVariableBooleanNormal.GetValue: Boolean;
 begin
   Result := FValue;
 end;
 
 
-procedure TsgeVariableBoolean.SetValue(AValue: Boolean);
+procedure TsgeVariableBooleanNormal.SetValue(AValue: Boolean);
 begin
   if FReadOnly then
     raise EsgeException.Create(_UNITNAME, Err_VariableIsReadOnly);
@@ -58,7 +58,7 @@ begin
 end;
 
 
-constructor TsgeVariableBoolean.Create(Name: ShortString; Value: Boolean; DefValue: Boolean; ReadOnly: Boolean; TrueStr: ShortString; FalseStr: ShortString);
+constructor TsgeVariableBooleanNormal.Create(Name: ShortString; Value: Boolean; DefValue: Boolean; ReadOnly: Boolean; TrueStr: ShortString; FalseStr: ShortString);
 begin
   inherited Create(Name, DefValue, ReadOnly, TrueStr, FalseStr);
 

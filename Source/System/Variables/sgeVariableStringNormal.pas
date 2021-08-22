@@ -1,14 +1,14 @@
 {
 Пакет             Simple Game Engine 2
-Файл              sgeVariableString.pas
+Файл              sgeVariableStringNormal.pas
 Версия            1.0
 Создан            19.07.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
-Описание          Класс переменной: Строка
+Описание          Класс переменной: Строка: Значение
 }
 {$Include Defines.inc}
 
-unit sgeVariableString;
+unit sgeVariableStringNormal;
 
 {$mode objfpc}{$H+}
 {$ModeSwitch duplicatelocals}
@@ -20,7 +20,7 @@ uses
 
 
 type
-  TsgeVariableString = class(TsgeVariableStringBase)
+  TsgeVariableStringNormal = class(TsgeVariableStringBase)
   private
     FValue: String;
 
@@ -39,17 +39,17 @@ uses
   sgeErrors, sgeVariableBase;
 
 const
-  _UNITNAME = 'VariableString';
+  _UNITNAME = 'VariableStringNormal';
 
 
 
-function TsgeVariableString.GetValue: String;
+function TsgeVariableStringNormal.GetValue: String;
 begin
   Result := FValue;
 end;
 
 
-procedure TsgeVariableString.SetValue(AValue: String);
+procedure TsgeVariableStringNormal.SetValue(AValue: String);
 begin
   if FReadOnly then
     raise EsgeException.Create(_UNITNAME, Err_VariableIsReadOnly);
@@ -58,7 +58,7 @@ begin
 end;
 
 
-constructor TsgeVariableString.Create(Name: ShortString; Value: String; DefValue: String; ReadOnly: Boolean);
+constructor TsgeVariableStringNormal.Create(Name: ShortString; Value: String; DefValue: String; ReadOnly: Boolean);
 begin
   inherited Create(Name, DefValue, ReadOnly);
 

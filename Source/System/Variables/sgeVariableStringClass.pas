@@ -1,14 +1,14 @@
 {
 Пакет             Simple Game Engine 2
-Файл              sgeVariableStringVirtual.pas
+Файл              sgeVariableStringClass.pas
 Версия            1.0
 Создан            20.07.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
-Описание          Класс переменной: Виртуальная строка
+Описание          Класс переменной: Строка: Ссылка на метод класса
 }
 {$Include Defines.inc}
 
-unit sgeVariableStringVirtual;
+unit sgeVariableStringClass;
 
 {$mode objfpc}{$H+}
 {$ModeSwitch duplicatelocals}
@@ -21,21 +21,21 @@ uses
 
 type
   //Методы изменения
-  TsgeVariableStringSetter = procedure(AValue: String) of object;
-  TsgeVariableStringGetter = function: String of object;
+  TsgeVariableStringClassSetter = procedure(AValue: String) of object;
+  TsgeVariableStringClassGetter = function: String of object;
 
 
-  TsgeVariableStringVirtual = class(TsgeVariableStringBase)
+  TsgeVariableStringClass = class(TsgeVariableStringBase)
   private
-    FSetter: TsgeVariableStringSetter;
-    FGetter: TsgeVariableStringGetter;
+    FSetter: TsgeVariableStringClassSetter;
+    FGetter: TsgeVariableStringClassGetter;
 
   protected
     function  GetValue: String; override;
     procedure SetValue(AValue: String); override;
 
   public
-    constructor Create(Name: ShortString; DefValue: String; Getter: TsgeVariableStringGetter; Setter: TsgeVariableStringSetter = nil);
+    constructor Create(Name: ShortString; DefValue: String; Getter: TsgeVariableStringClassGetter; Setter: TsgeVariableStringClassSetter = nil);
   end;
 
 
@@ -45,17 +45,17 @@ uses
   sgeErrors, sgeVariableBase;
 
 const
-  _UNITNAME = 'VariableStringVirtual';
+  _UNITNAME = 'VariableStringClass';
 
 
 
-function TsgeVariableStringVirtual.GetValue: String;
+function TsgeVariableStringClass.GetValue: String;
 begin
   Result := FGetter();
 end;
 
 
-procedure TsgeVariableStringVirtual.SetValue(AValue: String);
+procedure TsgeVariableStringClass.SetValue(AValue: String);
 begin
   if FReadOnly then
     raise EsgeException.Create(_UNITNAME, Err_VariableIsReadOnly);
@@ -64,7 +64,7 @@ begin
 end;
 
 
-constructor TsgeVariableStringVirtual.Create(Name: ShortString; DefValue: String; Getter: TsgeVariableStringGetter; Setter: TsgeVariableStringSetter);
+constructor TsgeVariableStringClass.Create(Name: ShortString; DefValue: String; Getter: TsgeVariableStringClassGetter; Setter: TsgeVariableStringClassSetter);
 begin
   //Проверить метод чтения
   if Getter = nil then

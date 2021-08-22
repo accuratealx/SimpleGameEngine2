@@ -1,14 +1,14 @@
 {
 Пакет             Simple Game Engine 2
-Файл              sgeVariableIntegerVirtual.pas
+Файл              sgeVariableIntegerClass.pas
 Версия            1.0
 Создан            19.07.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
-Описание          Класс переменной: Виртуальное целое число
+Описание          Класс переменной: Целое число: Ссылка на метод класса
 }
 {$Include Defines.inc}
 
-unit sgeVariableIntegerVirtual;
+unit sgeVariableIntegerClass;
 
 {$mode objfpc}{$H+}
 {$ModeSwitch duplicatelocals}
@@ -21,21 +21,21 @@ uses
 
 type
   //Методы изменения
-  TsgeVariableIntegerSetter = procedure(AValue: Integer) of object;
-  TsgeVariableIntegerGetter = function: Integer of object;
+  TsgeVariableIntegerClassSetter = procedure(AValue: Integer) of object;
+  TsgeVariableIntegerClassGetter = function: Integer of object;
 
 
-  TsgeVariableIntegerVirtual = class(TsgeVariableIntegerBase)
+  TsgeVariableIntegerClass = class(TsgeVariableIntegerBase)
   private
-    FSetter: TsgeVariableIntegerSetter;
-    FGetter: TsgeVariableIntegerGetter;
+    FSetter: TsgeVariableIntegerClassSetter;
+    FGetter: TsgeVariableIntegerClassGetter;
 
   protected
     function  GetValue: Integer; override;
     procedure SetValue(AValue: Integer); override;
 
   public
-    constructor Create(Name: ShortString; DefValue: Integer; Getter: TsgeVariableIntegerGetter; Setter: TsgeVariableIntegerSetter = nil; MinValue: Integer = -MaxInt; MaxValue: Integer = MaxInt);
+    constructor Create(Name: ShortString; DefValue: Integer; Getter: TsgeVariableIntegerClassGetter; Setter: TsgeVariableIntegerClassSetter = nil; MinValue: Integer = -MaxInt; MaxValue: Integer = MaxInt);
   end;
 
 
@@ -45,17 +45,17 @@ uses
   sgeErrors, sgeVariableBase;
 
 const
-  _UNITNAME = 'VariableIntegerVirtual';
+  _UNITNAME = 'VariableIntegerClass';
 
 
 
-function TsgeVariableIntegerVirtual.GetValue: Integer;
+function TsgeVariableIntegerClass.GetValue: Integer;
 begin
   Result := FGetter();
 end;
 
 
-procedure TsgeVariableIntegerVirtual.SetValue(AValue: Integer);
+procedure TsgeVariableIntegerClass.SetValue(AValue: Integer);
 begin
   if FReadOnly then
     raise EsgeException.Create(_UNITNAME, Err_VariableIsReadOnly);
@@ -68,7 +68,7 @@ begin
 end;
 
 
-constructor TsgeVariableIntegerVirtual.Create(Name: ShortString; DefValue: Integer; Getter: TsgeVariableIntegerGetter; Setter: TsgeVariableIntegerSetter; MinValue: Integer; MaxValue: Integer);
+constructor TsgeVariableIntegerClass.Create(Name: ShortString; DefValue: Integer; Getter: TsgeVariableIntegerClassGetter; Setter: TsgeVariableIntegerClassSetter; MinValue: Integer; MaxValue: Integer);
 begin
   //Проверить метод чтения
   if Getter = nil then

@@ -1,14 +1,14 @@
 {
 Пакет             Simple Game Engine 2
-Файл              sgeVariableBooleanVirtual.pas
+Файл              sgeVariableBooleanClass.pas
 Версия            1.0
 Создан            22.07.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
-Описание          Класс переменной: Виртуальная Булевая переменная
+Описание          Класс переменной: Булевая переменная: Ссылка на метод класса
 }
 {$Include Defines.inc}
 
-unit sgeVariableBooleanVirtual;
+unit sgeVariableBooleanClass;
 
 {$mode objfpc}{$H+}
 {$ModeSwitch duplicatelocals}
@@ -21,21 +21,21 @@ uses
 
 type
   //Методы изменения
-  TsgeVariableBooleanSetter = procedure(AValue: Boolean) of object;
-  TsgeVariableBooleanGetter = function: Boolean of object;
+  TsgeVariableBooleanClassSetter = procedure(AValue: Boolean) of object;
+  TsgeVariableBooleanClassGetter = function: Boolean of object;
 
 
-  TsgeVariableBooleanVirtual = class(TsgeVariableBooleanBase)
+  TsgeVariableBooleanClass = class(TsgeVariableBooleanBase)
   private
-    FSetter: TsgeVariableBooleanSetter;
-    FGetter: TsgeVariableBooleanGetter;
+    FSetter: TsgeVariableBooleanClassSetter;
+    FGetter: TsgeVariableBooleanClassGetter;
 
   protected
     function  GetValue: Boolean; override;
     procedure SetValue(AValue: Boolean); override;
 
   public
-    constructor Create(Name: ShortString; DefValue: Boolean; Getter: TsgeVariableBooleanGetter; Setter: TsgeVariableBooleanSetter = nil; TrueStr: ShortString = 'True'; FalseStr: ShortString = 'False');
+    constructor Create(Name: ShortString; DefValue: Boolean; Getter: TsgeVariableBooleanClassGetter; Setter: TsgeVariableBooleanClassSetter = nil; TrueStr: ShortString = 'True'; FalseStr: ShortString = 'False');
   end;
 
 
@@ -45,17 +45,17 @@ uses
   sgeErrors, sgeVariableBase;
 
 const
-  _UNITNAME = 'VariableBooleanVirtual';
+  _UNITNAME = 'VariableBooleanClass';
 
 
 
-function TsgeVariableBooleanVirtual.GetValue: Boolean;
+function TsgeVariableBooleanClass.GetValue: Boolean;
 begin
   Result := FGetter();
 end;
 
 
-procedure TsgeVariableBooleanVirtual.SetValue(AValue: Boolean);
+procedure TsgeVariableBooleanClass.SetValue(AValue: Boolean);
 begin
   if FReadOnly then
     raise EsgeException.Create(_UNITNAME, Err_VariableIsReadOnly);
@@ -64,7 +64,7 @@ begin
 end;
 
 
-constructor TsgeVariableBooleanVirtual.Create(Name: ShortString; DefValue: Boolean; Getter: TsgeVariableBooleanGetter; Setter: TsgeVariableBooleanSetter; TrueStr: ShortString; FalseStr: ShortString);
+constructor TsgeVariableBooleanClass.Create(Name: ShortString; DefValue: Boolean; Getter: TsgeVariableBooleanClassGetter; Setter: TsgeVariableBooleanClassSetter; TrueStr: ShortString; FalseStr: ShortString);
 begin
   //Проверить метод чтения
   if Getter = nil then

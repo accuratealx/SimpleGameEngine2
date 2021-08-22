@@ -1,14 +1,14 @@
 {
 Пакет             Simple Game Engine 2
-Файл              sgeVariableInteger.pas
+Файл              sgeVariableIntegerNormal.pas
 Версия            1.0
 Создан            19.07.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
-Описание          Класс переменной: Целое число
+Описание          Класс переменной: Целое число: Значение
 }
 {$Include Defines.inc}
 
-unit sgeVariableInteger;
+unit sgeVariableIntegerNormal;
 
 {$mode objfpc}{$H+}
 {$ModeSwitch duplicatelocals}
@@ -20,7 +20,7 @@ uses
 
 
 type
-  TsgeVariableInteger = class(TsgeVariableIntegerBase)
+  TsgeVariableIntegerNormal = class(TsgeVariableIntegerBase)
   private
     FValue: Integer;
 
@@ -39,17 +39,17 @@ uses
   sgeErrors, sgeVariableBase;
 
 const
-  _UNITNAME = 'VariableInteger';
+  _UNITNAME = 'VariableIntegerNormal';
 
 
 
-function TsgeVariableInteger.GetValue: Integer;
+function TsgeVariableIntegerNormal.GetValue: Integer;
 begin
   Result := FValue;
 end;
 
 
-procedure TsgeVariableInteger.SetValue(AValue: Integer);
+procedure TsgeVariableIntegerNormal.SetValue(AValue: Integer);
 begin
   if FReadOnly then
     raise EsgeException.Create(_UNITNAME, Err_VariableIsReadOnly);
@@ -62,7 +62,7 @@ begin
 end;
 
 
-constructor TsgeVariableInteger.Create(Name: ShortString; Value: Integer; DefValue: Integer; ReadOnly: Boolean; MinValue: Integer; MaxValue: Integer);
+constructor TsgeVariableIntegerNormal.Create(Name: ShortString; Value: Integer; DefValue: Integer; ReadOnly: Boolean; MinValue: Integer; MaxValue: Integer);
 begin
   inherited Create(Name, DefValue, ReadOnly, MinValue, MaxValue);
 

@@ -1,14 +1,14 @@
 {
 Пакет             Simple Game Engine 2
-Файл              sgeVariableSingle.pas
+Файл              sgeVariableSingleNormal.pas
 Версия            1.0
 Создан            19.07.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
-Описание          Класс переменной: Дробное число одинарной точности
+Описание          Класс переменной: Дробное число одинарной точности: Значение
 }
 {$Include Defines.inc}
 
-unit sgeVariableSingle;
+unit sgeVariableSingleNormal;
 
 {$mode objfpc}{$H+}
 {$ModeSwitch duplicatelocals}
@@ -20,7 +20,7 @@ uses
 
 
 type
-  TsgeVariableSingle = class(TsgeVariableSingleBase)
+  TsgeVariableSingleNormal = class(TsgeVariableSingleBase)
   private
     FValue: Single;
 
@@ -39,17 +39,17 @@ uses
   sgeErrors, sgeVariableBase;
 
 const
-  _UNITNAME = 'VariableSingle';
+  _UNITNAME = 'VariableSingleNormal';
 
 
 
-function TsgeVariableSingle.GetValue: Single;
+function TsgeVariableSingleNormal.GetValue: Single;
 begin
   Result := FValue;
 end;
 
 
-procedure TsgeVariableSingle.SetValue(AValue: Single);
+procedure TsgeVariableSingleNormal.SetValue(AValue: Single);
 begin
   if FReadOnly then
     raise EsgeException.Create(_UNITNAME, Err_VariableIsReadOnly);
@@ -62,7 +62,7 @@ begin
 end;
 
 
-constructor TsgeVariableSingle.Create(Name: ShortString; Value: Single; DefValue: Single; ReadOnly: Boolean; MinValue: Single; MaxValue: Single);
+constructor TsgeVariableSingleNormal.Create(Name: ShortString; Value: Single; DefValue: Single; ReadOnly: Boolean; MinValue: Single; MaxValue: Single);
 begin
   inherited Create(Name, DefValue, ReadOnly, MinValue, MaxValue);
 

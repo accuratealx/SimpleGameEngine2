@@ -1,14 +1,14 @@
 {
 Пакет             Simple Game Engine 2
-Файл              sgeVariableSingleVirtual.pas
+Файл              sgeVariableSingleClass.pas
 Версия            1.0
 Создан            19.07.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
-Описание          Класс переменной: Виртуальное дробное число одинарной точности
+Описание          Класс переменной: Дробное число одинарной точности: Ссылка на метод класса
 }
 {$Include Defines.inc}
 
-unit sgeVariableSingleVirtual;
+unit sgeVariableSingleClass;
 
 {$mode objfpc}{$H+}
 {$ModeSwitch duplicatelocals}
@@ -21,21 +21,21 @@ uses
 
 type
   //Методы изменения
-  TsgeVariableSingleSetter = procedure(AValue: Single) of object;
-  TsgeVariableSingleGetter = function: Single of object;
+  TsgeVariableSingleClassSetter = procedure(AValue: Single) of object;
+  TsgeVariableSingleClassGetter = function: Single of object;
 
 
-  TsgeVariableSingleVirtual = class(TsgeVariableSingleBase)
+  TsgeVariableSingleClass = class(TsgeVariableSingleBase)
   private
-    FSetter: TsgeVariableSingleSetter;
-    FGetter: TsgeVariableSingleGetter;
+    FSetter: TsgeVariableSingleClassSetter;
+    FGetter: TsgeVariableSingleClassGetter;
 
   protected
     function  GetValue: Single; override;
     procedure SetValue(AValue: Single); override;
 
   public
-    constructor Create(Name: ShortString; DefValue: Single; Getter: TsgeVariableSingleGetter; Setter: TsgeVariableSingleSetter = nil; MinValue: single = 1.5E-45; MaxValue: single = 3.4E38);
+    constructor Create(Name: ShortString; DefValue: Single; Getter: TsgeVariableSingleClassGetter; Setter: TsgeVariableSingleClassSetter = nil; MinValue: single = 1.5E-45; MaxValue: single = 3.4E38);
   end;
 
 
@@ -45,17 +45,17 @@ uses
   sgeErrors, sgeVariableBase;
 
 const
-  _UNITNAME = 'VariableSingleVirtual';
+  _UNITNAME = 'VariableSingleClass';
 
 
 
-function TsgeVariableSingleVirtual.GetValue: Single;
+function TsgeVariableSingleClass.GetValue: Single;
 begin
   Result := FGetter();
 end;
 
 
-procedure TsgeVariableSingleVirtual.SetValue(AValue: Single);
+procedure TsgeVariableSingleClass.SetValue(AValue: Single);
 begin
   if FReadOnly then
     raise EsgeException.Create(_UNITNAME, Err_VariableIsReadOnly);
@@ -68,7 +68,7 @@ begin
 end;
 
 
-constructor TsgeVariableSingleVirtual.Create(Name: ShortString; DefValue: Single; Getter: TsgeVariableSingleGetter; Setter: TsgeVariableSingleSetter; MinValue: single; MaxValue: single);
+constructor TsgeVariableSingleClass.Create(Name: ShortString; DefValue: Single; Getter: TsgeVariableSingleClassGetter; Setter: TsgeVariableSingleClassSetter; MinValue: single; MaxValue: single);
 begin
   //Проверить метод чтения
   if Getter = nil then

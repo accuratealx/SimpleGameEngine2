@@ -16,9 +16,12 @@ unit sgeExtensionVariables;
 interface
 
 uses
-  sgeExtensionBase, sgeVariableList,
-  sgeVariableInteger, sgeVariableIntegerVirtual, sgeVariableSingle, sgeVariableSingleVirtual,
-  sgeVariableString, sgeVariableStringVirtual, sgeVariableBoolean, sgeVariableBooleanVirtual;
+  sgeExtensionBase, sgeVariableList, sgeGraphicColor,
+  sgeVariableIntegerNormal, sgeVariableIntegerClass,
+  sgeVariableSingleNormal, sgeVariableSingleClass,
+  sgeVariableStringNormal, sgeVariableStringClass,
+  sgeVariableBooleanNormal, sgeVariableBooleanClass,
+  sgeVariableColorNormal, sgeVariableColorClass;
 
 
 const
@@ -39,20 +42,23 @@ type
     destructor  Destroy; override;
 
     //Добавление новых переменных
-    function AddInteger(Name: ShortString; Value: Integer; DefValue: Integer; ReadOnly: Boolean = False; MinValue: Integer = -MaxInt; MaxValue: Integer = MaxInt): TsgeVariableInteger;
-    function AddInteger(Name: ShortString; DefValue: Integer; Setter: TsgeVariableIntegerSetter; Getter: TsgeVariableIntegerGetter; MinValue: Integer = -MaxInt; MaxValue: Integer = MaxInt): TsgeVariableIntegerVirtual;
-    function AddSingle(Name: ShortString; Value: Single; DefValue: Single; ReadOnly: Boolean = False; MinValue: single = 1.5E-45; MaxValue: single = 3.4E38): TsgeVariableSingle;
-    function AddSingle(Name: ShortString; DefValue: Single; Getter: TsgeVariableSingleGetter; Setter: TsgeVariableSingleSetter = nil; MinValue: single = 1.5E-45; MaxValue: single = 3.4E38): TsgeVariableSingleVirtual;
-    function AddString(Name: ShortString; Value: String; DefValue: String; ReadOnly: Boolean = False): TsgeVariableString;
-    function AddString(Name: ShortString; DefValue: String; Getter: TsgeVariableStringGetter; Setter: TsgeVariableStringSetter = nil): TsgeVariableStringVirtual;
-    function AddBoolean(Name: ShortString; Value: Boolean; DefValue: Boolean; ReadOnly: Boolean = False; TrueStr: ShortString = 'True'; FalseStr: ShortString = 'False'): TsgeVariableBoolean;
-    function AddBoolean(Name: ShortString; DefValue: Boolean; Getter: TsgeVariableBooleanGetter; Setter: TsgeVariableBooleanSetter = nil; TrueStr: ShortString = 'True'; FalseStr: ShortString = 'False'): TsgeVariableBooleanVirtual;
+    function AddInteger(Name: ShortString; Value: Integer; DefValue: Integer; ReadOnly: Boolean = False; MinValue: Integer = -MaxInt; MaxValue: Integer = MaxInt): TsgeVariableIntegerNormal;
+    function AddInteger(Name: ShortString; DefValue: Integer; Setter: TsgeVariableIntegerClassSetter; Getter: TsgeVariableIntegerClassGetter; MinValue: Integer = -MaxInt; MaxValue: Integer = MaxInt): TsgeVariableIntegerClass;
+    function AddSingle(Name: ShortString; Value: Single; DefValue: Single; ReadOnly: Boolean = False; MinValue: single = 1.5E-45; MaxValue: single = 3.4E38): TsgeVariableSingleNormal;
+    function AddSingle(Name: ShortString; DefValue: Single; Getter: TsgeVariableSingleClassGetter; Setter: TsgeVariableSingleClassSetter = nil; MinValue: single = 1.5E-45; MaxValue: single = 3.4E38): TsgeVariableSingleClass;
+    function AddString(Name: ShortString; Value: String; DefValue: String; ReadOnly: Boolean = False): TsgeVariableStringNormal;
+    function AddString(Name: ShortString; DefValue: String; Getter: TsgeVariableStringClassGetter; Setter: TsgeVariableStringClassSetter = nil): TsgeVariableStringClass;
+    function AddBoolean(Name: ShortString; Value: Boolean; DefValue: Boolean; ReadOnly: Boolean = False; TrueStr: ShortString = 'True'; FalseStr: ShortString = 'False'): TsgeVariableBooleanNormal;
+    function AddBoolean(Name: ShortString; DefValue: Boolean; Getter: TsgeVariableBooleanClassGetter; Setter: TsgeVariableBooleanClassSetter = nil; TrueStr: ShortString = 'True'; FalseStr: ShortString = 'False'): TsgeVariableBooleanClass;
+    function AddColor(Name: ShortString; Value: TsgeRGBA; DefValue: TsgeRGBA; ReadOnly: Boolean = False): TsgeVariableColorNormal;
+    function AddColor(Name: ShortString; DefValue: TsgeRGBA; Getter: TsgeVariableColorClassGetter; Setter: TsgeVariableColorClassSetter = nil): TsgeVariableColorClass;
 
     //Изменить значение переменной
     procedure SetInteger(Name: ShortString; Value: Integer);
     procedure SetSingle(Name: ShortString; Value: Single);
     procedure SetString(Name: ShortString; Value: String);
     procedure SetBoolean(Name: ShortString; Value: Boolean);
+    procedure SetColor(Name: ShortString; Value: TsgeRGBA);
 
     //Классы
     property Variables: TsgeVariableList read FVariableList;
@@ -62,7 +68,7 @@ type
 implementation
 
 uses
-  sgeErrors, sgeSystemUtils;
+  sgeErrors, sgeSystemUtils, sgeGraphicColorUtils;
 
 
 const
@@ -109,90 +115,112 @@ begin
 end;
 
 
-function TsgeExtensionVariables.AddInteger(Name: ShortString; Value: Integer; DefValue: Integer; ReadOnly: Boolean; MinValue: Integer; MaxValue: Integer): TsgeVariableInteger;
+function TsgeExtensionVariables.AddInteger(Name: ShortString; Value: Integer; DefValue: Integer; ReadOnly: Boolean; MinValue: Integer; MaxValue: Integer): TsgeVariableIntegerNormal;
 begin
   //Проверить на существование
   CheckVariableExist(Name);
 
   //Добавить
-  Result := TsgeVariableInteger.Create(Name, Value, DefValue, ReadOnly, MinValue, MaxValue);
+  Result := TsgeVariableIntegerNormal.Create(Name, Value, DefValue, ReadOnly, MinValue, MaxValue);
   FVariableList.Add(Result);
 end;
 
 
-function TsgeExtensionVariables.AddInteger(Name: ShortString; DefValue: Integer; Setter: TsgeVariableIntegerSetter; Getter: TsgeVariableIntegerGetter; MinValue: Integer; MaxValue: Integer): TsgeVariableIntegerVirtual;
+function TsgeExtensionVariables.AddInteger(Name: ShortString; DefValue: Integer; Setter: TsgeVariableIntegerClassSetter; Getter: TsgeVariableIntegerClassGetter; MinValue: Integer; MaxValue: Integer): TsgeVariableIntegerClass;
 begin
   //Проверить на существование
   CheckVariableExist(Name);
 
   //Добавить
-  Result := TsgeVariableIntegerVirtual.Create(Name, DefValue, Getter, Setter, MinValue, MaxValue);
+  Result := TsgeVariableIntegerClass.Create(Name, DefValue, Getter, Setter, MinValue, MaxValue);
   FVariableList.Add(Result);
 end;
 
 
-function TsgeExtensionVariables.AddSingle(Name: ShortString; Value: Single; DefValue: Single; ReadOnly: Boolean; MinValue: single; MaxValue: single): TsgeVariableSingle;
+function TsgeExtensionVariables.AddSingle(Name: ShortString; Value: Single; DefValue: Single; ReadOnly: Boolean; MinValue: single; MaxValue: single): TsgeVariableSingleNormal;
 begin
   //Проверить на существование
   CheckVariableExist(Name);
 
   //Добавить
-  Result := TsgeVariableSingle.Create(Name, Value, DefValue, ReadOnly, MinValue, MaxValue);
+  Result := TsgeVariableSingleNormal.Create(Name, Value, DefValue, ReadOnly, MinValue, MaxValue);
   FVariableList.Add(Result);
 end;
 
 
-function TsgeExtensionVariables.AddSingle(Name: ShortString; DefValue: Single; Getter: TsgeVariableSingleGetter; Setter: TsgeVariableSingleSetter; MinValue: single; MaxValue: single): TsgeVariableSingleVirtual;
+function TsgeExtensionVariables.AddSingle(Name: ShortString; DefValue: Single; Getter: TsgeVariableSingleClassGetter; Setter: TsgeVariableSingleClassSetter; MinValue: single; MaxValue: single): TsgeVariableSingleClass;
 begin
   //Проверить на существование
   CheckVariableExist(Name);
 
   //Добавить
-  Result := TsgeVariableSingleVirtual.Create(Name, DefValue, Getter, Setter, MinValue, MaxValue);
+  Result := TsgeVariableSingleClass.Create(Name, DefValue, Getter, Setter, MinValue, MaxValue);
   FVariableList.Add(Result);
 end;
 
 
-function TsgeExtensionVariables.AddString(Name: ShortString; Value: String; DefValue: String; ReadOnly: Boolean): TsgeVariableString;
+function TsgeExtensionVariables.AddString(Name: ShortString; Value: String; DefValue: String; ReadOnly: Boolean): TsgeVariableStringNormal;
 begin
   //Проверить на существование
   CheckVariableExist(Name);
 
   //Добавить
-  Result := TsgeVariableString.Create(Name, Value, DefValue, ReadOnly);
+  Result := TsgeVariableStringNormal.Create(Name, Value, DefValue, ReadOnly);
   FVariableList.Add(Result);
 end;
 
 
-function TsgeExtensionVariables.AddString(Name: ShortString; DefValue: String; Getter: TsgeVariableStringGetter; Setter: TsgeVariableStringSetter): TsgeVariableStringVirtual;
+function TsgeExtensionVariables.AddString(Name: ShortString; DefValue: String; Getter: TsgeVariableStringClassGetter; Setter: TsgeVariableStringClassSetter): TsgeVariableStringClass;
 begin
   //Проверить на существование
   CheckVariableExist(Name);
 
   //Добавить
-  Result := TsgeVariableStringVirtual.Create(Name, DefValue, Getter, Setter);
+  Result := TsgeVariableStringClass.Create(Name, DefValue, Getter, Setter);
   FVariableList.Add(Result);
 end;
 
 
-function TsgeExtensionVariables.AddBoolean(Name: ShortString; Value: Boolean; DefValue: Boolean; ReadOnly: Boolean; TrueStr: ShortString; FalseStr: ShortString): TsgeVariableBoolean;
+function TsgeExtensionVariables.AddBoolean(Name: ShortString; Value: Boolean; DefValue: Boolean; ReadOnly: Boolean; TrueStr: ShortString; FalseStr: ShortString): TsgeVariableBooleanNormal;
 begin
   //Проверить на существование
   CheckVariableExist(Name);
 
   //Добавить
-  Result := TsgeVariableBoolean.Create(Name, Value, DefValue, ReadOnly, TrueStr, FalseStr);
+  Result := TsgeVariableBooleanNormal.Create(Name, Value, DefValue, ReadOnly, TrueStr, FalseStr);
   FVariableList.Add(Result);
 end;
 
 
-function TsgeExtensionVariables.AddBoolean(Name: ShortString; DefValue: Boolean; Getter: TsgeVariableBooleanGetter; Setter: TsgeVariableBooleanSetter; TrueStr: ShortString; FalseStr: ShortString): TsgeVariableBooleanVirtual;
+function TsgeExtensionVariables.AddBoolean(Name: ShortString; DefValue: Boolean; Getter: TsgeVariableBooleanClassGetter; Setter: TsgeVariableBooleanClassSetter; TrueStr: ShortString; FalseStr: ShortString): TsgeVariableBooleanClass;
 begin
   //Проверить на существование
   CheckVariableExist(Name);
 
   //Добавить
-  Result := TsgeVariableBooleanVirtual.Create(Name, DefValue, Getter, Setter, TrueStr, FalseStr);
+  Result := TsgeVariableBooleanClass.Create(Name, DefValue, Getter, Setter, TrueStr, FalseStr);
+  FVariableList.Add(Result);
+end;
+
+
+function TsgeExtensionVariables.AddColor(Name: ShortString; Value: TsgeRGBA; DefValue: TsgeRGBA; ReadOnly: Boolean): TsgeVariableColorNormal;
+begin
+  //Проверить на существование
+  CheckVariableExist(Name);
+
+  //Добавить
+  Result := TsgeVariableColorNormal.Create(Name, Value, DefValue, ReadOnly);
+  FVariableList.Add(Result);
+end;
+
+
+function TsgeExtensionVariables.AddColor(Name: ShortString; DefValue: TsgeRGBA; Getter: TsgeVariableColorClassGetter; Setter: TsgeVariableColorClassSetter): TsgeVariableColorClass;
+begin
+  //Проверить на существование
+  CheckVariableExist(Name);
+
+  //Добавить
+  Result := TsgeVariableColorClass.Create(Name, DefValue, Getter, Setter);
   FVariableList.Add(Result);
 end;
 
@@ -230,6 +258,15 @@ var
 begin
   Idx := FVariableList.IndexOf(Name);
   if Idx = -1 then AddBoolean(Name, Value, False, False) else FVariableList.Item[Idx].StrValue := sgeBoolToStr(Value);
+end;
+
+
+procedure TsgeExtensionVariables.SetColor(Name: ShortString; Value: TsgeRGBA);
+var
+  Idx: Integer;
+begin
+  Idx := FVariableList.IndexOf(Name);
+  if Idx = -1 then AddColor(Name, Value, sgeGetRGBA(0, 0, 0, 1), False) else FVariableList.Item[Idx].StrValue := sgeRGBAToString(Value);
 end;
 
 
