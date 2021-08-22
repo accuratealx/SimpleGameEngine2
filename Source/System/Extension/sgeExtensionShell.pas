@@ -110,6 +110,8 @@ type
     procedure RegisterVariables;
     procedure Variable_SetEnable(AEnable: Boolean);
     function  Variable_GetEnable: Boolean;
+    procedure Variable_SetBGColor(AColor: TsgeRGBA);
+    function  Variable_GetBGColor: TsgeRGBA;
   protected
     //Специальные команды
     FStopExecuting: Boolean;                                        //Флаг прерывания работы скрипта
@@ -765,6 +767,7 @@ end;
 procedure TsgeExtensionShell.RegisterVariables;
 begin
   FExtVariables.AddBoolean('Shell.Enable', False, @Variable_GetEnable, @Variable_SetEnable, 'On', 'Off');
+  FExtVariables.AddColor('Shell.BGColor', sgeGetRGBA(128, 0, 128, 128), @Variable_GetBGColor, @Variable_SetBGColor);
 end;
 
 
@@ -777,6 +780,18 @@ end;
 function TsgeExtensionShell.Variable_GetEnable: Boolean;
 begin
   Result := Enable;
+end;
+
+
+procedure TsgeExtensionShell.Variable_SetBGColor(AColor: TsgeRGBA);
+begin
+  BGColor := sgeRGBAToColor(AColor);
+end;
+
+
+function TsgeExtensionShell.Variable_GetBGColor: TsgeRGBA;
+begin
+  Result := sgeColorToRGBA(BGColor);
 end;
 
 
