@@ -15,7 +15,7 @@
     </CompilerOptions>
     <Description Value="Simple Game Engine 2"/>
     <Version Major="1"/>
-    <Files Count="149">
+    <Files Count="152">
       <Item1>
         <Filename Value="..\Source\ThirdParty\GDIPlus\GDIPAPI.pas"/>
         <UnitName Value="GDIPAPI"/>
@@ -405,56 +405,56 @@
         <Type Value="Include"/>
       </Item97>
       <Item98>
-        <Filename Value="..\Source\System\Variables\sgeVariableBoolean.pas"/>
-        <UnitName Value="sgeVariableBoolean"/>
+        <Filename Value="..\Source\System\Variables\sgeVariableBooleanNormal.pas"/>
+        <UnitName Value="sgeVariableBooleanNormal"/>
       </Item98>
       <Item99>
         <Filename Value="..\Source\System\Variables\sgeVariableBooleanBase.pas"/>
         <UnitName Value="sgeVariableBooleanBase"/>
       </Item99>
       <Item100>
-        <Filename Value="..\Source\System\Variables\sgeVariableBooleanVirtual.pas"/>
-        <UnitName Value="sgeVariableBooleanVirtual"/>
+        <Filename Value="..\Source\System\Variables\sgeVariableBooleanClass.pas"/>
+        <UnitName Value="sgeVariableBooleanClass"/>
       </Item100>
       <Item101>
-        <Filename Value="..\Source\System\Variables\sgeVariableInteger.pas"/>
-        <UnitName Value="sgeVariableInteger"/>
+        <Filename Value="..\Source\System\Variables\sgeVariableIntegerNormal.pas"/>
+        <UnitName Value="sgeVariableIntegerNormal"/>
       </Item101>
       <Item102>
         <Filename Value="..\Source\System\Variables\sgeVariableIntegerBase.pas"/>
         <UnitName Value="sgeVariableIntegerBase"/>
       </Item102>
       <Item103>
-        <Filename Value="..\Source\System\Variables\sgeVariableIntegerVirtual.pas"/>
-        <UnitName Value="sgeVariableIntegerVirtual"/>
+        <Filename Value="..\Source\System\Variables\sgeVariableIntegerClass.pas"/>
+        <UnitName Value="sgeVariableIntegerClass"/>
       </Item103>
       <Item104>
         <Filename Value="..\Source\System\Variables\sgeVariableList.pas"/>
         <UnitName Value="sgeVariableList"/>
       </Item104>
       <Item105>
-        <Filename Value="..\Source\System\Variables\sgeVariableSingle.pas"/>
-        <UnitName Value="sgeVariableSingle"/>
+        <Filename Value="..\Source\System\Variables\sgeVariableSingleNormal.pas"/>
+        <UnitName Value="sgeVariableSingleNormal"/>
       </Item105>
       <Item106>
         <Filename Value="..\Source\System\Variables\sgeVariableSingleBase.pas"/>
         <UnitName Value="sgeVariableSingleBase"/>
       </Item106>
       <Item107>
-        <Filename Value="..\Source\System\Variables\sgeVariableSingleVirtual.pas"/>
-        <UnitName Value="sgeVariableSingleVirtual"/>
+        <Filename Value="..\Source\System\Variables\sgeVariableSingleClass.pas"/>
+        <UnitName Value="sgeVariableSingleClass"/>
       </Item107>
       <Item108>
-        <Filename Value="..\Source\System\Variables\sgeVariableString.pas"/>
-        <UnitName Value="sgeVariableString"/>
+        <Filename Value="..\Source\System\Variables\sgeVariableColorNormal.pas"/>
+        <UnitName Value="sgeVariableColorNormal"/>
       </Item108>
       <Item109>
-        <Filename Value="..\Source\System\Variables\sgeVariableStringBase.pas"/>
-        <UnitName Value="sgeVariableStringBase"/>
+        <Filename Value="..\Source\System\Variables\sgeVariableColorBase.pas"/>
+        <UnitName Value="sgeVariableColorBase"/>
       </Item109>
       <Item110>
-        <Filename Value="..\Source\System\Variables\sgeVariableStringVirtual.pas"/>
-        <UnitName Value="sgeVariableStringVirtual"/>
+        <Filename Value="..\Source\System\Variables\sgeVariableColorClass.pas"/>
+        <UnitName Value="sgeVariableColorClass"/>
       </Item110>
       <Item111>
         <Filename Value="..\Source\System\Templates\sgeTemplateObjectCollection.pas"/>
@@ -612,6 +612,18 @@
         <Filename Value="..\Source\System\Base\sgeStringUtils.pas"/>
         <UnitName Value="sgeStringUtils"/>
       </Item149>
+      <Item150>
+        <Filename Value="..\Source\System\Variables\sgeVariableStringBase.pas"/>
+        <UnitName Value="sgeVariableStringBase"/>
+      </Item150>
+      <Item151>
+        <Filename Value="..\Source\System\Variables\sgeVariableStringNormal.pas"/>
+        <UnitName Value="sgeVariableStringNormal"/>
+      </Item151>
+      <Item152>
+        <Filename Value="..\Source\System\Variables\sgeVariableStringClass.pas"/>
+        <UnitName Value="sgeVariableStringClass"/>
+      </Item152>
     </Files>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)"/>

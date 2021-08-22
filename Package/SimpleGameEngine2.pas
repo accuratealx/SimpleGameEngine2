@@ -33,13 +33,13 @@ uses
   sgePackFileReader, sgePackFileWriter, sgeSoundBuffer, sgeSoundBufferLoader, 
   sgeSoundBufferWavLoader, sgeSoundSource, sgeTemplateCollection, 
   sgeTemplateList, sgeSystemCursor, sgeSystemIcon, sgeSystemTimeEvent, 
-  sgeSystemTrayIcon, sgeVariableBoolean, sgeVariableBooleanBase, 
-  sgeVariableBooleanVirtual, sgeVariableInteger, sgeVariableIntegerBase, 
-  sgeVariableIntegerVirtual, sgeVariableList, sgeVariableSingle, 
-  sgeVariableSingleBase, sgeVariableSingleVirtual, sgeVariableString, 
-  sgeVariableStringBase, sgeVariableStringVirtual, 
-  sgeTemplateObjectCollection, sgeShellCommand_System_Read, sgeJournal, 
-  sgeShellCommand, sgeShellCommandList, sgeCommandHistory, sgeSystemConsole, 
+  sgeSystemTrayIcon, sgeVariableBooleanNormal, sgeVariableBooleanBase, 
+  sgeVariableBooleanClass, sgeVariableIntegerNormal, sgeVariableIntegerBase, 
+  sgeVariableIntegerClass, sgeVariableList, sgeVariableSingleNormal, 
+  sgeVariableSingleBase, sgeVariableSingleClass, sgeVariableColorNormal, 
+  sgeVariableColorBase, sgeVariableColorClass, sgeTemplateObjectCollection, 
+  sgeShellCommand_System_Read, sgeJournal, sgeShellCommand, 
+  sgeShellCommandList, sgeCommandHistory, sgeSystemConsole, 
   sgeExtensionKeyCommand, sgeShellCommandQueue, sgeKeyCommandKeyboard, 
   sgeKeyCommandMouse, sgeKeyCommandJoystick, sgeKeyCommandJoystickButtonInfo, 
   sgeKeyCommandJoystickInfo, sgeKeyCommandJoystickAxisInfo, 
@@ -54,7 +54,8 @@ uses
   sgeShellCommand_System_Sleep, sgeShellLine, sgeShellLineItem, 
   sgeShellLineList, sgeShellCommand_System_Write, 
   sgeShellCommand_System_Screenshot, sgeShellCommand_System_Stop, 
-  sgeStringUtils;
+  sgeStringUtils, sgeVariableStringBase, sgeVariableStringNormal, 
+  sgeVariableStringClass;
 
 implementation
 
