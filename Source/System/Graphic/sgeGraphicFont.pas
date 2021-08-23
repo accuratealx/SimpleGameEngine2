@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGraphicFont.pas
-Версия            1.1
+Версия            1.2
 Создан            05.05.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс битового шрифта для вывода посредством OpenGL.
@@ -49,6 +49,10 @@ type
     FHeight: Word;
     FName: String;
     FAttrib: TsgeGraphicFontAttrib;
+    FCharWidth: Integer;
+    FCharHeight: Integer;
+    FCharAscent: Integer;
+    fCharDescent: Integer;
 
     FDC: HDC;
     FFont: HFONT;
@@ -69,6 +73,10 @@ type
     property Size: Word read FSize;
     property Name: String read FName write SetName;
     property Attrib: TsgeGraphicFontAttrib read FAttrib write SetAttrib;
+    property CharWidth: Integer read FCharWidth;
+    property CharHeight: Integer read FCharHeight;
+    property CharAscent: Integer read FCharAscent;
+    property CharDescent: Integer read fCharDescent;
   end;
 
 
@@ -125,16 +133,17 @@ procedure TsgeGraphicFont.BuildFont;
 var
   Fnt: HFONT;
   LogFont: TLOGFONT;
+  Metrix: TTEXTMETRIC;
   ErrStr: String;
 begin
   //Параметры шрифта
   ErrStr := FName + ' ' + sgeIntToStr(FSize) + ' ' + sgeFontAttribToString(FAttrib);
 
-  //Запомнить высоту шрифта
-  FSize := FHeight * GetDeviceCaps(FDC, LOGPIXELSY) div 72;
+  //Запомнить размер шрифта
+  FSize := FHeight div (GetDeviceCaps(FDC, LOGPIXELSY) div 72);
 
   //Структура логического шрифта
-  LogFont.lfHeight := -(FSize);                                     //Высота
+  LogFont.lfHeight := -(FHeight);                                   //Высота шрифта
   LogFont.lfWidth := 0;                                             //Автоподбор ширины
   LogFont.lfEscapement := 0;                                        //Угол в десятых долях между вектором спуска и осью x устройства
   LogFont.lfOrientation := 0;                                       //Угол в градусах
@@ -163,6 +172,13 @@ begin
   if wglUseFontBitmaps(FDc, 0, 256, FGLHandle) = False then
     raise EsgeException.Create(_UNITNAME, Err_CantCreateGLFont, ErrStr);
   glPopAttrib;
+
+  //Запомнить метрики шрифта
+  GetTextMetrics(FDC, Metrix);
+  FCharWidth := Metrix.tmAveCharWidth;
+  FCharHeight := Metrix.tmHeight;
+  FCharAscent := Metrix.tmAscent;
+  fCharDescent := Metrix.tmDescent;
 
   //Почистить память
   DeleteObject(FFont);
