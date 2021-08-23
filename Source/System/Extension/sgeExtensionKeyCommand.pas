@@ -145,6 +145,9 @@ function TsgeExtensionKeyCommand.Handler_KeyDown(EventObj: TsgeEventWindowKeyboa
 var
   Command: String;
 begin
+  //По умолчанию
+  Result := False;
+
   //Проверить команду на кнопке
   Command := FKeyboard.Key[EventObj.Key].Down;
   if Command <> '' then
@@ -152,11 +155,7 @@ begin
     Result := True;                                           //Дальше не передавать этот объект
     FBlockCharEvent := True;                                  //Заблокировать следующее событие WM_CHAR
     if EventObj.FirstDown then FExtShell.DoCommand(Command);  //Выполнить команду
-    end
-    else begin
-    FBlockCharEvent := False;
-    Result := False;
-    end;
+    end else FBlockCharEvent := False;
 end;
 
 
@@ -168,8 +167,14 @@ end;
 
 function TsgeExtensionKeyCommand.Handler_KeyChar(EventObj: TsgeEventWindowChar): Boolean;
 begin
-  //Заглушка. Что бы подавить событие WM_CHAR
-  Result := FBlockCharEvent;
+  Result := False;
+
+  //Проверить подавление события WM_CHAR
+  if FBlockCharEvent then
+    begin
+    FBlockCharEvent := True;
+    Result := True;
+    end;
 end;
 
 
