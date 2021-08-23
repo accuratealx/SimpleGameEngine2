@@ -159,7 +159,7 @@ type
 implementation
 
 uses
-  sgeErrors, sgeStringList, sgeEventBase, sgeSystemUtils, sgeStringUtils,
+  sgeErrors, sgeStringList, sgeEventBase, sgeOSPlatform, sgeSystemUtils, sgeStringUtils,
   sgeVariableBase, sgeShellCommand, sgeKeys, sgeShellLine, sgeShellLineItem, sgeMathUtils;
 
 const
@@ -611,8 +611,8 @@ begin
 
 
     //Вывод строки редактора
-    Color := FEditorTextColor;                                      //Установить цвет текста
-    DrawText(X + XOffset, Y, FFont, FEditor.Line);                  //Вывод
+    Color := FEditorTextColor;
+    DrawText(X + XOffset, Y, FFont, FEditor.Line);
 
 
     //Границы высоты выделения строки редактора
@@ -803,6 +803,10 @@ begin
   //Поправить элемент отрисовки
   FElementSprite.Visible := FEnable;
 
+  //КОООООСТЫЛЬ!!!
+  //Не сразу перехватывать события клавиатуры, что бы sgeKeyCommand смог подавить событие WM_CHAR.
+  sgeSleep(1);
+
   //Поправить подписчиков событий
   FSubKeyDown.Enable := FEnable;
   FSubKeyUp.Enable := FEnable;
@@ -851,7 +855,7 @@ begin
     FAliases := TsgeSimpleParameters.Create;
     FCommandList := TsgeShellCommandList.Create;
     FEditor := TsgeLineEditor.Create;
-    FFont := TsgeGraphicFont.Create('Lucida Console', 14, [gfaBold]);
+    FFont := TsgeGraphicFont.Create('Lucida Console', 14, []);
 
     //Задать параметры
     FEnable := False;
