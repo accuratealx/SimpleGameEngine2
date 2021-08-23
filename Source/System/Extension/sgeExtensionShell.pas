@@ -58,6 +58,7 @@ type
     FEnable: Boolean;
     FWeakSeparator: Boolean;
     FJournalLines: Byte;                                            //Количество строк журнала
+    FJournalPage: Byte;                                             //Размер страницы прокрутки
 
     FBGSprite: TsgeGraphicSprite;                                   //Фоновый спрайт
 
@@ -75,6 +76,7 @@ type
     FChangeSize: Boolean;                                           //Флаг изменения размеров
     FSkipChar: Boolean;                                             //Флаг пропуска события WM_CHAR
     FCommandIsRunning: Boolean;                                     //Флаг выполнения команды
+    FJournalOffset: Integer;                                        //Смещение журнала
 
     //Обработчики событий
     procedure RegisterEventHandlers;
@@ -83,6 +85,7 @@ type
     function  Handler_KeyDown(EventObj: TsgeEventWindowKeyboard): Boolean;
     function  Handler_KeyUp(EventObj: TsgeEventWindowKeyboard): Boolean;
     function  Handler_KeyChar(EventObj: TsgeEventWindowChar): Boolean;
+    function  Handler_MouseWheel(EventObj: TsgeEventWindowMouse): Boolean;
 
     //Вспомогательные методы
     procedure RegisterDefaultAliases;                               //Добавить алиасы по умолчанию
@@ -92,6 +95,8 @@ type
     procedure ExecuteCommand(Command: String);                      //Разбор строки на алиасы и выполнение
     procedure PaintCanvas(Graphic: TsgeGraphic);                    //Перерисовать холст
     procedure RepaintInner;                                         //Перерисовать из основного потока
+    procedure JournalUp(UsePage: Boolean = False);                  //Прокрутка журнала вверх
+    procedure JournalDown(UsePage: Boolean = False);                //Прокрутка журнала вниз
 
     //Методы потока
     procedure InitGraphic;                                          //Подготовить графику
@@ -143,6 +148,7 @@ type
     property Enable: Boolean read FEnable write SetEnable;
     property Journal: TsgeShellLineList read FJournal;
     property WeakSeparator: Boolean read FWeakSeparator write FWeakSeparator;
+    property JournalPage: Byte read FJournalPage write FJournalPage;
 
     property BGSprite: TsgeGraphicSprite read FBGSprite write SetBGSprite;
     property BGColor: TsgeColor read FBGColor write FBGColor;
@@ -189,6 +195,8 @@ begin
   FSubKeyDown := EventManager.Subscribe(Event_WindowKeyDown, TsgeEventHandler(@Handler_KeyDown), HandlerPriority, False);
   FSubKeyUp := EventManager.Subscribe(Event_WindowKeyUp, TsgeEventHandler(@Handler_KeyUp), HandlerPriority, False);
   FSubKeyChar := EventManager.Subscribe(Event_WindowChar, TsgeEventHandler(@Handler_KeyChar), HandlerPriority, False);
+
+  EventManager.Subscribe(Event_WindowMouseScroll, TsgeEventHandler(@Handler_MouseWheel), $FFFE, True);
 
   EventManager.Subscribe(Event_WindowSize, TsgeEventHandler(@Event_WindowResize), $FFFE, True);
 end;
@@ -280,6 +288,14 @@ begin
       keyDown: FEditor.Line := FCommandHistory.GetNextCommand;
 
 
+      //Прокрутить журнал вверх
+      keyPageUp: JournalUp(not (kbCtrl in EventObj.KeyboardButtons));
+
+
+      //Прокрутить журнал вниз
+      keyPageDown: JournalDown(not (kbCtrl in EventObj.KeyboardButtons));
+
+
       //Очистить журнал оболочки
       keyL:
         if (kbCtrl in EventObj.KeyboardButtons) then FJournal.Clear;
@@ -319,6 +335,15 @@ begin
 
   //Перерисовать
   RepaintInner;
+end;
+
+
+function TsgeExtensionShell.Handler_MouseWheel(EventObj: TsgeEventWindowMouse): Boolean;
+var
+  Page: Boolean;
+begin
+  Page := (kbCtrl in EventObj.KeyboardButtons);
+  if EventObj.Delta > 0 then JournalUp(Page) else JournalDown(Page);
 end;
 
 
@@ -637,8 +662,8 @@ begin
 
 
     //Вывод журнала оболочки
-    JEnd := FJournal.Count - 1;
-    JBegin := FJournal.Count - sgeMin(FJournal.Count, FJournalLines);
+    JEnd := FJournal.Count - 1 - FJournalOffset;
+    JBegin := sgeMax(JEnd - FJournalLines + 1, 0);
     Y := Indent + JournalH - FFont.Height - 1;
 
     for i := JEnd downto JBegin do
@@ -700,6 +725,37 @@ end;
 procedure TsgeExtensionShell.RepaintInner;
 begin
   PaintCanvas(FExtGraphic.Graphic);
+end;
+
+
+procedure TsgeExtensionShell.JournalUp(UsePage: Boolean);
+var
+  d, i: Integer;
+begin
+  if UsePage then i := FJournalPage else i := 1;
+  Inc(FJournalOffset, i);
+
+  //Проверить выход за границы
+  d := sgeMax(FJournal.Count - FJournalLines, 0);
+  if FJournalOffset >= d then FJournalOffset := d;
+
+  //Перерисовать оболочку
+  RepaintInner;
+end;
+
+
+procedure TsgeExtensionShell.JournalDown(UsePage: Boolean);
+var
+  i: Integer;
+begin
+  if UsePage then i := FJournalPage else i := 1;
+  Dec(FJournalOffset, i);
+
+  //Проверить выход за границы
+  if FJournalOffset <= 0 then FJournalOffset := 0;
+
+  //Перерисовать оболочку
+  RepaintInner;
 end;
 
 
@@ -863,6 +919,7 @@ begin
     FReadMode := False;
     FReadKeyMode := False;
     FJournalLines := 12;
+    FJournalPage := 5;
 
     FBGColor            := sgeRGBAToColor(128, 0, 128, 128);
     FEditorTextColor    := sgeRGBAToColor(255, 255, 255, 255);
@@ -946,6 +1003,9 @@ procedure TsgeExtensionShell.LogMessage(Text: String; MsgType: TsgeShellMessageT
 var
   Color: TsgeColor;
 begin
+  //Сместить прокрутку журнала в низ
+  FJournalOffset := 0;
+
   //Определить цвет строки
   case MsgType of
     smtText : Color := FTextColor;
