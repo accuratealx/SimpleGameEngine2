@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGraphicFPS.pas
-Версия            1.2
+Версия            1.3
 Создан            05.05.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс расширения: Графика: Настройки вывода FPS
@@ -48,7 +48,7 @@ implementation
 
 constructor TsgeGraphicFPS.Create;
 begin
-  FFont := TsgeGraphicFont.Create('System', 12, []);
+  FFont := TsgeGraphicFont.Create('Lucida Console', 14, []);
   FHorizontalAlign := haRight;
   FVerticalAlign := vaTop;
   FColor := cWhite;

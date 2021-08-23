@@ -475,7 +475,7 @@ begin
       S := Utf8ToAnsi('Творческий Человек  [accuratealx@gmail.com]');
       JLine := FJournal.Add;
       for i := 1 to Length(S) do
-        JLine.Add(S[i], sgeGetRandomColor, cBlack);
+        JLine.Add(S[i], sgeGetRandomColor, sgeGetRandomColor);
       end;
   end;
 
@@ -555,8 +555,8 @@ var
 begin
   //Расчёты
   W := FExtGraphic.Graphic.Width;                                   //Ширина спрайта
-  LineH := FFont.GetStringHeight('W');                              //Высота строки текста
-  CharW := FFont.GetStringWidth('W');                               //Ширина символа
+  LineH := FFont.CharHeight;                                        //Высота символа
+  CharW := FFont.CharWidth;                                         //Ширина символа
   JournalH := (LineH + JournalLineIndent * 2) * FJournalLines;      //Высота журнала
   H := JournalH + LineH + Indent * 3;                               //Высота оболочки
   MaxCharWidth := sgeFloor((W - Indent * 2) / CharW);               //Максимум символов по ширине
@@ -595,7 +595,7 @@ begin
 
     //Координаты Начала вывода строки редактора
     X := Indent;
-    Y := H - Indent - LineH + JournalLineIndent;
+    Y := H - Indent - FFont.Height;
 
 
     //Вывод спецсимвола ожидания ввода
@@ -639,7 +639,7 @@ begin
     //Вывод журнала оболочки
     JEnd := FJournal.Count - 1;
     JBegin := FJournal.Count - sgeMin(FJournal.Count, FJournalLines);
-    Y := Indent + JournalH - LineH;
+    Y := Indent + JournalH - FFont.Height - 1;
 
     for i := JEnd downto JBegin do
       begin
@@ -671,7 +671,7 @@ begin
 
         //Вывод текста
         Color := Item.Color;
-        DrawText(X1, Y1 + JournalLineIndent + 1, FFont, s);
+        DrawText(X1, Y1, FFont, s);
 
         //Сместить начало вывода нового символа
         Inc(DrawChar, ItemW);
@@ -851,7 +851,7 @@ begin
     FAliases := TsgeSimpleParameters.Create;
     FCommandList := TsgeShellCommandList.Create;
     FEditor := TsgeLineEditor.Create;
-    FFont := TsgeGraphicFont.Create('Lucida Console', 12, [gfaBold]);
+    FFont := TsgeGraphicFont.Create('Lucida Console', 14, [gfaBold]);
 
     //Задать параметры
     FEnable := False;

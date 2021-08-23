@@ -247,7 +247,7 @@ begin
 
   //Размеры текста
   TxtW := FFPS.Font.GetStringWidth(s);
-  TxtH := FFPS.Font.GetStringHeight(s);
+  TxtH := FFPS.Font.CharHeight;
 
   //Вертикальное выравнивание
   case FFPS.VerticalAlign of

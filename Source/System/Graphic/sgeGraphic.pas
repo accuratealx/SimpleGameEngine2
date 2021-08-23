@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGraphic.pas
-Версия            1.4
+Версия            1.6
 Создан            27.04.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс графики
@@ -1425,7 +1425,7 @@ begin
   if Text = '' then Exit;
 
   glPushAttrib(GL_LIST_BIT);                                    //Сохранить настройки дисплейных списков
-  glRasterPos2f(X, Y + Font.Height);                            //Указать координаты вывода растров
+  glRasterPos2f(X, Y + Font.Height - Font.CharDescent);         //Указать координаты вывода растров
   glListBase(Font.GLHandle);                                    //Выбрать первый дисплейный список
   glCallLists(Length(Text), GL_UNSIGNED_BYTE, PAnsiChar(Text)); //Вывести списки с номерами равным коду символа
   glPopAttrib;                                                  //Вернуть настройки
