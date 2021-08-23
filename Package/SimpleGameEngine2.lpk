@@ -413,8 +413,8 @@
         <UnitName Value="sgeVariableBooleanBase"/>
       </Item99>
       <Item100>
-        <Filename Value="..\Source\System\Variables\sgeVariableBooleanClass.pas"/>
-        <UnitName Value="sgeVariableBooleanClass"/>
+        <Filename Value="..\Source\System\Variables\sgeVariableBooleanProc.pas"/>
+        <UnitName Value="sgeVariableBooleanProc"/>
       </Item100>
       <Item101>
         <Filename Value="..\Source\System\Variables\sgeVariableIntegerNormal.pas"/>
@@ -425,8 +425,8 @@
         <UnitName Value="sgeVariableIntegerBase"/>
       </Item102>
       <Item103>
-        <Filename Value="..\Source\System\Variables\sgeVariableIntegerClass.pas"/>
-        <UnitName Value="sgeVariableIntegerClass"/>
+        <Filename Value="..\Source\System\Variables\sgeVariableIntegerProc.pas"/>
+        <UnitName Value="sgeVariableIntegerProc"/>
       </Item103>
       <Item104>
         <Filename Value="..\Source\System\Variables\sgeVariableList.pas"/>
@@ -441,8 +441,8 @@
         <UnitName Value="sgeVariableSingleBase"/>
       </Item106>
       <Item107>
-        <Filename Value="..\Source\System\Variables\sgeVariableSingleClass.pas"/>
-        <UnitName Value="sgeVariableSingleClass"/>
+        <Filename Value="..\Source\System\Variables\sgeVariableSingleProc.pas"/>
+        <UnitName Value="sgeVariableSingleProc"/>
       </Item107>
       <Item108>
         <Filename Value="..\Source\System\Variables\sgeVariableColorNormal.pas"/>
@@ -453,8 +453,8 @@
         <UnitName Value="sgeVariableColorBase"/>
       </Item109>
       <Item110>
-        <Filename Value="..\Source\System\Variables\sgeVariableColorClass.pas"/>
-        <UnitName Value="sgeVariableColorClass"/>
+        <Filename Value="..\Source\System\Variables\sgeVariableColorProc.pas"/>
+        <UnitName Value="sgeVariableColorProc"/>
       </Item110>
       <Item111>
         <Filename Value="..\Source\System\Templates\sgeTemplateObjectCollection.pas"/>
@@ -621,8 +621,8 @@
         <UnitName Value="sgeVariableStringNormal"/>
       </Item151>
       <Item152>
-        <Filename Value="..\Source\System\Variables\sgeVariableStringClass.pas"/>
-        <UnitName Value="sgeVariableStringClass"/>
+        <Filename Value="..\Source\System\Variables\sgeVariableStringProc.pas"/>
+        <UnitName Value="sgeVariableStringProc"/>
       </Item152>
     </Files>
     <UsageOptions>

@@ -34,10 +34,10 @@ uses
   sgeSoundBufferWavLoader, sgeSoundSource, sgeTemplateCollection, 
   sgeTemplateList, sgeSystemCursor, sgeSystemIcon, sgeSystemTimeEvent, 
   sgeSystemTrayIcon, sgeVariableBooleanNormal, sgeVariableBooleanBase, 
-  sgeVariableBooleanClass, sgeVariableIntegerNormal, sgeVariableIntegerBase, 
-  sgeVariableIntegerClass, sgeVariableList, sgeVariableSingleNormal, 
-  sgeVariableSingleBase, sgeVariableSingleClass, sgeVariableColorNormal, 
-  sgeVariableColorBase, sgeVariableColorClass, sgeTemplateObjectCollection, 
+  sgeVariableBooleanProc, sgeVariableIntegerNormal, sgeVariableIntegerBase, 
+  sgeVariableIntegerProc, sgeVariableList, sgeVariableSingleNormal, 
+  sgeVariableSingleBase, sgeVariableSingleProc, sgeVariableColorNormal, 
+  sgeVariableColorBase, sgeVariableColorProc, sgeTemplateObjectCollection, 
   sgeShellCommand_System_Read, sgeJournal, sgeShellCommand, 
   sgeShellCommandList, sgeCommandHistory, sgeSystemConsole, 
   sgeExtensionKeyCommand, sgeShellCommandQueue, sgeKeyCommandKeyboard, 
@@ -55,7 +55,7 @@ uses
   sgeShellLineList, sgeShellCommand_System_Write, 
   sgeShellCommand_System_Screenshot, sgeShellCommand_System_Stop, 
   sgeStringUtils, sgeVariableStringBase, sgeVariableStringNormal, 
-  sgeVariableStringClass;
+  sgeVariableStringProc;
 
 implementation
 
