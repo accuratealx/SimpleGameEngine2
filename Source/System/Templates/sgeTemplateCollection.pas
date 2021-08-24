@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeTemplateCollection.pas
-Версия            1.1
+Версия            1.2
 Создан            14.06.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс-шаблон: Коллекция
@@ -25,13 +25,11 @@ type
     constructor Create; virtual;
     destructor  Destroy; override;
 
-    //function  IndexOf(AItem: T): Integer;
+    procedure Clear; virtual;
 
-    procedure ClearItem; virtual;
-
-    procedure AddItem(Item: T);
-    procedure DeleteItem(Index: Integer);
-    procedure InsertItem(Index: Integer; Item: T);
+    procedure Add(Item: T);
+    procedure Delete(Index: Integer);
+    procedure Insert(Index: Integer; Item: T);
 
     property Count: Integer read FCount;
     property Item[Index: Integer]: T read GetItem;
@@ -70,28 +68,11 @@ end;
 
 destructor TsgeTemplateCollection.Destroy;
 begin
-  ClearItem;
+  Clear;
 end;
 
 
-{function TsgeTemplateCollection.IndexOf(AItem: T): Integer;
-var
-  i: Integer;
-begin
-  Result := -1;
-
-  for i := 0 to FCount - 1 do
-    begin
-    if FList[i] = AItem then
-      begin
-      Result := i;
-      Break;
-      end;
-    end;
-end;}
-
-
-procedure TsgeTemplateCollection.ClearItem;
+procedure TsgeTemplateCollection.Clear;
 begin
   //Поправить параметры
   FCount := 0;
@@ -101,7 +82,7 @@ begin
 end;
 
 
-procedure TsgeTemplateCollection.AddItem(Item: T);
+procedure TsgeTemplateCollection.Add(Item: T);
 begin
   Inc(FCount);
   SetLength(FList, FCount);
@@ -109,7 +90,7 @@ begin
 end;
 
 
-procedure TsgeTemplateCollection.DeleteItem(Index: Integer);
+procedure TsgeTemplateCollection.Delete(Index: Integer);
 var
   c, i: Integer;
 begin
@@ -129,7 +110,7 @@ begin
 end;
 
 
-procedure TsgeTemplateCollection.InsertItem(Index: Integer; Item: T);
+procedure TsgeTemplateCollection.Insert(Index: Integer; Item: T);
 var
   i: Integer;
 begin
