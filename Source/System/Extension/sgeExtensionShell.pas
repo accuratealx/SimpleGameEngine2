@@ -16,8 +16,8 @@ interface
 
 uses
   sgeTypes, sgeThread, sgeSystemEvent, sgeSimpleCommand, sgeSimpleParameters, sgeGraphic, sgeGraphicColor,
-  sgeGraphicFont, sgeExtensionBase, sgeEventWindow, sgeEventSubscriber, sgeShellCommandQueue,
-  sgeShellCommandList, sgeLineEditor, sgeCommandHistory, sgeShellLineList, sgeExtensionGraphic,
+  sgeGraphicFont, sgeExtensionBase, sgeEventWindow, sgeEventSubscriber, sgeShellCommandQueue, sgeShellScriptList,
+  sgeShellCommandList, sgeLineEditor, sgeCommandHistory, sgeShellLineList, sgeExtensionGraphic, sgeShellCallStack,
   sgeExtensionResourceList, sgeExtensionVariables, sgeGraphicSprite, sgeGraphicElementSpriteCashed;
 
 
@@ -43,6 +43,8 @@ type
     FCommandQueue: TsgeShellCommandQueue;                           //Очередь комманд на выполнение
     FCommandList: TsgeShellCommandList;                             //Список команд оболочки
     FCommandHistory: TsgeCommandHistory;                            //История введённых команд
+    FScriptList: TsgeShellScriptList;                               //Массив сценариев
+    FCallStack: TsgeShellCallStack;                                 //Стек вызовов
     FJournal: TsgeShellLineList;                                    //Журнал
     FEditor: TsgeLineEditor;                                        //Однострочный редактор
     FAliases: TsgeSimpleParameters;                                 //Псевдонимы
@@ -93,6 +95,7 @@ type
     function  SubstituteVariables(Str: String): String;             //Подставить здначеня переменных в строку
     procedure RunCommand(Cmd: TsgeSimpleCommand);                   //Выполнение разобранной команды
     procedure ExecuteCommand(Command: String);                      //Разбор строки на алиасы и выполнение
+    procedure RunScriptByCommand(Command: String);                  //Запустить выполнение сценария из команды
     procedure PaintCanvas(Graphic: TsgeGraphic);                    //Перерисовать холст
     procedure RepaintInner;                                         //Перерисовать из основного потока
     procedure JournalUp(UsePage: Boolean = False);                  //Прокрутка журнала вверх
@@ -142,6 +145,8 @@ type
     property Aliases: TsgeSimpleParameters read FAliases;
     property CommandList: TsgeShellCommandList read FCommandList;
     property CommandHistory: TsgeCommandHistory read FCommandHistory;
+    property ScriptList: TsgeShellScriptList read FScriptList;
+    property CallStack: TsgeShellCallStack read FCallStack;
     property Editor: TsgeLineEditor read FEditor;
 
     //Параметры
@@ -165,8 +170,8 @@ type
 implementation
 
 uses
-  sgeErrors, sgeStringList, sgeEventBase, sgeOSPlatform, sgeSystemUtils, sgeStringUtils,
-  sgeVariableBase, sgeShellCommand, sgeKeys, sgeShellLine, sgeShellLineItem, sgeMathUtils;
+  sgeErrors, sgeStringList, sgeEventBase, sgeOSPlatform, sgeSystemUtils, sgeStringUtils, sgeMathUtils,
+  sgeVariableBase, sgeShellCommand, sgeKeys, sgeShellLine, sgeShellLineItem, sgeShellScript, sgeShellCallStackItem;
 
 const
   _UNITNAME = 'ExtensionShell';
@@ -561,6 +566,44 @@ begin
 end;
 
 
+procedure TsgeExtensionShell.RunScriptByCommand(Command: String);
+const
+  ScriptName = 'System';
+var
+  Script: TsgeShellScript;
+  StackCall: TsgeShellStackItem;
+begin
+  //Создать новый сценарий
+  Script := TsgeShellScript.Create(ScriptName, Command);
+
+  //Добавить в список сценариев
+  FScriptList.Insert(0, Script);
+
+  //Подготовить стек переходов
+  FCallStack.Clear;
+  FCallStack.Add(ScriptName, 0);
+
+
+  //Выполнять команды пока есть хоть один элемент в стеке вызова
+  StackCall := FCallStack.GetLast;
+  while StackCall <> nil do
+    begin
+    //Найти ссылку на скрипт
+
+
+    //Найти номер строки
+
+    //Выполнить команду
+
+
+    end;
+
+
+  //Удалить этот сценарий
+  FScriptList.Delete(ScriptName);
+end;
+
+
 procedure TsgeExtensionShell.PaintCanvas(Graphic: TsgeGraphic);
 const
   Indent = 5;
@@ -898,6 +941,8 @@ begin
     FThread := TsgeThread.Create;
     FCommandQueue := TsgeShellCommandQueue.Create;
     FCommandHistory := TsgeCommandHistory.Create;
+    FScriptList := TsgeShellScriptList.Create(True);
+    FCallStack := TsgeShellCallStack.Create;
     FJournal := TsgeShellLineList.Create;
     FAliases := TsgeSimpleParameters.Create;
     FCommandList := TsgeShellCommandList.Create;
@@ -979,6 +1024,8 @@ begin
   FThread.Free;
   FFont.Free;
   FEvent.Free;
+  FCallStack.Free;
+  FScriptList.Free;
   FCommandQueue.Free;
   FEditor.Free;
   FJournal.Free;
