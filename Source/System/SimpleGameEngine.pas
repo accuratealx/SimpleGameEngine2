@@ -104,7 +104,7 @@ implementation
 
 uses
   sgeErrors, sgeKeys, sgeMemoryStream,
-  sgeOSPlatform, sgeDateUtils, sgeFileUtils, sgeShellCommands;
+  sgeOSPlatform, sgeDateUtils, sgeFileUtils, sgeShellCommands, sgeVariables;
 
 
 const
@@ -199,6 +199,9 @@ begin
 
   //Зарегестрировать функции оболочки
   sgeShellCommands_Init(Self);
+
+  //Зарегестрировать системные переменные
+  sgeVariables_Init(Self);
 
   //Зарегестрировать системные обработчики событий
   RegisterEventHandlers;
