@@ -55,7 +55,8 @@ uses
   sgeShellLineList, sgeShellCommand_System_Write, 
   sgeShellCommand_System_Screenshot, sgeShellCommand_System_Stop, 
   sgeStringUtils, sgeVariableStringBase, sgeVariableStringNormal, 
-  sgeVariableStringProc;
+  sgeVariableStringProc, sgeVariables, sgeShellScript, sgeShellScriptList, 
+  sgeShellCallStack, sgeShellCallStackItem;
 
 implementation
 
