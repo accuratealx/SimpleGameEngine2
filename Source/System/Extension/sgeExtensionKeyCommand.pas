@@ -79,9 +79,6 @@ uses
 const
   _UNITNAME = 'ExtensionKeyCommand';
 
-  //Приоритет
-  HandlerPriority = $FFFE;
-
 
 
 function TsgeExtensionKeyCommand.GetMouseButtonIndex(Buttons: TsgeMouseButtons): Byte;
@@ -115,22 +112,22 @@ end;
 procedure TsgeExtensionKeyCommand.RegisterEventHandlers;
 begin
   //Клавиатура
-  EventManager.Subscribe(Event_WindowKeyDown, TsgeEventHandler(@Handler_KeyDown), HandlerPriority, True);
-  EventManager.Subscribe(Event_WindowKeyUp, TsgeEventHandler(@Handler_KeyUp), HandlerPriority, True);
-  EventManager.Subscribe(Event_WindowChar, TsgeEventHandler(@Handler_KeyChar), HandlerPriority, True);
+  EventManager.Subscribe(Event_WindowKeyDown, TsgeEventHandler(@Handler_KeyDown), EventProirityMaxMinusOne, True);
+  EventManager.Subscribe(Event_WindowKeyUp, TsgeEventHandler(@Handler_KeyUp), EventProirityMaxMinusOne, True);
+  EventManager.Subscribe(Event_WindowChar, TsgeEventHandler(@Handler_KeyChar), EventProirityMax, True);
 
   //Мышь
-  EventManager.Subscribe(Event_WindowMouseDown, TsgeEventHandler(@Handler_MouseDown), HandlerPriority, True);
-  EventManager.Subscribe(Event_WindowMouseUp, TsgeEventHandler(@Handler_MouseUp), HandlerPriority, True);
-  EventManager.Subscribe(Event_WindowMouseScroll, TsgeEventHandler(@Handler_MouseWheel), HandlerPriority, True);
+  EventManager.Subscribe(Event_WindowMouseDown, TsgeEventHandler(@Handler_MouseDown), EventProirityMaxMinusOne, True);
+  EventManager.Subscribe(Event_WindowMouseUp, TsgeEventHandler(@Handler_MouseUp), EventProirityMaxMinusOne, True);
+  EventManager.Subscribe(Event_WindowMouseScroll, TsgeEventHandler(@Handler_MouseWheel), EventProirityMaxMinusOne, True);
 
   //Контроллеры
-  EventManager.Subscribe(Event_ControllerButtonDown, TsgeEventHandler(@Handler_JoystickButtonDown), HandlerPriority, True);
-  EventManager.Subscribe(Event_ControllerButtonUp, TsgeEventHandler(@Handler_JoystickButtonUp), HandlerPriority, True);
-  EventManager.Subscribe(Event_ControllerPovDown, TsgeEventHandler(@Handler_JoystickPadDown), HandlerPriority, True);
-  EventManager.Subscribe(Event_ControllerPovUp, TsgeEventHandler(@Handler_JoystickPadUp), HandlerPriority, True);
-  EventManager.Subscribe(Event_ControllerAxisDown, TsgeEventHandler(@Handler_JoystickAxisDown), HandlerPriority, True);
-  EventManager.Subscribe(Event_ControllerAxisUp, TsgeEventHandler(@Handler_JoystickAxisUp), HandlerPriority, True);
+  EventManager.Subscribe(Event_ControllerButtonDown, TsgeEventHandler(@Handler_JoystickButtonDown), EventProirityMaxMinusOne, True);
+  EventManager.Subscribe(Event_ControllerButtonUp, TsgeEventHandler(@Handler_JoystickButtonUp), EventProirityMaxMinusOne, True);
+  EventManager.Subscribe(Event_ControllerPovDown, TsgeEventHandler(@Handler_JoystickPadDown), EventProirityMaxMinusOne, True);
+  EventManager.Subscribe(Event_ControllerPovUp, TsgeEventHandler(@Handler_JoystickPadUp), EventProirityMaxMinusOne, True);
+  EventManager.Subscribe(Event_ControllerAxisDown, TsgeEventHandler(@Handler_JoystickAxisDown), EventProirityMaxMinusOne, True);
+  EventManager.Subscribe(Event_ControllerAxisUp, TsgeEventHandler(@Handler_JoystickAxisUp), EventProirityMaxMinusOne, True);
 end;
 
 
@@ -172,7 +169,7 @@ begin
   //Проверить подавление события WM_CHAR
   if FBlockCharEvent then
     begin
-    FBlockCharEvent := True;
+    FBlockCharEvent := False;
     Result := True;
     end;
 end;

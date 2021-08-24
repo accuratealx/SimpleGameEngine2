@@ -178,9 +178,6 @@ const
   Err_CommandError        = 'CommandError';
   Err_MultipleCommand     = 'MultipleCommand';
 
-  //Приоритеты
-  HandlerPriority = $FFFF;
-
   //Настройки парсера
   CommandSeparator = ';';
   VariablePrefix = '@';
@@ -192,13 +189,11 @@ type
 
 procedure TsgeExtensionShell.RegisterEventHandlers;
 begin
-  FSubKeyDown := EventManager.Subscribe(Event_WindowKeyDown, TsgeEventHandler(@Handler_KeyDown), HandlerPriority, False);
-  FSubKeyUp := EventManager.Subscribe(Event_WindowKeyUp, TsgeEventHandler(@Handler_KeyUp), HandlerPriority, False);
-  FSubKeyChar := EventManager.Subscribe(Event_WindowChar, TsgeEventHandler(@Handler_KeyChar), HandlerPriority, False);
-
-  EventManager.Subscribe(Event_WindowMouseScroll, TsgeEventHandler(@Handler_MouseWheel), $FFFE, True);
-
-  EventManager.Subscribe(Event_WindowSize, TsgeEventHandler(@Event_WindowResize), $FFFE, True);
+  FSubKeyDown := EventManager.Subscribe(Event_WindowKeyDown, TsgeEventHandler(@Handler_KeyDown), EventProirityMax, False);
+  FSubKeyUp := EventManager.Subscribe(Event_WindowKeyUp, TsgeEventHandler(@Handler_KeyUp), EventProirityMax, False);
+  FSubKeyChar := EventManager.Subscribe(Event_WindowChar, TsgeEventHandler(@Handler_KeyChar),  EventProirityMaxMinusOne, False);
+  EventManager.Subscribe(Event_WindowMouseScroll, TsgeEventHandler(@Handler_MouseWheel), EventProirityMax, True);
+  EventManager.Subscribe(Event_WindowSize, TsgeEventHandler(@Event_WindowResize), EventProirityMaxMinusOne, True);
 end;
 
 
@@ -859,10 +854,6 @@ begin
   //Поправить элемент отрисовки
   FElementSprite.Visible := FEnable;
 
-  //КОООООСТЫЛЬ!!!
-  //Не сразу перехватывать события клавиатуры, что бы sgeKeyCommand смог подавить событие WM_CHAR.
-  sgeSleep(1);
-
   //Поправить подписчиков событий
   FSubKeyDown.Enable := FEnable;
   FSubKeyUp.Enable := FEnable;
@@ -911,7 +902,7 @@ begin
     FAliases := TsgeSimpleParameters.Create;
     FCommandList := TsgeShellCommandList.Create;
     FEditor := TsgeLineEditor.Create;
-    FFont := TsgeGraphicFont.Create('Lucida Console', 14, []);
+    FFont := TsgeGraphicFont.Create('Lucida Console', 14, [gfaBold]);
 
     //Задать параметры
     FEnable := False;

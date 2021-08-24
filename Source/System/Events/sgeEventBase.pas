@@ -14,6 +14,12 @@ unit sgeEventBase;
 
 interface
 
+
+const
+  EventProirityMax = $FFFF;
+  EventProirityMaxMinusOne = $FFFE;
+
+
 type
   //Базовый класс события
   TsgeEventBase = class
