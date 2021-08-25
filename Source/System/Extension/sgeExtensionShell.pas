@@ -18,7 +18,7 @@ uses
   sgeTypes, sgeThread, sgeSystemEvent, sgeSimpleCommand, sgeSimpleParameters, sgeGraphic, sgeGraphicColor,
   sgeGraphicFont, sgeExtensionBase, sgeEventWindow, sgeEventSubscriber, sgeShellCommandQueue, sgeShellScriptList,
   sgeShellCommandList, sgeLineEditor, sgeCommandHistory, sgeShellLineList, sgeExtensionGraphic, sgeShellCallStack,
-  sgeExtensionResourceList, sgeExtensionVariables, sgeGraphicSprite, sgeGraphicElementSpriteCashed;
+  sgeExtensionResourceList, sgeExtensionVariables, sgeGraphicSprite, sgeGraphicElementSpriteCashed, sgeCriticalSection;
 
 
 const
@@ -50,6 +50,7 @@ type
     FAliases: TsgeSimpleParameters;                                 //Псевдонимы
     FCanvas: TsgeGraphicSprite;                                     //Холст для отрисовки оболочки
     FFont: TsgeGraphicFont;                                         //Шрифт
+    FRepaintCS: TsgeCriticalSection;                                //Синхронизация перерисовки из разных потоков
 
     //Ссылки на объекты подписки
     FSubKeyDown : TsgeEventSubscriber;
@@ -63,7 +64,6 @@ type
     FJournalPage: Byte;                                             //Размер страницы прокрутки
 
     FBGSprite: TsgeGraphicSprite;                                   //Фоновый спрайт
-
     FBGColor: TsgeColor;                                            //Цвет фона
     FEditorTextColor: TsgeColor;                                    //Цвет текста строки редактора
     FEditorSelectColor: TsgeColor;                                  //Цвет выделения строки редактора
@@ -182,6 +182,7 @@ const
   Err_UnexpectedError     = 'UnexpectedError';
   Err_CommandError        = 'CommandError';
   Err_MultipleCommand     = 'MultipleCommand';
+  Err_BreakByUser         = 'BreakByUser';
 
   //Настройки парсера
   CommandSeparator = ';';
@@ -243,7 +244,7 @@ begin
   case EventObj.Key of
 
     //Закрыть оболочку
-    keyEscape: Enable := False;
+    keyEscape: if not FCommandIsRunning then Enable := False;
 
     //Выполнить команду
     keyEnter:
@@ -416,6 +417,9 @@ var
   MatchList: TsgeShellCommandList;
   JLine: TsgeShellLine;
 begin
+  //Обработать аварийный останов
+  if FStopExecuting then Exit;
+
   Command := nil;
 
   //Определить режим работы
@@ -521,6 +525,7 @@ begin
     c := Line.Count - 1;
     for i := 0 to c do
       begin
+      //Выделить часть
       Str := sgeTrim(Line.Part[i]);
 
       //Пустая строка
@@ -558,6 +563,8 @@ begin
       end;
 
 
+      //Проверить на останов выполнения
+      if FStopExecuting then Break;
       end;  //For
 
   finally
@@ -571,13 +578,11 @@ const
   ScriptName = 'System';
 var
   Script: TsgeShellScript;
-  StackCall: TsgeShellStackItem;
+  Call: TsgeShellStackItem;
+  s: String;
 begin
-  //Создать новый сценарий
-  Script := TsgeShellScript.Create(ScriptName, Command);
-
-  //Добавить в список сценариев
-  FScriptList.Insert(0, Script);
+  //Создать новый сценарий с одной командой и добавить в список
+  FScriptList.Insert(0, TsgeShellScript.Create(ScriptName, Command));
 
   //Подготовить стек переходов
   FCallStack.Clear;
@@ -585,22 +590,50 @@ begin
 
 
   //Выполнять команды пока есть хоть один элемент в стеке вызова
-  StackCall := FCallStack.GetLast;
-  while StackCall <> nil do
+  while True do
     begin
+    //Проверить на останов выполнения
+    if FStopExecuting then Break;
+
+    //Ссылка на последний переход
+    Call := FCallStack.GetLast;
+
+    //Если нет перехода то завершить выполнение скрипта
+    if Call = nil then Break;
+
     //Найти ссылку на скрипт
+    Script := FScriptList.GetByName(Call.Name);
 
+    //не найден скрипт, выход
+    if Script = nil then Break;
 
-    //Найти номер строки
+    //Проверить выход курсора за пределы скрипта
+    if Call.Pos > Script.Count - 1 then Break;
+
+    //Взять строку
+    s := Script.Item[Call.Pos];
+
+    //Изменить переход на 1
+    Call.Pos := Call.Pos + 1;
 
     //Выполнить команду
-
-
+    ExecuteCommand(s);
     end;
 
 
-  //Удалить этот сценарий
+  //Удалить временный сценарий
   FScriptList.Delete(ScriptName);
+
+
+  //Обработать аварийный останов
+  if FStopExecuting then
+    begin
+    FStopExecuting := False;                                        //Сбросить флаш остановки
+    FReadKeyMode := False;                                          //Выключить режим ввода кода клавиши
+    FReadMode := False;                                             //Выключить режим ввода строки
+    ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_BreakByUser)); //Обработать ошибку
+    RepaintThread;                                                  //Перерисовать оболочку
+    end;
 end;
 
 
@@ -616,6 +649,8 @@ var
   Rct: TsgeFloatRect;
   s: String;
 begin
+  FRepaintCS.Enter;
+
   //Расчёты
   W := FExtGraphic.Graphic.Width;                                   //Ширина спрайта
   LineH := FFont.CharHeight;                                        //Высота символа
@@ -757,6 +792,8 @@ begin
   FElementSprite.W := W;
   FElementSprite.H := H;
   FElementSprite.Update;
+
+  FRepaintCS.Leave;
 end;
 
 
@@ -831,8 +868,8 @@ begin
     //Проверить на изменение размеров контекста
     if FChangeSize then ChangeGraphicSize;
 
-    //Выполнить следующую команду
-    ExecuteCommand(FCommandQueue.PullFirstCommand);
+    //Создать скрипт и выполнить команду
+    RunScriptByCommand(FCommandQueue.PullFirstCommand);
     end;
 
   //Снять флаг выполнения команды
@@ -938,6 +975,7 @@ begin
 
     //Создать объекты
     FEvent := TsgeSystemEvent.Create(True, False);
+    FRepaintCS := sgeCriticalSection.TsgeCriticalSection.Create;
     FThread := TsgeThread.Create;
     FCommandQueue := TsgeShellCommandQueue.Create;
     FCommandHistory := TsgeCommandHistory.Create;
@@ -1005,8 +1043,8 @@ end;
 
 destructor TsgeExtensionShell.Destroy;
 begin
-  //Отписать подписчиков
-  UnRegisterEventHandlers;
+  //Остановить выполнение команд
+  StopCommand;
 
   //Удалить элемент отрисовки
   FElementSprite.Delete;
@@ -1014,15 +1052,16 @@ begin
   //Удалить холст
   FCanvas.Free;
 
-  //Остановить выполнение команд
-  StopCommand;
-
   //Освободить графику
   FThread.RunProcAndWait(@DoneGraphic);
+
+  //Отписать подписчиков
+  UnRegisterEventHandlers;
 
   //Удалить объекты
   FThread.Free;
   FFont.Free;
+  FRepaintCS.Free;
   FEvent.Free;
   FCallStack.Free;
   FScriptList.Free;
@@ -1041,9 +1080,6 @@ procedure TsgeExtensionShell.LogMessage(Text: String; MsgType: TsgeShellMessageT
 var
   Color: TsgeColor;
 begin
-  //Сместить прокрутку журнала в низ
-  FJournalOffset := 0;
-
   //Определить цвет строки
   case MsgType of
     smtText : Color := FTextColor;
@@ -1053,6 +1089,9 @@ begin
 
   //Добавить строку в журнал
   FJournal.Add(Text, Color);
+
+  //Сместить прокрутку журнала в низ
+  FJournalOffset := 0;
 end;
 
 
@@ -1068,8 +1107,13 @@ end;
 
 procedure TsgeExtensionShell.StopCommand;
 begin
-  //FStopExecuting := True;
-  //FEvent.Up;
+  if FStopExecuting then Exit;
+
+  //Записать флаг остановки
+  FStopExecuting := True;
+
+  //Разбудить поток, для команд Read, ReadLn, ReadKey
+  FEvent.Up;
 end;
 
 

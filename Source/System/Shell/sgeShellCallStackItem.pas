@@ -24,6 +24,7 @@ type
     constructor Create(Name: ShortString; Pos: Integer = 0);
 
     property Name: ShortString read FName write FName;
+    property Pos: Integer read FPos write FPos;
   end;
 
 
