@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeErrors.pas
-Версия            1.6
+Версия            1.7
 Создан            24.02.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс ошибок
@@ -51,7 +51,7 @@ end;
 
 function sgeCreateErrorString(ModuleName, Error: String; Info: String = ''; NewLine: String = ''): String;
 const
-  ParamSeparator = ';';
+  ParamSeparator = #9;
   LineSeparator = #13#10;
 begin
   Result := ModuleName + ParamSeparator + Error;

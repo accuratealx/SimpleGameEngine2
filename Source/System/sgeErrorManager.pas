@@ -74,7 +74,7 @@ var
   aUnitName, ErrorText, Info, S: String;
 begin
   Lines := TsgeStringList.Create;
-  Line := TsgeSimpleCommand.Create('', False, ';');
+  Line := TsgeSimpleCommand.Create('', False, #9);
 
   //Разобрать на строки
   Lines.FromString(ErrorMessage);
