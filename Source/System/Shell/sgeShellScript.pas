@@ -24,7 +24,7 @@ type
 
   TsgeShellScript = class(TsgeShellScriptTemplate)
   private
-    FName: ShortString;                                             //Имя скрипта
+    FName: ShortString;
   public
     constructor Create(Name: ShortString);
     constructor Create(Name: ShortString; Lines: String);

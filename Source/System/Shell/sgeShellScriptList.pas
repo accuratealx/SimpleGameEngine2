@@ -26,6 +26,7 @@ type
   private
   public
     function IndexOf(Name: ShortString): Integer;
+    function GetByName(Name: ShortString): TsgeShellScript;
 
     procedure Delete(Name: ShortString);
   end;
@@ -47,11 +48,28 @@ var
   i: Integer;
 begin
   Result := -1;
+
   Name := LowerCase(Name);
   for i := 0 to FCount - 1 do
     if Name = LowerCase(FList[i].Name) then
       begin
       Result := i;
+      Break;
+      end;
+end;
+
+
+function TsgeShellScriptList.GetByName(Name: ShortString): TsgeShellScript;
+var
+  i: Integer;
+begin
+  Result := nil;
+
+  Name := LowerCase(Name);
+  for i := 0 to FCount - 1 do
+    if Name = LowerCase(FList[i].Name) then
+      begin
+      Result := FList[i];
       Break;
       end;
 end;
