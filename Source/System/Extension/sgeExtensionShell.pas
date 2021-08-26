@@ -62,7 +62,7 @@ type
     FWeakSeparator: Boolean;
     FJournalLines: Byte;                                            //Количество строк журнала
     FJournalPage: Byte;                                             //Размер страницы прокрутки
-
+    FJournalOffset: Integer;                                        //Смещение журнала
     FBGSprite: TsgeGraphicSprite;                                   //Фоновый спрайт
     FBGColor: TsgeColor;                                            //Цвет фона
     FEditorTextColor: TsgeColor;                                    //Цвет текста строки редактора
@@ -78,7 +78,7 @@ type
     FChangeSize: Boolean;                                           //Флаг изменения размеров
     FSkipChar: Boolean;                                             //Флаг пропуска события WM_CHAR
     FCommandIsRunning: Boolean;                                     //Флаг выполнения команды
-    FJournalOffset: Integer;                                        //Смещение журнала
+    FDestroying: Boolean;                                           //Флаг разрушения объекта
 
     //Обработчики событий
     procedure RegisterEventHandlers;
@@ -302,7 +302,7 @@ begin
         if (kbCtrl in EventObj.KeyboardButtons) then FJournal.Clear;
 
       //Остановить выполнение команды
-      keyPause:
+      keyF5:
         if (kbCtrl in EventObj.KeyboardButtons) then StopCommand;
 
     else
@@ -504,7 +504,7 @@ begin
       S := Utf8ToAnsi('Творческий Человек  [accuratealx@gmail.com]');
       JLine := FJournal.Add;
       for i := 1 to Length(S) do
-        JLine.Add(S[i], sgeGetRandomColor, sgeGetRandomColor);
+        JLine.Add(S[i], sgeGetRandomColor);
       end;
   end;
 
@@ -628,10 +628,10 @@ begin
   //Обработать аварийный останов
   if FStopExecuting then
     begin
-    FStopExecuting := False;                                        //Сбросить флаш остановки
+    FStopExecuting := False;                                        //Сбросить флаг остановки
     FReadKeyMode := False;                                          //Выключить режим ввода кода клавиши
     FReadMode := False;                                             //Выключить режим ввода строки
-    ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_BreakByUser)); //Обработать ошибку
+    if not FDestroying then ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_BreakByUser));  //Обработать ошибку
     RepaintThread;                                                  //Перерисовать оболочку
     end;
 end;
@@ -865,6 +865,9 @@ begin
   //Выполнить накопленные команды
   while FCommandQueue.Count > 0 do
     begin
+    //проверить на аварийный останов
+    if FStopExecuting then Break;
+
     //Проверить на изменение размеров контекста
     if FChangeSize then ChangeGraphicSize;
 
@@ -1043,6 +1046,9 @@ end;
 
 destructor TsgeExtensionShell.Destroy;
 begin
+  //Установить флаг разрушения, для запрета изменения из других потоков
+  FDestroying := True;
+
   //Остановить выполнение команд
   StopCommand;
 
