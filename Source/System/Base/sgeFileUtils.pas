@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeFileUtils.pas
-Версия            1.4
+Версия            1.5
 Создан            08.05.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Вспомогательные функции файловой системы
@@ -20,6 +20,9 @@ uses
 
 const
   sgeLineEnd = #13#10;
+  sgeDriveSeparator = ':';
+  sgePathSeparator = '\';
+  sgeExtSeparator = '.';
 
 
 function  sgeGetUniqueFileName: String;
@@ -27,7 +30,9 @@ function  sgeGetUniqueFileName: String;
 function  sgeExtractFileName(const FileName: String): String;
 function  sgeExtractFileExt(const FileName: String): String;
 function  sgeExtractFilePath(const FileName: String): String;
+function  sgeIsFullPath(const FileName: String): Boolean;                                   //Определить является ли путь к файлу полным
 function  sgeCheckPathDelimiter(Path: String): String;
+function  sgeChangeFileExt(const FileName: String; Ext: String = ''): String;               //Изменить расширение файла
 
 procedure sgeFindFilesInFolder(Path: String; List: TsgeStringList);                         //Поиск всех файлов каталоге
 procedure sgeFindFilesInFolderByExt(Path: String; List: TsgeStringList; Ext: String = '');  //Поиск всех файлов каталоге по маске
@@ -101,6 +106,17 @@ begin
 end;
 
 
+function sgeIsFullPath(const FileName: String): Boolean;
+const
+  DriveLeter = ['A'..'Z'];
+begin
+  Result := False;
+
+  if Length(FileName) > 3 then
+    Result := (FileName[1] in DriveLeter) and (FileName[2] = sgeDriveSeparator) and (FileName[3] = sgePathSeparator);
+end;
+
+
 function sgeCheckPathDelimiter(Path: String): String;
 var
   c: Integer;
@@ -111,6 +127,32 @@ begin
   if c = 0 then Exit;
 
   if Result[c] <> System.DirectorySeparator then Result := Path + System.DirectorySeparator;
+end;
+
+
+function sgeChangeFileExt(const FileName: String; Ext: String): String;
+var
+  i: Integer;
+begin
+  //Результат по умолчанию
+  Result := FileName;
+
+  //Если разделитель с точкой, то удалить
+  if Ext <> '' then if Ext[1] = sgeExtSeparator then Delete(Ext, 1, 1);
+
+  for i := Length(FileName) downto 1 do
+    begin
+    //Дальше смотреть нет смысла
+    if (FileName[i] = sgePathSeparator) then Break;
+
+    //Проверить на разделитель расширения
+    if FileName[i] = sgeExtSeparator then
+      begin
+      Result := Copy(FileName, 1, i - 1);
+      if Ext <> '' then Result := Result + sgeExtSeparator + Ext;
+      Break;
+      end;
+    end;
 end;
 
 
