@@ -37,6 +37,8 @@ uses
   sgeShellCommand_Variable_Delete,
   sgeShellCommand_Variable_Clear,
 
+  sgeShellCommand_Script_Load,
+
   sgeShellCommand_Dialog_Message;
 
 
@@ -58,6 +60,8 @@ begin
   TsgeShellCommand_Variable_Set.Create(SGEObject);
   TsgeShellCommand_Variable_Delete.Create(SGEObject);
   TsgeShellCommand_Variable_Clear.Create(SGEObject);
+
+  TsgeShellCommand_Script_Load.Create(SGEObject);
 
   TsgeShellCommand_Dialog_Message.Create(SGEObject);
 end;
