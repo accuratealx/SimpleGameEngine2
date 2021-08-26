@@ -28,6 +28,10 @@ uses
   sgeShellCommand_System_Sleep,
   sgeShellCommand_System_Write,
   sgeShellCommand_System_Screenshot,
+  sgeShellCommand_System_Label,
+  sgeShellCommand_System_Return,
+  sgeShellCommand_System_Exit,
+  sgeShellCommand_System_Procedure,
 
   sgeShellCommand_Variable_Set,
   sgeShellCommand_Variable_Delete,
@@ -46,6 +50,10 @@ begin
   TsgeShellCommand_System_Sleep.Create(SGEObject);
   TsgeShellCommand_System_Write.Create(SGEObject);
   TsgeShellCommand_System_Screenshot.Create(SGEObject);
+  TsgeShellCommand_System_Label.Create(SGEObject);
+  TsgeShellCommand_System_Return.Create(SGEObject);
+  TsgeShellCommand_System_Exit.Create(SGEObject);
+  TsgeShellCommand_System_Procedure.Create(SGEObject);
 
   TsgeShellCommand_Variable_Set.Create(SGEObject);
   TsgeShellCommand_Variable_Delete.Create(SGEObject);
