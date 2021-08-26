@@ -53,7 +53,7 @@ uses
   sgeShellCommand_Variable_Delete, sgeShellCommand_Variable_Set, 
   sgeShellCommand_System_Sleep, sgeShellLine, sgeShellLineItem, 
   sgeShellLineList, sgeShellCommand_System_Write, 
-  sgeShellCommand_System_Screenshot, sgeShellCommand_System_Stop, 
+  sgeShellCommand_System_Screenshot, sgeShellCommand_System_Label, 
   sgeStringUtils, sgeVariableStringBase, sgeVariableStringNormal, 
   sgeVariableStringProc, sgeVariables, sgeShellScript, sgeShellScriptList, 
   sgeShellCallStack, sgeShellCallStackItem;
