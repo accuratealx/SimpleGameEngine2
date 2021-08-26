@@ -40,7 +40,7 @@ type
 implementation
 
 uses
-  sgeStringList;
+  sgeStringList, sgeFileUtils;
 
 
 constructor TsgeShellScript.Create(Name: ShortString);
@@ -67,7 +67,7 @@ var
   i, j: Integer;
 begin
   List := TsgeStringList.Create;
-  List.Separator := #13#10;
+  List.Separator := sgeLineEnd;
   List.FromString(Str);
 
   Line := TsgeStringList.Create;

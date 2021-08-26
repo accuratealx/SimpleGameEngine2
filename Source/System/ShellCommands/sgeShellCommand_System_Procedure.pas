@@ -50,6 +50,7 @@ const
   Err_CantFindProcedureEnd  = 'CantFindProcedureEnd';
 
 
+
 constructor TsgeShellCommand_System_Procedure.Create(SGEObject: TObject);
 begin
   inherited Create(SGEObject, 'Procedure', Group_System);

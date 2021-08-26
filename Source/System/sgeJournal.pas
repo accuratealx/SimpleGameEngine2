@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeJournal.pas
-Версия            1.0
+Версия            1.1
 Создан            31.07.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс протоколирования в файл
@@ -53,7 +53,7 @@ uses
 const
   _UNITNAME = 'Journal';
 
-  Err_FileWriteError = 'FileWriteError';
+  Err_CantWriteFile = 'CantWriteFile';
 
 
 procedure TsgeJournal.SetEnable(AEnable: Boolean);
@@ -67,7 +67,7 @@ begin
         CreateFileStream;
       except
         FEnable := False;
-        raise EsgeException.Create(_UNITNAME, Err_FileWriteError, FFileName);
+        raise EsgeException.Create(_UNITNAME, Err_CantWriteFile, FFileName);
       end;
 
     False:
@@ -89,7 +89,7 @@ begin
       CreateFileStream;
     except
       FEnable := False;
-      raise EsgeException.Create(_UNITNAME, Err_FileWriteError, FFileName);
+      raise EsgeException.Create(_UNITNAME, Err_CantWriteFile, FFileName);
     end;
 
     end;

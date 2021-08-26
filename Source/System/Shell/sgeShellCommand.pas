@@ -22,6 +22,7 @@ const
   Group_System    = 'System';
   Group_Shell     = 'Shell';
   Group_Variables = 'Variable';
+  Group_Script    = 'Script';
   Group_Dialog    = 'Dialog';
 
   //Ошибки
