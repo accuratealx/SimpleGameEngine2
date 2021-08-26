@@ -63,16 +63,27 @@ end;
 
 procedure TsgeShellScript.FromString(Str: String);
 var
-  List: TsgeStringList;
-  i: Integer;
+  List, Line: TsgeStringList;
+  i, j: Integer;
 begin
   List := TsgeStringList.Create;
   List.Separator := #13#10;
   List.FromString(Str);
 
-  for i := 0 to List.Count - 1 do
-    Add(List.Part[i]);
+  Line := TsgeStringList.Create;
+  Line.Separator := ';';
 
+  for i := 0 to List.Count - 1 do
+    begin
+    if List.Part[i] = '' then Add(List.Part[i])
+      else begin
+      Line.FromString(List.Part[i]);
+      for j := 0 to Line.Count - 1 do
+        Add(Line.Part[j]);
+      end;
+    end;
+
+  Line.Free;
   List.Free;
 end;
 
