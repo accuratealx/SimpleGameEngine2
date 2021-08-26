@@ -657,8 +657,8 @@
         <UnitName Value="sgeShellCommand_System_Return"/>
       </Item160>
       <Item161>
-        <Filename Value="..\Source\System\ShellCommands\sgeShellCommand_System_Stop.pas"/>
-        <UnitName Value="sgeShellCommand_System_Stop"/>
+        <Filename Value="..\Source\System\ShellCommands\sgeShellCommand_Script_Load.pas"/>
+        <UnitName Value="sgeShellCommand_Script_Load"/>
       </Item161>
     </Files>
     <UsageOptions>

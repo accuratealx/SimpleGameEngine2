@@ -56,7 +56,9 @@ uses
   sgeShellCommand_System_Screenshot, sgeShellCommand_System_Label, 
   sgeStringUtils, sgeVariableStringBase, sgeVariableStringNormal, 
   sgeVariableStringProc, sgeVariables, sgeShellScript, sgeShellScriptList, 
-  sgeShellCallStack, sgeShellCallStackItem;
+  sgeShellCallStack, sgeShellCallStackItem, sgeShellCommand_System_Exit, 
+  sgeShellCommand_System_Procedure, sgeShellCommand_System_Return, 
+  sgeShellCommand_Script_Load;
 
 implementation
 
