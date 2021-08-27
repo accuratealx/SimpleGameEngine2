@@ -195,11 +195,11 @@ type
 
 procedure TsgeExtensionShell.RegisterEventHandlers;
 begin
-  FSubKeyDown := EventManager.Subscribe(Event_WindowKeyDown, TsgeEventHandler(@Handler_KeyDown), EventProirityMax, False);
-  FSubKeyUp := EventManager.Subscribe(Event_WindowKeyUp, TsgeEventHandler(@Handler_KeyUp), EventProirityMax, False);
-  FSubKeyChar := EventManager.Subscribe(Event_WindowChar, TsgeEventHandler(@Handler_KeyChar),  EventProirityMaxMinusOne, False);
-  EventManager.Subscribe(Event_WindowMouseScroll, TsgeEventHandler(@Handler_MouseWheel), EventProirityMax, True);
-  EventManager.Subscribe(Event_WindowSize, TsgeEventHandler(@Event_WindowResize), EventProirityMaxMinusOne, True);
+  FSubKeyDown := EventManager.Subscribe(Event_WindowKeyDown, TsgeEventHandler(@Handler_KeyDown), EventPriorityMax, False);
+  FSubKeyUp := EventManager.Subscribe(Event_WindowKeyUp, TsgeEventHandler(@Handler_KeyUp), EventPriorityMax, False);
+  FSubKeyChar := EventManager.Subscribe(Event_WindowChar, TsgeEventHandler(@Handler_KeyChar),  EventPriorityMaxMinusOne, False);
+  EventManager.Subscribe(Event_WindowMouseScroll, TsgeEventHandler(@Handler_MouseWheel), EventPriorityMax, True);
+  EventManager.Subscribe(Event_WindowSize, TsgeEventHandler(@Event_WindowResize), EventPriorityMaxMinusOne, True);
 end;
 
 
@@ -228,6 +228,10 @@ var
   s: String;
 begin
   Result := True;
+
+  //Проверить на аварийный останов
+  if (EventObj.Key = keyF5) and (kbCtrl in EventObj.KeyboardButtons) then StopCommand;
+
 
   //Проверить на команду ReadKey
   if FReadKeyMode then
@@ -302,8 +306,8 @@ begin
         if (kbCtrl in EventObj.KeyboardButtons) then FJournal.Clear;
 
       //Остановить выполнение команды
-      keyF5:
-        if (kbCtrl in EventObj.KeyboardButtons) then StopCommand;
+      {keyF5:
+        if (kbCtrl in EventObj.KeyboardButtons) then StopCommand;}
 
     else
       FEditor.ProcessKey(EventObj.Key, EventObj.KeyboardButtons);
@@ -608,7 +612,11 @@ begin
     if Script = nil then Break;
 
     //Проверить выход курсора за пределы скрипта
-    if Call.Pos > Script.Count - 1 then Break;
+    if Call.Pos > Script.Count - 1 then
+      begin
+      FCallStack.DeleteLast;  //Удалить последний элемент стека вызовов
+      Continue;
+      end;
 
     //Взять строку
     s := Script.Item[Call.Pos];
