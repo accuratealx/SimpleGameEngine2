@@ -112,22 +112,22 @@ end;
 procedure TsgeExtensionKeyCommand.RegisterEventHandlers;
 begin
   //Клавиатура
-  EventManager.Subscribe(Event_WindowKeyDown, TsgeEventHandler(@Handler_KeyDown), EventProirityMaxMinusOne, True);
-  EventManager.Subscribe(Event_WindowKeyUp, TsgeEventHandler(@Handler_KeyUp), EventProirityMaxMinusOne, True);
-  EventManager.Subscribe(Event_WindowChar, TsgeEventHandler(@Handler_KeyChar), EventProirityMax, True);
+  EventManager.Subscribe(Event_WindowKeyDown, TsgeEventHandler(@Handler_KeyDown), EventPriorityMaxMinusOne, True);
+  EventManager.Subscribe(Event_WindowKeyUp, TsgeEventHandler(@Handler_KeyUp), EventPriorityMaxMinusOne, True);
+  EventManager.Subscribe(Event_WindowChar, TsgeEventHandler(@Handler_KeyChar), EventPriorityMax, True);
 
   //Мышь
-  EventManager.Subscribe(Event_WindowMouseDown, TsgeEventHandler(@Handler_MouseDown), EventProirityMaxMinusOne, True);
-  EventManager.Subscribe(Event_WindowMouseUp, TsgeEventHandler(@Handler_MouseUp), EventProirityMaxMinusOne, True);
-  EventManager.Subscribe(Event_WindowMouseScroll, TsgeEventHandler(@Handler_MouseWheel), EventProirityMaxMinusOne, True);
+  EventManager.Subscribe(Event_WindowMouseDown, TsgeEventHandler(@Handler_MouseDown), EventPriorityMaxMinusOne, True);
+  EventManager.Subscribe(Event_WindowMouseUp, TsgeEventHandler(@Handler_MouseUp), EventPriorityMaxMinusOne, True);
+  EventManager.Subscribe(Event_WindowMouseScroll, TsgeEventHandler(@Handler_MouseWheel), EventPriorityMaxMinusOne, True);
 
   //Контроллеры
-  EventManager.Subscribe(Event_ControllerButtonDown, TsgeEventHandler(@Handler_JoystickButtonDown), EventProirityMaxMinusOne, True);
-  EventManager.Subscribe(Event_ControllerButtonUp, TsgeEventHandler(@Handler_JoystickButtonUp), EventProirityMaxMinusOne, True);
-  EventManager.Subscribe(Event_ControllerPovDown, TsgeEventHandler(@Handler_JoystickPadDown), EventProirityMaxMinusOne, True);
-  EventManager.Subscribe(Event_ControllerPovUp, TsgeEventHandler(@Handler_JoystickPadUp), EventProirityMaxMinusOne, True);
-  EventManager.Subscribe(Event_ControllerAxisDown, TsgeEventHandler(@Handler_JoystickAxisDown), EventProirityMaxMinusOne, True);
-  EventManager.Subscribe(Event_ControllerAxisUp, TsgeEventHandler(@Handler_JoystickAxisUp), EventProirityMaxMinusOne, True);
+  EventManager.Subscribe(Event_ControllerButtonDown, TsgeEventHandler(@Handler_JoystickButtonDown), EventPriorityMaxMinusOne, True);
+  EventManager.Subscribe(Event_ControllerButtonUp, TsgeEventHandler(@Handler_JoystickButtonUp), EventPriorityMaxMinusOne, True);
+  EventManager.Subscribe(Event_ControllerPovDown, TsgeEventHandler(@Handler_JoystickPadDown), EventPriorityMaxMinusOne, True);
+  EventManager.Subscribe(Event_ControllerPovUp, TsgeEventHandler(@Handler_JoystickPadUp), EventPriorityMaxMinusOne, True);
+  EventManager.Subscribe(Event_ControllerAxisDown, TsgeEventHandler(@Handler_JoystickAxisDown), EventPriorityMaxMinusOne, True);
+  EventManager.Subscribe(Event_ControllerAxisUp, TsgeEventHandler(@Handler_JoystickAxisUp), EventPriorityMaxMinusOne, True);
 end;
 
 

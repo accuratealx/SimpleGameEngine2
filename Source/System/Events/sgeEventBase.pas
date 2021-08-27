@@ -16,8 +16,8 @@ interface
 
 
 const
-  EventProirityMax = $FFFF;
-  EventProirityMaxMinusOne = $FFFE;
+  EventPriorityMax = $FFFF;
+  EventPriorityMaxMinusOne = $FFFE;
 
 
 type
