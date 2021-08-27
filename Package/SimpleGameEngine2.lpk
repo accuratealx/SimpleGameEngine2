@@ -15,7 +15,7 @@
     </CompilerOptions>
     <Description Value="Simple Game Engine 2"/>
     <Version Major="1"/>
-    <Files Count="161">
+    <Files Count="166">
       <Item1>
         <Filename Value="..\Source\ThirdParty\GDIPlus\GDIPAPI.pas"/>
         <UnitName Value="GDIPAPI"/>
@@ -660,6 +660,26 @@
         <Filename Value="..\Source\System\ShellCommands\sgeShellCommand_Script_Load.pas"/>
         <UnitName Value="sgeShellCommand_Script_Load"/>
       </Item161>
+      <Item162>
+        <Filename Value="..\Source\System\ShellCommands\sgeShellCommand_System_Goto.pas"/>
+        <UnitName Value="sgeShellCommand_System_Goto"/>
+      </Item162>
+      <Item163>
+        <Filename Value="..\Source\System\ShellCommands\sgeShellCommand_System_Run.pas"/>
+        <UnitName Value="sgeShellCommand_System_Run"/>
+      </Item163>
+      <Item164>
+        <Filename Value="..\Source\System\ShellCommands\sgeShellCommandsUtils.pas"/>
+        <UnitName Value="sgeShellCommandsUtils"/>
+      </Item164>
+      <Item165>
+        <Filename Value="..\Source\System\ShellCommands\sgeShellCommand_System_Call.pas"/>
+        <UnitName Value="sgeShellCommand_System_Call"/>
+      </Item165>
+      <Item166>
+        <Filename Value="..\Source\System\ShellCommands\sgeShellCommand_System_Stop.pas"/>
+        <UnitName Value="sgeShellCommand_System_Stop"/>
+      </Item166>
     </Files>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)"/>

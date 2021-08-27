@@ -58,7 +58,9 @@ uses
   sgeVariableStringProc, sgeVariables, sgeShellScript, sgeShellScriptList, 
   sgeShellCallStack, sgeShellCallStackItem, sgeShellCommand_System_Exit, 
   sgeShellCommand_System_Procedure, sgeShellCommand_System_Return, 
-  sgeShellCommand_Script_Load;
+  sgeShellCommand_Script_Load, sgeShellCommand_System_Goto, 
+  sgeShellCommand_System_Run, sgeShellCommandsUtils, 
+  sgeShellCommand_System_Call, sgeShellCommand_System_Stop;
 
 implementation
 
