@@ -1113,7 +1113,8 @@ end;
 
 procedure TsgeExtensionShell.StopCommand;
 begin
-  if FStopExecuting then Exit;
+  //Если скрипт не авполняется, то выход
+  if not FCommandIsRunning then Exit;
 
   //Записать флаг остановки
   FStopExecuting := True;
