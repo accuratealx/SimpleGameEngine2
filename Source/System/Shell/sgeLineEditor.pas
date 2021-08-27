@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              .pas
-Версия            1.0
+Версия            1.1
 Создан            15.07.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Однострочный редактор текста
@@ -51,6 +51,8 @@ type
     procedure ClipboardCopy;
     procedure ClipboardPaste;
     procedure ClipboardCut;
+
+    function  GetClearString(Str: String): String;
   public
     constructor Create;
 
@@ -329,7 +331,7 @@ begin
   DeleteSelection;
   Idx := sgeCopyFromClipboard(s);
   if Idx <> 0 then Exit;
-  InsertString(FCursorPos, s);
+  InsertString(FCursorPos, GetClearString(s));
   ClearSelection;
 end;
 
@@ -344,6 +346,15 @@ begin
   s := Copy(FLine, Idx + 1, Count);
   DeleteSelection;
   sgeCopyToClipboard(s);
+end;
+
+
+function TsgeLineEditor.GetClearString(Str: String): String;
+var
+  i: Integer;
+begin
+  for i := 1 to Length(Str) do
+    if Ord(Str[i]) >= 32 then Result := Result + Str[i];
 end;
 
 
