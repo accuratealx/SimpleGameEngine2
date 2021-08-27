@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeShellFunctions.pas
-Версия            1.2
+Версия            1.3
 Создан            31.07.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Методы оболочки
@@ -32,6 +32,9 @@ uses
   sgeShellCommand_System_Return,
   sgeShellCommand_System_Exit,
   sgeShellCommand_System_Procedure,
+  sgeShellCommand_System_Goto,
+  sgeShellCommand_System_Run,
+  sgeShellCommand_System_Call,
 
   sgeShellCommand_Variable_Set,
   sgeShellCommand_Variable_Delete,
@@ -56,6 +59,9 @@ begin
   TsgeShellCommand_System_Return.Create(SGEObject);
   TsgeShellCommand_System_Exit.Create(SGEObject);
   TsgeShellCommand_System_Procedure.Create(SGEObject);
+  TsgeShellCommand_System_Goto.Create(SGEObject);
+  TsgeShellCommand_System_Run.Create(SGEObject);
+  TsgeShellCommand_System_Call.Create(SGEObject);
 
   TsgeShellCommand_Variable_Set.Create(SGEObject);
   TsgeShellCommand_Variable_Delete.Create(SGEObject);
