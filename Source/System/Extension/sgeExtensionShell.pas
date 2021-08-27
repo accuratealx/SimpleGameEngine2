@@ -298,10 +298,6 @@ begin
       keyL:
         if (kbCtrl in EventObj.KeyboardButtons) then FJournal.Clear;
 
-      //Остановить выполнение команды
-      {keyF5:
-        if (kbCtrl in EventObj.KeyboardButtons) then StopCommand;}
-
     else
       FEditor.ProcessKey(EventObj.Key, EventObj.KeyboardButtons);
   end;
@@ -968,7 +964,7 @@ begin
     FJournalLines := 12;
     FJournalPage := 5;
 
-    FBGColor            := sgeRGBAToColor(128, 0, 128, 128);
+    FBGColor            := sgeRGBAToColor(0, 0, 0, 128);
     FEditorTextColor    := sgeRGBAToColor(255, 255, 255, 255);
     FEditorCursorColor  := sgeRGBAToColor(255, 255, 255, 255);
     FEditorSelectColor  := sgeChangeColorAlpha(FEditorCursorColor, 0.5);
