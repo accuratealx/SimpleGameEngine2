@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeShellCommandsUtils.pas
-Версия            1.0
+Версия            1.1
 Создан            27.08.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Вспомогательные функции команд
@@ -15,12 +15,7 @@ unit sgeShellCommandsUtils;
 interface
 
 uses
-  sgeExtensionShell, sgeShellScript;
-
-
-type
-  TsgeExtensionShellHack = class(TsgeExtensionShell);
-
+  sgeShellScript;
 
 
 procedure sgeExtractScriptAndLabel(Str: String; var Script: ShortString; var LabelName: ShortString; Separator: Char = ':');

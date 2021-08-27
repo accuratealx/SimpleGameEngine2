@@ -38,11 +38,10 @@ type
 implementation
 
 uses
-  SimpleGameEngine, sgeExtensionShell, sgeSystemUtils;
+  SimpleGameEngine, sgeSystemUtils, sgeExtensionShell;
 
 type
   TsgeExtensionShellHack = class(TsgeExtensionShell);
-
 
 
 constructor TsgeShellCommand_System_ReadLn.Create(SGEObject: TObject);

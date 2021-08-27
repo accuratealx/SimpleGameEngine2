@@ -39,7 +39,7 @@ type
 implementation
 
 uses
-  SimpleGameEngine, sgeExtensionShell, sgeSystemUtils, sgeOSPlatform, sgeSystemEvent;
+  SimpleGameEngine, sgeSystemUtils, sgeOSPlatform,  sgeSystemEvent, sgeExtensionShell;
 
 type
   TsgeExtensionShellHack = class(TsgeExtensionShell);

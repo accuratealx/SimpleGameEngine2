@@ -44,7 +44,7 @@ uses
   SimpleGameEngine, sgeErrors, sgeMemoryStream, sgeFileUtils, sgeOSPlatform;
 
 const
-  _UNITNAME = 'sgeShellCommand_Script_Load';
+  _UNITNAME = 'ShellCommand_Script_Load';
 
   Err_ScriptExist   = 'ScriptExist';
   Err_FileNotFound  = 'FileNotFound';

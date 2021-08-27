@@ -44,7 +44,7 @@ uses
   sgeShellCallStackItem, sgeShellScript;
 
 const
-  _UNITNAME = 'sgeShellCommand_System_Procedure';
+  _UNITNAME = 'ShellCommand_System_Procedure';
 
   Err_ScriptNotFound        = 'ScriptNotFound';
   Err_CantFindProcedureEnd  = 'CantFindProcedureEnd';
