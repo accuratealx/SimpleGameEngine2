@@ -113,13 +113,6 @@ type
     //Свойства
     procedure SetEnable(AEnable: Boolean);
     procedure SetBGSprite(ASprite: TsgeGraphicSprite);
-
-    //Системные переменные
-    procedure RegisterVariables;
-    procedure Variable_SetEnable(AEnable: Boolean);
-    function  Variable_GetEnable: Boolean;
-    procedure Variable_SetBGColor(AColor: TsgeRGBA);
-    function  Variable_GetBGColor: TsgeRGBA;
   protected
     //Специальные команды
     FStopExecuting: Boolean;                                        //Флаг прерывания работы скрипта
@@ -358,7 +351,7 @@ begin
   FAliases.SetValue('Quit', 'System.Stop');
   FAliases.SetValue('Echo', 'System.Write');
   FAliases.SetValue('Print', 'System.Write');
-  //FAliases.SetValue('Exec', 'Run');
+  FAliases.SetValue('Exec', 'System.Run');
 end;
 
 
@@ -906,37 +899,6 @@ begin
 end;
 
 
-procedure TsgeExtensionShell.RegisterVariables;
-begin
-  FExtVariables.AddBoolean('Shell.Enable', False, @Variable_GetEnable, @Variable_SetEnable, 'On', 'Off');
-  FExtVariables.AddColor('Shell.BGColor', sgeGetRGBA(128, 0, 128, 128), @Variable_GetBGColor, @Variable_SetBGColor);
-end;
-
-
-procedure TsgeExtensionShell.Variable_SetEnable(AEnable: Boolean);
-begin
-  Enable := AEnable;
-end;
-
-
-function TsgeExtensionShell.Variable_GetEnable: Boolean;
-begin
-  Result := Enable;
-end;
-
-
-procedure TsgeExtensionShell.Variable_SetBGColor(AColor: TsgeRGBA);
-begin
-  BGColor := sgeRGBAToColor(AColor);
-end;
-
-
-function TsgeExtensionShell.Variable_GetBGColor: TsgeRGBA;
-begin
-  Result := sgeColorToRGBA(BGColor);
-end;
-
-
 procedure TsgeExtensionShell.SetEnable(AEnable: Boolean);
 begin
   //Запомнить состояние
@@ -1012,7 +974,7 @@ begin
     FEditorSelectColor  := sgeChangeColorAlpha(FEditorCursorColor, 0.5);
     FErrorColor         := sgeRGBAToColor(255, 0, 0, 255);
     FTextColor          := sgeRGBAToColor(255, 255, 255, 255);
-    FNoteColor          := sgeRGBAToColor(255, 255, 255, 127);
+    FNoteColor          := sgeRGBAToColor(255, 255, 255, 128);
 
 
     //Активировать графику
@@ -1026,9 +988,6 @@ begin
 
     //Добавить стандартные алиасы
     RegisterDefaultAliases;
-
-    //Зарегестрировать переменные
-    RegisterVariables;
 
     //Создать холст
     FCanvas := TsgeGraphicSprite.Create(500, 300);
