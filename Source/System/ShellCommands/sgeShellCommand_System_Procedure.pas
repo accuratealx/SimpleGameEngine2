@@ -41,7 +41,7 @@ implementation
 
 uses
   SimpleGameEngine, sgeErrors,
-  sgeShellCallStackItem, sgeShellScript;
+  sgeShellCallStackItem, sgeShellScript, sgeShellCommandsUtils;
 
 const
   _UNITNAME = 'ShellCommand_System_Procedure';
@@ -65,8 +65,7 @@ var
   SGE: TSimpleGameEngine;
   Call: TsgeShellStackItem;
   Script: TsgeShellScript;
-  Line: TsgeSimpleCommand;
-  i: Integer;
+  Pos: Integer;
 begin
   Result := inherited Execute(Command);
   SGE := TSimpleGameEngine(FSGE);
@@ -84,31 +83,18 @@ begin
     Exit;
     end;
 
-  //Просмотреть дальше по списку до команды Return
-  Line := TsgeSimpleCommand.Create;
-  try
-    for i := Call.Pos to Script.Count - 1 do
-      begin
-      Line.Command := Script.Item[i];
+  //Найти конец процедуры
+  Pos := sgeGetProcedureEndInScript(Script, Command.Part[1], Call.Pos);
 
-      //Пропуск если нет двух частей
-      if Line.Count < 2 then Continue;
+  //Конец процедуры не найден
+  if Pos = -1 then
+    begin
+    Result := sgeCreateErrorString(_UNITNAME, Err_CantFindProcedureEnd, Command.Part[1]);
+    Exit;
+    end;
 
-      //Проверить совпадение
-      if (LowerCase(Line.Part[0]) = 'return') and (LowerCase(Line.Part[1]) = LowerCase(Command.Part[1])) then
-        begin
-        Call.Pos := i + 1;
-        Exit;
-        end;
-      end;
-
-  finally
-    Line.Free;
-  end;
-
-
-  //Если не найден конец процедуры
-  Result := sgeCreateErrorString(_UNITNAME, Err_CantFindProcedureEnd, Command.Part[1]);
+  //Изменить текущее положение
+  Call.Pos := Pos + 1;
 end;
 
 

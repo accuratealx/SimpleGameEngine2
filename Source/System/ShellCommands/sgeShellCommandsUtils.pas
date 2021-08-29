@@ -21,6 +21,7 @@ uses
 procedure sgeExtractScriptAndLabel(Str: String; var Script: ShortString; var LabelName: ShortString; Separator: Char = ':');
 function  sgeGetLabelPosInScript(Script: TsgeShellScript; LabelName: ShortString): Integer;
 function  sgeGetProcedurePosInScript(Script: TsgeShellScript; ProcedureName: ShortString): Integer;
+function  sgeGetProcedureEndInScript(Script: TsgeShellScript; ProcedureName: ShortString; StartPos: Integer): Integer;
 
 
 implementation
@@ -98,6 +99,35 @@ begin
 
       //Проверить на совпадение имени метки
       if (LowerCase(Line.Part[0]) = 'procedure') and (LowerCase(Line.Part[1]) = ProcedureName) then Exit(i);
+      end;
+
+  finally
+    Line.Free;
+  end;
+end;
+
+
+function sgeGetProcedureEndInScript(Script: TsgeShellScript; ProcedureName: ShortString; StartPos: Integer): Integer;
+var
+  i: Integer;
+  Line: TsgeSimpleCommand;
+begin
+  Result := -1;
+  ProcedureName := LowerCase(ProcedureName);
+
+  Line := TsgeSimpleCommand.Create;
+  try
+
+    for i := StartPos to Script.Count - 1 do
+      begin
+      //Разобрать строку на части
+      Line.Command := Script.Item[i];
+
+      //Пропуск если нет двух частей
+      if Line.Count < 2 then Continue;
+
+      //Проверить совпадение
+      if (LowerCase(Line.Part[0]) = 'return') and (LowerCase(Line.Part[1]) = ProcedureName) then Exit(i);
       end;
 
   finally
