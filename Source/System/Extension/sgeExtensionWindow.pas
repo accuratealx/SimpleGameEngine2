@@ -61,6 +61,7 @@ type
     destructor  Destroy; override;
 
     property Window: TsgeWindow read FWindow;
+
     property FullScreen: Boolean read FFullScreen write SetFullScreen;
   end;
 
