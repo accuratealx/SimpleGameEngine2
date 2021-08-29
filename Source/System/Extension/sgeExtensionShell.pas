@@ -223,7 +223,12 @@ begin
   Result := True;
 
   //Проверить на аварийный останов
-  if (EventObj.Key = keyF5) and (kbCtrl in EventObj.KeyboardButtons) then StopCommand;
+  if (EventObj.Key = keyX) and (kbCtrl in EventObj.KeyboardButtons) and (kbAlt in EventObj.KeyboardButtons) then
+    begin
+    StopCommand;
+    RepaintInner;
+    Exit;
+    end;
 
 
   //Проверить на команду ReadKey
@@ -1018,6 +1023,9 @@ begin
   //Удалить элемент отрисовки
   FElementSprite.Delete;
 
+  //Удалить шрифт
+  FFont.Free;
+
   //Удалить холст
   FCanvas.Free;
 
@@ -1029,7 +1037,6 @@ begin
 
   //Удалить объекты
   FThread.Free;
-  FFont.Free;
   FRepaintCS.Free;
   FEvent.Free;
   FCallStack.Free;

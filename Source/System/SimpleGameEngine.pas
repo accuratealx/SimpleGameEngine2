@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              SimpleGameEngine.pas
-Версия            1.0
+Версия            1.1
 Создан            28.03.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Ядро движка
@@ -18,7 +18,7 @@ uses
   sgeErrorManager, sgeNamedObjectList, sgeExtensionList, sgeEventManager, sgeEventBase, sgeEventWindow,
   sgeExtensionWindow, sgeExtensionGraphic, sgeExtensionPackList, sgeExtensionFileSystem, sgeExtensionShell,
   sgeExtensionResourceList, sgeExtensionStartParameters, sgeExtensionSound, sgeExtensionControllers,
-  sgeExtensionVariables, sgeExtensionKeyCommand;
+  sgeExtensionVariables, sgeExtensionKeyCommand, sgeExtensionTimeEvent;
 
 
 const
@@ -55,6 +55,7 @@ type
     FExtensionControllers: TsgeExtensionControllers;                //Расширение: Контроллеры
     FExtensionShell: TsgeExtensionShell;                            //Расширение: Оболочка
     FExtensionKeyCommand: TsgeExtensionKeyCommand;                  //Расширение: Команды на клавишах
+    FExtensionTimeEvent: TsgeExtensionTimeEvent;                    //Расширение: Таймерные события
 
     //Свойства
     procedure SetDebug(ADebug: Boolean);
@@ -172,11 +173,10 @@ begin
 
   try
     //Создать расширения
-    FExtensionVariables := TsgeExtensionVariables.Create(FObjectList);              //Переменные
-
     FExtensionStartParameters := TsgeExtensionStartParameters.Create(FObjectList);  //Стартовые параметры
     ProcessSystemStartParameters;                                                   //Обработать системные стартовые параметры
 
+    FExtensionVariables := TsgeExtensionVariables.Create(FObjectList);              //Переменные
     FExtensionWindow := TsgeExtensionWindow.Create(FObjectList);                    //Окно
     FExtensionGraphic := TsgeExtensionGraphic.Create(FObjectList);                  //Графика
     FExtensionPackFiles :=   TsgeExtensionPackList.Create(FObjectList);             //Файловые архивы
@@ -186,6 +186,8 @@ begin
     FExtensionControllers := TsgeExtensionControllers.Create(FObjectList);          //Контроллеры
     FExtensionShell := TsgeExtensionShell.Create(FObjectList);                      //Оболочка
     FExtensionKeyCommand := TsgeExtensionKeyCommand.Create(FObjectList);            //Команда на кнопках
+    FExtensionTimeEvent := TsgeExtensionTimeEvent.Create(FObjectList);              //Таймерные события
+
 
   except
     //Ошибка инициализации движка
