@@ -895,6 +895,9 @@ begin
   for i := 0 to List.Count - 1 do
     if i = 0 then LogMessage(List.Part[i], smtError) else LogMessage('  ' + List.Part[i], smtError);
 
+  //Почистить память
+  List.Free;
+
   //Перерисовать оболочку
   RepaintInner;
 end;
