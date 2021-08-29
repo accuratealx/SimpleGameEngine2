@@ -84,6 +84,9 @@ begin
 
   //Удалить строку редактора
   SGE.ExtShell.Editor.Line := '';
+
+  //Перерисовать оболочку
+  TsgeExtensionShellHack(SGE.ExtShell).RepaintThread;
 end;
 
 
