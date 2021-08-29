@@ -15,7 +15,7 @@
     </CompilerOptions>
     <Description Value="Simple Game Engine 2"/>
     <Version Major="1"/>
-    <Files Count="166">
+    <Files Count="167">
       <Item1>
         <Filename Value="..\Source\ThirdParty\GDIPlus\GDIPAPI.pas"/>
         <UnitName Value="GDIPAPI"/>
@@ -680,6 +680,10 @@
         <Filename Value="..\Source\System\ShellCommands\sgeShellCommand_System_Stop.pas"/>
         <UnitName Value="sgeShellCommand_System_Stop"/>
       </Item166>
+      <Item167>
+        <Filename Value="..\Source\System\Extension\sgeExtensionTimeEvent.pas"/>
+        <UnitName Value="sgeExtensionTimeEvent"/>
+      </Item167>
     </Files>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)"/>
