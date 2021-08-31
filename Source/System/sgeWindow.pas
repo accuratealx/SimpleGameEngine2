@@ -475,6 +475,9 @@ begin
 
   //Пошевелить окно
   SetWindowPos(FHandle, GetHWNDPos, 0, 0, 0, 0, SWP_NOMOVE or SWP_NOSIZE or SWP_FRAMECHANGED or SWP_NOACTIVATE);
+
+  //Послать сообщение об изменении размеров, строка выше SetWindowPos не гененрирует это событие
+  PostMessage(FHandle, WM_SIZE, SIZE_RESTORED, MAKELPARAM(Width, Height));
 end;
 
 
@@ -485,7 +488,6 @@ var
 begin
   //Подготовительные работы
   FStyle := [wsCaption, wsSizeable, wsSystemMenu];    //Заполняем начальный стиль окна
-  //FOldStyle := FStyle;                                //Запомнить старый стиль
   FButtons := [wbClose, wbMinimize, wbMaximize];      //Заполняем системные кнопки
 
   //Заполняем класс окна
@@ -531,8 +533,8 @@ end;
 
 destructor TsgeWindow.Destroy;
 begin
-  DestroyWindow(FHandle);                                                       //Удаляем окно
-  Windows.UnregisterClass(FWindowClass.lpszClassName, FWindowClass.hInstance);  //Удаляем класс окна
+  DestroyWindow(FHandle);
+  Windows.UnregisterClass(FWindowClass.lpszClassName, FWindowClass.hInstance);
 end;
 
 
