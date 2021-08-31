@@ -38,7 +38,7 @@ type
     procedure Delete;
 
     //Пользовательские функции
-    procedure UpdateData; virtual; abstract;                  //ООбновление данных
+    procedure UpdateData; virtual; abstract;                  //Обновление данных
     procedure Draw(Graphic: TsgeGraphic); virtual; abstract;  //Отрисовка элемента
 
     property Visible: Boolean read FVisible write FVisible;
