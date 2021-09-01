@@ -292,6 +292,11 @@ begin
   //Если нет потока, то ничего не делать
   if FHandle <> 0 then
     begin
+    //Почистить указатели
+    FRunLoopProc := nil;
+    FRunOnceProc := nil;
+    FRunOnceProcWait := nil;
+
     //Если поток не завершил свою работу, то прибить
     if not FFinished then Terminate(True);
 
@@ -352,7 +357,7 @@ begin
   Resume;
 
   //Подождать завершения
-  if Wait then sgeWaitForSingleObject(FHandle, INFINITE);
+  if Wait and not FFinished then sgeWaitForSingleObject(FHandle, INFINITE);
 end;
 
 
