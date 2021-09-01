@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeExtensionBase.pas
-Версия            1.5
+Версия            1.6
 Создан            31.03.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс расширения: Базовый
@@ -31,7 +31,9 @@ type
     FErrorManager: TsgeErrorManager;                                //Менеджер ошибок
 
   protected
-     class function GetName: String; virtual; abstract;
+    FDestroying: Boolean;                                           //Флаг разрушения объект
+
+    class function GetName: String; virtual; abstract;
 
     //Список объектов
     function  GetObject(Name: String): TObject;
