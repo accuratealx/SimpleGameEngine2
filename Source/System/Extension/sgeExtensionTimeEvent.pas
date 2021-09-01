@@ -15,7 +15,7 @@ unit sgeExtensionTimeEvent;
 interface
 
 uses
-  sgeExtensionBase;
+  sgeExtensionBase, sgeThread, sgeTimeEventList, sgeTimeEventItem, sgeEventTimeEvent;
 
 
 const
@@ -25,6 +25,12 @@ const
 type
   TsgeExtensionTimeEvent = class(TsgeExtensionBase)
   private
+    FThread: TsgeThread;
+    FTimeEventList: TsgeTimeEventList;                              //Список таймеров
+
+    FDelay: Cardinal;                                               //Задержка между опросами элементов
+
+    procedure ThreadProc;
 
   protected
     class function GetName: String; override;
@@ -32,6 +38,13 @@ type
   public
     constructor Create(ObjectList: TObject); override;
     destructor  Destroy; override;
+
+    function  Add(Proc: TsgeTimeEventProc; Delay: Cardinal = 0; Times: Integer = -1; AutoDelete: Boolean = True; StartDelay: Cardinal = 0; Enable: Boolean = True): TsgeTimeEventItem;
+    procedure Delete(Proc: TsgeTimeEventProc);
+
+    property TimeEventList: TsgeTimeEventList read FTimeEventList;
+
+    property Delay: Cardinal read FDelay write FDelay;
   end;
 
 
@@ -39,10 +52,72 @@ type
 implementation
 
 uses
-  sgeErrors;
+  sgeErrors, sgeOSPlatform;
 
 const
   _UNITNAME = 'ExtensionTimeEvent';
+
+
+
+procedure TsgeExtensionTimeEvent.ThreadProc;
+var
+  Idx: Integer;
+  El: TsgeTimeEventItem;
+begin
+  //Заблокировать список
+  FTimeEventList.Lock;
+
+
+  //Цикл по элементам
+  Idx := 0;
+  while Idx < FTimeEventList.Count do
+    begin
+    //Проверка на разрушение объекта
+    if FDestroying then Break;
+
+    //Ссылка на элемент
+    El := FTimeEventList.Item[Idx];
+
+    //Проверить на удаление
+    if El.NeedDelete then
+      begin
+      FTimeEventList.Delete(Idx);
+      Continue;
+      end;
+
+    //Проверить на активность
+    if not El.Enable then Continue;
+
+    //Проверить, прошло время для выполнения или нет
+    if El.IsTimePassed then
+      begin
+      //Увеличить счётчик срабатываний
+      El.IncTimes;
+
+      //Событие срабатывания таймера
+      EventManager.Publish(Event_TimeEvent, TsgeEventTimeEvent.Create(El.Proc));
+
+      //Проверить на предел по количеству выполнений
+      if (El.Times <> -1) and (El.TimesCount >= El.Times) then
+        begin
+        //Остановить выполнение
+        El.Enable := False;
+
+        //Проверить на автоудаление
+        if El.AutoDelete then El.Delete;
+        end;
+      end;
+
+    Inc(Idx);
+    end;
+
+
+  //Разблокировать список
+  FTimeEventList.Unlock;
+
+  //Заснуть
+  sgeSleep(FDelay);
+end;
 
 
 class function TsgeExtensionTimeEvent.GetName: String;
@@ -56,13 +131,15 @@ begin
   try
     inherited Create(ObjectList);
 
-    //Параметры по умолчанию
-    //FMainDir := sgeGetApplicationDirectory;
-    //FScreenshotDir := FMainDir + 'Screenshot\';
+    //Создать объекты
+    FThread := TsgeThread.Create(@ThreadProc, True, False);
+    FTimeEventList := TsgeTimeEventList.Create;
 
-    //Получить ссылки на объекты
-    //FExtPackList := TsgeExtensionPackList(GetExtension(Extension_PackList));
+    //Параметры
+    FDelay := 1;
 
+    //Запустить обработку
+    FThread.Resume;
   except
     on E: EsgeException do
       raise EsgeException.Create(_UNITNAME, Err_CantCreateExtension, '', E.Message);
@@ -72,7 +149,34 @@ end;
 
 destructor TsgeExtensionTimeEvent.Destroy;
 begin
+  FDestroying := True;
+
+  FThread.Free;
+  FTimeEventList.Free;
+
   inherited Destroy;
+end;
+
+
+function TsgeExtensionTimeEvent.Add(Proc: TsgeTimeEventProc; Delay: Cardinal; Times: Integer; AutoDelete: Boolean; StartDelay: Cardinal; Enable: Boolean): TsgeTimeEventItem;
+begin
+  //Создать таймер
+  Result := TsgeTimeEventItem.Create(Proc, Delay, Times, AutoDelete, StartDelay, Enable);
+
+  //Добавить в список
+  FTimeEventList.Add(Result);
+end;
+
+
+procedure TsgeExtensionTimeEvent.Delete(Proc: TsgeTimeEventProc);
+var
+  Idx: Integer;
+begin
+  //Найти индекс таймера
+  Idx := FTimeEventList.IndexOf(Proc);
+
+  //Удалить
+  if Idx <> -1 then FTimeEventList.Delete(Idx);
 end;
 
 

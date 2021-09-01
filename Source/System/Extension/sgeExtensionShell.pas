@@ -78,7 +78,6 @@ type
     FChangeSize: Boolean;                                           //Флаг изменения размеров
     FSkipChar: Boolean;                                             //Флаг пропуска события WM_CHAR
     FCommandIsRunning: Boolean;                                     //Флаг выполнения команды
-    FDestroying: Boolean;                                           //Флаг разрушения объекта
 
     //Обработчики событий
     procedure RegisterEventHandlers;
