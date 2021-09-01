@@ -15,7 +15,7 @@ unit SimpleGameEngine;
 interface
 
 uses
-  sgeErrorManager, sgeNamedObjectList, sgeExtensionList, sgeEventManager, sgeEventBase, sgeEventWindow,
+  sgeErrorManager, sgeNamedObjectList, sgeExtensionList, sgeEventManager, sgeEventBase,
   sgeExtensionWindow, sgeExtensionGraphic, sgeExtensionPackList, sgeExtensionFileSystem, sgeExtensionShell,
   sgeExtensionResourceList, sgeExtensionStartParameters, sgeExtensionSound, sgeExtensionControllers,
   sgeExtensionVariables, sgeExtensionKeyCommand, sgeExtensionTimeEvent;
@@ -65,7 +65,9 @@ type
 
     //Обработчики событий
     procedure RegisterEventHandlers;                                //Подписать системные обработчики событий
+    procedure UnregisterEventHandlers;                              //Отписать системные обработчики событий
     function  EventWindowClose(Obj: TsgeEventBase): Boolean;        //Закрытие окна
+    function  EventTime(Obj: TsgeEventBase): Boolean;               //Таймерное событие
   public
     constructor Create; virtual;
     destructor  Destroy; override;
@@ -98,6 +100,7 @@ type
     property ExtControllers: TsgeExtensionControllers read FExtensionControllers;
     property ExtShell: TsgeExtensionShell read FExtensionShell;
     property ExtKeyCommand: TsgeExtensionKeyCommand read FExtensionKeyCommand;
+    property ExtTimeEvent: TsgeExtensionTimeEvent read FExtensionTimeEvent;
   end;
 
 
@@ -105,14 +108,16 @@ implementation
 
 uses
   sgeErrors, sgeKeys, sgeMemoryStream,
-  sgeOSPlatform, sgeDateUtils, sgeFileUtils, sgeShellCommands, sgeVariables;
+  sgeOSPlatform, sgeDateUtils, sgeFileUtils, sgeShellCommands, sgeVariables,
+  sgeEventWindow, sgeEventTimeEvent;
 
 
 const
   _UNITNAME = 'SimpleGameEngine';
 
-  Err_CantCreateSimpleGameEngine = 'CantCreateSimpleGameEngine';
-  Err_CantCreateScreenShot = 'CantCreateScreenShot';
+  Err_CantCreateSimpleGameEngine  = 'CantCreateSimpleGameEngine';
+  Err_CantCreateScreenShot        = 'CantCreateScreenShot';
+  Err_EmptyMethodPointer          = 'EmptyMethodPointer';
 
   Ext_Journal = 'Journal';
 
@@ -138,12 +143,33 @@ end;
 procedure TSimpleGameEngine.RegisterEventHandlers;
 begin
   FEventManager.Subscribe(Event_WindowClose, @EventWindowClose);
+  FEventManager.Subscribe(Event_TimeEvent, @EventTime);
+end;
+
+
+procedure TSimpleGameEngine.UnregisterEventHandlers;
+begin
+  FEventManager.UnSubscribe(Self);
 end;
 
 
 function TSimpleGameEngine.EventWindowClose(Obj: TsgeEventBase): Boolean;
 begin
   if CloseWindow then Stop;
+end;
+
+
+function TSimpleGameEngine.EventTime(Obj: TsgeEventBase): Boolean;
+var
+  Proc: TsgeTimeEventProc;
+begin
+  Proc := TsgeEventTimeEvent(Obj).Proc;
+
+  if Proc = nil then
+    raise EsgeException.Create(_UNITNAME, Err_EmptyMethodPointer);
+
+  //Выполнить функцию
+  Proc();
 end;
 
 
@@ -217,6 +243,9 @@ destructor TSimpleGameEngine.Destroy;
 begin
   //Остановить приложение
   Stop;
+
+  //Отписать системные обработчики событий
+  UnregisterEventHandlers;
 
   //Событие разрушения
   FEventManager.Publish(Event_KernelDestroy, nil);
