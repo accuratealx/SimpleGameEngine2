@@ -357,7 +357,7 @@ begin
   Resume;
 
   //Подождать завершения
-  if Wait and not FFinished then sgeWaitForSingleObject(FHandle, INFINITE);
+  if Wait then sgeWaitForSingleObject(FHandle, INFINITE);
 end;
 
 
