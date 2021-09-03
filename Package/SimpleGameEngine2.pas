@@ -15,11 +15,11 @@ uses
   sgeSimpleCommand, sgeSimpleContainer, sgeSimpleParameters, 
   sgeStartParameters, sgeStringList, sgeMathUtils, sgeSystemEvent, 
   sgeSystemUtils, sgeThread, sgeTypes, sgeControllerList, sgeEventControllers, 
-  sgeEventGraphic, sgeEventList, sgeEventManager, sgeEventSubscriber, 
+  sgeEventTimeEvent, sgeEventList, sgeEventManager, sgeEventSubscriber, 
   sgeEventSubscriberGroup, sgeEventSubscriberGroupList, 
   sgeEventSubscriberList, sgeEventWindow, sgeExtensionControllers, 
   sgeExtensionFileSystem, sgeExtensionGraphic, sgeExtensionList, 
-  sgeExtensionPackList, sgeExtensionResourceList, sgeExtensionShell, 
+  sgeExtensionGUI, sgeExtensionResourceList, sgeExtensionShell, 
   sgeExtensionSound, sgeExtensionStartParameters, sgeExtensionVariables, 
   sgeExtensionWindow, sgeGraphicAnimation, sgeGraphicAnimationFrames, 
   sgeGraphicColor, sgeGraphicDrawList, sgeGraphicElementAnimation, 
@@ -62,7 +62,8 @@ uses
   sgeShellCommand_System_Run, sgeShellCommandsUtils, 
   sgeShellCommand_System_Call, sgeShellCommand_Script_Clear, 
   sgeExtensionTimeEvent, sgeShellCommand_Script_Delete, 
-  sgeShellCommand_System_Stop;
+  sgeShellCommand_System_Stop, sgeTimeEventList, sgeGUIElement, sgeGUIForm, 
+  sgeGUIFormList;
 
 implementation
 
