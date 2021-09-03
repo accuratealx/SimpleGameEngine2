@@ -18,7 +18,7 @@ uses
   sgeErrorManager, sgeNamedObjectList, sgeExtensionList, sgeEventManager, sgeEventBase,
   sgeExtensionWindow, sgeExtensionGraphic, sgeExtensionPackList, sgeExtensionFileSystem, sgeExtensionShell,
   sgeExtensionResourceList, sgeExtensionStartParameters, sgeExtensionSound, sgeExtensionControllers,
-  sgeExtensionVariables, sgeExtensionKeyCommand, sgeExtensionTimeEvent;
+  sgeExtensionVariables, sgeExtensionKeyCommand, sgeExtensionTimeEvent, sgeExtensionGUI;
 
 
 const
@@ -56,6 +56,7 @@ type
     FExtensionShell: TsgeExtensionShell;                            //Расширение: Оболочка
     FExtensionKeyCommand: TsgeExtensionKeyCommand;                  //Расширение: Команды на клавишах
     FExtensionTimeEvent: TsgeExtensionTimeEvent;                    //Расширение: Таймерные события
+    FExtensionGUI: TsgeExtensionGUI;                                //Расширение: GUI
 
     //Свойства
     procedure SetDebug(ADebug: Boolean);
@@ -101,6 +102,7 @@ type
     property ExtShell: TsgeExtensionShell read FExtensionShell;
     property ExtKeyCommand: TsgeExtensionKeyCommand read FExtensionKeyCommand;
     property ExtTimeEvent: TsgeExtensionTimeEvent read FExtensionTimeEvent;
+    property ExtGUI: TsgeExtensionGUI read FExtensionGUI;
   end;
 
 
@@ -213,6 +215,7 @@ begin
     FExtensionShell := TsgeExtensionShell.Create(FObjectList);                      //Оболочка
     FExtensionKeyCommand := TsgeExtensionKeyCommand.Create(FObjectList);            //Команда на кнопках
     FExtensionTimeEvent := TsgeExtensionTimeEvent.Create(FObjectList);              //Таймерные события
+    FExtensionGUI := TsgeExtensionGUI.Create(FObjectList);                          //GUI
 
 
   except
@@ -311,7 +314,10 @@ begin
   //Изменить флаг работы
   FWorking := False;
 
-  //Очистить массив элементов графики
+  //Очистить список таймеров
+  FExtensionTimeEvent.TimeEventList.Clear;
+
+  //Очистить список элементов графики
   FExtensionGraphic.DrawList.ClearLayers;
 
   //Разбудить основной поток

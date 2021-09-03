@@ -18,7 +18,7 @@ interface
 const
   EventPriorityMax = $FFFF;
   EventPriorityMaxMinusOne = $FFFE;
-
+  EventPriorityMaxMinusTwo = $FFFD;
 
 type
   //Базовый класс события

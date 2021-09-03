@@ -34,7 +34,7 @@ type
   public
     function  IndexOf(Name: String): Integer;                                             //Найти индекс слоя по имени
 
-    procedure AddLayer(Name: String; Index: Word);                                        //Добавить слой
+    procedure AddLayer(Item: TsgeGraphicElementLayer);                                    //Добавить слой
     procedure Delete(Index: Integer);
     procedure Delete(Name: String);                                                       //Удалить слой
 
@@ -122,13 +122,10 @@ begin
 end;
 
 
-procedure TsgeGraphicElementLayerList.AddLayer(Name: String; Index: Word);
+procedure TsgeGraphicElementLayerList.AddLayer(Item: TsgeGraphicElementLayer);
 begin
-  //Проверить слой на существование
-  if IndexOf(Name) <> - 1 then Exit;
-
   //Добавить слой
-  Add(TsgeGraphicElementLayer.Create(Name, Index, True));
+  inherited Add(Item);
 
   //Упорядочить
   Sort;
@@ -167,7 +164,7 @@ begin
     Idx := IndexOf('');
     if Idx = -1 then
       begin
-      AddLayer('', 0);
+      AddLayer(TsgeGraphicElementLayer.Create('', 0));
       Idx := IndexOf('');
       end;
     end;

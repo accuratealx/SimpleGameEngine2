@@ -15,7 +15,7 @@ unit sgeGraphicDrawList;
 interface
 
 uses
-  sgeCriticalSection, sgeGraphicElementLayerList,  sgeGraphicElementBase;
+  sgeCriticalSection, sgeGraphicElementLayer, sgeGraphicElementLayerList, sgeGraphicElementBase;
 
 
 type
@@ -32,7 +32,7 @@ type
     procedure UnLock;
 
     procedure ClearLayers;
-    procedure AddLayer(Name: String; Index: Word);
+    function  AddLayer(Name: String; Index: Word; Visible: Boolean = True): TsgeGraphicElementLayer;
     procedure DeleteLayer(Name: String);
 
     procedure AddElement(Element: TsgeGraphicElementBase; LayerName: String = '');
@@ -79,12 +79,19 @@ begin
   FCS.Leave;
 end;
 
-procedure TsgeGraphicDrawList.AddLayer(Name: String; Index: Word);
+function TsgeGraphicDrawList.AddLayer(Name: String; Index: Word; Visible: Boolean): TsgeGraphicElementLayer;
 begin
   FCS.Enter;
   try
 
-    FList.AddLayer(Name, Index);
+    //Проверить слой на существование
+    if FList.IndexOf(Name) <> - 1 then Exit;
+
+    //Создать слой
+    Result := TsgeGraphicElementLayer.Create(Name, Index, Visible);
+
+    //Добавить в список
+    FList.AddLayer(Result);
 
   finally
     FCS.Leave;
