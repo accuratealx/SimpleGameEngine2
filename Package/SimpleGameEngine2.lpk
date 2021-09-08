@@ -15,7 +15,7 @@
     </CompilerOptions>
     <Description Value="Simple Game Engine 2"/>
     <Version Major="1"/>
-    <Files Count="174">
+    <Files Count="175">
       <Item1>
         <Filename Value="..\Source\ThirdParty\GDIPlus\GDIPAPI.pas"/>
         <UnitName Value="GDIPAPI"/>
@@ -712,6 +712,10 @@
         <Filename Value="..\Source\System\GUI\sgeGUIFormList.pas"/>
         <UnitName Value="sgeGUIFormList"/>
       </Item174>
+      <Item175>
+        <Filename Value="..\Source\System\sgeVars.pas"/>
+        <UnitName Value="sgeVars"/>
+      </Item175>
     </Files>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)"/>
