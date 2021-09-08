@@ -109,7 +109,7 @@ type
 implementation
 
 uses
-  sgeErrors, sgeKeys, sgeMemoryStream,
+  sgeErrors, sgeKeys, sgeMemoryStream, sgeVars,
   sgeOSPlatform, sgeDateUtils, sgeFileUtils, sgeShellCommands, sgeVariables,
   sgeEventWindow, sgeEventTimeEvent;
 
@@ -179,6 +179,9 @@ constructor TSimpleGameEngine.Create;
 var
   JFile: String;
 begin
+  //Записать себя в глобальную переменную
+  sgeVars.SGE := Self;
+
   //Параметры
   FWorking := True;
 

@@ -61,6 +61,8 @@ type
     constructor Create(ObjectList: TObject); override;
     destructor  Destroy; override;
 
+
+
     property Enable: Boolean read FEnable write SetEnable;
     property Visible: Boolean read FVisible write SetVisible;
 
