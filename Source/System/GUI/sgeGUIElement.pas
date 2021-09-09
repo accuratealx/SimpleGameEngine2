@@ -28,7 +28,7 @@ type
 
 
   //Состояние элемента
-  TsgeGUIElementState = set of (esCreating, esDestroing, esDeleting, esCorrectSize, esRepaint, esRepaintParent);
+  TsgeGUIElementState = set of (esCreating, esDestroing, esCorrectSize, esRepaint, esRepaintParent);
 
 
   //Элемент
@@ -92,9 +92,9 @@ type
     procedure Repaint;
     procedure AddChild(Element: TsgeGUIElement);
     procedure DeleteChild(Element: TsgeGUIElement);
+    procedure DeleteChild;
 
-    procedure Delete;
-    procedure Draw;
+    procedure Draw; virtual;
 
     //Параметры
     property State: TsgeGUIElementState read FState write FState;
@@ -126,6 +126,7 @@ type
   private
   public
     function  IndexOf(Element: TsgeGUIElement): Integer;
+    procedure Delete(Index: Integer);
     procedure Delete(Element: TsgeGUIElement);
   end;
 
@@ -145,6 +146,12 @@ begin
 
   for i := 0 to FCount - 1 do
     if FList[i] = Element then Exit(i);
+end;
+
+
+procedure TsgeGUIElementList.Delete(Index: Integer);
+begin
+  inherited Delete(Index);
 end;
 
 
@@ -331,7 +338,8 @@ end;
 
 procedure TsgeGUIElement.DrawBefore;
 begin
-
+  SGE.ExtGraphic.Graphic.BGColor := sgeGetRandomColor(1);
+  SGE.ExtGraphic.Graphic.EraseBG;
 end;
 
 
@@ -440,14 +448,13 @@ constructor TsgeGUIElement.Create(Name: String; Left, Top, Width, Height: Intege
 begin
   //Установить параметры
   FName := Name;
-  FState := [esCreating];
   FVisible := True;
   FEnable := True;
   FAlpha := 1;
 
   //Создать холст
   FCanvas := TsgeGraphicSprite.Create(Width, Height, cTransparent);
-  FChildList := TsgeGUIElementList.Create(True);
+  FChildList := TsgeGUIElementList.Create(False);
 
   //Изменить размеры
   SetBounds(sgeGetFloatRect(Left, Top, Left + Width, Top + Height));
@@ -459,12 +466,15 @@ end;
 
 destructor TsgeGUIElement.Destroy;
 begin
-  //Сказать родителю что я удаляюсь
-  if not (esDeleting in FState) then Delete;
+  //Удалить детей
+  DeleteChild;
 
   //Удалить объекты
   FChildList.Free;
   FCanvas.Free;
+
+  //Удалить себя у родителя
+  if FParent <> nil then FParent.DeleteChild(Self);
 end;
 
 
@@ -477,28 +487,34 @@ end;
 procedure TsgeGUIElement.AddChild(Element: TsgeGUIElement);
 begin
   FChildList.Add(Element);
+  Repaint;
 end;
 
 
 procedure TsgeGUIElement.DeleteChild(Element: TsgeGUIElement);
 begin
-  if Element = nil then Exit;
-
-  Element.State := Element.State + [esDeleting];
   FChildList.Delete(Element);
+  Repaint;
 end;
 
 
-procedure TsgeGUIElement.Delete;
+procedure TsgeGUIElement.DeleteChild;
 begin
-  //Удалить себя у родителя
-  if FParent <> nil then DeleteChild(Self);
+  //Определить флаг перерисовки
+  if FChildList.Count = 0 then Exit;
+
+  //Удалить объекты
+  while FChildList.Count > 0 do
+    FChildList.Item[0].Free;
+
+  //Перерисовать
+  Repaint;
 end;
 
 
 procedure TsgeGUIElement.Draw;
 begin
-   //Подготовить графику
+  //Подготовить графику
   GraphicPrepare;
 
   //Вывод перед отрисовкой детей
