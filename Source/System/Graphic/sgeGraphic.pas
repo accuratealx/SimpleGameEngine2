@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGraphic.pas
-Версия            1.6
+Версия            1.7
 Создан            27.04.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс графики
@@ -32,6 +32,10 @@ type
 
   //Режим вывода полигонов (Заливка, Линия, Точки)
   TsgeGraphicPolygonMode = (gpmFill, gpmLine, gpmDot);
+
+
+  //Режим смешивания для цветов
+  TsgeGraphicBlendFunction = (gbfCopy, gbfTransparent, gbfAlphaCopy);
 
 
   //Режим затенения (Последний цвет, Градиент)
@@ -85,6 +89,7 @@ type
     FRenderPlace: TsgeGraphicRenderPlace;                           //Место отрисовки
     FRenderSprite: TsgeGraphicSprite;                               //Спрайт вывода
     FFrameBuffer: Cardinal;                                         //Кадровый буфер
+    FBlendFunction: TsgeGraphicBlendFunction;                       //Режим смешивания цветов
     FDrawOptions: TsgeGraphicDrawOptions;                           //Настройки вывода спрайтов
 
     function  GetInfo(Index: TsgeGraphicInfo): String;
@@ -112,6 +117,7 @@ type
     procedure SetLineStipple(AStipple: Boolean);
     function  GetLineStipple: Boolean;
 
+    procedure SetBlendFunction(AFunction: TsgeGraphicBlendFunction);
     procedure SetRenderSprite(ASprite: TsgeGraphicSprite);
     procedure SetRenderPlace(APlace: TsgeGraphicRenderPlace);
 
@@ -223,6 +229,7 @@ type
     property ShadeModel: TsgeGraphicShadeModel read GetShadeModel write SetShadeModel;
     property TextureEnvironment: TsgeGraphicTextureEnvironment read GetTextureEnvironment write SetTextureEnvironment;
     property RenderBuffer: TsgeGraphicRenderBuffer read FRenderBuffer write SetRenderBuffer;
+    property BlendFunction: TsgeGraphicBlendFunction read FBlendFunction write SetBlendFunction;
     property VerticalSync: Boolean read GetVerticalSync write SetVerticalSync;
     property RenderPlace: TsgeGraphicRenderPlace read FRenderPlace write SetRenderPlace;
     property RenderSprite: TsgeGraphicSprite read FRenderSprite write SetRenderSprite;
@@ -470,6 +477,19 @@ end;
 function TsgeGraphic.GetLineStipple: Boolean;
 begin
   Result := glIsEnabled(GL_LINE_STIPPLE);
+end;
+
+
+procedure TsgeGraphic.SetBlendFunction(AFunction: TsgeGraphicBlendFunction);
+begin
+  if FBlendFunction = AFunction then Exit;
+
+  FBlendFunction := AFunction;
+  case AFunction of
+    gbfCopy       : glBlendFunc(GL_ONE, GL_ZERO);
+    gbfTransparent: glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    gbfAlphaCopy  : glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+  end;
 end;
 
 
@@ -816,6 +836,7 @@ begin
   //Запомнить размеры
   FWidth := Width;
   FHeight := Height;
+  FBlendFunction := gbfTransparent;
 
   //Загрузить библиотеку
   if GL_LibHandle = nil then InitOpenGL;
