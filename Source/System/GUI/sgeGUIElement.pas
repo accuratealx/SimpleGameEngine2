@@ -29,6 +29,10 @@ type
 
   //Состояние элемента
   TsgeGUIElementState = set of (esCreating, esDestroing, esCorrectSize, esRepaint, esRepaintParent);
+  TsgeGUIProcMouseEvent = procedure(Obj: TsgeGUIElement; X, Y: Integer; MouseButtons: TsgeMouseButtons; KeyboardButtons: TsgeKeyboardButtons) of object;
+  TsgeGUIProcMouseScrollEvent = procedure(Obj: TsgeGUIElement; X, Y: Integer; MouseButtons: TsgeMouseButtons; KeyboardButtons: TsgeKeyboardButtons; Delta: Integer) of object;
+  TsgeGUIProcButtonEvent = procedure(Obj: TsgeGUIElement; Key: Byte; KeyboardButtons: TsgeKeyboardButtons) of object;
+  TsgeGUIProcButtonCharEvent = procedure(Obj: TsgeGUIElement; Key: Char; KeyboardButtons: TsgeKeyboardButtons) of object;
 
 
   //Элемент
@@ -57,6 +61,19 @@ type
     FOnDrawAfter: TsgeGUIProcEvent;
     FOnShow: TsgeGUIProcEvent;
     FOnHide: TsgeGUIProcEvent;
+
+    FOnMouseClick   : TsgeGUIProcMouseEvent;
+    FOnMouseDblClick: TsgeGUIProcMouseEvent;
+    FOnMouseMove    : TsgeGUIProcMouseEvent;
+    FOnMouseDown    : TsgeGUIProcMouseEvent;
+    FOnMouseUp      : TsgeGUIProcMouseEvent;
+    FOnMouseLeave   : TsgeGUIProcMouseEvent;
+    FOnMouseEnter   : TsgeGUIProcMouseEvent;
+    FOnMouseScroll  : TsgeGUIProcMouseScrollEvent;
+
+    FOnButtonDown   : TsgeGUIProcButtonEvent;
+    FOnButtonUp     : TsgeGUIProcButtonEvent;
+    FOnButtonChar   : TsgeGUIProcButtonCharEvent;
 
     procedure Handler_Show; virtual;
     procedure Handler_Hide; virtual;
@@ -116,6 +133,19 @@ type
     property OnDrawAfter: TsgeGUIProcEvent read FOnDrawAfter write SetDrawAfter;
     property OnShow: TsgeGUIProcEvent read FOnShow write FOnShow;
     property OnHide: TsgeGUIProcEvent read FOnHide write FOnHide;
+
+    property OnMouseClick: TsgeGUIProcMouseEvent read FOnMouseClick write FOnMouseClick;
+    property OnMouseDblClick: TsgeGUIProcMouseEvent read FOnMouseDblClick write FOnMouseDblClick;
+    property OnMouseMove: TsgeGUIProcMouseEvent read FOnMouseMove write FOnMouseMove;
+    property OnMouseDown: TsgeGUIProcMouseEvent read FOnMouseDown write FOnMouseDown;
+    property OnMouseUp: TsgeGUIProcMouseEvent read FOnMouseUp write FOnMouseUp;
+    property OnMouseLeave: TsgeGUIProcMouseEvent read FOnMouseLeave write FOnMouseLeave;
+    property OnMouseEnter: TsgeGUIProcMouseEvent read FOnMouseEnter write FOnMouseEnter;
+    property OnMouseScroll: TsgeGUIProcMouseScrollEvent read FOnMouseScroll write FOnMouseScroll;
+
+    property OnButtonDown: TsgeGUIProcButtonEvent read FOnButtonDown write FOnButtonDown;
+    property OnButtonUp: TsgeGUIProcButtonEvent read FOnButtonUp write FOnButtonUp;
+    property OnButtonChar: TsgeGUIProcButtonCharEvent read FOnButtonChar write FOnButtonChar;
   end;
 
 
@@ -223,7 +253,7 @@ begin
 
   if FVisible then Handler_Show else Handler_Hide;
 
-  Repaint;
+  Notify([esRepaintParent]);
 end;
 
 
@@ -297,9 +327,10 @@ begin
     with SGE.ExtGraphic.Graphic do
       begin
       ResetDrawOptions;
+      BlendFunction := gbfAlphaCopy;
       doTransparentColor := sgeGetColor(1, 1, 1, El.Alpha);
       DrawSprite(El.Left, El.Top, El.Width, El.Height, El.Canvas);
-      ResetDrawOptions;
+      BlendFunction := gbfTransparent;
       end;
     end;
 end;
@@ -332,14 +363,18 @@ begin
     RenderSprite := nil;
     RenderPlace := grpScreen;
     PopAttrib;
+    Finish;
     end;
 end;
 
 
 procedure TsgeGUIElement.DrawBefore;
 begin
-  SGE.ExtGraphic.Graphic.BGColor := sgeGetRandomColor(1);
-  SGE.ExtGraphic.Graphic.EraseBG;
+  with SGE.ExtGraphic.Graphic do
+    begin
+    BGColor := cWhite;
+    EraseBG;
+    end;
 end;
 
 
