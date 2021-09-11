@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeShellScriptList.pas
-Версия            1.1
+Версия            1.2
 Создан            24.08.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Список сценариев оболочки
@@ -30,6 +30,7 @@ type
 
     procedure Add(Name: ShortString; Lines: String);
     procedure Delete(Name: ShortString);
+    procedure SafeDelete(Name: ShortString);
   end;
 
 
@@ -99,6 +100,16 @@ begin
     raise EsgeException.Create(_UNITNAME, Err_ScriptNotFound, Name);
 
   inherited Delete(Idx);
+end;
+
+
+procedure TsgeShellScriptList.SafeDelete(Name: ShortString);
+var
+  Idx: Integer;
+begin
+  Idx := IndexOf(Name);
+  if Idx <> -1 then
+    inherited Delete(Idx);
 end;
 
 
