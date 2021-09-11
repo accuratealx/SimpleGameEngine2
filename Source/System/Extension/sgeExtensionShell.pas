@@ -115,7 +115,7 @@ type
   protected
     //Специальные команды
     FStopExecuting: Boolean;                                        //Флаг прерывания работы скрипта
-    FReadMode: Boolean;                                             //Флаг обработки команды Read, ReadLn
+    FReadLnMode: Boolean;                                           //Флаг обработки команды Read, ReadLn
     FReadKeyMode: Boolean;                                          //Флаг обработки команды ReadKey
     FreadKeyChar: Byte;                                             //Код символа нажатия
     FEvent: TsgeSystemEvent;                                        //События для Read, ReadLn
@@ -237,6 +237,7 @@ begin
     FReadKeyMode := False;        //Выключить режим чтения одной кнопки
     FreadKeyChar := EventObj.Key; //Запомнить код клавиши
     FEvent.Up;                    //Сказать потоку что нажали кнопку
+    RepaintInner;                 //Перерисовать оболочку
     Exit;
     end;
 
@@ -251,9 +252,9 @@ begin
     keyEnter:
       begin
       //Проверить на команду Read, ReadLn
-      if FReadMode then
+      if FReadLnMode then
         begin
-        FReadMode := False;
+        FReadLnMode := False;
         FEvent.Up;
         Exit;
         end;
@@ -325,6 +326,7 @@ begin
   if FSkipChar then
     begin
     FSkipChar := False;
+    RepaintInner;
     Exit;
     end;
 
@@ -623,16 +625,13 @@ begin
 
 
   //Удалить временный сценарий
-  FScriptList.Delete(ScriptName);
+  FScriptList.SafeDelete(ScriptName);
 
 
   //Обработать аварийный останов
-  if FStopExecuting then
+  if FStopExecuting and not FDestroying then
     begin
-    FStopExecuting := False;                                        //Сбросить флаг остановки
-    FReadKeyMode := False;                                          //Выключить режим ввода кода клавиши
-    FReadMode := False;                                             //Выключить режим ввода строки
-    if not FDestroying then ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_BreakByUser));  //Обработать ошибку
+    ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_BreakByUser));  //Обработать ошибку
     RepaintThread;                                                  //Перерисовать оболочку
     end;
 end;
@@ -650,6 +649,7 @@ var
   Rct: TsgeFloatRect;
   s: String;
 begin
+  //Заблоктровать перерисовку
   FRepaintCS.Enter;
 
   //Расчёты
@@ -699,7 +699,7 @@ begin
 
     //Вывод спецсимвола ожидания ввода
     s := '';
-    if FReadMode then s := '?';
+    if FReadLnMode then s := '?';
     if FReadKeyMode then s := '#';
     if s <> '' then
       begin
@@ -788,13 +788,13 @@ begin
     Finish;
     end;
 
+  //Разблоктровать перерисовку
+  FRepaintCS.Leave;
 
   //Обновить графический примитив
   FElementSprite.W := W;
   FElementSprite.H := H;
   FElementSprite.Update;
-
-  FRepaintCS.Leave;
 end;
 
 
@@ -875,6 +875,9 @@ begin
     //Создать скрипт и выполнить команду
     RunScriptByCommand(FCommandQueue.PullFirstCommand);
     end;
+
+  //Сбросить флаг аварийного останова
+  FStopExecuting := False;
 
   //Снять флаг выполнения команды
   FCommandIsRunning := False;
@@ -966,7 +969,7 @@ begin
     //Задать параметры
     FEnable := False;
     FWeakSeparator := True;
-    FReadMode := False;
+    FReadLnMode := False;
     FReadKeyMode := False;
     FJournalLines := 12;
     FJournalPage := 5;
@@ -1090,9 +1093,18 @@ begin
 
   //Записать флаг остановки
   FStopExecuting := True;
+  FReadKeyMode := False;                                          //Выключить режим ввода кода клавиши
+  FReadLnMode := False;                                             //Выключить режим ввода строки
 
   //Разбудить поток, для команд Read, ReadLn, ReadKey
   FEvent.Up;
+
+  //Без этой строки в TsgeShellCommand_System_ReadKey, после аварийного
+  //прерывания выполнения скрипта не работает таймаут в строке
+  //TsgeExtensionShellHack(SGE.ExtShell).FEvent.Wait(Timeout), не зависимо
+  //от значения происходит сразу выход, как будто он равен 0. Не до конца
+  //понятно почему нормально работает если не прерывать выполнение.
+  FEvent.Down;
 end;
 
 
