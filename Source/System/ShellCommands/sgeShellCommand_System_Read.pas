@@ -61,7 +61,7 @@ begin
   SGE := TSimpleGameEngine(FSGE);
 
   //Изменить флажок в оболочке, что бы при вводе поднять флаг события
-  TsgeExtensionShellHack(SGE.ExtShell).FreadMode := True;
+  TsgeExtensionShellHack(SGE.ExtShell).FreadLnMode := True;
 
   //Перерисовать оболочку
   TsgeExtensionShellHack(SGE.ExtShell).RepaintThread;
