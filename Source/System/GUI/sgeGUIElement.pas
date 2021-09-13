@@ -16,7 +16,8 @@ interface
 
 uses
   sgeTypes, sgeTemplateObjectCollection,
-  sgeGraphicSprite;
+  sgeGraphicSprite, sgeGraphicColor,
+  sgeEventWindow;
 
 
 type
@@ -25,18 +26,25 @@ type
 
   //Обработчики
   TsgeGUIProcEvent = procedure(Obj: TsgeGUIElement) of Object;
-
-
-  //Состояние элемента
-  TsgeGUIElementState = set of (esCreating, esDestroing, esCorrectSize, esRepaint, esRepaintParent);
-  TsgeGUIProcMouseEvent = procedure(Obj: TsgeGUIElement; X, Y: Integer; MouseButtons: TsgeMouseButtons; KeyboardButtons: TsgeKeyboardButtons) of object;
-  TsgeGUIProcMouseScrollEvent = procedure(Obj: TsgeGUIElement; X, Y: Integer; MouseButtons: TsgeMouseButtons; KeyboardButtons: TsgeKeyboardButtons; Delta: Integer) of object;
+  TsgeGUIProcMouseEvent = procedure(Obj: TsgeGUIElement; Mouse: TsgeEventWindowMouse) of object;
   TsgeGUIProcButtonEvent = procedure(Obj: TsgeGUIElement; Key: Byte; KeyboardButtons: TsgeKeyboardButtons) of object;
   TsgeGUIProcButtonCharEvent = procedure(Obj: TsgeGUIElement; Key: Char; KeyboardButtons: TsgeKeyboardButtons) of object;
 
 
+  //Состояние элемента
+  TsgeGUIElementState = set of (esCreating, esDestroing, esCorrectSize, esRepaint, esRepaintParent);
+
+
+  //Тип обработчика мыши
+  TsgeGUIElementMouseEventType = (emetDown, emetUp, emetMove, emetEnter, emetLeave, emetScroll);
+
+
   //Элемент
   TsgeGUIElement = class
+  public
+    FColor: TsgeColor;
+    procedure SetColor(AColor: TsgeColor);
+    property Color: TsgeColor read FColor write SetColor;
   protected
     //Классы
     FCanvas: TsgeGraphicSprite;                                     //Холст для рисования
@@ -69,7 +77,7 @@ type
     FOnMouseUp      : TsgeGUIProcMouseEvent;
     FOnMouseLeave   : TsgeGUIProcMouseEvent;
     FOnMouseEnter   : TsgeGUIProcMouseEvent;
-    FOnMouseScroll  : TsgeGUIProcMouseScrollEvent;
+    FOnMouseScroll  : TsgeGUIProcMouseEvent;
 
     FOnButtonDown   : TsgeGUIProcButtonEvent;
     FOnButtonUp     : TsgeGUIProcButtonEvent;
@@ -111,7 +119,11 @@ type
     procedure DeleteChild(Element: TsgeGUIElement);
     procedure DeleteChild;
 
+    //Обработчики событий
+    function  MouseHandler(EventType: TsgeGUIElementMouseEventType; Mouse: TsgeEventWindowMouse): Boolean;
+
     procedure Draw; virtual;
+    function  CursorInElement(X, Y: Integer): Boolean;
 
     //Параметры
     property State: TsgeGUIElementState read FState write FState;
@@ -141,11 +153,11 @@ type
     property OnMouseUp: TsgeGUIProcMouseEvent read FOnMouseUp write FOnMouseUp;
     property OnMouseLeave: TsgeGUIProcMouseEvent read FOnMouseLeave write FOnMouseLeave;
     property OnMouseEnter: TsgeGUIProcMouseEvent read FOnMouseEnter write FOnMouseEnter;
-    property OnMouseScroll: TsgeGUIProcMouseScrollEvent read FOnMouseScroll write FOnMouseScroll;
+    property OnMouseScroll: TsgeGUIProcMouseEvent read FOnMouseScroll write FOnMouseScroll;
 
-    property OnButtonDown: TsgeGUIProcButtonEvent read FOnButtonDown write FOnButtonDown;
-    property OnButtonUp: TsgeGUIProcButtonEvent read FOnButtonUp write FOnButtonUp;
-    property OnButtonChar: TsgeGUIProcButtonCharEvent read FOnButtonChar write FOnButtonChar;
+    property OnButtonDown   : TsgeGUIProcButtonEvent read FOnButtonDown write FOnButtonDown;
+    property OnButtonUp     : TsgeGUIProcButtonEvent read FOnButtonUp write FOnButtonUp;
+    property OnButtonChar   : TsgeGUIProcButtonCharEvent read FOnButtonChar write FOnButtonChar;
   end;
 
 
@@ -165,7 +177,7 @@ type
 implementation
 
 uses
-  sgeVars, sgeGraphic, sgeGraphicColor;
+  sgeVars, sgeGraphic;
 
 
 function TsgeGUIElementList.IndexOf(Element: TsgeGUIElement): Integer;
@@ -267,6 +279,12 @@ begin
 end;
 
 
+procedure TsgeGUIElement.SetColor(AColor: TsgeColor);
+begin
+  FColor := AColor;
+  Repaint;
+end;
+
 procedure TsgeGUIElement.Handler_Show;
 begin
   if Assigned(FOnShow) then FOnShow(Self);
@@ -327,10 +345,10 @@ begin
     with SGE.ExtGraphic.Graphic do
       begin
       ResetDrawOptions;
-      BlendFunction := gbfAlphaCopy;
+      //BlendFunction := gbfAlphaCopy;
       doTransparentColor := sgeGetColor(1, 1, 1, El.Alpha);
       DrawSprite(El.Left, El.Top, El.Width, El.Height, El.Canvas);
-      BlendFunction := gbfTransparent;
+      //BlendFunction := gbfTransparent;
       end;
     end;
 end;
@@ -372,8 +390,10 @@ procedure TsgeGUIElement.DrawBefore;
 begin
   with SGE.ExtGraphic.Graphic do
     begin
-    BGColor := cWhite;
+    BGColor := FColor; //sgeGetColor(0, 0, 0, 0.5);
     EraseBG;
+    //Color := cBlack;
+    //DrawRect(0, 0, FWidth, FHeight);
     end;
 end;
 
@@ -481,6 +501,8 @@ end;
 
 constructor TsgeGUIElement.Create(Name: String; Left, Top, Width, Height: Integer; Parent: TsgeGUIElement);
 begin
+  FColor := cLime;
+
   //Установить параметры
   FName := Name;
   FVisible := True;
@@ -547,6 +569,60 @@ begin
 end;
 
 
+function TsgeGUIElement.MouseHandler(EventType: TsgeGUIElementMouseEventType; Mouse: TsgeEventWindowMouse): Boolean;
+var
+  i: Integer;
+  El: TsgeGUIElement;
+  ChildHandled: Boolean;
+begin
+  Result := True;
+
+  //Обработать тип события
+  case EventType of
+    emetDown, emetUp, emetScroll:
+      begin
+      ChildHandled := False;
+
+      //Проверить детей
+      for i := 0 to FChildList.Count - 1 do
+        begin
+        El := FChildList.Item[i];
+
+        if El.CursorInElement(Mouse.X, Mouse.Y) then
+          begin
+          //Координаты относительно элемента
+          Mouse.ChangeXY(Mouse.X - El.Left, Mouse.Y - El.Top);
+
+          //Вызвать обработчик
+          El.MouseHandler(EventType, Mouse);
+
+          ChildHandled := True;
+          Break;
+          end;
+        end;
+
+
+      //Собственный обработчик если не выполнился у дитя
+      if not ChildHandled then
+        case EventType of
+          emetDown  : if Assigned(FOnMouseDown) then FOnMouseDown(Self, Mouse);
+          emetUp    : if Assigned(FOnMouseUp) then FOnMouseUp(Self, Mouse);
+          emetScroll: if Assigned(FOnMouseScroll) then FOnMouseScroll(Self, Mouse);
+        end;
+      end;
+
+
+    emetMove:
+      begin
+      end;
+
+  end;  //case
+
+
+
+end;
+
+
 procedure TsgeGUIElement.Draw;
 begin
   //Подготовить графику
@@ -563,6 +639,12 @@ begin
 
   //Восстановить графику
   GraphicRestore;
+end;
+
+
+function TsgeGUIElement.CursorInElement(X, Y: Integer): Boolean;
+begin
+  Result := (X >= FLeft) and (X <= FLeft + FWidth) and (Y >= FTop) and (Y <= FTop + FHeight);
 end;
 
 
