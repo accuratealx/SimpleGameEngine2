@@ -16,7 +16,7 @@ interface
 
 uses
   sgeExtensionBase, sgeEventWindow, sgeEventSubscriber, sgeGraphicElementLayer, sgeExtensionGraphic,
-  sgeGUIFormList;
+  sgeGUIFormList, sgeGUIElement;
 
 const
   Extension_GUI = 'GUI';
@@ -25,7 +25,7 @@ const
 type
   TsgeExtensionGUI = class(TsgeExtensionBase)
   const
-    MAX_SUB_COUNT = 5;
+    MAX_SUB_COUNT = 6;
   private
     //Ссылки
     FExtGraphic: TsgeExtensionGraphic;
@@ -48,12 +48,17 @@ type
     //Обработчики событий
     procedure RegisterEventHandlers;
     procedure UnregisterEventHandlers;
+
     function  Handler_KeyDown(EventObj: TsgeEventWindowKeyboard): Boolean;
     function  Handler_KeyUp(EventObj: TsgeEventWindowKeyboard): Boolean;
     function  Handler_KeyChar(EventObj: TsgeEventWindowChar): Boolean;
+
+    function  Handler_MouseMove(EventObj: TsgeEventWindowMouse): Boolean;
     function  Handler_MouseDown(EventObj: TsgeEventWindowMouse): Boolean;
     function  Handler_MouseUp(EventObj: TsgeEventWindowMouse): Boolean;
     function  Handler_MouseWheel(EventObj: TsgeEventWindowMouse): Boolean;
+
+    function  MouseHandler(EventType: TsgeGUIElementMouseEventType; Mouse: TsgeEventWindowMouse): Boolean;
   protected
     class function GetName: String; override;
 
@@ -74,7 +79,7 @@ type
 implementation
 
 uses
-  sgeErrors, sgeStringList, sgeFileUtils, sgeOSPlatform, sgeEventBase;
+  sgeErrors, sgeStringList, sgeFileUtils, sgeOSPlatform, sgeEventBase, sgeGUIForm;
 
 const
   _UNITNAME = 'ExtensionGUI';
@@ -111,9 +116,10 @@ begin
   FEventSubscriber[1] := EventManager.Subscribe(Event_WindowKeyUp, TsgeEventHandler(@Handler_KeyUp), EventPriorityMaxMinusTwo, True);
   FEventSubscriber[2] := EventManager.Subscribe(Event_WindowChar, TsgeEventHandler(@Handler_KeyChar), EventPriorityMaxMinusTwo, True);
   //Мышь
-  FEventSubscriber[3] := EventManager.Subscribe(Event_WindowMouseDown, TsgeEventHandler(@Handler_MouseDown), EventPriorityMaxMinusTwo, True);
-  FEventSubscriber[4] := EventManager.Subscribe(Event_WindowMouseUp, TsgeEventHandler(@Handler_MouseUp), EventPriorityMaxMinusTwo, True);
-  FEventSubscriber[5] := EventManager.Subscribe(Event_WindowMouseScroll, TsgeEventHandler(@Handler_MouseWheel), EventPriorityMaxMinusTwo, True);
+  FEventSubscriber[3] := EventManager.Subscribe(Event_WindowMouseMove, TsgeEventHandler(@Handler_MouseMove), EventPriorityMaxMinusTwo, True);
+  FEventSubscriber[4] := EventManager.Subscribe(Event_WindowMouseDown, TsgeEventHandler(@Handler_MouseDown), EventPriorityMaxMinusTwo, True);
+  FEventSubscriber[5] := EventManager.Subscribe(Event_WindowMouseUp, TsgeEventHandler(@Handler_MouseUp), EventPriorityMaxMinusTwo, True);
+  FEventSubscriber[6] := EventManager.Subscribe(Event_WindowMouseScroll, TsgeEventHandler(@Handler_MouseWheel), EventPriorityMaxMinusTwo, True);
 end;
 
 
@@ -141,21 +147,70 @@ begin
 end;
 
 
+function TsgeExtensionGUI.Handler_MouseMove(EventObj: TsgeEventWindowMouse): Boolean;
+begin
+  Result := MouseHandler(emetMove, EventObj);
+end;
+
+
 function TsgeExtensionGUI.Handler_MouseDown(EventObj: TsgeEventWindowMouse): Boolean;
 begin
-  Result := False;
+  Result := MouseHandler(emetDown, EventObj);
 end;
 
 
 function TsgeExtensionGUI.Handler_MouseUp(EventObj: TsgeEventWindowMouse): Boolean;
 begin
-  Result := False;
+  Result := MouseHandler(emetUp, EventObj);
 end;
 
 
 function TsgeExtensionGUI.Handler_MouseWheel(EventObj: TsgeEventWindowMouse): Boolean;
 begin
+  Result := MouseHandler(emetScroll, EventObj);
+end;
+
+
+function TsgeExtensionGUI.MouseHandler(EventType: TsgeGUIElementMouseEventType; Mouse: TsgeEventWindowMouse): Boolean;
+var
+  i: Integer;
+  Form: TsgeGUIForm;
+begin
   Result := False;
+
+
+  //Просмотреть формы
+  for i := 0 to FFormList.Count - 1 do
+    begin
+    //Ссылка
+    Form := FFormList.Item[i];
+
+    //Обработать тип события
+    case EventType of
+      emetDown, emetUp, emetScroll:
+        begin
+        if Form.CursorInElement(Mouse.X, Mouse.Y) then
+          begin
+          //Координаты относительно элемента
+          Mouse.ChangeXY(Mouse.X - Form.Left, Mouse.Y - Form.Top);
+
+          //Вызвать обработчик
+          Form.MouseHandler(EventType, Mouse);
+          Result := True;
+          Break;
+          end;
+        end;
+
+
+      emetMove:
+        begin
+
+        end;
+    end;
+
+
+
+    end;  //for
 end;
 
 
