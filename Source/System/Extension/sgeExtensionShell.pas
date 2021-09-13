@@ -56,6 +56,7 @@ type
     FSubKeyDown : TsgeEventSubscriber;
     FSubKeyUp   : TsgeEventSubscriber;
     FSubKeyChar : TsgeEventSubscriber;
+    FSubMouseScroll: TsgeEventSubscriber;
 
     //Параметры
     FEnable: Boolean;
@@ -190,7 +191,7 @@ begin
   FSubKeyDown := EventManager.Subscribe(Event_WindowKeyDown, TsgeEventHandler(@Handler_KeyDown), EventPriorityMax, False);
   FSubKeyUp := EventManager.Subscribe(Event_WindowKeyUp, TsgeEventHandler(@Handler_KeyUp), EventPriorityMax, False);
   FSubKeyChar := EventManager.Subscribe(Event_WindowChar, TsgeEventHandler(@Handler_KeyChar),  EventPriorityMaxMinusOne, False);
-  EventManager.Subscribe(Event_WindowMouseScroll, TsgeEventHandler(@Handler_MouseWheel), EventPriorityMax, True);
+  FSubMouseScroll := EventManager.Subscribe(Event_WindowMouseScroll, TsgeEventHandler(@Handler_MouseWheel), EventPriorityMax, False);
   EventManager.Subscribe(Event_WindowSize, TsgeEventHandler(@Event_WindowResize), EventPriorityMaxMinusOne, True);
 end;
 
@@ -342,6 +343,8 @@ function TsgeExtensionShell.Handler_MouseWheel(EventObj: TsgeEventWindowMouse): 
 var
   Page: Boolean;
 begin
+  Result := True;
+
   Page := (kbCtrl in EventObj.KeyboardButtons);
   if EventObj.Delta > 0 then JournalUp(Page) else JournalDown(Page);
 end;
@@ -917,6 +920,7 @@ begin
   FSubKeyDown.Enable := FEnable;
   FSubKeyUp.Enable := FEnable;
   FSubKeyChar.Enable := FEnable;
+  FSubMouseScroll.Enable := FEnable;
 end;
 
 
@@ -1093,7 +1097,7 @@ begin
 
   //Записать флаг остановки
   FStopExecuting := True;
-  FReadKeyMode := False;                                          //Выключить режим ввода кода клавиши
+  FReadKeyMode := False;                                            //Выключить режим ввода кода клавиши
   FReadLnMode := False;                                             //Выключить режим ввода строки
 
   //Разбудить поток, для команд Read, ReadLn, ReadKey
