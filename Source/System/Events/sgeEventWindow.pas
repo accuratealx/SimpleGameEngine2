@@ -102,6 +102,8 @@ type
   public
     constructor Create(X, Y: Integer; MouseButtons: TsgeMouseButtons; KeyboardButtons: TsgeKeyboardButtons; Delta: Integer = 0);
 
+    procedure ChangeXY(X, Y: Integer);
+
     property Pos: TsgeIntPoint read GetPos;
     property X: Integer read FX;
     property Y: Integer read FY;
@@ -152,6 +154,13 @@ begin
   FDelta := Delta;
   FMouseButtons := MouseButtons;
   FKeyboardButtons := KeyboardButtons;
+end;
+
+
+procedure TsgeEventWindowMouse.ChangeXY(X, Y: Integer);
+begin
+  FX := X;
+  FY := Y;
 end;
 
 
