@@ -26,7 +26,8 @@ type
 
   protected
     procedure DrawBefore; override;
-
+    procedure SetVisible(AVisible: Boolean); override;
+    procedure SetAlpha(AAlpha: Single); override;
   public
     constructor Create(AName: String; ALeft, ATop, AWidth, AHeight: Integer; AParent: TsgeGUIElement = nil); override;
     destructor  Destroy; override;
@@ -38,7 +39,7 @@ type
 implementation
 
 uses
-  sgeVars, sgeGraphicColor;
+  sgeVars, sgeGraphicColor, sgeOSPlatform, sgeGraphic;
 
 
 
@@ -46,9 +47,26 @@ procedure TsgeGUIForm.DrawBefore;
 begin
   with SGE.ExtGraphic.Graphic do
     begin
-    BGColor := cRed;
+    BGColor := cNavy;
     EraseBG;
     end;
+end;
+
+
+procedure TsgeGUIForm.SetVisible(AVisible: Boolean);
+begin
+  inherited SetVisible(AVisible);
+
+  FGraphicElement.Visible := AVisible;
+end;
+
+
+procedure TsgeGUIForm.SetAlpha(AAlpha: Single);
+begin
+  inherited SetAlpha(AAlpha);
+
+  FGraphicElement.Alpha := AAlpha;
+  FGraphicElement.Update;
 end;
 
 
@@ -67,8 +85,9 @@ end;
 
 destructor TsgeGUIForm.Destroy;
 begin
-  //Удалить графический элемент
-  FGraphicElement.Delete;
+  //Спрятать форму
+  SetVisible(False);
+
 
   inherited Destroy;
 end;
