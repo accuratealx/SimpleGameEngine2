@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeEventWindow.pas
-Версия            1.3
+Версия            1.4
 Создан            02.05.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Классы событий: Окно
@@ -15,7 +15,6 @@ unit sgeEventWindow;
 interface
 
 uses
-  sgeTypes,
   sgeEventBase;
 
 
@@ -32,20 +31,10 @@ const
   Event_WindowHide              = 'Window.Hide';
   Event_WindowActivate          = 'Window.Activate';
   Event_WindowDeActivate        = 'Window.DeActivate';
-  Event_WindowChar              = 'Window.Char';
-  Event_WindowKeyDown           = 'Window.KeyDown';
-  Event_WindowKeyUp             = 'Window.KeyUp';
-  Event_WindowMouseDown         = 'Window.MouseDown';
-  Event_WindowMouseUp           = 'Window.MouseUp';
-  Event_WindowMouseLeave        = 'Window.MouseLeave';
-  Event_WindowMouseEnter        = 'Window.MouseEnter';
-  Event_WindowMouseDoubleClick  = 'Window.MouseDoubleClick';
-  Event_WindowMouseMove         = 'Window.MouseMove';
-  Event_WindowMouseScroll       = 'Window.MouseScroll';
+
 
 
 type
-  //Размеры
   TsgeEventWindowSize = class(TsgeEventBase)
   private
     FWidth: Integer;
@@ -58,61 +47,6 @@ type
   end;
 
 
-
-  //Символы
-  TsgeEventWindowChar = class(TsgeEventBase)
-  private
-    FChar: Char;
-    FKeyboardButtons: TsgeKeyboardButtons;
-  public
-    constructor Create(Char: Char; KeyboardButtons: TsgeKeyboardButtons);
-
-    property Char: Char read FChar;
-    property KeyboardButtons: TsgeKeyboardButtons read FKeyboardButtons;
-  end;
-
-
-
-  //Кнопки
-  TsgeEventWindowKeyboard = class(TsgeEventBase)
-  private
-    FKey: Byte;
-    FKeyboardButtons: TsgeKeyboardButtons;
-    FFirstDown: Boolean;
-  public
-    constructor Create(Key: Byte; KeyboardButtons: TsgeKeyboardButtons; FirstDown: Boolean);
-
-    property Key: Byte read FKey;
-    property KeyboardButtons: TsgeKeyboardButtons read FKeyboardButtons;
-    property FirstDown: Boolean read FFirstDown;
-  end;
-
-
-
-  //Кнопки мыши
-  TsgeEventWindowMouse = class(TsgeEventBase)
-  private
-    FX: Integer;
-    FY: Integer;
-    FDelta: Integer;
-    FMouseButtons: TsgeMouseButtons;
-    FKeyboardButtons: TsgeKeyboardButtons;
-
-    function GetPos: TsgeIntPoint;
-  public
-    constructor Create(X, Y: Integer; MouseButtons: TsgeMouseButtons; KeyboardButtons: TsgeKeyboardButtons; Delta: Integer = 0);
-
-    procedure ChangeXY(X, Y: Integer);
-
-    property Pos: TsgeIntPoint read GetPos;
-    property X: Integer read FX;
-    property Y: Integer read FY;
-    property Delta: Integer read FDelta;
-    property MouseButtons: TsgeMouseButtons read FMouseButtons;
-    property KeyboardButtons: TsgeKeyboardButtons read FKeyboardButtons;
-  end;
-
-
 implementation
 
 
@@ -120,47 +54,6 @@ constructor TsgeEventWindowSize.Create(Width, Height: Integer);
 begin
   FWidth := Width;
   FHeight := Height;
-end;
-
-
-
-constructor TsgeEventWindowChar.Create(Char: Char; KeyboardButtons: TsgeKeyboardButtons);
-begin
-  FChar := Char;
-  FKeyboardButtons := KeyboardButtons;
-end;
-
-
-
-constructor TsgeEventWindowKeyboard.Create(Key: Byte; KeyboardButtons: TsgeKeyboardButtons; FirstDown: Boolean);
-begin
-  FKey := Key;
-  FKeyboardButtons := KeyboardButtons;
-  FFirstDown := FirstDown;
-end;
-
-
-function TsgeEventWindowMouse.GetPos: TsgeIntPoint;
-begin
-  Result.X := FX;
-  Result.Y := FY;
-end;
-
-
-constructor TsgeEventWindowMouse.Create(X, Y: Integer; MouseButtons: TsgeMouseButtons; KeyboardButtons: TsgeKeyboardButtons; Delta: Integer);
-begin
-  FX := X;
-  FY := Y;
-  FDelta := Delta;
-  FMouseButtons := MouseButtons;
-  FKeyboardButtons := KeyboardButtons;
-end;
-
-
-procedure TsgeEventWindowMouse.ChangeXY(X, Y: Integer);
-begin
-  FX := X;
-  FY := Y;
 end;
 
 
