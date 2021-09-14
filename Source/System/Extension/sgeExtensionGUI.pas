@@ -15,8 +15,8 @@ unit sgeExtensionGUI;
 interface
 
 uses
-  sgeExtensionBase, sgeEventWindow, sgeEventSubscriber, sgeGraphicElementLayer, sgeExtensionGraphic,
-  sgeGUIFormList, sgeGUIElement;
+  sgeExtensionBase, sgeEventKeyboard, sgeEventMouse, sgeEventSubscriber, sgeGraphicElementLayer,
+  sgeExtensionGraphic, sgeGUIFormList, sgeGUIElement;
 
 const
   Extension_GUI = 'GUI';
@@ -25,7 +25,7 @@ const
 type
   TsgeExtensionGUI = class(TsgeExtensionBase)
   const
-    MAX_SUB_COUNT = 6;
+    MAX_SUB_COUNT = 7;
   private
     //Ссылки
     FExtGraphic: TsgeExtensionGraphic;
@@ -49,16 +49,17 @@ type
     procedure RegisterEventHandlers;
     procedure UnregisterEventHandlers;
 
-    function  Handler_KeyDown(EventObj: TsgeEventWindowKeyboard): Boolean;
-    function  Handler_KeyUp(EventObj: TsgeEventWindowKeyboard): Boolean;
-    function  Handler_KeyChar(EventObj: TsgeEventWindowChar): Boolean;
+    function  Handler_KeyDown(EventObj: TsgeEventKeyboard): Boolean;
+    function  Handler_KeyUp(EventObj: TsgeEventKeyboard): Boolean;
+    function  Handler_KeyChar(EventObj: TsgeEventKeyboardChar): Boolean;
 
-    function  Handler_MouseMove(EventObj: TsgeEventWindowMouse): Boolean;
-    function  Handler_MouseDown(EventObj: TsgeEventWindowMouse): Boolean;
-    function  Handler_MouseUp(EventObj: TsgeEventWindowMouse): Boolean;
-    function  Handler_MouseWheel(EventObj: TsgeEventWindowMouse): Boolean;
+    function  Handler_MouseMove(EventObj: TsgeEventMouse): Boolean;
+    function  Handler_MouseDown(EventObj: TsgeEventMouse): Boolean;
+    function  Handler_MouseUp(EventObj: TsgeEventMouse): Boolean;
+    function  Handler_MouseWheel(EventObj: TsgeEventMouse): Boolean;
+    function  Handler_MouseDblClick(EventObj: TsgeEventMouse): Boolean;
 
-    function  MouseHandler(EventType: TsgeGUIElementMouseEventType; Mouse: TsgeEventWindowMouse): Boolean;
+    function  MouseHandler(EventType: TsgeGUIElementMouseEventType; Mouse: TsgeEventMouse): Boolean;
   protected
     class function GetName: String; override;
 
@@ -111,15 +112,17 @@ end;
 
 procedure TsgeExtensionGUI.RegisterEventHandlers;
 begin
-   //Клавиатура
-  FEventSubscriber[0] := EventManager.Subscribe(Event_WindowKeyDown, TsgeEventHandler(@Handler_KeyDown), EventPriorityMaxMinusTwo, True);
-  FEventSubscriber[1] := EventManager.Subscribe(Event_WindowKeyUp, TsgeEventHandler(@Handler_KeyUp), EventPriorityMaxMinusTwo, True);
-  FEventSubscriber[2] := EventManager.Subscribe(Event_WindowChar, TsgeEventHandler(@Handler_KeyChar), EventPriorityMaxMinusTwo, True);
+  //Клавиатура
+  FEventSubscriber[0] := EventManager.Subscribe(Event_KeyboardDown, TsgeEventHandler(@Handler_KeyDown), EventPriorityMaxMinusTwo, True);
+  FEventSubscriber[1] := EventManager.Subscribe(Event_KeyboardUp, TsgeEventHandler(@Handler_KeyUp), EventPriorityMaxMinusTwo, True);
+  FEventSubscriber[2] := EventManager.Subscribe(Event_KeyboardChar, TsgeEventHandler(@Handler_KeyChar), EventPriorityMaxMinusTwo, True);
+
   //Мышь
-  FEventSubscriber[3] := EventManager.Subscribe(Event_WindowMouseMove, TsgeEventHandler(@Handler_MouseMove), EventPriorityMaxMinusTwo, True);
-  FEventSubscriber[4] := EventManager.Subscribe(Event_WindowMouseDown, TsgeEventHandler(@Handler_MouseDown), EventPriorityMaxMinusTwo, True);
-  FEventSubscriber[5] := EventManager.Subscribe(Event_WindowMouseUp, TsgeEventHandler(@Handler_MouseUp), EventPriorityMaxMinusTwo, True);
-  FEventSubscriber[6] := EventManager.Subscribe(Event_WindowMouseScroll, TsgeEventHandler(@Handler_MouseWheel), EventPriorityMaxMinusTwo, True);
+  FEventSubscriber[3] := EventManager.Subscribe(Event_MouseMove, TsgeEventHandler(@Handler_MouseMove), EventPriorityMaxMinusTwo, True);
+  FEventSubscriber[4] := EventManager.Subscribe(Event_MouseDown, TsgeEventHandler(@Handler_MouseDown), EventPriorityMaxMinusTwo, True);
+  FEventSubscriber[5] := EventManager.Subscribe(Event_MouseUp, TsgeEventHandler(@Handler_MouseUp), EventPriorityMaxMinusTwo, True);
+  FEventSubscriber[6] := EventManager.Subscribe(Event_MouseScroll, TsgeEventHandler(@Handler_MouseWheel), EventPriorityMaxMinusTwo, True);
+  FEventSubscriber[7] := EventManager.Subscribe(Event_MouseDoubleClick, TsgeEventHandler(@Handler_MouseDblClick), EventPriorityMaxMinusTwo, True);
 end;
 
 
@@ -129,49 +132,55 @@ begin
 end;
 
 
-function TsgeExtensionGUI.Handler_KeyDown(EventObj: TsgeEventWindowKeyboard): Boolean;
+function TsgeExtensionGUI.Handler_KeyDown(EventObj: TsgeEventKeyboard): Boolean;
 begin
   Result := False;
 end;
 
 
-function TsgeExtensionGUI.Handler_KeyUp(EventObj: TsgeEventWindowKeyboard): Boolean;
+function TsgeExtensionGUI.Handler_KeyUp(EventObj: TsgeEventKeyboard): Boolean;
 begin
   Result := False;
 end;
 
 
-function TsgeExtensionGUI.Handler_KeyChar(EventObj: TsgeEventWindowChar): Boolean;
+function TsgeExtensionGUI.Handler_KeyChar(EventObj: TsgeEventKeyboardChar): Boolean;
 begin
   Result := False;
 end;
 
 
-function TsgeExtensionGUI.Handler_MouseMove(EventObj: TsgeEventWindowMouse): Boolean;
+function TsgeExtensionGUI.Handler_MouseMove(EventObj: TsgeEventMouse): Boolean;
 begin
   Result := MouseHandler(emetMove, EventObj);
 end;
 
 
-function TsgeExtensionGUI.Handler_MouseDown(EventObj: TsgeEventWindowMouse): Boolean;
+function TsgeExtensionGUI.Handler_MouseDown(EventObj: TsgeEventMouse): Boolean;
 begin
   Result := MouseHandler(emetDown, EventObj);
 end;
 
 
-function TsgeExtensionGUI.Handler_MouseUp(EventObj: TsgeEventWindowMouse): Boolean;
+function TsgeExtensionGUI.Handler_MouseUp(EventObj: TsgeEventMouse): Boolean;
 begin
   Result := MouseHandler(emetUp, EventObj);
 end;
 
 
-function TsgeExtensionGUI.Handler_MouseWheel(EventObj: TsgeEventWindowMouse): Boolean;
+function TsgeExtensionGUI.Handler_MouseWheel(EventObj: TsgeEventMouse): Boolean;
 begin
   Result := MouseHandler(emetScroll, EventObj);
 end;
 
 
-function TsgeExtensionGUI.MouseHandler(EventType: TsgeGUIElementMouseEventType; Mouse: TsgeEventWindowMouse): Boolean;
+function TsgeExtensionGUI.Handler_MouseDblClick(EventObj: TsgeEventMouse): Boolean;
+begin
+  Result := MouseHandler(emetDblClick, EventObj);
+end;
+
+
+function TsgeExtensionGUI.MouseHandler(EventType: TsgeGUIElementMouseEventType; Mouse: TsgeEventMouse): Boolean;
 var
   i: Integer;
   Form: TsgeGUIForm;
@@ -187,7 +196,7 @@ begin
 
     //Обработать тип события
     case EventType of
-      emetDown, emetUp, emetScroll:
+      emetDown, emetUp, emetScroll, emetDblClick:
         begin
         if Form.CursorInElement(Mouse.X, Mouse.Y) then
           begin

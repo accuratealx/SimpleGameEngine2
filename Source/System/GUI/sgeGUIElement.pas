@@ -17,7 +17,7 @@ interface
 uses
   sgeTypes, sgeTemplateObjectCollection,
   sgeGraphicSprite, sgeGraphicColor,
-  sgeEventWindow;
+  sgeEventKeyboard, sgeEventMouse;
 
 
 type
@@ -26,9 +26,9 @@ type
 
   //Обработчики
   TsgeGUIProcEvent = procedure(Obj: TsgeGUIElement) of Object;
-  TsgeGUIProcMouseEvent = procedure(Obj: TsgeGUIElement; Mouse: TsgeEventWindowMouse) of object;
-  TsgeGUIProcButtonEvent = procedure(Obj: TsgeGUIElement; Key: Byte; KeyboardButtons: TsgeKeyboardButtons) of object;
-  TsgeGUIProcButtonCharEvent = procedure(Obj: TsgeGUIElement; Key: Char; KeyboardButtons: TsgeKeyboardButtons) of object;
+  TsgeGUIProcMouseEvent = procedure(Obj: TsgeGUIElement; Mouse: TsgeEventMouse) of object;
+  TsgeGUIProcButtonEvent = procedure(Obj: TsgeGUIElement; Keyboard: TsgeEventKeyboard) of object;
+  TsgeGUIProcButtonCharEvent = procedure(Obj: TsgeGUIElement; Keyboard: TsgeEventKeyboardChar) of object;
 
 
   //Состояние элемента
@@ -36,7 +36,7 @@ type
 
 
   //Тип обработчика мыши
-  TsgeGUIElementMouseEventType = (emetDown, emetUp, emetMove, emetEnter, emetLeave, emetScroll);
+  TsgeGUIElementMouseEventType = (emetDown, emetUp, emetMove, emetEnter, emetLeave, emetScroll, emetDblClick);
 
 
   //Элемент
@@ -70,18 +70,18 @@ type
     FOnShow: TsgeGUIProcEvent;
     FOnHide: TsgeGUIProcEvent;
 
-    FOnMouseClick   : TsgeGUIProcMouseEvent;
-    FOnMouseDblClick: TsgeGUIProcMouseEvent;
-    FOnMouseMove    : TsgeGUIProcMouseEvent;
-    FOnMouseDown    : TsgeGUIProcMouseEvent;
-    FOnMouseUp      : TsgeGUIProcMouseEvent;
-    FOnMouseLeave   : TsgeGUIProcMouseEvent;
-    FOnMouseEnter   : TsgeGUIProcMouseEvent;
-    FOnMouseScroll  : TsgeGUIProcMouseEvent;
+    FOnMouseClick       : TsgeGUIProcMouseEvent;
+    FOnMouseDoubleClick : TsgeGUIProcMouseEvent;
+    FOnMouseMove        : TsgeGUIProcMouseEvent;
+    FOnMouseDown        : TsgeGUIProcMouseEvent;
+    FOnMouseUp          : TsgeGUIProcMouseEvent;
+    FOnMouseLeave       : TsgeGUIProcMouseEvent;
+    FOnMouseEnter       : TsgeGUIProcMouseEvent;
+    FOnMouseScroll      : TsgeGUIProcMouseEvent;
 
-    FOnButtonDown   : TsgeGUIProcButtonEvent;
-    FOnButtonUp     : TsgeGUIProcButtonEvent;
-    FOnButtonChar   : TsgeGUIProcButtonCharEvent;
+    FOnButtonDown       : TsgeGUIProcButtonEvent;
+    FOnButtonUp         : TsgeGUIProcButtonEvent;
+    FOnButtonChar       : TsgeGUIProcButtonCharEvent;
 
     procedure Handler_Show; virtual;
     procedure Handler_Hide; virtual;
@@ -120,7 +120,7 @@ type
     procedure DeleteChild;
 
     //Обработчики событий
-    function  MouseHandler(EventType: TsgeGUIElementMouseEventType; Mouse: TsgeEventWindowMouse): Boolean;
+    function  MouseHandler(EventType: TsgeGUIElementMouseEventType; Mouse: TsgeEventMouse): Boolean;
 
     procedure Draw; virtual;
     function  CursorInElement(X, Y: Integer): Boolean;
@@ -147,7 +147,7 @@ type
     property OnHide: TsgeGUIProcEvent read FOnHide write FOnHide;
 
     property OnMouseClick: TsgeGUIProcMouseEvent read FOnMouseClick write FOnMouseClick;
-    property OnMouseDblClick: TsgeGUIProcMouseEvent read FOnMouseDblClick write FOnMouseDblClick;
+    property OnMouseDoubleClick: TsgeGUIProcMouseEvent read FOnMouseDoubleClick write FOnMouseDoubleClick;
     property OnMouseMove: TsgeGUIProcMouseEvent read FOnMouseMove write FOnMouseMove;
     property OnMouseDown: TsgeGUIProcMouseEvent read FOnMouseDown write FOnMouseDown;
     property OnMouseUp: TsgeGUIProcMouseEvent read FOnMouseUp write FOnMouseUp;
@@ -569,7 +569,7 @@ begin
 end;
 
 
-function TsgeGUIElement.MouseHandler(EventType: TsgeGUIElementMouseEventType; Mouse: TsgeEventWindowMouse): Boolean;
+function TsgeGUIElement.MouseHandler(EventType: TsgeGUIElementMouseEventType; Mouse: TsgeEventMouse): Boolean;
 var
   i: Integer;
   El: TsgeGUIElement;
@@ -579,7 +579,7 @@ begin
 
   //Обработать тип события
   case EventType of
-    emetDown, emetUp, emetScroll:
+    emetDown, emetUp, emetScroll, emetDblClick:
       begin
       ChildHandled := False;
 
@@ -605,9 +605,10 @@ begin
       //Собственный обработчик если не выполнился у дитя
       if not ChildHandled then
         case EventType of
-          emetDown  : if Assigned(FOnMouseDown) then FOnMouseDown(Self, Mouse);
-          emetUp    : if Assigned(FOnMouseUp) then FOnMouseUp(Self, Mouse);
-          emetScroll: if Assigned(FOnMouseScroll) then FOnMouseScroll(Self, Mouse);
+          emetDown    : if Assigned(FOnMouseDown) then FOnMouseDown(Self, Mouse);
+          emetUp      : if Assigned(FOnMouseUp) then FOnMouseUp(Self, Mouse);
+          emetScroll  : if Assigned(FOnMouseScroll) then FOnMouseScroll(Self, Mouse);
+          emetDblClick: if Assigned(FOnMouseDoubleClick) then FOnMouseDoubleClick(Self, Mouse);
         end;
       end;
 
