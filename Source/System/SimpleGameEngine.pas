@@ -290,7 +290,7 @@ begin
   try
     try
       //Запросить снимок экрана
-      FExtensionGraphic.Graphic.ScreenShot(MS);
+      FExtensionGraphic.ScreenShot(MS);
 
       //Сохранить в файл
       MS.SaveToFile(FExtensionFileSystem.ScreenshotDir + s);

@@ -15,10 +15,10 @@ unit sgeExtensionGraphic;
 interface
 
 uses
-  sgeTypes, sgeThread,
+  sgeTypes, sgeThread, sgeMemoryStream,
   sgeExtensionBase, sgeGraphicColor, sgeGraphicDrawList, sgeGraphicElementBase, sgeGraphicFPS,
   sgeCounter, sgeScreenFade, sgeEventBase, sgeEventWindow,
-  sgeGraphic, sgeExtensionWindow;
+  sgeGraphic, sgeExtensionWindow, sgeWindow;
 
 
 const
@@ -57,6 +57,8 @@ type
     FDrawLastTime: Int64;
     FDrawCurrentTime: Int64;
     FDrawDelay: Int64;
+    FTempWindow: TsgeWindow;                                        //Временное окно для не основных контекстов
+    FScreenshotStream: TsgeMemoryStream;                            //Ссылка на память
 
     //FChangeViewArea: Boolean;
     FNewWidth: Integer;
@@ -67,6 +69,7 @@ type
     procedure DoneGraphic;
     procedure ChangeSize;
     procedure ChangeDrawControl;
+    procedure GetScreenshot;
     procedure SystemDraw;
     procedure Draw;
 
@@ -96,6 +99,7 @@ type
 
     //Методы
     procedure Fade(Mode: TsgeExtensionFadeMode; Color: TsgeColor; Time: Cardinal);
+    procedure ScreenShot(Stream: TsgeMemoryStream);
 
     //Объекты
     property Graphic: TsgeGraphic read FGraphic;
@@ -144,6 +148,12 @@ end;
 procedure TsgeExtensionGraphic.ChangeDrawControl;
 begin
   FGraphicInner.VerticalSync := FDrawControl = gdcSync;
+end;
+
+
+procedure TsgeExtensionGraphic.GetScreenshot;
+begin
+  FGraphicInner.ScreenShot(FScreenshotStream);
 end;
 
 
@@ -356,10 +366,13 @@ begin
     //Получить ссылки на объекты
     FExtWindow := TsgeExtensionWindow(GetExtension(Extension_Window));
 
+    //Скрытое окно
+    FTempWindow := TsgeWindow.Create('SGETempWindowClass', '', 0, 0, 0, 0);
+
     //Контекст графики
     FGraphicInner := TsgeGraphic.Create(FExtWindow.Window.DC, FExtWindow.Window.Width, FExtWindow.Window.Height);
-    FGraphicShell := TsgeGraphic.Create(FExtWindow.Window.DC, FExtWindow.Window.Width, FExtWindow.Window.Height);
-    FGraphic := TsgeGraphic.Create(FExtWindow.Window.DC, FExtWindow.Window.Width, FExtWindow.Window.Height);
+    FGraphicShell := TsgeGraphic.Create(FTempWindow.DC, 0, 0);
+    FGraphic := TsgeGraphic.Create(FTempWindow.DC, 0, 0);
 
     //Расшарить ресурсы между контекстами
     FGraphicInner.ShareList(FGraphic.Context);
@@ -419,6 +432,7 @@ begin
   FFPS.Free;
   FFPSCounter.Free;
   FFade.Free;
+  FTempWindow.Free;
 
   inherited Destroy;
 end;
@@ -427,6 +441,13 @@ procedure TsgeExtensionGraphic.Fade(Mode: TsgeExtensionFadeMode; Color: TsgeColo
 begin
   //Запустить затемнение
   FFade.Start(TsgeScreenFadeMode(Mode), Color, Time, @FadeCallBackProc);
+end;
+
+procedure TsgeExtensionGraphic.ScreenShot(Stream: TsgeMemoryStream);
+begin
+  FScreenshotStream := Stream;
+
+  FThread.RunProcAndWait(@GetScreenshot);
 end;
 
 
