@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeExtensionWindow.pas
-Версия            1.6
+Версия            1.7
 Создан            31.03.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс расширения: Окно
@@ -70,7 +70,7 @@ type
 implementation
 
 uses
-  sgeErrors, sgeEventWindow;
+  sgeErrors, sgeEventWindow, sgeEventKeyboard, sgeEventMouse;
 
 
 var
@@ -95,13 +95,13 @@ begin
   FFullScreen := AFullScreen;
   if FFullScreen then
     begin
-    FWindowStyle := FWindow.Style;  //Запомнить стиль окна
-    FWindow.Style := [];            //Убрать Заголовок
-    FWindow.Maximize;               //Развернуть на весь экран
+    FWindowStyle := FWindow.Style;
+    FWindow.Style := [];
+    FWindow.Maximize;
     end
     else begin
-    FWindow.Restore;                //Вернуть в исходное состояние
-    FWindow.Style := FWindowStyle;  //Вернуть стиль окна
+    FWindow.Restore;
+    FWindow.Style := FWindowStyle;
     end;
 end;
 
@@ -286,31 +286,31 @@ begin
 
 
     WM_CHAR:
-      EventManager.Publish(Event_WindowChar, TsgeEventWindowChar.Create(chr(wParam), GetKeyboardButtons));
+      EventManager.Publish(Event_KeyboardChar, TsgeEventKeyboardChar.Create(chr(wParam), GetKeyboardButtons));
 
 
     WM_KEYDOWN, WM_SYSKEYDOWN:
-      EventManager.Publish(Event_WindowKeyDown, TsgeEventWindowKeyboard.Create(wParam, GetKeyboardButtons, (lParam shr 30) = 0));
+      EventManager.Publish(Event_KeyboardDown, TsgeEventKeyboard.Create(wParam, GetKeyboardButtons, (lParam shr 30) = 0));
 
 
     WM_KEYUP, WM_SYSKEYUP:
-      EventManager.Publish(Event_WindowKeyUp, TsgeEventWindowKeyboard.Create(wParam, GetKeyboardButtons, False));
+      EventManager.Publish(Event_KeyboardUp, TsgeEventKeyboard.Create(wParam, GetKeyboardButtons, False));
 
 
     WM_LBUTTONDOWN, WM_MBUTTONDOWN, WM_RBUTTONDOWN, WM_XBUTTONDOWN:
-      EventManager.Publish(Event_WindowMouseDown, TsgeEventWindowMouse.Create(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), GetMouseButtons(wParam), GetKeyboardButtons));
+      EventManager.Publish(Event_MouseDown, TsgeEventMouse.Create(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), GetMouseButtons(wParam), GetKeyboardButtons));
 
 
     WM_LBUTTONUP, WM_MBUTTONUP, WM_RBUTTONUP, WM_XBUTTONUP:
-      EventManager.Publish(Event_WindowMouseUp, TsgeEventWindowMouse.Create(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), GetMouseButtons(wParam), GetKeyboardButtons));
+      EventManager.Publish(Event_MouseUp, TsgeEventMouse.Create(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), GetMouseButtons(wParam), GetKeyboardButtons));
 
 
     WM_LBUTTONDBLCLK, WM_MBUTTONDBLCLK, WM_RBUTTONDBLCLK, WM_XBUTTONDBLCLK:
-      EventManager.Publish(Event_WindowMouseDoubleClick, TsgeEventWindowMouse.Create(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), GetMouseButtons(wParam), GetKeyboardButtons));
+      EventManager.Publish(Event_MouseDoubleClick, TsgeEventMouse.Create(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), GetMouseButtons(wParam), GetKeyboardButtons));
 
 
     WM_MOUSEWHEEL:
-      EventManager.Publish(Event_WindowMouseScroll, TsgeEventWindowMouse.Create(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), GetMouseButtons(wParam), GetKeyboardButtons, GetMouseScrollDelta(wParam)));
+      EventManager.Publish(Event_MouseScroll, TsgeEventMouse.Create(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), GetMouseButtons(wParam), GetKeyboardButtons, GetMouseScrollDelta(wParam)));
 
 
     WM_MOUSEMOVE:
@@ -324,17 +324,17 @@ begin
         begin
         FMouseOut := False;
         SetMouseTrackEvent;
-        EventManager.Publish(Event_WindowMouseEnter, TsgeEventWindowMouse.Create(CursorPos.X, CursorPos.Y, GetMouseButtons(wParam), GetKeyboardButtons));
+        EventManager.Publish(Event_MouseEnter, TsgeEventMouse.Create(CursorPos.X, CursorPos.Y, GetMouseButtons(wParam), GetKeyboardButtons));
         end;
 
-      EventManager.Publish(Event_WindowMouseMove, TsgeEventWindowMouse.Create(CursorPos.X, CursorPos.Y, GetMouseButtons(wParam), GetKeyboardButtons));
+      EventManager.Publish(Event_MouseMove, TsgeEventMouse.Create(CursorPos.X, CursorPos.Y, GetMouseButtons(wParam), GetKeyboardButtons));
       end;
 
 
     WM_MOUSELEAVE:
       begin
       FMouseOut := True;
-      EventManager.Publish(Event_WindowMouseLeave, TsgeEventWindowMouse.Create(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), GetMouseButtons(wParam), GetKeyboardButtons));
+      EventManager.Publish(Event_MouseLeave, TsgeEventMouse.Create(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), GetMouseButtons(wParam), GetKeyboardButtons));
       end;
 
 

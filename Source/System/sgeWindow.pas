@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeWindow.pas
-Версия            1.3
+Версия            1.4
 Создан            22.04.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание					Окно на WinAPI
@@ -20,7 +20,7 @@ uses
 
 type
   //Стили
-  TsgeWindowStyle = set of (wsCaption, wsSizeable, wsSystemMenu, wsTopMost, wsDoubleClick);
+  TsgeWindowStyle = set of (wsCaption, wsSizeable, wsSystemMenu, wsTopMost);
 
   //Кнопки
   TsgeWindowButtons = set of (wbClose, wbMinimize, wbMaximize);
@@ -467,8 +467,7 @@ begin
   SetWindowLongPtr(FHandle, GWL_STYLE, NewStyle);
 
   //Двойной клик на окне
-  NewStyle := CS_HREDRAW or CS_VREDRAW;
-  if wsDoubleClick in FStyle then NewStyle := NewStyle or CS_DBLCLKS;
+  NewStyle := CS_HREDRAW or CS_VREDRAW or CS_DBLCLKS;
 
   //Установить стиль
   SetClassLongPtr(FHandle, GCL_STYLE, NewStyle);
@@ -487,24 +486,24 @@ var
   Rct: TsgeIntRect;
 begin
   //Подготовительные работы
-  FStyle := [wsCaption, wsSizeable, wsSystemMenu];    //Заполняем начальный стиль окна
-  FButtons := [wbClose, wbMinimize, wbMaximize];      //Заполняем системные кнопки
+  FStyle := [wsCaption, wsSizeable, wsSystemMenu];                  //Заполняем начальный стиль окна
+  FButtons := [wbClose, wbMinimize, wbMaximize];                    //Заполняем системные кнопки
 
   //Заполняем класс окна
   with FWindowClass do
     begin
-    cbSize := SizeOf(TWNDClassEx);                    //Размер структуры
-    style := CS_HREDRAW or CS_VREDRAW;                //Стиль окна
-    lpfnWndProc := @DefWindowProc;                    //Обработчик событий окна
-    cbClsExtra := 0;                                  //Дополнительная память
-    cbWndExtra := 0;                                  //Дополнительная память для всех потомков
-    hInstance := System.HINSTANCE;                    //Адрес начала данных приложения Win32
-    hIcon := LoadIcon(0, IDI_APPLICATION);            //Загрузка стандартного значка приложения
-    hCursor := LoadCursor(0, IDC_ARROW);              //Загрузка стандартного курсора Win32
-    hbrBackground := GetStockObject(BLACK_BRUSH);     //Заливка стандартной чёрной кистью
-    lpszMenuName := nil;                              //Имя строки-ресурса системного меню
-    lpszClassName := PChar(WndClassName);             //Уникальное имя класса
-    hIconSm := 0;                                     //Ссылка на маленькую иконку
+    cbSize := SizeOf(TWNDClassEx);                                  //Размер структуры
+    style := CS_HREDRAW or CS_VREDRAW;                              //Стиль окна
+    lpfnWndProc := @DefWindowProc;                                  //Обработчик событий окна
+    cbClsExtra := 0;                                                //Дополнительная память
+    cbWndExtra := 0;                                                //Дополнительная память для всех потомков
+    hInstance := System.HINSTANCE;                                  //Адрес начала данных приложения Win32
+    hIcon := LoadIcon(0, IDI_APPLICATION);                          //Загрузка стандартного значка приложения
+    hCursor := LoadCursor(0, IDC_ARROW);                            //Загрузка стандартного курсора Win32
+    hbrBackground := GetStockObject(BLACK_BRUSH);                   //Заливка стандартной чёрной кистью
+    lpszMenuName := nil;                                            //Имя строки-ресурса системного меню
+    lpszClassName := PChar(WndClassName);                           //Уникальное имя класса
+    hIconSm := 0;                                                   //Ссылка на маленькую иконку
     end;
 
   //Регистрация окна
