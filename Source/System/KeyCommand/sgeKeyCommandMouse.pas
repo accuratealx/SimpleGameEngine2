@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeKeyCommandMouse.pas
-Версия            1.0
+Версия            1.1
 Создан            04.08.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Команды на кнопках: Мышь
@@ -15,153 +15,91 @@ unit sgeKeyCommandMouse;
 interface
 
 uses
+  sgeTypes,
   sgeKeyCommandTypes;
 
 
 type
   TsgeKeyCommandMouse = class
-  const
-    MAX_BUTTONS = 5;
-
   private
-    FList: array[0..MAX_BUTTONS] of TsgeKeyCommandAction;
+    FButtonList: array[TsgeMouseButton] of TsgeKeyCommandMouseAction;
+    FWheel: TsgeKeyCommandAction;
 
-    function GetCount: Byte;
-    function GetKey(Index: Byte): TsgeKeyCommandAction;
-    function GetNamedKey(Name: ShortString): TsgeKeyCommandAction;
+    function GetButton(Index: TsgeMouseButton): TsgeKeyCommandMouseAction;
   public
     constructor Create;
     destructor  Destroy; override;
 
-    function  IndexOf(Name: ShortString): Integer;
-    function  GetName(Index: Byte): ShortString;
-
     procedure Clear;
-    procedure Delete(Index: Byte);
-    procedure Delete(Name: ShortString);
+    procedure DeleteButton(Index: TsgeMouseButton);
+    procedure DeleteWheel;
 
-    property Count: Byte read GetCount;
-    property Key[Index: Byte]: TsgeKeyCommandAction read GetKey;
-    property NamedKey[Name: ShortString]: TsgeKeyCommandAction read GetNamedKey;
+    property Button[Index: TsgeMouseButton]: TsgeKeyCommandMouseAction read GetButton;
+    property Wheel: TsgeKeyCommandAction read FWheel;
   end;
 
 
 
 implementation
 
-uses
-  sgeErrors, sgeSystemUtils;
 
-const
-  //Имена кнопок мыши
-  KeyNames: array[0..5] of ShortString = (
-    'Left',       //0
-    'Middle',     //1
-    'Right',      //2
-    'X1',         //3
-    'X2',         //4
-    'Wheel'       //5
-    );
-
-  _UNITNAME = 'KeyCommandKeyboard';
-
-
-
-function TsgeKeyCommandMouse.GetCount: Byte;
+function TsgeKeyCommandMouse.GetButton(Index: TsgeMouseButton): TsgeKeyCommandMouseAction;
 begin
-  Result := MAX_BUTTONS;
-end;
-
-
-function TsgeKeyCommandMouse.GetKey(Index: Byte): TsgeKeyCommandAction;
-begin
-  if (Index > MAX_BUTTONS) then
-    raise EsgeException.Create(_UNITNAME, Err_IndexOutOfBounds, sgeIntToStr(Index));
-
-  Result := FList[Index];
-end;
-
-
-function TsgeKeyCommandMouse.GetNamedKey(Name: ShortString): TsgeKeyCommandAction;
-var
-  Idx: Integer;
-begin
-  Idx := IndexOf(Name);
-  if Idx = -1 then
-    raise EsgeException.Create(_UNITNAME, Err_KeyNotFound, Name);
-
-  Result := FList[Idx];
+  Result := FButtonList[Index];
 end;
 
 
 constructor TsgeKeyCommandMouse.Create;
 var
-  i: Integer;
+  i: TsgeMouseButton;
 begin
-  for i := 0 to MAX_BUTTONS do
-    FList[i] := TsgeKeyCommandAction.Create;
+  //Создать кнопки
+  for i := mbLeft to mbExtra2 do
+    FButtonList[i] := TsgeKeyCommandMouseAction.Create;
+
+  //Создать колесо
+  FWheel := TsgeKeyCommandAction.Create;
 end;
 
 
 destructor TsgeKeyCommandMouse.Destroy;
 var
-  i: Integer;
+  i: TsgeMouseButton;
 begin
-  for i := 0 to MAX_BUTTONS do
-    FList[i].Free;
-end;
+  //Удалить кнопки
+  for i := mbLeft to mbExtra2 do
+    FButtonList[i].Free;
 
-
-function TsgeKeyCommandMouse.IndexOf(Name: ShortString): Integer;
-var
-  i: Byte;
-begin
-  Result := -1;
-
-  Name := LowerCase(Name);
-  for i := 0 to MAX_BUTTONS do
-    if Name = LowerCase(KeyNames[i]) then
-      begin
-      Result := i;
-      Break;
-      end;
-end;
-
-
-function TsgeKeyCommandMouse.GetName(Index: Byte): ShortString;
-begin
-  Result := KeyNames[Index];
+  //Удалить колесо
+  FWheel.Free;
 end;
 
 
 procedure TsgeKeyCommandMouse.Clear;
 var
-  i: Integer;
+  i: TsgeMouseButton;
 begin
-  for i := 0 to MAX_BUTTONS do
-    Delete(i);
+  //Очистить кнопки
+  for i := mbLeft to mbExtra2 do
+    DeleteButton(i);
+
+  //Очистить прокрутку
+  DeleteWheel;
 end;
 
 
-procedure TsgeKeyCommandMouse.Delete(Index: Byte);
+procedure TsgeKeyCommandMouse.DeleteButton(Index: TsgeMouseButton);
 begin
-  if (Index > MAX_BUTTONS) then
-    raise EsgeException.Create(_UNITNAME, Err_IndexOutOfBounds, sgeIntToStr(Index));
-
-  FList[Index].Up := '';
-  FList[Index].Down := '';
+  FButtonList[Index].Up := '';
+  FButtonList[Index].Down := '';
+  FButtonList[Index].DblClick := '';
 end;
 
 
-procedure TsgeKeyCommandMouse.Delete(Name: ShortString);
-var
-  Idx: Integer;
+procedure TsgeKeyCommandMouse.DeleteWheel;
 begin
-  Idx := IndexOf(Name);
-  if Idx = -1 then
-    raise EsgeException.Create(_UNITNAME, Err_KeyNotFound, Name);
-
-  Delete(Idx);
+  FWheel.Up := '';
+  FWheel.Down := '';
 end;
 
 

@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeKeyCommandTypes.pas
-Версия            1.0
+Версия            1.1
 Создан            05.08.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Команды на кнопках: Общие типы
@@ -27,7 +27,12 @@ type
     Down: String;
   end;
 
-
+  //Класс хранения действий на отпускание и нажатие клавиши мыши
+  TsgeKeyCommandMouseAction = class
+    Up: String;
+    Down: String;
+    DblClick: String;
+  end;
 
 
 

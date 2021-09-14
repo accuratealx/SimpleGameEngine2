@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeExtensionKeyCommand.pas
-Версия            1.2
+Версия            1.5
 Создан            01.08.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс расширения: Команда на кнопках
@@ -17,7 +17,7 @@ interface
 
 uses
   sgeTypes, sgeExtensionBase, sgeExtensionShell, sgeEventBase, sgeEventSubscriber,
-  sgeEventWindow, sgeEventControllers,
+  sgeEventWindow, sgeEventKeyboard, sgeEventMouse, sgeEventControllers,
   sgeKeyCommandKeyboard, sgeKeyCommandMouse, sgeKeyCommandJoystick;
 
 
@@ -45,12 +45,16 @@ type
     //Обработчики событий
     procedure RegisterEventHandlers;
     procedure UnRegisterEventHandlers;
-    function  Handler_KeyDown(EventObj: TsgeEventWindowKeyboard): Boolean;
-    function  Handler_KeyUp(EventObj: TsgeEventWindowKeyboard): Boolean;
-    function  Handler_KeyChar(EventObj: TsgeEventWindowChar): Boolean;
-    function  Handler_MouseDown(EventObj: TsgeEventWindowMouse): Boolean;
-    function  Handler_MouseUp(EventObj: TsgeEventWindowMouse): Boolean;
-    function  Handler_MouseWheel(EventObj: TsgeEventWindowMouse): Boolean;
+
+    function  Handler_KeyDown(EventObj: TsgeEventKeyboard): Boolean;
+    function  Handler_KeyUp(EventObj: TsgeEventKeyboard): Boolean;
+    function  Handler_KeyChar(EventObj: TsgeEventKeyboardChar): Boolean;
+
+    function  Handler_MouseDown(EventObj: TsgeEventMouse): Boolean;
+    function  Handler_MouseUp(EventObj: TsgeEventMouse): Boolean;
+    function  Handler_MouseWheel(EventObj: TsgeEventMouse): Boolean;
+    function  Handler_MouseDblClick(EventObj: TsgeEventMouse): Boolean;
+
     function  Handler_JoystickButtonDown(EventObj: TsgeEventControllerButton): Boolean;
     function  Handler_JoystickButtonUp(EventObj: TsgeEventControllerButton): Boolean;
     function  Handler_JoystickPadDown(EventObj: TsgeEventControllerPOV): Boolean;
@@ -112,14 +116,15 @@ end;
 procedure TsgeExtensionKeyCommand.RegisterEventHandlers;
 begin
   //Клавиатура
-  EventManager.Subscribe(Event_WindowKeyDown, TsgeEventHandler(@Handler_KeyDown), EventPriorityMaxMinusOne, True);
-  EventManager.Subscribe(Event_WindowKeyUp, TsgeEventHandler(@Handler_KeyUp), EventPriorityMaxMinusOne, True);
-  EventManager.Subscribe(Event_WindowChar, TsgeEventHandler(@Handler_KeyChar), EventPriorityMax, True);
+  EventManager.Subscribe(Event_KeyboardDown, TsgeEventHandler(@Handler_KeyDown), EventPriorityMaxMinusOne, True);
+  EventManager.Subscribe(Event_KeyboardUp, TsgeEventHandler(@Handler_KeyUp), EventPriorityMaxMinusOne, True);
+  EventManager.Subscribe(Event_KeyboardChar, TsgeEventHandler(@Handler_KeyChar), EventPriorityMax, True);
 
   //Мышь
-  EventManager.Subscribe(Event_WindowMouseDown, TsgeEventHandler(@Handler_MouseDown), EventPriorityMaxMinusOne, True);
-  EventManager.Subscribe(Event_WindowMouseUp, TsgeEventHandler(@Handler_MouseUp), EventPriorityMaxMinusOne, True);
-  EventManager.Subscribe(Event_WindowMouseScroll, TsgeEventHandler(@Handler_MouseWheel), EventPriorityMaxMinusOne, True);
+  EventManager.Subscribe(Event_MouseDown, TsgeEventHandler(@Handler_MouseDown), EventPriorityMaxMinusOne, True);
+  EventManager.Subscribe(Event_MouseUp, TsgeEventHandler(@Handler_MouseUp), EventPriorityMaxMinusOne, True);
+  EventManager.Subscribe(Event_MouseScroll, TsgeEventHandler(@Handler_MouseWheel), EventPriorityMaxMinusOne, True);
+  EventManager.Subscribe(Event_MouseDoubleClick, TsgeEventHandler(@Handler_MouseDblClick), EventPriorityMaxMinusOne, True);
 
   //Контроллеры
   EventManager.Subscribe(Event_ControllerButtonDown, TsgeEventHandler(@Handler_JoystickButtonDown), EventPriorityMaxMinusOne, True);
@@ -138,7 +143,7 @@ begin
 end;
 
 
-function TsgeExtensionKeyCommand.Handler_KeyDown(EventObj: TsgeEventWindowKeyboard): Boolean;
+function TsgeExtensionKeyCommand.Handler_KeyDown(EventObj: TsgeEventKeyboard): Boolean;
 var
   Command: String;
 begin
@@ -156,13 +161,13 @@ begin
 end;
 
 
-function TsgeExtensionKeyCommand.Handler_KeyUp(EventObj: TsgeEventWindowKeyboard): Boolean;
+function TsgeExtensionKeyCommand.Handler_KeyUp(EventObj: TsgeEventKeyboard): Boolean;
 begin
   Result := CommandHandler(FKeyboard.Key[EventObj.Key].Up);
 end;
 
 
-function TsgeExtensionKeyCommand.Handler_KeyChar(EventObj: TsgeEventWindowChar): Boolean;
+function TsgeExtensionKeyCommand.Handler_KeyChar(EventObj: TsgeEventKeyboardChar): Boolean;
 begin
   Result := False;
 
@@ -175,19 +180,19 @@ begin
 end;
 
 
-function TsgeExtensionKeyCommand.Handler_MouseDown(EventObj: TsgeEventWindowMouse): Boolean;
+function TsgeExtensionKeyCommand.Handler_MouseDown(EventObj: TsgeEventMouse): Boolean;
 begin
-  Result := CommandHandler(FMouse.Key[GetMouseButtonIndex(EventObj.MouseButtons)].Down);
+  Result := CommandHandler(FMouse.Button[TsgeMouseButton(GetMouseButtonIndex(EventObj.MouseButtons))].Down);
 end;
 
 
-function TsgeExtensionKeyCommand.Handler_MouseUp(EventObj: TsgeEventWindowMouse): Boolean;
+function TsgeExtensionKeyCommand.Handler_MouseUp(EventObj: TsgeEventMouse): Boolean;
 begin
-  Result := CommandHandler(FMouse.Key[GetMouseButtonIndex(EventObj.MouseButtons)].Up);
+  Result := CommandHandler(FMouse.Button[TsgeMouseButton(GetMouseButtonIndex(EventObj.MouseButtons))].Up);
 end;
 
 
-function TsgeExtensionKeyCommand.Handler_MouseWheel(EventObj: TsgeEventWindowMouse): Boolean;
+function TsgeExtensionKeyCommand.Handler_MouseWheel(EventObj: TsgeEventMouse): Boolean;
 const
   ckmUp = 0;
   ckmDown = 1;
@@ -200,12 +205,18 @@ begin
 
   //Проверить команду
   case KeyMethod of
-    ckmUp   : Command := FMouse.Key[mouseWheel].Up;
-    ckmDown : Command := FMouse.Key[mouseWheel].Down;
+    ckmUp   : Command := FMouse.Wheel.Up;
+    ckmDown : Command := FMouse.Wheel.Down;
   end;
 
   //Обработать команду
   Result := CommandHandler(Command);
+end;
+
+
+function TsgeExtensionKeyCommand.Handler_MouseDblClick(EventObj: TsgeEventMouse): Boolean;
+begin
+  Result := CommandHandler(FMouse.Button[TsgeMouseButton(GetMouseButtonIndex(EventObj.MouseButtons))].DblClick);
 end;
 
 
