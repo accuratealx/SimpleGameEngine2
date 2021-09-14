@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeExtensionShell.pas
-Версия            1.2
+Версия            1.4
 Создан            14.07.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс расширения: Оболочка
@@ -16,9 +16,10 @@ interface
 
 uses
   sgeTypes, sgeThread, sgeSystemEvent, sgeSimpleCommand, sgeSimpleParameters, sgeGraphic, sgeGraphicColor,
-  sgeGraphicFont, sgeExtensionBase, sgeEventWindow, sgeEventSubscriber, sgeShellCommandQueue, sgeShellScriptList,
-  sgeShellCommandList, sgeLineEditor, sgeCommandHistory, sgeShellLineList, sgeExtensionGraphic, sgeShellCallStack,
-  sgeExtensionResourceList, sgeExtensionVariables, sgeGraphicSprite, sgeGraphicElementSpriteCashed, sgeCriticalSection;
+  sgeGraphicFont, sgeExtensionBase, sgeEventWindow, sgeEventKeyboard, sgeEventMouse, sgeEventSubscriber,
+  sgeShellCommandQueue, sgeShellScriptList, sgeShellCommandList, sgeLineEditor, sgeCommandHistory,
+  sgeShellLineList, sgeExtensionGraphic, sgeShellCallStack, sgeExtensionResourceList, sgeExtensionVariables,
+  sgeGraphicSprite, sgeGraphicElementSpriteCashed, sgeCriticalSection;
 
 
 const
@@ -31,6 +32,8 @@ type
 
 
   TsgeExtensionShell = class(TsgeExtensionBase)
+  const
+    MAX_SUB_COUNT = 7;
   private
     //Ссылки
     FExtGraphic: TsgeExtensionGraphic;
@@ -53,10 +56,7 @@ type
     FRepaintCS: TsgeCriticalSection;                                //Синхронизация перерисовки из разных потоков
 
     //Ссылки на объекты подписки
-    FSubKeyDown : TsgeEventSubscriber;
-    FSubKeyUp   : TsgeEventSubscriber;
-    FSubKeyChar : TsgeEventSubscriber;
-    FSubMouseScroll: TsgeEventSubscriber;
+    FEventSubscriber: array [0..MAX_SUB_COUNT] of TsgeEventSubscriber;
 
     //Параметры
     FEnable: Boolean;
@@ -83,11 +83,19 @@ type
     //Обработчики событий
     procedure RegisterEventHandlers;
     procedure UnRegisterEventHandlers;
+
     function  Event_WindowResize(Obj: TsgeEventWindowSize): Boolean;
-    function  Handler_KeyDown(EventObj: TsgeEventWindowKeyboard): Boolean;
-    function  Handler_KeyUp(EventObj: TsgeEventWindowKeyboard): Boolean;
-    function  Handler_KeyChar(EventObj: TsgeEventWindowChar): Boolean;
-    function  Handler_MouseWheel(EventObj: TsgeEventWindowMouse): Boolean;
+
+    function  Handler_KeyDown(EventObj: TsgeEventKeyboard): Boolean;
+    function  Handler_KeyUp(EventObj: TsgeEventKeyboard): Boolean;
+    function  Handler_KeyChar(EventObj: TsgeEventKeyboardChar): Boolean;
+
+    function  Handler_MouseMove(EventObj: TsgeEventMouse): Boolean;
+    function  Handler_MouseDown(EventObj: TsgeEventMouse): Boolean;
+    function  Handler_MouseUp(EventObj: TsgeEventMouse): Boolean;
+    function  Handler_MouseWheel(EventObj: TsgeEventMouse): Boolean;
+    function  Handler_MouseDblClick(EventObj: TsgeEventMouse): Boolean;
+
 
     //Вспомогательные методы
     procedure RegisterDefaultAliases;                               //Добавить алиасы по умолчанию
@@ -188,10 +196,19 @@ type
 
 procedure TsgeExtensionShell.RegisterEventHandlers;
 begin
-  FSubKeyDown := EventManager.Subscribe(Event_WindowKeyDown, TsgeEventHandler(@Handler_KeyDown), EventPriorityMax, False);
-  FSubKeyUp := EventManager.Subscribe(Event_WindowKeyUp, TsgeEventHandler(@Handler_KeyUp), EventPriorityMax, False);
-  FSubKeyChar := EventManager.Subscribe(Event_WindowChar, TsgeEventHandler(@Handler_KeyChar),  EventPriorityMaxMinusOne, False);
-  FSubMouseScroll := EventManager.Subscribe(Event_WindowMouseScroll, TsgeEventHandler(@Handler_MouseWheel), EventPriorityMax, False);
+  //Клавиатура
+  FEventSubscriber[0] := EventManager.Subscribe(Event_KeyboardDown, TsgeEventHandler(@Handler_KeyDown), EventPriorityMax, False);
+  FEventSubscriber[1] := EventManager.Subscribe(Event_KeyboardUp, TsgeEventHandler(@Handler_KeyUp), EventPriorityMax, False);
+  FEventSubscriber[2] := EventManager.Subscribe(Event_KeyboardChar, TsgeEventHandler(@Handler_KeyChar),  EventPriorityMaxMinusOne, False);
+
+  //Мышь
+  FEventSubscriber[3] := EventManager.Subscribe(Event_MouseMove, TsgeEventHandler(@Handler_MouseMove), EventPriorityMax, False);
+  FEventSubscriber[4] := EventManager.Subscribe(Event_MouseDown, TsgeEventHandler(@Handler_MouseDown), EventPriorityMax, False);
+  FEventSubscriber[5] := EventManager.Subscribe(Event_MouseUp, TsgeEventHandler(@Handler_MouseUp), EventPriorityMax, False);
+  FEventSubscriber[6] := EventManager.Subscribe(Event_MouseScroll, TsgeEventHandler(@Handler_MouseWheel), EventPriorityMax, False);
+  FEventSubscriber[7] := EventManager.Subscribe(Event_MouseDoubleClick, TsgeEventHandler(@Handler_MouseDblClick), EventPriorityMax, False);
+
+  //Измение размеров окна
   EventManager.Subscribe(Event_WindowSize, TsgeEventHandler(@Event_WindowResize), EventPriorityMaxMinusOne, True);
 end;
 
@@ -216,7 +233,7 @@ begin
 end;
 
 
-function TsgeExtensionShell.Handler_KeyDown(EventObj: TsgeEventWindowKeyboard): Boolean;
+function TsgeExtensionShell.Handler_KeyDown(EventObj: TsgeEventKeyboard): Boolean;
 var
   s: String;
 begin
@@ -313,13 +330,13 @@ begin
 end;
 
 
-function TsgeExtensionShell.Handler_KeyUp(EventObj: TsgeEventWindowKeyboard): Boolean;
+function TsgeExtensionShell.Handler_KeyUp(EventObj: TsgeEventKeyboard): Boolean;
 begin
   Result := True;
 end;
 
 
-function TsgeExtensionShell.Handler_KeyChar(EventObj: TsgeEventWindowChar): Boolean;
+function TsgeExtensionShell.Handler_KeyChar(EventObj: TsgeEventKeyboardChar): Boolean;
 begin
   Result := True;
 
@@ -339,7 +356,25 @@ begin
 end;
 
 
-function TsgeExtensionShell.Handler_MouseWheel(EventObj: TsgeEventWindowMouse): Boolean;
+function TsgeExtensionShell.Handler_MouseMove(EventObj: TsgeEventMouse): Boolean;
+begin
+  Result := True;
+end;
+
+
+function TsgeExtensionShell.Handler_MouseDown(EventObj: TsgeEventMouse): Boolean;
+begin
+  Result := True;
+end;
+
+
+function TsgeExtensionShell.Handler_MouseUp(EventObj: TsgeEventMouse): Boolean;
+begin
+  Result := True;
+end;
+
+
+function TsgeExtensionShell.Handler_MouseWheel(EventObj: TsgeEventMouse): Boolean;
 var
   Page: Boolean;
 begin
@@ -347,6 +382,12 @@ begin
 
   Page := (kbCtrl in EventObj.KeyboardButtons);
   if EventObj.Delta > 0 then JournalUp(Page) else JournalDown(Page);
+end;
+
+
+function TsgeExtensionShell.Handler_MouseDblClick(EventObj: TsgeEventMouse): Boolean;
+begin
+  Result := True;
 end;
 
 
@@ -909,6 +950,8 @@ end;
 
 
 procedure TsgeExtensionShell.SetEnable(AEnable: Boolean);
+var
+  i: Integer;
 begin
   //Запомнить состояние
   FEnable := AEnable;
@@ -917,10 +960,8 @@ begin
   FElementSprite.Visible := FEnable;
 
   //Поправить подписчиков событий
-  FSubKeyDown.Enable := FEnable;
-  FSubKeyUp.Enable := FEnable;
-  FSubKeyChar.Enable := FEnable;
-  FSubMouseScroll.Enable := FEnable;
+  for i := 0 to MAX_SUB_COUNT do
+    FEventSubscriber[i].Enable := FEnable;
 end;
 
 
