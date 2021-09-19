@@ -17,7 +17,8 @@ interface
 uses
   sgeTypes, sgeTemplateObjectCollection,
   sgeGraphicSprite, sgeGraphicColor,
-  sgeEventKeyboard, sgeEventMouse;
+  sgeEventBase, sgeEventKeyboard, sgeEventMouse,
+  sgeGUIElementConstrains;
 
 
 type
@@ -39,6 +40,10 @@ type
   TsgeGUIElementMouseEventType = (emetDown, emetUp, emetMove, emetEnter, emetLeave, emetScroll, emetDblClick);
 
 
+  //Тип обработчика клавиатуры
+  TsgeGUIElementButtonEventType = (ebetDown, ebetUp, ebetChar);
+
+
   //Элемент
   TsgeGUIElement = class
   public
@@ -58,17 +63,29 @@ type
     FName: ShortString;                                             //Имя элемента
     FVisible: Boolean;                                              //Видимость элемента
     FEnable: Boolean;                                               //Реагирование на действия пользователя
+    FFocused: Boolean;                                              //Флаг активности
     FAlpha: Single;                                                 //Прозрачность элемента
     FLeft: Integer;                                                 //X относительно родителя
     FTop: Integer;                                                  //Y относительно родителя
     FWidth: Integer;                                                //Ширина
     FHeight: Integer;                                               //Высота
+    FAutoSize: Boolean;                                             //Авторазмер
+    FClickButton: TsgeMouseButton;                                  //Кнопка мыши для Click
+    FConstrains: TsgeGUIElementConstrains;                          //Ограничение размеров
+
+    //Вспомогательные параметры
+    FEventMouseEntered: Boolean;                                    //Флаг захода мышки на элемент
+    FPressed: Boolean;                                              //Флаг нажатия для Click
 
     //Обработчики событий
     FOnDrawBefore: TsgeGUIProcEvent;
     FOnDrawAfter: TsgeGUIProcEvent;
-    FOnShow: TsgeGUIProcEvent;
-    FOnHide: TsgeGUIProcEvent;
+
+    FOnShow             : TsgeGUIProcEvent;
+    FOnHide             : TsgeGUIProcEvent;
+
+    FOnSetFocus         : TsgeGUIProcEvent;
+    FOnLostFocus        : TsgeGUIProcEvent;
 
     FOnMouseClick       : TsgeGUIProcMouseEvent;
     FOnMouseDoubleClick : TsgeGUIProcMouseEvent;
@@ -86,7 +103,25 @@ type
     procedure Handler_Show; virtual;
     procedure Handler_Hide; virtual;
 
+    procedure Handler_SetFocus; virtual;
+    procedure Handler_LostFocus; virtual;
+
+    procedure Handler_MouseClick(Mouse: TsgeEventMouse); virtual;
+    procedure Handler_MouseDoubleClick(Mouse: TsgeEventMouse); virtual;
+    procedure Handler_MouseMove(Mouse: TsgeEventMouse); virtual;
+    procedure Handler_MouseDown(Mouse: TsgeEventMouse); virtual;
+    procedure Handler_MouseUp(Mouse: TsgeEventMouse); virtual;
+    procedure Handler_MouseLeave(Mouse: TsgeEventMouse); virtual;
+    procedure Handler_MouseEnter(Mouse: TsgeEventMouse); virtual;
+    procedure Handler_MouseScroll(Mouse: TsgeEventMouse); virtual;
+
+    procedure Handler_ButtonDown(Keyboard: TsgeEventKeyboard); virtual;
+    procedure Handler_ButtonUp(Keyboard: TsgeEventKeyboard); virtual;
+    procedure Handler_ButtonChar(Keyboard: TsgeEventKeyboardChar); virtual;
+
     //Вспомогательные методы
+    procedure GetPrefferedSize(var NewWidth, NewHeight: Integer); virtual;  //Взять предпочтительный размер элемента
+    procedure CalculateAutosize(var NewWidth, NewHeight: Integer); virtual; //Расчёт авторазмер
     procedure Notify(Action: TsgeGUIElementState); virtual;         //Вызвать уведомление
     procedure DrawChild;                                            //Нарисовать детей
 
@@ -109,21 +144,27 @@ type
     procedure SetEnable(AEnabled: Boolean); virtual;
     procedure SetVisible(AVisible: Boolean); virtual;
     procedure SetAlpha(AAlpha: Single); virtual;
-  public
-    constructor Create(Name: String; Left, Top, Width, Height: Integer; Parent: TsgeGUIElement = nil); virtual;
-    destructor  Destroy; override;
+    procedure SetFocused(AFocused: Boolean); virtual;
+    procedure SetAutoSize(AAutoSize: Boolean); virtual;
 
     //Методы Parent
     procedure Repaint;
     procedure AddChild(Element: TsgeGUIElement);
     procedure DeleteChild(Element: TsgeGUIElement);
     procedure DeleteChild;
+  public
+    constructor Create(Name: String; Left, Top, Width, Height: Integer; Parent: TsgeGUIElement = nil); virtual;
+    destructor  Destroy; override;
 
     //Обработчики событий
-    function  MouseHandler(EventType: TsgeGUIElementMouseEventType; Mouse: TsgeEventMouse): Boolean;
+    function  MouseHandler(EventType: TsgeGUIElementMouseEventType; Mouse: TsgeEventMouse): Boolean; virtual;
+    function  ButtonHandler(EventType: TsgeGUIElementButtonEventType; Keyboard: TsgeEventBase): Boolean; virtual;
 
     procedure Draw; virtual;
-    function  CursorInElement(X, Y: Integer): Boolean;
+
+    //Вспомогательные методы
+    function  CursorInElement(X, Y: Integer): Boolean;              //Проверить нахождение курсора в элементе
+    function  GetGlobalPos: TsgeIntPoint;                           //Узнать координаты элемента относительно формы
 
     //Параметры
     property State: TsgeGUIElementState read FState write FState;
@@ -131,6 +172,8 @@ type
     property Name: ShortString read FName;
     property Enable: Boolean read FEnable write SetEnable;
     property Visible: Boolean read FVisible write SetVisible;
+    property Focused: Boolean read FFocused write SetFocused;
+    property AutoSize: Boolean read FAutoSize write SetAutoSize;
     property Alpha: Single read FAlpha write SetAlpha;
     property Parent: TsgeGUIElement read FParent write SetParent;
     property Bounds: TsgeFloatRect read GetBounds write SetBounds;
@@ -138,13 +181,19 @@ type
     property Top: Integer read FTop write SetTop;
     property Width: Integer read FWidth write SetWidth;
     property Height: Integer read FHeight write SetHeight;
+    property Constrains: TsgeGUIElementConstrains read FConstrains;
+    property ClickButton: TsgeMouseButton read FClickButton write FClickButton;
     property ChildList: TsgeGUIElementList read FChildList;
 
     //Обработчики
     property OnDrawBefore: TsgeGUIProcEvent read FOnDrawBefore write SetDrawBefore;
     property OnDrawAfter: TsgeGUIProcEvent read FOnDrawAfter write SetDrawAfter;
+
     property OnShow: TsgeGUIProcEvent read FOnShow write FOnShow;
     property OnHide: TsgeGUIProcEvent read FOnHide write FOnHide;
+
+    property OnSetFocus: TsgeGUIProcEvent read FOnSetFocus write FOnSetFocus;
+    property OnLostFocus: TsgeGUIProcEvent read FOnLostFocus write FOnLostFocus;
 
     property OnMouseClick: TsgeGUIProcMouseEvent read FOnMouseClick write FOnMouseClick;
     property OnMouseDoubleClick: TsgeGUIProcMouseEvent read FOnMouseDoubleClick write FOnMouseDoubleClick;
@@ -177,7 +226,10 @@ type
 implementation
 
 uses
-  sgeVars, sgeGraphic;
+  sgeVars, sgeGraphic, sgeMathUtils;
+
+type
+  TsgeGUIElementHack = class(TsgeGUIElement);
 
 
 function TsgeGUIElementList.IndexOf(Element: TsgeGUIElement): Integer;
@@ -263,6 +315,7 @@ begin
 
   FVisible := AVisible;
 
+  //Выполнить обработчик
   if FVisible then Handler_Show else Handler_Hide;
 
   Notify([esRepaintParent]);
@@ -279,11 +332,32 @@ begin
 end;
 
 
+procedure TsgeGUIElement.SetFocused(AFocused: Boolean);
+begin
+  if FFocused = AFocused then Exit;
+
+  FFocused := AFocused;
+
+  if FFocused then Handler_SetFocus else Handler_LostFocus;
+end;
+
+
+procedure TsgeGUIElement.SetAutoSize(AAutoSize: Boolean);
+begin
+  if FAutoSize = AAutoSize then Exit;
+
+  FAutoSize := AAutoSize;
+
+  Notify([esCorrectSize]);
+end;
+
+
 procedure TsgeGUIElement.SetColor(AColor: TsgeColor);
 begin
   FColor := AColor;
   Repaint;
 end;
+
 
 procedure TsgeGUIElement.Handler_Show;
 begin
@@ -297,6 +371,101 @@ begin
 end;
 
 
+procedure TsgeGUIElement.Handler_SetFocus;
+begin
+  if Assigned(FOnSetFocus) then FOnSetFocus(Self);
+end;
+
+
+procedure TsgeGUIElement.Handler_LostFocus;
+begin
+  if Assigned(FOnLostFocus) then FOnLostFocus(Self);
+end;
+
+
+procedure TsgeGUIElement.Handler_MouseClick(Mouse: TsgeEventMouse);
+begin
+  if Assigned(FOnMouseClick) then FOnMouseClick(Self, Mouse);
+end;
+
+
+procedure TsgeGUIElement.Handler_MouseDoubleClick(Mouse: TsgeEventMouse);
+begin
+  if Assigned(FOnMouseDoubleClick) then FOnMouseDoubleClick(Self, Mouse);
+end;
+
+
+procedure TsgeGUIElement.Handler_MouseMove(Mouse: TsgeEventMouse);
+begin
+  if Assigned(FOnMouseMove) then FOnMouseMove(Self, Mouse);
+end;
+
+
+procedure TsgeGUIElement.Handler_MouseDown(Mouse: TsgeEventMouse);
+begin
+  if Assigned(FOnMouseDown) then FOnMouseDown(Self, Mouse);
+end;
+
+
+procedure TsgeGUIElement.Handler_MouseUp(Mouse: TsgeEventMouse);
+begin
+  if Assigned(FOnMouseUp) then FOnMouseUp(Self, Mouse);
+end;
+
+
+procedure TsgeGUIElement.Handler_MouseLeave(Mouse: TsgeEventMouse);
+begin
+  if Assigned(FOnMouseLeave) then FOnMouseLeave(Self, Mouse);
+end;
+
+
+procedure TsgeGUIElement.Handler_MouseEnter(Mouse: TsgeEventMouse);
+begin
+  if Assigned(FOnMouseEnter) then FOnMouseEnter(Self, Mouse);
+end;
+
+
+procedure TsgeGUIElement.Handler_MouseScroll(Mouse: TsgeEventMouse);
+begin
+  if Assigned(FOnMouseScroll) then FOnMouseScroll(Self, Mouse);
+end;
+
+
+procedure TsgeGUIElement.Handler_ButtonDown(Keyboard: TsgeEventKeyboard);
+begin
+  if Assigned(FOnButtonDown) then FOnButtonDown(Self, Keyboard);
+end;
+
+
+procedure TsgeGUIElement.Handler_ButtonUp(Keyboard: TsgeEventKeyboard);
+begin
+  if Assigned(FOnButtonUp) then FOnButtonUp(Self, Keyboard);
+end;
+
+
+procedure TsgeGUIElement.Handler_ButtonChar(Keyboard: TsgeEventKeyboardChar);
+begin
+  if Assigned(FOnButtonChar) then FOnButtonChar(Self, Keyboard);
+end;
+
+
+procedure TsgeGUIElement.GetPrefferedSize(var NewWidth, NewHeight: Integer);
+begin
+  //Проверить авторазмер
+  if FAutoSize then CalculateAutosize(NewWidth, NewHeight);
+
+  //Проверить ограничение размера
+  FConstrains.Check(NewWidth, NewHeight);
+end;
+
+
+procedure TsgeGUIElement.CalculateAutosize(var NewWidth, NewHeight: Integer);
+begin
+  //Заглушка. Тут код определения авторазмеров элемента
+  //для компонентов, использующих шрифт
+end;
+
+
 procedure TsgeGUIElement.Notify(Action: TsgeGUIElementState);
 begin
   FState := FState + Action;
@@ -305,7 +474,7 @@ begin
   if esCorrectSize in FState then
     begin
     Exclude(FState, esCorrectSize);                                 //Удалить флаг изменения размеров
-    //GetPrefferedSize(FWidth, FHeight);                            //Взять предпочтительный размер
+    GetPrefferedSize(FWidth, FHeight);                              //Взять предпочтительный размер
     FCanvas.SetSize(FWidth, FHeight);                               //Изменить размеры канваса
     Include(FState, esRepaint);                                     //Дбавить флаг перерисовки
     end;
@@ -501,17 +670,21 @@ end;
 
 constructor TsgeGUIElement.Create(Name: String; Left, Top, Width, Height: Integer; Parent: TsgeGUIElement);
 begin
-  FColor := cLime;
+  FColor := cMaroon;
 
   //Установить параметры
   FName := Name;
   FVisible := True;
   FEnable := True;
   FAlpha := 1;
+  FFocused := False;
+  FAutoSize := False;
+  FClickButton := mbLeft;
 
-  //Создать холст
+  //Создать объекты
   FCanvas := TsgeGraphicSprite.Create(Width, Height, cTransparent);
   FChildList := TsgeGUIElementList.Create(False);
+  FConstrains := TsgeGUIElementConstrains.Create(Self);
 
   //Изменить размеры
   SetBounds(sgeGetFloatRect(Left, Top, Left + Width, Top + Height));
@@ -523,10 +696,17 @@ end;
 
 destructor TsgeGUIElement.Destroy;
 begin
+  //Отключить захват мыши
+  SGE.ExtGUI.ReleaseMouse(Self);
+
+  //Убрать фокус с элемента
+  SGE.ExtGUI.LostFocus(Self);
+
   //Удалить детей
   DeleteChild;
 
   //Удалить объекты
+  FConstrains.Free;
   FChildList.Free;
   FCanvas.Free;
 
@@ -570,12 +750,20 @@ end;
 
 
 function TsgeGUIElement.MouseHandler(EventType: TsgeGUIElementMouseEventType; Mouse: TsgeEventMouse): Boolean;
+
+  function IsMouseInElement: Boolean;
+  begin
+    Result := (Mouse.X >= 0) and (Mouse.X <= FWidth) and (Mouse.Y >= 0) and (Mouse.Y <= FHeight);
+  end;
+
 var
   i: Integer;
   El: TsgeGUIElement;
   ChildHandled: Boolean;
+  MouseChild: TsgeEventMouse;
 begin
   Result := True;
+
 
   //Обработать тип события
   case EventType of
@@ -583,44 +771,150 @@ begin
       begin
       ChildHandled := False;
 
+      MouseChild := TsgeEventMouse.Create(Mouse.X, Mouse.Y, Mouse.MouseButtons, Mouse.KeyboardButtons, Mouse.Delta);
+
       //Проверить детей
       for i := 0 to FChildList.Count - 1 do
         begin
         El := FChildList.Item[i];
 
+        MouseChild.ChangeXY(Mouse.X - El.Left, Mouse.Y - El.Top);
+
         if El.CursorInElement(Mouse.X, Mouse.Y) then
           begin
-          //Координаты относительно элемента
-          Mouse.ChangeXY(Mouse.X - El.Left, Mouse.Y - El.Top);
-
-          //Вызвать обработчик
           El.MouseHandler(EventType, Mouse);
-
           ChildHandled := True;
           Break;
           end;
         end;
 
+      MouseChild.Free;
 
-      //Собственный обработчик если не выполнился у дитя
+
+      //Собственный обработчик если не выполнился у дочернего элемента
       if not ChildHandled then
         case EventType of
-          emetDown    : if Assigned(FOnMouseDown) then FOnMouseDown(Self, Mouse);
-          emetUp      : if Assigned(FOnMouseUp) then FOnMouseUp(Self, Mouse);
-          emetScroll  : if Assigned(FOnMouseScroll) then FOnMouseScroll(Self, Mouse);
-          emetDblClick: if Assigned(FOnMouseDoubleClick) then FOnMouseDoubleClick(Self, Mouse);
+          emetDown:
+            begin
+            //Установить фокус ввода
+            SGE.ExtGUI.SetFocus(Self);
+
+            if FClickButton in Mouse.MouseButtons then
+              begin
+              FPressed := True;
+              SGE.ExtGUI.MouseCapture(Self);
+              end;
+
+            Handler_MouseDown(Mouse);
+            end;
+
+          emetUp:
+            begin
+            //Проверить событие MouseClick
+            if FPressed and IsMouseInElement then
+              begin
+              FPressed := False;
+              SGE.ExtGUI.ReleaseMouse;
+              Handler_MouseClick(Mouse);
+              end;
+
+            Handler_MouseUp(Mouse);
+            end;
+
+          emetScroll:
+            Handler_MouseScroll(Mouse);
+
+          emetDblClick:
+            begin
+            SGE.ExtGUI.SetFocus(Self);                              //Установить фокус ввода
+            Handler_MouseDoubleClick(Mouse);
+            end;
         end;
       end;
 
 
     emetMove:
       begin
+      MouseChild := TsgeEventMouse.Create(Mouse.X, Mouse.Y, Mouse.MouseButtons, Mouse.KeyboardButtons, Mouse.Delta);
+
+      //Проверить заход и уход мыши с элементов
+      for i := 0 to FChildList.Count - 1 do
+        begin
+        El := FChildList.Item[i];
+
+        MouseChild.ChangeXY(Mouse.X - El.Left, Mouse.Y - El.Top);
+
+        if El.CursorInElement(Mouse.X, Mouse.Y) then
+          begin
+            //Заход мыши
+            if not TsgeGUIElement(El).FEventMouseEntered then
+              begin
+              TsgeGUIElement(El).FEventMouseEntered := True;
+              El.MouseHandler(emetEnter, MouseChild);
+              end;
+          end
+          else begin
+            //Выход мыши
+            if TsgeGUIElement(El).FEventMouseEntered then
+              begin
+              TsgeGUIElement(El).FEventMouseEntered := False;
+              El.MouseHandler(emetLeave, MouseChild);
+              end;
+            end;
+          end;  //For
+
+      MouseChild.Free;
+
+
+      //Проверить дочерние элементы
+      ChildHandled := False;
+      for i := 0 to FChildList.Count - 1 do
+        begin
+        El := FChildList.Item[i];
+
+        if El.CursorInElement(Mouse.X, Mouse.Y) then
+          begin
+          Mouse.ChangeXY(Mouse.X - El.Left, Mouse.Y - El.Top);
+          El.MouseHandler(emetMove, Mouse);
+          ChildHandled := True;
+          //Break;
+          end;
+        end;
+
+      //Собственный обработчик если не выполнился у дочернего элемента
+      if not ChildHandled then Handler_MouseMove(Mouse);
+      end;
+
+
+    emetEnter:
+      begin
+      Handler_MouseEnter(Mouse);
+      MouseHandler(emetMove, Mouse);
+      end;
+
+
+    emetLeave:
+      begin
+      Handler_MouseLeave(Mouse);
+      MouseHandler(emetMove, Mouse);
       end;
 
   end;  //case
+end;
 
 
+function TsgeGUIElement.ButtonHandler(EventType: TsgeGUIElementButtonEventType; Keyboard: TsgeEventBase): Boolean;
+begin
+  Result := True;
 
+  if not FVisible then Exit;
+  if not FEnable then Exit;
+
+  case EventType of
+    ebetDown: Handler_ButtonDown(TsgeEventKeyboard(Keyboard));
+    ebetUp  : Handler_ButtonUp(TsgeEventKeyboard(Keyboard));
+    ebetChar: Handler_ButtonChar(TsgeEventKeyboardChar(Keyboard));
+  end;
 end;
 
 
@@ -645,7 +939,25 @@ end;
 
 function TsgeGUIElement.CursorInElement(X, Y: Integer): Boolean;
 begin
-  Result := (X >= FLeft) and (X <= FLeft + FWidth) and (Y >= FTop) and (Y <= FTop + FHeight);
+  if FParent = nil then
+    Result := (X >= FLeft) and (X <= FLeft + FWidth) and (Y >= FTop) and (Y <= FTop + FHeight)
+      else Result := (X >= sgeMax(0, FLeft)) and (X <= sgeMin(FParent.Width,  FLeft + FWidth)) and
+                     (Y >= sgeMax(0, FTop)) and (Y <= sgeMin(FParent.Height, FTop + FHeight));
+end;
+
+
+function TsgeGUIElement.GetGlobalPos: TsgeIntPoint;
+var
+  Pt: TsgeIntPoint;
+begin
+  Result := sgeGetIntPoint(FLeft, FTop);
+
+  if FParent <> nil then
+    begin
+    Pt := FParent.GetGlobalPos;
+    Result.X := Result.X + Pt.X;
+    Result.Y := Result.Y + Pt.Y;
+    end;
 end;
 
 
