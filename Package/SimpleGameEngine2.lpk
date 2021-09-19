@@ -15,7 +15,7 @@
     </CompilerOptions>
     <Description Value="Simple Game Engine 2"/>
     <Version Major="1"/>
-    <Files Count="178">
+    <Files Count="179">
       <Item1>
         <Filename Value="..\Source\ThirdParty\GDIPlus\GDIPAPI.pas"/>
         <UnitName Value="GDIPAPI"/>
@@ -728,6 +728,10 @@
         <Filename Value="..\Source\System\Events\sgeEventMouse.pas"/>
         <UnitName Value="sgeEventMouse"/>
       </Item178>
+      <Item179>
+        <Filename Value="..\Source\System\GUI\sgeGUIElementConstrains.pas"/>
+        <UnitName Value="sgeGUIElementConstrains"/>
+      </Item179>
     </Files>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)"/>
