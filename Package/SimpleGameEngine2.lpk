@@ -15,7 +15,7 @@
     </CompilerOptions>
     <Description Value="Simple Game Engine 2"/>
     <Version Major="1"/>
-    <Files Count="179">
+    <Files Count="182">
       <Item1>
         <Filename Value="..\Source\ThirdParty\GDIPlus\GDIPAPI.pas"/>
         <UnitName Value="GDIPAPI"/>
@@ -732,6 +732,18 @@
         <Filename Value="..\Source\System\GUI\sgeGUIElementConstrains.pas"/>
         <UnitName Value="sgeGUIElementConstrains"/>
       </Item179>
+      <Item180>
+        <Filename Value="..\Source\System\GUI\sgeGUIBackground.pas"/>
+        <UnitName Value="sgeGUIBackground"/>
+      </Item180>
+      <Item181>
+        <Filename Value="..\Source\System\GUI\sgeGUIBackgroundGradient.pas"/>
+        <UnitName Value="sgeGUIBackgroundGradient"/>
+      </Item181>
+      <Item182>
+        <Filename Value="..\Source\System\GUI\sgeGUIProperty.pas"/>
+        <UnitName Value="sgeGUIProperty"/>
+      </Item182>
     </Files>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)"/>
