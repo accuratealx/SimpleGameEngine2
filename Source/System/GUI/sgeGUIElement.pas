@@ -46,10 +46,6 @@ type
 
   //Элемент
   TsgeGUIElement = class
-  public
-    FColor: TsgeColor;
-    procedure SetColor(AColor: TsgeColor);
-    property Color: TsgeColor read FColor write SetColor;
   protected
     //Классы
     FCanvas: TsgeGraphicSprite;                                     //Холст для рисования
@@ -167,7 +163,6 @@ type
     function  GetGlobalPos: TsgeIntPoint;                           //Узнать координаты элемента относительно формы
 
     //Параметры
-    property State: TsgeGUIElementState read FState write FState;
     property Canvas: TsgeGraphicSprite read FCanvas;
     property Name: ShortString read FName;
     property Enable: Boolean read FEnable write SetEnable;
@@ -214,7 +209,6 @@ type
   //Список элементов
   TsgeGUIElementListTemplate = specialize TsgeTemplateObjectCollection<TsgeGUIElement>;
   TsgeGUIElementList = class(TsgeGUIElementListTemplate)
-  private
   public
     function  IndexOf(Element: TsgeGUIElement): Integer;
     procedure Delete(Index: Integer);
@@ -352,13 +346,6 @@ begin
 end;
 
 
-procedure TsgeGUIElement.SetColor(AColor: TsgeColor);
-begin
-  FColor := AColor;
-  Repaint;
-end;
-
-
 procedure TsgeGUIElement.Handler_Show;
 begin
   if Assigned(FOnShow) then FOnShow(Self);
@@ -487,7 +474,6 @@ begin
     Include(FState, esRepaintParent);                               //Добавить флаг для родителя о перерисовке
     end;
 
-
   //Проверить перерисовку родителя
   if esRepaintParent in FState then
     begin
@@ -529,6 +515,7 @@ begin
     begin
     PushAttrib;
     Reset;
+    ResetDrawOptions;
     RenderSprite := FCanvas;
     RenderPlace := grpSprite;
     PoligonMode := gpmFill;
@@ -549,6 +536,7 @@ begin
     begin
     RenderSprite := nil;
     RenderPlace := grpScreen;
+    ResetDrawOptions;
     PopAttrib;
     Finish;
     end;
@@ -559,10 +547,8 @@ procedure TsgeGUIElement.DrawBefore;
 begin
   with SGE.ExtGraphic.Graphic do
     begin
-    BGColor := FColor; //sgeGetColor(0, 0, 0, 0.5);
+    BGColor := cRed;
     EraseBG;
-    //Color := cBlack;
-    //DrawRect(0, 0, FWidth, FHeight);
     end;
 end;
 
@@ -670,7 +656,8 @@ end;
 
 constructor TsgeGUIElement.Create(Name: String; Left, Top, Width, Height: Integer; Parent: TsgeGUIElement);
 begin
-  FColor := cMaroon;
+  //Установить флаг создания
+  FState := [esCreating];
 
   //Установить параметры
   FName := Name;
@@ -691,11 +678,17 @@ begin
 
   //Установить Родителя
   SetParent(Parent);
+
+  //Убрать флаг создания
+  Exclude(FState, esCreating);
 end;
 
 
 destructor TsgeGUIElement.Destroy;
 begin
+  //Установить флаг уничтожения объекта
+  Include(FState, esDestroing);
+
   //Отключить захват мыши
   SGE.ExtGUI.ReleaseMouse(Self);
 
@@ -712,6 +705,9 @@ begin
 
   //Удалить себя у родителя
   if FParent <> nil then FParent.DeleteChild(Self);
+
+  //Убрать флаг уничтожения объекта
+  Exclude(FState, esDestroing);
 end;
 
 
@@ -737,7 +733,6 @@ end;
 
 procedure TsgeGUIElement.DeleteChild;
 begin
-  //Определить флаг перерисовки
   if FChildList.Count = 0 then Exit;
 
   //Удалить объекты
@@ -762,8 +757,12 @@ var
   ChildHandled: Boolean;
   MouseChild: TsgeEventMouse;
 begin
-  Result := True;
+  Result := False;
 
+  if not FVisible then Exit;
+  if not FEnable then Exit;
+
+  Result := True;
 
   //Обработать тип события
   case EventType of
@@ -905,10 +904,12 @@ end;
 
 function TsgeGUIElement.ButtonHandler(EventType: TsgeGUIElementButtonEventType; Keyboard: TsgeEventBase): Boolean;
 begin
-  Result := True;
+  Result := False;
 
   if not FVisible then Exit;
   if not FEnable then Exit;
+
+  Result := True;
 
   case EventType of
     ebetDown: Handler_ButtonDown(TsgeEventKeyboard(Keyboard));
@@ -920,6 +921,9 @@ end;
 
 procedure TsgeGUIElement.Draw;
 begin
+  //Проверка на создание
+  if (esCreating in FState) or (esDestroing in FState) then Exit;
+
   //Подготовить графику
   GraphicPrepare;
 
