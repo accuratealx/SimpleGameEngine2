@@ -14,27 +14,24 @@ unit sgeGUIElementConstrains;
 
 interface
 
+uses
+  sgeGUIProperty;
+
 
 type
-  TsgeGUIElementConstrains = class
+  TsgeGUIElementConstrains = class(TsgeGUIProperty)
   private
-    FOwner: TObject;                                                //Ссылка на владельца
-
     FMinWidth: Integer;
     FMaxWidth: Integer;
     FMinHeight: Integer;
     FMaxHeight: Integer;
-
-    procedure UpdateParent;
 
     procedure SetMinHeight(AMinHeight: Integer);
     procedure SetMinWidth(AMinWidth: Integer);
     procedure SetMaxHeight(AMaxHeight: Integer);
     procedure SetMaxWidth(AMaxWidth: Integer);
   public
-    constructor Create(AOwner: TObject);
-
-    procedure Check(var NewWidth, NewHeight: Integer);              //Проверка размеров
+    procedure Check(var NewWidth, NewHeight: Integer);
 
     property MinWidth: Integer read FMinWidth write SetMinWidth;
     property MaxWidth: Integer read FMaxWidth write SetMaxWidth;
@@ -44,18 +41,6 @@ type
 
 
 implementation
-
-uses
-  sgeGUIElement;
-
-type
-  TsgeGUIElementHack = class(TsgeGUIElement);
-
-
-procedure TsgeGUIElementConstrains.UpdateParent;
-begin
-  TsgeGUIElementHack(FOwner).Notify([esCorrectSize]);
-end;
 
 
 procedure TsgeGUIElementConstrains.SetMinHeight(AMinHeight: Integer);
@@ -68,7 +53,7 @@ begin
   if FMinHeight > FMaxHeight then FMaxHeight := FMinHeight;
 
   //Внести изменения
-  UpdateParent;
+  ResizeParent;
 end;
 
 
@@ -82,7 +67,7 @@ begin
   if FMinWidth > FMaxWidth then FMaxWidth := FMinWidth;
 
   //Внести изменения
-  UpdateParent;
+  ResizeParent;
 end;
 
 
@@ -96,7 +81,7 @@ begin
   if FMaxHeight < FMinHeight then FMinHeight := FMaxHeight;
 
   //Внести изменения
-  UpdateParent;
+  ResizeParent;
 end;
 
 
@@ -110,13 +95,7 @@ begin
   if FMaxWidth < FMinWidth then FMinWidth := FMaxWidth;
 
   //Внести изменения
-  UpdateParent;
-end;
-
-
-constructor TsgeGUIElementConstrains.Create(AOwner: TObject);
-begin
-  FOwner := AOwner;
+  ResizeParent;
 end;
 
 
