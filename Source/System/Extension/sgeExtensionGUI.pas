@@ -67,6 +67,9 @@ type
 
     function  MouseHandler(EventType: TsgeGUIElementMouseEventType; Mouse: TsgeEventMouse): Boolean;
     function  ButtonHandler(EventType: TsgeGUIElementButtonEventType; Keyboard: TsgeEventBase): Boolean;
+
+    //Вспомогательные функции
+    procedure ClearForms;
   protected
     class function GetName: String; override;
 
@@ -251,9 +254,8 @@ begin
           Mouse.ChangeXY(Mouse.X - Form.Left, Mouse.Y - Form.Top);
 
           //Вызвать обработчик
-          Form.MouseHandler(EventType, Mouse);
-          Result := True;
-          Break;
+          Result := Form.MouseHandler(EventType, Mouse);
+          if Result then Break;
           end;
         end;
 
@@ -275,8 +277,7 @@ begin
             end;
 
           //Движение мыши
-          Form.MouseHandler(emetMove, Mouse);
-          Result := True;
+          Result := Form.MouseHandler(emetMove, Mouse);
           end
           else begin
             if TsgeGUIFormHack(Form).FEventMouseEntered then
@@ -314,13 +315,17 @@ begin
   Result := False;
 
   if FFocusedElement <> nil then
-    begin
-    //Блокировать передачу события
-    Result := True;
+    Result := FFocusedElement.ButtonHandler(EventType, Keyboard);
+end;
 
-    //Передать событие активному элементу
-    FFocusedElement.ButtonHandler(EventType, Keyboard);
-    end;
+
+procedure TsgeExtensionGUI.ClearForms;
+begin
+  if FFormList.Count = 0 then Exit;
+
+  //Удалить объекты
+  while FFormList.Count > 0 do
+    FFormList.Item[0].Free;
 end;
 
 
@@ -339,7 +344,7 @@ begin
     FExtGraphic := TsgeExtensionGraphic(GetExtension(Extension_Graphic));
 
     //Создать классы
-    FFormList := TsgeGUIFormList.Create(True);
+    FFormList := TsgeGUIFormList.Create(False);
 
     //Подписаться на события
     RegisterEventHandlers;
@@ -359,6 +364,9 @@ destructor TsgeExtensionGUI.Destroy;
 begin
   //Отписаться от событий
   UnregisterEventHandlers;
+
+  //Удалить формы
+  ClearForms;
 
   //Удалить объекты
   FFormList.Free;
