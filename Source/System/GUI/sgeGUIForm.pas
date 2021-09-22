@@ -16,13 +16,16 @@ unit sgeGUIForm;
 interface
 
 uses
-  sgeGUIElement, sgeGraphicElementSpriteCashed;
+  sgeGUIElement, sgeGraphicElementSpriteCashed,
+  sgeGUIBackground;
 
 
 type
   TsgeGUIForm = class(TsgeGUIElement)
   private
-    FGraphicElement: TsgeGraphicElementSpriteCashed;
+    FGraphicElement: TsgeGraphicElementSpriteCashed;                //Элемент отрисовки
+
+    FBackground: TsgeGUIBackground;                                 //Фон
 
   protected
     procedure DrawBefore; override;
@@ -33,23 +36,21 @@ type
     destructor  Destroy; override;
 
     procedure Draw; override;
+
+    property Background: TsgeGUIBackground read FBackground;
   end;
 
 
 implementation
 
 uses
-  sgeVars, sgeGraphicColor, sgeOSPlatform, sgeGraphic;
+  sgeVars, sgeGraphicColor, sgeOSPlatform;
 
 
 
 procedure TsgeGUIForm.DrawBefore;
 begin
-  with SGE.ExtGraphic.Graphic do
-    begin
-    BGColor := cNavy;
-    EraseBG;
-    end;
+  FBackground.Draw;
 end;
 
 
@@ -76,10 +77,18 @@ begin
 
   //Создать графический элемент
   FGraphicElement := TsgeGraphicElementSpriteCashed.Create(Left, Top, Width, Height, FCanvas);
+
+  //Добавить элемент в список отрисовки
   SGE.ExtGraphic.DrawList.AddElement(FGraphicElement, 'GUI');
+
+  //Создать свойство фона
+  FBackground := TsgeGUIBackground.Create(Self);
 
   //Перерисовать форму
   Repaint;
+
+  //Добавить себя в список форм
+  SGE.ExtGUI.FormList.Add(Self);
 end;
 
 
@@ -88,6 +97,11 @@ begin
   //Спрятать форму
   SetVisible(False);
 
+  //Удалить свойство фона
+  FBackground.Free;
+
+  //Удалить себя из списока форм
+  SGE.ExtGUI.FormList.Delete(Self);
 
   inherited Destroy;
 end;
