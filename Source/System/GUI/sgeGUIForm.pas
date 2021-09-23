@@ -17,7 +17,7 @@ interface
 
 uses
   sgeGUIElement, sgeGraphicElementSpriteCashed,
-  sgeGUIBackground;
+  sgeGUIPropertyBackground;
 
 
 type

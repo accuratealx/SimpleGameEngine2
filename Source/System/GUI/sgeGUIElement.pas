@@ -18,7 +18,7 @@ uses
   sgeTypes, sgeTemplateObjectCollection,
   sgeGraphicSprite, sgeGraphicColor,
   sgeEventBase, sgeEventKeyboard, sgeEventMouse,
-  sgeGUIElementConstrains;
+  sgeGUIElementPropertyConstrains;
 
 
 type
@@ -67,7 +67,7 @@ type
     FHeight: Integer;                                               //Высота
     FAutoSize: Boolean;                                             //Авторазмер
     FClickButton: TsgeMouseButton;                                  //Кнопка мыши для Click
-    FConstrains: TsgeGUIElementConstrains;                          //Ограничение размеров
+    FConstrains: TsgeGUIElementPropertyConstrains;                  //Ограничение размеров
 
     //Вспомогательные параметры
     FEventMouseEntered: Boolean;                                    //Флаг захода мышки на элемент
@@ -176,7 +176,7 @@ type
     property Top: Integer read FTop write SetTop;
     property Width: Integer read FWidth write SetWidth;
     property Height: Integer read FHeight write SetHeight;
-    property Constrains: TsgeGUIElementConstrains read FConstrains;
+    property Constrains: TsgeGUIElementPropertyConstrains read FConstrains;
     property ClickButton: TsgeMouseButton read FClickButton write FClickButton;
     property ChildList: TsgeGUIElementList read FChildList;
 
@@ -671,7 +671,7 @@ begin
   //Создать объекты
   FCanvas := TsgeGraphicSprite.Create(Width, Height, cTransparent);
   FChildList := TsgeGUIElementList.Create(False);
-  FConstrains := TsgeGUIElementConstrains.Create(Self);
+  FConstrains := TsgeGUIElementPropertyConstrains.Create(Self);
 
   //Изменить размеры
   SetBounds(sgeGetFloatRect(Left, Top, Left + Width, Top + Height));
@@ -813,9 +813,10 @@ begin
             if FPressed and IsMouseInElement then
               begin
               FPressed := False;
-              SGE.ExtGUI.ReleaseMouse;
               Handler_MouseClick(Mouse);
               end;
+
+            SGE.ExtGUI.ReleaseMouse;
 
             Handler_MouseUp(Mouse);
             end;
