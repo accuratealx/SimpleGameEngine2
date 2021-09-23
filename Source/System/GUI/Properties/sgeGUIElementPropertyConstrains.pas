@@ -4,11 +4,11 @@
 Версия            1.0
 Создан            19.09.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
-Описание          GUI: Ограничение размеров базового элемента
+Описание          GUI: Свойство: Ограничение размеров базового элемента
 }
 {$Include Defines.inc}
 
-unit sgeGUIElementConstrains;
+unit sgeGUIElementPropertyConstrains;
 
 {$mode objfpc}{$H+}
 
@@ -19,7 +19,7 @@ uses
 
 
 type
-  TsgeGUIElementConstrains = class(TsgeGUIProperty)
+  TsgeGUIElementPropertyConstrains = class(TsgeGUIProperty)
   private
     FMinWidth: Integer;
     FMaxWidth: Integer;
@@ -43,7 +43,7 @@ type
 implementation
 
 
-procedure TsgeGUIElementConstrains.SetMinHeight(AMinHeight: Integer);
+procedure TsgeGUIElementPropertyConstrains.SetMinHeight(AMinHeight: Integer);
 begin
   if AMinHeight < 0 then AMinHeight := 0;
   if FMinHeight = AMinHeight then Exit;
@@ -57,7 +57,7 @@ begin
 end;
 
 
-procedure TsgeGUIElementConstrains.SetMinWidth(AMinWidth: Integer);
+procedure TsgeGUIElementPropertyConstrains.SetMinWidth(AMinWidth: Integer);
 begin
   if AMinWidth < 0 then AMinWidth := 0;
   if FMinWidth = AMinWidth then Exit;
@@ -71,7 +71,7 @@ begin
 end;
 
 
-procedure TsgeGUIElementConstrains.SetMaxHeight(AMaxHeight: Integer);
+procedure TsgeGUIElementPropertyConstrains.SetMaxHeight(AMaxHeight: Integer);
 begin
   if AMaxHeight < 0 then AMaxHeight := 0;
   if FMaxHeight = AMaxHeight then Exit;
@@ -85,7 +85,7 @@ begin
 end;
 
 
-procedure TsgeGUIElementConstrains.SetMaxWidth(AMaxWidth: Integer);
+procedure TsgeGUIElementPropertyConstrains.SetMaxWidth(AMaxWidth: Integer);
 begin
   if AMaxWidth < 0 then AMaxWidth := 0;
   if FMaxWidth = AMaxWidth then Exit;
@@ -99,7 +99,7 @@ begin
 end;
 
 
-procedure TsgeGUIElementConstrains.Check(var NewWidth, NewHeight: Integer);
+procedure TsgeGUIElementPropertyConstrains.Check(var NewWidth, NewHeight: Integer);
 begin
   if (FMinWidth <> 0) and (NewWidth < FMinWidth) then NewWidth := FMinWidth;
   if (FMaxWidth <> 0) and (NewWidth > FMaxWidth) then NewWidth := FMaxWidth;

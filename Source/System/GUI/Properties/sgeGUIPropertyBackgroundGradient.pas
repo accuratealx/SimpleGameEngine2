@@ -1,6 +1,6 @@
 {
 Пакет             Simple Game Engine 2
-Файл              sgeGUIBackgroundGradient.pas
+Файл              sgeGUIPropertyBackgroundGradient.pas
 Версия            1.0
 Создан            22.09.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
@@ -8,7 +8,7 @@
 }
 {$Include Defines.inc}
 
-unit sgeGUIBackgroundGradient;
+unit sgeGUIPropertyBackgroundGradient;
 
 {$mode objfpc}{$H+}
 
@@ -20,7 +20,7 @@ uses
 
 
 type
-  TsgeGUIBackgroundGradient = class(TsgeGUIProperty)
+  TsgeGUIPropertyBackgroundGradient = class(TsgeGUIProperty)
   private
     FTopLeft: TsgeColor;
     FTopRight: TsgeColor;
@@ -54,35 +54,35 @@ type
   TsgeGUIElementHack = class(TsgeGUIElement);
 
 
-procedure TsgeGUIBackgroundGradient.SetTopLeft(AColor: TsgeColor);
+procedure TsgeGUIPropertyBackgroundGradient.SetTopLeft(AColor: TsgeColor);
 begin
   FTopLeft := AColor;
   RepaintParent;
 end;
 
 
-procedure TsgeGUIBackgroundGradient.SetTopRight(AColor: TsgeColor);
+procedure TsgeGUIPropertyBackgroundGradient.SetTopRight(AColor: TsgeColor);
 begin
   FTopRight := AColor;
   RepaintParent;
 end;
 
 
-procedure TsgeGUIBackgroundGradient.SetBottomLeft(AColor: TsgeColor);
+procedure TsgeGUIPropertyBackgroundGradient.SetBottomLeft(AColor: TsgeColor);
 begin
   FBottomLeft := AColor;
   RepaintParent;
 end;
 
 
-procedure TsgeGUIBackgroundGradient.SetBottomRight(AColor: TsgeColor);
+procedure TsgeGUIPropertyBackgroundGradient.SetBottomRight(AColor: TsgeColor);
 begin
   FBottomRight := AColor;
   RepaintParent;
 end;
 
 
-constructor TsgeGUIBackgroundGradient.Create(AOwner: TObject);
+constructor TsgeGUIPropertyBackgroundGradient.Create(AOwner: TObject);
 begin
   inherited Create(AOwner);
 
@@ -93,7 +93,7 @@ begin
 end;
 
 
-procedure TsgeGUIBackgroundGradient.Draw;
+procedure TsgeGUIPropertyBackgroundGradient.Draw;
 var
   Col: TsgeQuadColor;
   W, H: Single;
@@ -108,6 +108,7 @@ begin
     DrawRectGradient(0, 0, W, H, Col);
     end;
 end;
+
 
 
 end.

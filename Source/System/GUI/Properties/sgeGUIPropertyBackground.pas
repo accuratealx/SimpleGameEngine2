@@ -1,14 +1,14 @@
 {
 Пакет             Simple Game Engine 2
-Файл              sgeGUIBackground.pas
+Файл              sgeGUIPropertyBackground.pas
 Версия            1.0
 Создан            22.09.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
-Описание          GUI: Класс фона элемента
+Описание          GUI: Свойство: Фон элемента
 }
 {$Include Defines.inc}
 
-unit sgeGUIBackground;
+unit sgeGUIPropertyBackground;
 
 {$mode objfpc}{$H+}
 
@@ -16,26 +16,27 @@ interface
 
 uses
   sgeGraphicColor,
-  sgeGUIProperty, sgeGUIBackgroundGradient;
+  sgeGUIProperty, sgeGUIPropertyBackgroundGradient, sgeGUIPropertyBackgroundSprite;
 
 
 type
   //Тип фона
-  TsgeGUIBackgroundType = (btColor, btGradient, btSprite);
+  TsgeGUIPropertyBackgroundType = (pbtColor, pbtGradient, pbtSprite);
 
 
   TsgeGUIBackground = class(TsgeGUIProperty)
   private
     //Объекты
-    FGradient: TsgeGUIBackgroundGradient;                           //Градиент
+    FGradient: TsgeGUIPropertyBackgroundGradient;                   //Градиент
+    FSprite: TsgeGUIPropertyBackgroundSprite;                       //Спрайт
 
     //Свойства
-    FType: TsgeGUIBackgroundType;                                   //Тип заполнения
+    FType: TsgeGUIPropertyBackgroundType;                           //Тип заполнения
     FColor: TsgeColor;                                              //Цвет фона
 
     procedure DrawColor;
 
-    procedure SetType(AType: TsgeGUIBackgroundType);
+    procedure SetType(AType: TsgeGUIPropertyBackgroundType);
     procedure SetColor(AColor: TsgeColor);
   public
     constructor Create(AOwner: TObject); override;
@@ -43,9 +44,10 @@ type
 
     procedure Draw;
 
-    property DrawType: TsgeGUIBackgroundType read FType write SetType;
+    property DrawType: TsgeGUIPropertyBackgroundType read FType write SetType;
     property Color: TsgeColor read FColor write SetColor;
-    property Gradient: TsgeGUIBackgroundGradient read FGradient;
+    property Gradient: TsgeGUIPropertyBackgroundGradient read FGradient;
+    property Sprite: TsgeGUIPropertyBackgroundSprite read FSprite;
   end;
 
 
@@ -66,7 +68,7 @@ begin
 end;
 
 
-procedure TsgeGUIBackground.SetType(AType: TsgeGUIBackgroundType);
+procedure TsgeGUIBackground.SetType(AType: TsgeGUIPropertyBackgroundType);
 begin
   if FType = AType then Exit;
 
@@ -86,15 +88,17 @@ constructor TsgeGUIBackground.Create(AOwner: TObject);
 begin
   inherited Create(AOwner);
 
-  FGradient := TsgeGUIBackgroundGradient.Create(AOwner);
+  FGradient := TsgeGUIPropertyBackgroundGradient.Create(AOwner);
+  FSprite := TsgeGUIPropertyBackgroundSprite.Create(AOwner);
 
-  FType := btColor;
+  FType := pbtColor;
   FColor := cGray;
 end;
 
 
 destructor TsgeGUIBackground.Destroy;
 begin
+  FSprite.Free;
   FGradient.Free;
 
   inherited Destroy;
@@ -107,9 +111,9 @@ begin
 
   //Нарисовать фон
   case FType of
-    btColor   : DrawColor;
-    btGradient: FGradient.Draw;
-    btSprite  : ;
+    pbtColor    : DrawColor;
+    pbtGradient : FGradient.Draw;
+    pbtSprite   : FSprite.Draw;
   end;
 end;
 
