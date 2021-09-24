@@ -111,9 +111,9 @@ type
     procedure Handler_MouseEnter(Mouse: TsgeEventMouse); virtual;
     procedure Handler_MouseScroll(Mouse: TsgeEventMouse); virtual;
 
-    procedure Handler_ButtonDown(Keyboard: TsgeEventKeyboard); virtual;
-    procedure Handler_ButtonUp(Keyboard: TsgeEventKeyboard); virtual;
-    procedure Handler_ButtonChar(Keyboard: TsgeEventKeyboardChar); virtual;
+    function Handler_ButtonDown(Keyboard: TsgeEventKeyboard): Boolean; virtual;
+    function Handler_ButtonUp(Keyboard: TsgeEventKeyboard): Boolean; virtual;
+    function Handler_ButtonChar(Keyboard: TsgeEventKeyboardChar): Boolean; virtual;
 
     //Вспомогательные методы
     procedure GetPrefferedSize(var NewWidth, NewHeight: Integer); virtual;  //Взять предпочтительный размер элемента
@@ -199,9 +199,9 @@ type
     property OnMouseEnter: TsgeGUIProcMouseEvent read FOnMouseEnter write FOnMouseEnter;
     property OnMouseScroll: TsgeGUIProcMouseEvent read FOnMouseScroll write FOnMouseScroll;
 
-    property OnButtonDown   : TsgeGUIProcButtonEvent read FOnButtonDown write FOnButtonDown;
-    property OnButtonUp     : TsgeGUIProcButtonEvent read FOnButtonUp write FOnButtonUp;
-    property OnButtonChar   : TsgeGUIProcButtonCharEvent read FOnButtonChar write FOnButtonChar;
+    property OnButtonDown: TsgeGUIProcButtonEvent read FOnButtonDown write FOnButtonDown;
+    property OnButtonUp: TsgeGUIProcButtonEvent read FOnButtonUp write FOnButtonUp;
+    property OnButtonChar: TsgeGUIProcButtonCharEvent read FOnButtonChar write FOnButtonChar;
   end;
 
 
@@ -418,21 +418,24 @@ begin
 end;
 
 
-procedure TsgeGUIElement.Handler_ButtonDown(Keyboard: TsgeEventKeyboard);
+function TsgeGUIElement.Handler_ButtonDown(Keyboard: TsgeEventKeyboard): Boolean;
 begin
-  if Assigned(FOnButtonDown) then FOnButtonDown(Self, Keyboard);
+  Result := Assigned(FOnButtonDown);
+  if Result then FOnButtonDown(Self, Keyboard);
 end;
 
 
-procedure TsgeGUIElement.Handler_ButtonUp(Keyboard: TsgeEventKeyboard);
+function TsgeGUIElement.Handler_ButtonUp(Keyboard: TsgeEventKeyboard): Boolean;
 begin
-  if Assigned(FOnButtonUp) then FOnButtonUp(Self, Keyboard);
+  Result := Assigned(FOnButtonUp);
+  if Result then FOnButtonUp(Self, Keyboard);
 end;
 
 
-procedure TsgeGUIElement.Handler_ButtonChar(Keyboard: TsgeEventKeyboardChar);
+function TsgeGUIElement.Handler_ButtonChar(Keyboard: TsgeEventKeyboardChar): Boolean;
 begin
-  if Assigned(FOnButtonChar) then FOnButtonChar(Self, Keyboard);
+  Result := Assigned(FOnButtonChar);
+  if Result then FOnButtonChar(Self, Keyboard);
 end;
 
 
@@ -913,9 +916,9 @@ begin
   Result := True;
 
   case EventType of
-    ebetDown: Handler_ButtonDown(TsgeEventKeyboard(Keyboard));
-    ebetUp  : Handler_ButtonUp(TsgeEventKeyboard(Keyboard));
-    ebetChar: Handler_ButtonChar(TsgeEventKeyboardChar(Keyboard));
+    ebetDown: Result := Handler_ButtonDown(TsgeEventKeyboard(Keyboard));
+    ebetUp  : Result := Handler_ButtonUp(TsgeEventKeyboard(Keyboard));
+    ebetChar: Result := Handler_ButtonChar(TsgeEventKeyboardChar(Keyboard));
   end;
 end;
 
@@ -936,6 +939,17 @@ begin
 
   //Вывод после отрисовки детей
   if Assigned(FOnDrawAfter) then FOnDrawAfter(Self) else DrawAfter;
+
+  //Вывод рамки элемента
+  {$IfDef SGE_GUI_Bounds}
+  with SGE.ExtGraphic.Graphic do
+    begin
+    PoligonMode := gpmLine;
+    Color := cRed;
+    DrawRect(1, 0, FWidth - 1, FHeight - 1);
+    PoligonMode := gpmFill;
+    end;
+  {$EndIf}
 
   //Восстановить графику
   GraphicRestore;
