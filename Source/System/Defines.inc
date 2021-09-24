@@ -1,5 +1,5 @@
 //Определения
-//{$Define SGE_DEBUG}
+{$Define SGE_DEBUG}
 
 
 
@@ -13,5 +13,5 @@
 {$EndIf}
 
 
-
-
+//Вывод рамки GUI елементов
+{$Define SGE_GUI_Bounds}
