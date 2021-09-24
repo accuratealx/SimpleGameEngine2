@@ -21,7 +21,7 @@ uses
 
 type
   //Способ масштабирования
-  TsgeGUIPropertySpriteScaleMode = (pssmNormal, pssmStretch, pssmFitIn, pssmFitOutOut, pssmUser);
+  TsgeGUIPropertySpriteScaleMode = (pssmNormal, pssmStretch, pssmFitIn, pssmFitOut, pssmUser);
 
 
   //Горизонтальное выравнивание
@@ -32,8 +32,8 @@ type
   TsgeGUIPropertyVerticalAlign = (pvaTop, pvaMiddle, pvaBottom, pvaUser);
 
 
-  //Режим вывода спрайта (Целый, Плитка)
-  TsgeGUISpriteDrawMode = (sdmFull, sdmTile);
+  //Режим вывода спрайта (Целый, Плитка, Часть)
+  TsgeGUISpriteDrawMode = (sdmFull, sdmTile, sdmRect);
 
 
   //Метод вывода спрайта (Целиком, По частям)
@@ -53,6 +53,7 @@ type
     FDrawMode: TsgeGUISpriteDrawMode;                               //Режим вывода
     FDrawTileX: Word;                                               //Номер плитки X
     FDrawTileY: Word;                                               //Номер плитки Y
+    FDrawRect: TsgeGUIPropertyFloatRect;                            //Прямоугольник вывода части спрайта
     FDrawMethod: TsgeGUISpriteDrawMethod;                           //Метод вывода
     FSegmentOffset: TsgeGUIPropertySegmentOffset;                   //Смещение для сегментного вывода
 
@@ -83,6 +84,7 @@ type
     property DrawMode: TsgeGUISpriteDrawMode read FDrawMode write SetDrawMode;
     property DrawTileX: Word read FDrawTileX write SetDrawTileX;
     property DrawTileY: Word read FDrawTileY write SetDrawTileY;
+    property DrawRect: TsgeGUIPropertyFloatRect read FDrawRect;
     property DrawMethod: TsgeGUISpriteDrawMethod read FDrawMethod write SetDrawMethod;
     property SegmentOffset: TsgeGUIPropertySegmentOffset read FSegmentOffset;
   end;
@@ -91,7 +93,7 @@ type
 implementation
 
 uses
-  sgeGraphic, sgeGraphicColor, sgeGraphicUtils, sgeVars,
+  sgeTypes, sgeGraphic, sgeGraphicColor, sgeGraphicUtils, sgeVars,
   sgeGUIElement;
 
 type
@@ -195,6 +197,7 @@ begin
   //Создать свойства
   FScaleUserRect := TsgeGUIPropertyFloatRect.Create(AOwner);
   FSegmentOffset := TsgeGUIPropertySegmentOffset.Create(AOwner);
+  FDrawRect := TsgeGUIPropertyFloatRect.Create(AOwner);
 
   //Задать параметры
   FSprite := nil;
@@ -210,6 +213,7 @@ end;
 
 destructor TsgeGUIPropertyBackgroundSprite.Destroy;
 begin
+  FDrawRect.Free;
   FSegmentOffset.Free;
   FScaleUserRect.Free;
 
@@ -218,9 +222,29 @@ end;
 
 
 procedure TsgeGUIPropertyBackgroundSprite.Draw;
+
+  function FitIn(ElementW, ElementH, ImageW, ImageH: Integer): TsgeIntPoint;
+  var
+    k: Single;
+  begin
+    if (ElementW * ImageH < ImageW * ElementH) then k := ElementW / ImageW else k := ElementH / ImageH;
+    Result.X := Round(k * ImageW);
+    Result.Y := Round(k * ImageH);
+  end;
+
+  function FitOut(ElementW, ElementH, ImageW, ImageH: Integer): TsgeIntPoint;
+  var
+    k: Single;
+  begin
+    if (ElementW * ImageH > ImageW * ElementH) then k := ElementW / ImageW else k := ElementH / ImageH;
+    Result.X := Round(k * ImageW);
+    Result.Y := Round(k * ImageH);
+  end;
+
 var
   DrawOpt: TsgeGraphicDrawOptions;
   ElementWidth, ElementHeight, RectWidth, RectHeight: Integer;
+  Size: TsgeIntPoint;
   X, Y: Single;
 begin
   if FSprite = nil then Exit;
@@ -228,13 +252,6 @@ begin
   //Определить размеры элемента
   ElementWidth := TsgeGUIElementHack(FOwner).FWidth;
   ElementHeight := TsgeGUIElementHack(FOwner).FHeight;
-
-
-  SGE.ExtGraphic.Graphic.PoligonMode := gpmLine;
-  SGE.ExtGraphic.Graphic.Color := cRed;
-  SGE.ExtGraphic.Graphic.DrawRect(1, 0, ElementWidth - 1, ElementHeight - 1);
-  SGE.ExtGraphic.Graphic.PoligonMode := gpmFill;
-
 
   //Подготовить стандартныйе настройки вывода
   DrawOpt := DefaultDrawOptions;
@@ -259,12 +276,16 @@ begin
 
     pssmFitIn:
       begin
-      //Вписать в форму
+      Size := FitIn(ElementWidth, ElementHeight, FSprite.Width, FSprite.Height);
+      RectWidth := Size.X;
+      RectHeight := Size.Y;
       end;
 
-    pssmFitOutOut:
+    pssmFitOut:
       begin
-      //Описать форму
+      Size := FitOut(ElementWidth, ElementHeight, FSprite.Width, FSprite.Height);
+      RectWidth := Size.X;
+      RectHeight := Size.Y;
       end;
 
     pssmUser:
@@ -297,17 +318,19 @@ begin
   DrawOpt.Rect.Y2 := DrawOpt.Rect.Y1 + RectHeight;
 
   //Определить часть спрайта для вывода если плитка
-  if FDrawMode = sdmTile then
-    DrawOpt.SpriteRect := sgeGetTextureTileRect(FSprite, FDrawTileX, FDrawTileY);
+  case FDrawMode of
+    sdmTile:
+      DrawOpt.SpriteRect := sgeGetTextureTileRect(FSprite, FDrawTileX, FDrawTileY);
+
+    sdmRect:
+      DrawOpt.SpriteRect := sgeGetTextureRect(FSprite, FDrawRect.Rect);
+  end;
 
   //Вывод в зависимости от метода
   case FDrawMethod of
     sdmNormal : SGE.ExtGraphic.Graphic.DrawSprite(DrawOpt);
     sdmSegment: SGE.ExtGraphic.Graphic.DrawSpriteSegment(DrawOpt, FSegmentOffset.Rect);
   end;
-
-
-
 end;
 
 
