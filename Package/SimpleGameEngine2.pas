@@ -64,7 +64,7 @@ uses
   sgeExtensionTimeEvent, sgeShellCommand_Script_Delete, 
   sgeShellCommand_System_Stop, sgeTimeEventList, sgeGUIElement, sgeGUIForm, 
   sgeGUIFormList, sgeVars, sgeEventGraphic, sgeEventKeyboard, sgeEventMouse, 
-  sgeGUIPropertySegmentOffset, sgeGUIPropertyFloatRect;
+  sgeGUIPropertySegmentOffset, sgeGUIPropertyIntRect, sgeGUIPropertyFloatRect;
 
 implementation
 

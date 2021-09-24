@@ -15,7 +15,7 @@
     </CompilerOptions>
     <Description Value="Simple Game Engine 2"/>
     <Version Major="1"/>
-    <Files Count="185">
+    <Files Count="186">
       <Item1>
         <Filename Value="..\Source\ThirdParty\GDIPlus\GDIPAPI.pas"/>
         <UnitName Value="GDIPAPI"/>
@@ -758,9 +758,13 @@
         <UnitName Value="sgeGUIPropertySegmentOffset"/>
       </Item184>
       <Item185>
+        <Filename Value="..\Source\System\GUI\Properties\sgeGUIPropertyIntRect.pas"/>
+        <UnitName Value="sgeGUIPropertyIntRect"/>
+      </Item185>
+      <Item186>
         <Filename Value="..\Source\System\GUI\Properties\sgeGUIPropertyFloatRect.pas"/>
         <UnitName Value="sgeGUIPropertyFloatRect"/>
-      </Item185>
+      </Item186>
     </Files>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)"/>
