@@ -25,8 +25,9 @@ type
   private
     FGraphicElement: TsgeGraphicElementSpriteCashed;                //Элемент отрисовки
 
-    FBackground: TsgeGUIBackground;                                 //Фон
+    FBackground: TsgeGUIBackgroundExt;                              //Фон
 
+    function GetBackground: TsgeGUIPropertyBackground;
   protected
     procedure DrawBefore; override;
     procedure SetVisible(AVisible: Boolean); override;
@@ -37,15 +38,20 @@ type
 
     procedure Draw; override;
 
-    property Background: TsgeGUIBackground read FBackground;
+    property Background: TsgeGUIPropertyBackground read GetBackground;
   end;
 
 
 implementation
 
 uses
-  sgeVars, sgeGraphicColor, sgeOSPlatform;
+  sgeVars, sgeGraphicColor;
 
+
+function TsgeGUIForm.GetBackground: TsgeGUIPropertyBackground;
+begin
+  Result := FBackground;
+end;
 
 
 procedure TsgeGUIForm.DrawBefore;
@@ -82,7 +88,7 @@ begin
   SGE.ExtGraphic.DrawList.AddElement(FGraphicElement, 'GUI');
 
   //Создать свойство фона
-  FBackground := TsgeGUIBackground.Create(Self);
+  FBackground := TsgeGUIBackgroundExt.Create(Self);
 
   //Перерисовать форму
   Repaint;
@@ -113,6 +119,8 @@ begin
 
   if FGraphicElement <> nil then FGraphicElement.Update;
 end;
+
+
 
 end.
 

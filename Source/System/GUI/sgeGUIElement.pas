@@ -205,7 +205,6 @@ type
   end;
 
 
-
   //Список элементов
   TsgeGUIElementListTemplate = specialize TsgeTemplateObjectCollection<TsgeGUIElement>;
   TsgeGUIElementList = class(TsgeGUIElementListTemplate)
