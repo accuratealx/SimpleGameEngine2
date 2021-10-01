@@ -15,7 +15,6 @@ unit sgeGUIPropertyBackground;
 interface
 
 uses
-  sgeGraphicColor,
   sgeGUIProperty, sgeGUIPropertyColor, sgeGUIPropertyGradient, sgeGUIPropertySprite;
 
 
