@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGUIProperty.pas
-Версия            1.0
+Версия            1.2
 Создан            22.09.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          GUI: Базовое свойство
@@ -19,10 +19,14 @@ type
   protected
     FOwner: TObject;
 
-    procedure ResizeParent;
-    procedure RepaintParent;
+    FLockUpdate: Boolean;
+
+    procedure UpdateParent;
   public
     constructor Create(AOwner: TObject); virtual;
+
+    procedure LockUpdate;
+    procedure UnlockUpdate;
   end;
 
 
@@ -32,26 +36,37 @@ uses
   sgeGUIElement;
 
 type
-  TsgeGUIElementHack = class(TsgeGUIElement);
+  TsgeGUIElementExtended = class(TsgeGUIElement);
 
 
-procedure TsgeGUIProperty.ResizeParent;
+procedure TsgeGUIProperty.UpdateParent;
 begin
+  //Проверить блокировку обновления
+  if FLockUpdate then Exit;
+
+  //Если есть родитель, то обновить
   if FOwner <> nil then
-    TsgeGUIElementHack(FOwner).Notify([esCorrectSize]);
+    TsgeGUIElementExtended(FOwner).Notify([esCorrectSize]);
 end;
 
 
-procedure TsgeGUIProperty.RepaintParent;
+procedure TsgeGUIProperty.LockUpdate;
 begin
-  if FOwner <> nil then
-    TsgeGUIElementHack(FOwner).Notify([esRepaint]);
+  FLockUpdate := True;
+end;
+
+
+procedure TsgeGUIProperty.UnlockUpdate;
+begin
+  FLockUpdate := False;;
 end;
 
 
 constructor TsgeGUIProperty.Create(AOwner: TObject);
 begin
   FOwner := AOwner;
+
+  FLockUpdate := False;
 end;
 
 
