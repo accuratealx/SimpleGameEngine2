@@ -53,7 +53,7 @@ begin
   if FMinHeight > FMaxHeight then FMaxHeight := FMinHeight;
 
   //Внести изменения
-  ResizeParent;
+  UpdateParent;
 end;
 
 
@@ -67,7 +67,7 @@ begin
   if FMinWidth > FMaxWidth then FMaxWidth := FMinWidth;
 
   //Внести изменения
-  ResizeParent;
+  UpdateParent;
 end;
 
 
@@ -81,7 +81,7 @@ begin
   if FMaxHeight < FMinHeight then FMinHeight := FMaxHeight;
 
   //Внести изменения
-  ResizeParent;
+  UpdateParent;
 end;
 
 
@@ -95,7 +95,7 @@ begin
   if FMaxWidth < FMinWidth then FMinWidth := FMaxWidth;
 
   //Внести изменения
-  ResizeParent;
+  UpdateParent;
 end;
 
 
