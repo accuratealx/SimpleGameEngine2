@@ -66,7 +66,7 @@ begin
   FLeft := ATopLeft.X;
   FTop := ATopLeft.Y;
 
-  ResizeParent;
+  UpdateParent;
 end;
 
 
@@ -82,7 +82,7 @@ begin
   FRight := ABottomRight.X;
   FBottom := ABottomRight.Y;
 
-  ResizeParent;
+  UpdateParent;
 end;
 
 
@@ -102,35 +102,35 @@ begin
   FRight := ARect.X2;
   FBottom := ARect.Y2;
 
-  ResizeParent;
+  UpdateParent;
 end;
 
 
 procedure TsgeGUIPropertyFloatRect.SetTop(ATop: Single);
 begin
   FTop := ATop;
-  ResizeParent;
+  UpdateParent;
 end;
 
 
 procedure TsgeGUIPropertyFloatRect.SetLeft(ALeft: Single);
 begin
   FLeft := ALeft;
-  ResizeParent;
+  UpdateParent;
 end;
 
 
 procedure TsgeGUIPropertyFloatRect.SetRight(ARight: Single);
 begin
   FRight := ARight;
-  ResizeParent;
+  UpdateParent;
 end;
 
 
 procedure TsgeGUIPropertyFloatRect.SetBottom(ABottom: Single);
 begin
   FBottom := ABottom;
-  ResizeParent;
+  UpdateParent;
 end;
 
 
