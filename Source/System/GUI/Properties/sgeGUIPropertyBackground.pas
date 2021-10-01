@@ -16,7 +16,7 @@ interface
 
 uses
   sgeGraphicColor,
-  sgeGUIProperty, sgeGUIPropertyBackgroundGradient, sgeGUIPropertyBackgroundSprite;
+  sgeGUIProperty, sgeGUIPropertyColor, sgeGUIPropertyGradient, sgeGUIPropertySprite;
 
 
 type
@@ -24,98 +24,104 @@ type
   TsgeGUIPropertyBackgroundType = (pbtColor, pbtGradient, pbtSprite);
 
 
-  TsgeGUIBackground = class(TsgeGUIProperty)
+  TsgeGUIPropertyBackground = class(TsgeGUIProperty)
   private
     //Объекты
-    FGradient: TsgeGUIPropertyBackgroundGradient;                   //Градиент
-    FSprite: TsgeGUIPropertyBackgroundSprite;                       //Спрайт
+    FColor: TsgeGUIPropertyColorExt;                                //Цвет
+    FGradient: TsgeGUIPropertyGradientExt;                          //Градиент
+    FSprite: TsgeGUIPropertySpriteExt;                              //Спрайт
 
     //Свойства
     FType: TsgeGUIPropertyBackgroundType;                           //Тип заполнения
-    FColor: TsgeColor;                                              //Цвет фона
-
-    procedure DrawColor;
 
     procedure SetType(AType: TsgeGUIPropertyBackgroundType);
-    procedure SetColor(AColor: TsgeColor);
+
+    function  GetColor: TsgeGUIPropertyColor;
+    function  GetGradient: TsgeGUIPropertyGradient;
+    function  GetSprite: TsgeGUIPropertySprite;
   public
     constructor Create(AOwner: TObject); override;
     destructor  Destroy; override;
 
-    procedure Draw;
-
     property DrawType: TsgeGUIPropertyBackgroundType read FType write SetType;
-    property Color: TsgeColor read FColor write SetColor;
-    property Gradient: TsgeGUIPropertyBackgroundGradient read FGradient;
-    property Sprite: TsgeGUIPropertyBackgroundSprite read FSprite;
+    property Color: TsgeGUIPropertyColor read GetColor;
+    property Gradient: TsgeGUIPropertyGradient read GetGradient;
+    property Sprite: TsgeGUIPropertySprite read GetSprite;
   end;
 
+
+  TsgeGUIBackgroundExt = class(TsgeGUIPropertyBackground)
+  public
+    procedure Draw;
+  end;
 
 
 implementation
 
-uses
-  sgeVars;
 
 
-procedure TsgeGUIBackground.DrawColor;
-begin
-  with SGE.ExtGraphic.Graphic do
-    begin
-    BGColor := FColor;
-    EraseBG;
-    end;
-end;
 
-
-procedure TsgeGUIBackground.SetType(AType: TsgeGUIPropertyBackgroundType);
+procedure TsgeGUIPropertyBackground.SetType(AType: TsgeGUIPropertyBackgroundType);
 begin
   if FType = AType then Exit;
 
   FType := AType;
-  RepaintParent;
+  UpdateParent;
 end;
 
 
-procedure TsgeGUIBackground.SetColor(AColor: TsgeColor);
+function TsgeGUIPropertyBackground.GetColor: TsgeGUIPropertyColor;
 begin
-  FColor := AColor;
-  RepaintParent;
+  Result := FColor;
 end;
 
 
-constructor TsgeGUIBackground.Create(AOwner: TObject);
+function TsgeGUIPropertyBackground.GetGradient: TsgeGUIPropertyGradient;
+begin
+  Result := FGradient;
+end;
+
+
+function TsgeGUIPropertyBackground.GetSprite: TsgeGUIPropertySprite;
+begin
+  Result := FSprite;
+end;
+
+
+constructor TsgeGUIPropertyBackground.Create(AOwner: TObject);
 begin
   inherited Create(AOwner);
 
-  FGradient := TsgeGUIPropertyBackgroundGradient.Create(AOwner);
-  FSprite := TsgeGUIPropertyBackgroundSprite.Create(AOwner);
+  FColor := TsgeGUIPropertyColorExt.Create(AOwner);
+  FGradient := TsgeGUIPropertyGradientExt.Create(AOwner);
+  FSprite := TsgeGUIPropertySpriteExt.Create(AOwner);
 
   FType := pbtColor;
-  FColor := cGray;
 end;
 
 
-destructor TsgeGUIBackground.Destroy;
+destructor TsgeGUIPropertyBackground.Destroy;
 begin
   FSprite.Free;
   FGradient.Free;
+  FColor.Free;
 
   inherited Destroy;
 end;
 
 
-procedure TsgeGUIBackground.Draw;
+
+procedure TsgeGUIBackgroundExt.Draw;
 begin
   if FOwner = nil then Exit;
 
-  //Нарисовать фон
   case FType of
-    pbtColor    : DrawColor;
+    pbtColor    : FColor.Draw;
     pbtGradient : FGradient.Draw;
     pbtSprite   : FSprite.Draw;
   end;
 end;
+
 
 
 end.
