@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeTypes.pas
-Версия            1.1
+Версия            1.2
 Создан            22.04.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Общие типы
@@ -100,6 +100,9 @@ function  sgeGetSmallPoint(X, Y: SmallInt): TsgeSmallPoint;
 function  sgeGetIntRect(X1, Y1, X2, Y2: Integer): TsgeIntRect;
 function  sgeGetFloatRect(X1, Y1, X2, Y2: Single): TsgeFloatRect;
 
+function  sgeFitRectIn(BaseW, BaseH, RectW, RectH: Integer): TsgeIntPoint;
+function  sgeFitRectOut(BaseW, BaseH, RectW, RectH: Integer): TsgeIntPoint;
+
 
 implementation
 
@@ -141,6 +144,27 @@ begin
   Result.X2 := X2;
   Result.Y2 := Y2;
 end;
+
+
+function sgeFitRectIn(BaseW, BaseH, RectW, RectH: Integer): TsgeIntPoint;
+var
+  k: Single;
+begin
+  if (BaseW * RectH < RectW * BaseH) then k := BaseW / RectW else k := BaseH / RectH;
+  Result.X := Round(k * RectW);
+  Result.Y := Round(k * RectH);
+end;
+
+
+function sgeFitRectOut(BaseW, BaseH, RectW, RectH: Integer): TsgeIntPoint;
+var
+  k: Single;
+begin
+  if (BaseW * RectH > RectW * BaseH) then k := BaseW / RectW else k := BaseH / RectH;
+  Result.X := Round(k * RectW);
+  Result.Y := Round(k * RectH);
+end;
+
 
 
 end.
