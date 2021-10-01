@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGraphic.pas
-Версия            1.7
+Версия            1.8
 Создан            27.04.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс графики
@@ -575,7 +575,7 @@ begin
   Rct.Y2 := Rect.Y1 + Metric.Y1;
   sRct.X1 := SpriteRect.X1 + SpriteMetric.X1;
   sRct.Y1 := SpriteRect.Y1;
-  sRct.X2 := SpriteRect.X2 - SpriteMetric.X1;
+  sRct.X2 := SpriteRect.X2 - SpriteMetric.X2;
   sRct.Y2 := sRct.Y1 - SpriteMetric.Y1;
   FillSprite(Rct, sRct);
 
