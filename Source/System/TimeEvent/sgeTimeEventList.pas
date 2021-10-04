@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeTimeEventList.pas
-Версия            1.0
+Версия            1.1
 Создан            31.08.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Список таймерных элементов
@@ -16,28 +16,28 @@ unit sgeTimeEventList;
 interface
 
 uses
-  sgeCriticalSection, sgeTemplateObjectCollection, sgeTimeEventItem, sgeEventTimeEvent;
+  sgeCriticalSection, sgeTemplateCollection, sgeTimeEventItem;
 
 
 type
-  TsgeTimeEventListTemplate = specialize TsgeTemplateObjectCollection<TsgeTimeEventItem>;
+  TsgeTimeEventListTemplate = specialize TsgeTemplateCollection<TsgeTimeEventItem>;
 
 
   TsgeTimeEventList = class(TsgeTimeEventListTemplate)
   private
     FCS: TsgeCriticalSection;
+
   public
-    constructor Create;
+    constructor Create; override;
     destructor  Destroy; override;
 
-    function IndexOf(Proc: TsgeTimeEventProc): Integer;
+    function IndexOf(AItem: TsgeTimeEventItem): Integer;
 
     procedure Lock;
     procedure Unlock;
 
-    procedure Clear;
     procedure Add(AItem: TsgeTimeEventItem);
-    procedure Delete(Index: Integer);
+    procedure Delete(AItem: TsgeTimeEventItem);
   end;
 
 
@@ -46,7 +46,7 @@ implementation
 
 constructor TsgeTimeEventList.Create;
 begin
-  inherited Create(True);
+  inherited Create;
 
   FCS := TsgeCriticalSection.Create;
 end;
@@ -60,7 +60,7 @@ begin
 end;
 
 
-function TsgeTimeEventList.IndexOf(Proc: TsgeTimeEventProc): Integer;
+function TsgeTimeEventList.IndexOf(AItem: TsgeTimeEventItem): Integer;
 var
   i: Integer;
 begin
@@ -70,10 +70,10 @@ begin
   try
 
     for i := 0 to FCount - 1 do
-      if FList[i].Proc = Proc then Exit(i);
+      if FList[i] = AItem then Exit(i);
 
   finally
-    FCS.Free;
+    FCS.Leave;
   end;
 end;
 
@@ -90,19 +90,6 @@ begin
 end;
 
 
-procedure TsgeTimeEventList.Clear;
-begin
-  FCS.Enter;
-  try
-
-    inherited Clear;
-
-  finally
-    FCS.Leave;
-  end;
-end;
-
-
 procedure TsgeTimeEventList.Add(AItem: TsgeTimeEventItem);
 begin
   FCS.Enter;
@@ -116,12 +103,16 @@ begin
 end;
 
 
-procedure TsgeTimeEventList.Delete(Index: Integer);
+procedure TsgeTimeEventList.Delete(AItem: TsgeTimeEventItem);
+var
+  Idx: Integer;
 begin
   FCS.Enter;
   try
 
-    inherited Delete(Index);
+    Idx := IndexOf(AItem);
+    if Idx <> -1 then
+       inherited Delete(Idx);
 
   finally
     FCS.Leave;

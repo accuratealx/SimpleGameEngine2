@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine
 Файл              sgeTimeEventItem.pas
-Версия            1.2
+Версия            1.3
 Создан            31.08.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс таймерного события
@@ -29,7 +29,6 @@ type
     FProc: TsgeTimeEventProc;                   //Указатель на метод
     FStartDelay: Cardinal;                      //Задержка перед первым выполнением
     FAutoDelete: Boolean;                       //Автоудаление при выполнении
-    FNeedDelete: Boolean;                       //Флаг удаления
 
     //Дополнительные параметры
     FLastExecuteTime: Int64;                    //Время последнего вызова
@@ -39,8 +38,7 @@ type
     procedure SetEnable(AEnable: Boolean);
   public
     constructor Create(Proc: TsgeTimeEventProc; Delay: Cardinal = 0; Times: Integer = -1; AutoDelete: Boolean = True; StartDelay: Cardinal = 0; Enable: Boolean = True);
-
-    procedure Delete;
+    destructor  Destroy; override;
 
     function  IsTimePassed: Boolean;
     procedure IncTimes;
@@ -49,7 +47,6 @@ type
     procedure Start;
     procedure Stop;
 
-    property NeedDelete: Boolean read FNeedDelete;
     property Delay: Cardinal read FDelay write FDelay;
     property Enable: Boolean read FEnable write SetEnable;
     property Times: Integer read FTimes write SetTimes;
@@ -66,7 +63,7 @@ type
 implementation
 
 uses
-  sgeErrors, sgeOSPlatform;
+  sgeErrors, sgeOSPlatform, sgeVars;
 
 
 const
@@ -111,14 +108,18 @@ begin
   //Дополнительные параметры
   FTimesCount := 0;
 
+  //Добавить себя в список
+  SGE.ExtTimeEvent.TimeEventList.Add(Self);
+
   //Изменить активность
   SetEnable(Enable);
 end;
 
 
-procedure TsgeTimeEventItem.Delete;
+destructor TsgeTimeEventItem.Destroy;
 begin
-  FNeedDelete := True;
+  //Удалить себя из списока
+  SGE.ExtTimeEvent.TimeEventList.Delete(Self);
 end;
 
 
