@@ -15,7 +15,7 @@
     </CompilerOptions>
     <Description Value="Simple Game Engine 2"/>
     <Version Major="1"/>
-    <Files Count="194">
+    <Files Count="195">
       <Item1>
         <Filename Value="..\Source\ThirdParty\GDIPlus\GDIPAPI.pas"/>
         <UnitName Value="GDIPAPI"/>
@@ -744,9 +744,9 @@
         <UnitName Value="sgeGUIPropertySprite"/>
       </Item181>
       <Item182>
-        <Filename Value="..\Source\System\GUI\Properties\sgeGUIElementPropertyConstrains.pas"/>
+        <Filename Value="..\Source\System\GUI\Properties\sgeGUIPropertyConstrains.pas"/>
         <AddToUsesPkgSection Value="False"/>
-        <UnitName Value="sgeGUIElementPropertyConstrains"/>
+        <UnitName Value="sgeGUIPropertyConstrains"/>
       </Item182>
       <Item183>
         <Filename Value="..\Source\System\GUI\Properties\sgeGUIProperty.pas"/>
@@ -797,6 +797,10 @@
         <Filename Value="..\Source\System\GUI\Properties\sgeGUIPropertyDrawMethod.pas"/>
         <UnitName Value="sgeGUIPropertyDrawMethod"/>
       </Item194>
+      <Item195>
+        <Filename Value="..\Source\System\GUI\sgeGUITimer.pas"/>
+        <UnitName Value="sgeGUITimer"/>
+      </Item195>
     </Files>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)"/>
