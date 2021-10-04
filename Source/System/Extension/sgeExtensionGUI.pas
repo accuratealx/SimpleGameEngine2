@@ -77,6 +77,8 @@ type
     constructor Create(ObjectList: TObject); override;
     destructor  Destroy; override;
 
+    procedure RepaintForms;                                                   //Перерисовать формы
+
     //Мышь
     procedure MouseCapture(Element: TsgeGUIElement);                          //Установить захват мыши
     procedure ReleaseMouse(Element: TsgeGUIElement);                          //Отменить захват мыши
@@ -86,13 +88,14 @@ type
     procedure SetFocus(Element: TsgeGUIElement);                              //Установить фокус ввода на элемент
     procedure LostFocus(Element: TsgeGUIElement);                             //Убрать фокус с элемента
 
+    //Свойства
     property Enable: Boolean read FEnable write SetEnable;
     property Visible: Boolean read FVisible write SetVisible;
 
     property FormList: TsgeGUIFormList read FFormList;
 
 
-    //Шибануть
+    { TODO : Шибануть лишнее }
     property GUILayer: TsgeGraphicElementLayer read FGUILayer; experimental;
   end;
 
@@ -372,6 +375,15 @@ begin
   FFormList.Free;
 
   inherited Destroy;
+end;
+
+
+procedure TsgeExtensionGUI.RepaintForms;
+var
+  i: Integer;
+begin
+  for i := 0 to FFormList.Count - 1 do
+    FFormList.Item[i].Repaint;
 end;
 
 
