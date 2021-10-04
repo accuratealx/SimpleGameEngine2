@@ -18,7 +18,7 @@ uses
   sgeTypes, sgeTemplateObjectCollection,
   sgeGraphicSprite, sgeGraphicColor,
   sgeEventBase, sgeEventKeyboard, sgeEventMouse,
-  sgeGUIElementPropertyConstrains;
+  sgeGUIPropertyConstrains;
 
 
 type
@@ -67,22 +67,19 @@ type
     FHeight: Integer;                                               //Высота
     FAutoSize: Boolean;                                             //Авторазмер
     FClickButton: TsgeMouseButton;                                  //Кнопка мыши для Click
-    FConstrains: TsgeGUIElementPropertyConstrains;                  //Ограничение размеров
+    FConstrains: TsgeGUIPropertyConstrainsExt;                      //Ограничение размеров
 
     //Вспомогательные параметры
     FEventMouseEntered: Boolean;                                    //Флаг захода мышки на элемент
     FPressed: Boolean;                                              //Флаг нажатия для Click
 
     //Обработчики событий
-    FOnDrawBefore: TsgeGUIProcEvent;
-    FOnDrawAfter: TsgeGUIProcEvent;
-
+    FOnDrawBefore       : TsgeGUIProcEvent;
+    FOnDrawAfter        : TsgeGUIProcEvent;
     FOnShow             : TsgeGUIProcEvent;
     FOnHide             : TsgeGUIProcEvent;
-
     FOnSetFocus         : TsgeGUIProcEvent;
     FOnLostFocus        : TsgeGUIProcEvent;
-
     FOnMouseClick       : TsgeGUIProcMouseEvent;
     FOnMouseDoubleClick : TsgeGUIProcMouseEvent;
     FOnMouseMove        : TsgeGUIProcMouseEvent;
@@ -91,17 +88,14 @@ type
     FOnMouseLeave       : TsgeGUIProcMouseEvent;
     FOnMouseEnter       : TsgeGUIProcMouseEvent;
     FOnMouseScroll      : TsgeGUIProcMouseEvent;
-
     FOnButtonDown       : TsgeGUIProcButtonEvent;
     FOnButtonUp         : TsgeGUIProcButtonEvent;
     FOnButtonChar       : TsgeGUIProcButtonCharEvent;
 
     procedure Handler_Show; virtual;
     procedure Handler_Hide; virtual;
-
     procedure Handler_SetFocus; virtual;
     procedure Handler_LostFocus; virtual;
-
     procedure Handler_MouseClick(Mouse: TsgeEventMouse); virtual;
     procedure Handler_MouseDoubleClick(Mouse: TsgeEventMouse); virtual;
     procedure Handler_MouseMove(Mouse: TsgeEventMouse); virtual;
@@ -110,7 +104,6 @@ type
     procedure Handler_MouseLeave(Mouse: TsgeEventMouse); virtual;
     procedure Handler_MouseEnter(Mouse: TsgeEventMouse); virtual;
     procedure Handler_MouseScroll(Mouse: TsgeEventMouse); virtual;
-
     function Handler_ButtonDown(Keyboard: TsgeEventKeyboard): Boolean; virtual;
     function Handler_ButtonUp(Keyboard: TsgeEventKeyboard): Boolean; virtual;
     function Handler_ButtonChar(Keyboard: TsgeEventKeyboardChar): Boolean; virtual;
@@ -142,6 +135,8 @@ type
     procedure SetAlpha(AAlpha: Single); virtual;
     procedure SetFocused(AFocused: Boolean); virtual;
     procedure SetAutoSize(AAutoSize: Boolean); virtual;
+
+    function  GetConstrains: TsgeGUIPropertyConstrains;
 
     //Методы Parent
     procedure Repaint;
@@ -176,20 +171,17 @@ type
     property Top: Integer read FTop write SetTop;
     property Width: Integer read FWidth write SetWidth;
     property Height: Integer read FHeight write SetHeight;
-    property Constrains: TsgeGUIElementPropertyConstrains read FConstrains;
+    property Constrains: TsgeGUIPropertyConstrains read GetConstrains;
     property ClickButton: TsgeMouseButton read FClickButton write FClickButton;
     property ChildList: TsgeGUIElementList read FChildList;
 
     //Обработчики
     property OnDrawBefore: TsgeGUIProcEvent read FOnDrawBefore write SetDrawBefore;
     property OnDrawAfter: TsgeGUIProcEvent read FOnDrawAfter write SetDrawAfter;
-
     property OnShow: TsgeGUIProcEvent read FOnShow write FOnShow;
     property OnHide: TsgeGUIProcEvent read FOnHide write FOnHide;
-
     property OnSetFocus: TsgeGUIProcEvent read FOnSetFocus write FOnSetFocus;
     property OnLostFocus: TsgeGUIProcEvent read FOnLostFocus write FOnLostFocus;
-
     property OnMouseClick: TsgeGUIProcMouseEvent read FOnMouseClick write FOnMouseClick;
     property OnMouseDoubleClick: TsgeGUIProcMouseEvent read FOnMouseDoubleClick write FOnMouseDoubleClick;
     property OnMouseMove: TsgeGUIProcMouseEvent read FOnMouseMove write FOnMouseMove;
@@ -198,7 +190,6 @@ type
     property OnMouseLeave: TsgeGUIProcMouseEvent read FOnMouseLeave write FOnMouseLeave;
     property OnMouseEnter: TsgeGUIProcMouseEvent read FOnMouseEnter write FOnMouseEnter;
     property OnMouseScroll: TsgeGUIProcMouseEvent read FOnMouseScroll write FOnMouseScroll;
-
     property OnButtonDown: TsgeGUIProcButtonEvent read FOnButtonDown write FOnButtonDown;
     property OnButtonUp: TsgeGUIProcButtonEvent read FOnButtonUp write FOnButtonUp;
     property OnButtonChar: TsgeGUIProcButtonCharEvent read FOnButtonChar write FOnButtonChar;
@@ -220,9 +211,6 @@ implementation
 
 uses
   sgeVars, sgeGraphic, sgeMathUtils;
-
-type
-  TsgeGUIElementHack = class(TsgeGUIElement);
 
 
 function TsgeGUIElementList.IndexOf(Element: TsgeGUIElement): Integer;
@@ -345,6 +333,12 @@ begin
 end;
 
 
+function TsgeGUIElement.GetConstrains: TsgeGUIPropertyConstrains;
+begin
+  Result := FConstrains;
+end;
+
+
 procedure TsgeGUIElement.Handler_Show;
 begin
   if Assigned(FOnShow) then FOnShow(Self);
@@ -445,6 +439,8 @@ begin
 
   //Проверить ограничение размера
   FConstrains.Check(NewWidth, NewHeight);
+
+  //Проверку на наименьший размер ?
 end;
 
 
@@ -464,7 +460,11 @@ begin
     begin
     Exclude(FState, esCorrectSize);                                 //Удалить флаг изменения размеров
     GetPrefferedSize(FWidth, FHeight);                              //Взять предпочтительный размер
-    FCanvas.SetSize(FWidth, FHeight);                               //Изменить размеры канваса
+
+    //Изменить размеры канваса если они отличаются
+    if (FWidth <> FCanvas.Width) or (FHeight <> FCanvas.Height) then
+      FCanvas.SetSize(FWidth, FHeight);
+
     Include(FState, esRepaint);                                     //Дбавить флаг перерисовки
     end;
 
@@ -673,7 +673,7 @@ begin
   //Создать объекты
   FCanvas := TsgeGraphicSprite.Create(Width, Height, cTransparent);
   FChildList := TsgeGUIElementList.Create(False);
-  FConstrains := TsgeGUIElementPropertyConstrains.Create(Self);
+  FConstrains := TsgeGUIPropertyConstrainsExt.Create(Self);
 
   //Изменить размеры
   SetBounds(sgeGetFloatRect(Left, Top, Left + Width, Top + Height));
