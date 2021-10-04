@@ -45,7 +45,7 @@ type
 implementation
 
 uses
-  sgeVars, sgeGraphicColor;
+  sgeVars;
 
 
 function TsgeGUIForm.GetBackground: TsgeGUIPropertyBackground;
@@ -117,7 +117,14 @@ procedure TsgeGUIForm.Draw;
 begin
   inherited Draw;
 
-  if FGraphicElement <> nil then FGraphicElement.Update;
+  if FGraphicElement <> nil then
+    begin
+    FGraphicElement.X := FLeft;
+    FGraphicElement.Y := FTop;
+    FGraphicElement.W := FWidth;
+    FGraphicElement.H := FHeight;
+    FGraphicElement.Update;
+    end;
 end;
 
 
