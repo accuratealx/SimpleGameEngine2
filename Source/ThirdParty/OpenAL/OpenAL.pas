@@ -1583,8 +1583,6 @@ var
 
   alListeneriv: procedure(param: TALenum; const values: PALint);
 
-  //TODO: verder ontbrekende functies toevoegen.
-
   //Retrieve listener information
   alGetListeneriv: procedure(param: TALenum; values: PALint); cdecl;
   alGetListenerfv: procedure(param: TALenum; values: PALfloat); cdecl;
