@@ -16,8 +16,8 @@ unit sgeExtensionKeyCommand;
 interface
 
 uses
-  sgeTypes, sgeExtensionBase, sgeExtensionShell, sgeEventBase, sgeEventSubscriber,
-  sgeEventWindow, sgeEventKeyboard, sgeEventMouse, sgeEventControllers,
+  sgeTypes, sgeExtensionBase, sgeExtensionShell, sgeEventBase,
+  sgeEventKeyboard, sgeEventMouse, sgeEventControllers,
   sgeKeyCommandKeyboard, sgeKeyCommandMouse, sgeKeyCommandJoystick;
 
 
@@ -78,7 +78,7 @@ type
 implementation
 
 uses
-  sgeErrors, sgeKeys;
+  sgeErrors;
 
 const
   _UNITNAME = 'ExtensionKeyCommand';

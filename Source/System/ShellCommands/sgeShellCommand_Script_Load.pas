@@ -46,7 +46,7 @@ uses
 const
   _UNITNAME = 'ShellCommand_Script_Load';
 
-  Err_ScriptExist   = 'ScriptExist';
+  //Err_ScriptExist   = 'ScriptExist';
   Err_FileNotFound  = 'FileNotFound';
   Err_CantReadFile  = 'CantReadFile';
   Err_CantLoadFile  = 'CantLoadFile';
@@ -57,6 +57,8 @@ begin
   inherited Create(SGEObject, 'Load', Group_Script);
 
   //Добавить параметры
+  FParameters.AddString('FileName', True);
+  FParameters.AddString('Name', False);
 end;
 
 
@@ -68,6 +70,8 @@ var
 begin
   Result := inherited Execute(Command);
   SGE := TSimpleGameEngine(FSGE);
+
+  { TODO : Добавить проверку на существование скрипта или сделать обновление }
 
   //Имя файла
   fn := Command.Part[1];

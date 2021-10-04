@@ -52,14 +52,6 @@ type
 
 implementation
 
-uses
-  sgeErrors, sgeSystemUtils;
-
-const
-  _UNITNAME = 'EventSubscriberGroupList';
-
-  Err_IndexOutOfBounds = 'IndexOutOfBounds';
-
 
 
 constructor TsgeEventSubscriberGroupList.Create;

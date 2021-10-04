@@ -496,6 +496,7 @@ begin
       begin
       //Подготовить список найденных комманд для ошибки
       c := MatchList.Count - 1;
+      s := '';
       for i := 0 to c do
         begin
         S := S + MatchList.Item[i].GetFullName;

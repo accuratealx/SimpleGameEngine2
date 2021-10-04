@@ -58,7 +58,7 @@ type
 implementation
 
 uses
-  sgeTypes, sgeGraphic, sgeGraphicUtils, sgeVars,
+  sgeTypes, sgeGraphic, sgeVars,
   sgeGUIElement;
 
 type
@@ -132,7 +132,6 @@ var
   DrawOpt: TsgeGraphicDrawOptions;
   BaseWidth, BaseHeight: Integer;
   Size: TsgeIntPoint;
-  X, Y: Single;
 begin
   if FSprite = nil then Exit;
 

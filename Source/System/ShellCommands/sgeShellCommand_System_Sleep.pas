@@ -38,7 +38,7 @@ type
 implementation
 
 uses
-  SimpleGameEngine, sgeSystemUtils, sgeOSPlatform;
+  sgeSystemUtils, sgeOSPlatform;
 
 
 

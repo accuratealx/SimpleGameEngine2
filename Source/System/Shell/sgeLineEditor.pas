@@ -329,6 +329,7 @@ var
   s: String;
 begin
   DeleteSelection;
+  s := '';
   Idx := sgeCopyFromClipboard(s);
   if Idx <> 0 then Exit;
   InsertString(FCursorPos, GetClearString(s));
@@ -353,6 +354,7 @@ function TsgeLineEditor.GetClearString(Str: String): String;
 var
   i: Integer;
 begin
+  Result := '';
   for i := 1 to Length(Str) do
     if Ord(Str[i]) >= 32 then Result := Result + Str[i];
 end;

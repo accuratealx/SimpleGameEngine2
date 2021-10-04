@@ -15,7 +15,7 @@ unit sgeShellCommand_System_Label;
 interface
 
 uses
-  sgeSimpleCommand, sgeShellCommand;
+  sgeShellCommand;
 
 
 type

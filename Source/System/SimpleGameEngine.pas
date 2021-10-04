@@ -157,7 +157,9 @@ end;
 
 function TSimpleGameEngine.EventWindowClose(Obj: TsgeEventBase): Boolean;
 begin
-  if CloseWindow then Stop;
+  Result := CloseWindow;
+
+  if Result then Stop;
 end;
 
 
@@ -165,8 +167,13 @@ function TSimpleGameEngine.EventTime(Obj: TsgeEventBase): Boolean;
 var
   Proc: TsgeTimeEventProc;
 begin
+  //Не передавать дальше событие
+  Result := True;
+
+  //Ссылка на метод
   Proc := TsgeEventTimeEvent(Obj).Proc;
 
+  //Проверка на пустой указатель
   if Proc = nil then
     raise EsgeException.Create(_UNITNAME, Err_EmptyMethodPointer);
 

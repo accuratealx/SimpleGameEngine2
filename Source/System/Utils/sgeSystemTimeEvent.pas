@@ -38,7 +38,7 @@ type
     procedure SetTimes(ATimes: Integer);            //Установить количество срабатываний после запуска
     procedure StartEvent;                           //Запуск таймера
     procedure StopEvent;                            //Останов таймера
-    procedure CorrectPeriod(out Period: Cardinal);  //Поправить задержку
+    procedure CorrectPeriod(var Period: Cardinal);  //Поправить задержку
   public
     constructor Create(Delay: Cardinal; Enable: Boolean; Proc: TsgeEventProc; Times: Integer = -1);
     destructor  Destroy; override;
@@ -150,7 +150,7 @@ begin
 end;
 
 
-procedure TsgeSystemTimeEvent.CorrectPeriod(out Period: Cardinal);
+procedure TsgeSystemTimeEvent.CorrectPeriod(var Period: Cardinal);
 begin
   if Period < FMinPeriod then Period := FMinPeriod;
   if Period > FMaxPeriod then Period := FMaxPeriod;

@@ -15,7 +15,7 @@ unit sgeResourceList;
 interface
 
 uses
-  sgeMetaInfoList, sgeGraphicFont;
+  sgeMetaInfoList;
 
 
 
@@ -110,10 +110,6 @@ const
   Err_IndexOutOfBounds          = 'IndexOutOfBounds';
   Err_ResourceNotFound          = 'ResourceNotFound';
   Err_ObjectIsEmpty             = 'ObjectIsEmpty';
-  Err_NotEnoughParameters       = 'NotEnoughParameters';
-  Err_ValueIsEmpty              = 'ValueIsEmpty';
-  Err_DuplicateResource         = 'DuplicateResource';
-
 
 
 function sgeStrToResType(Str: String): TsgeResourceType;

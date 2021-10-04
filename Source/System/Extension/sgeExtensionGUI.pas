@@ -101,7 +101,7 @@ type
 implementation
 
 uses
-  sgeTypes, sgeErrors, sgeStringList, sgeFileUtils, sgeOSPlatform, sgeGUIForm;
+  sgeTypes, sgeErrors, sgeOSPlatform, sgeGUIForm;
 
 const
   _UNITNAME = 'ExtensionGUI';

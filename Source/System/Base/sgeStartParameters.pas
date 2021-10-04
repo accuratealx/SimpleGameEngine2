@@ -42,7 +42,7 @@ type
     function  GetExist(Name: String): Boolean;
     function  GetParameter(Index: Integer): TsgeStartParameterItem;
 
-    procedure GetNameAndValueFromString(Str: String; var pName, pValue: String);
+    procedure GetNameAndValueFromString(Str: String; out pName, pValue: String);
     procedure FindParametersFromString(Str: String);
     function  GetNormalParamString: String;
   public
@@ -160,7 +160,7 @@ begin
 end;
 
 
-procedure TsgeStartParameters.GetNameAndValueFromString(Str: String; var pName, pValue: String);
+procedure TsgeStartParameters.GetNameAndValueFromString(Str: String; out pName, pValue: String);
 var
   IsName: Boolean;
   i, c: Integer;
