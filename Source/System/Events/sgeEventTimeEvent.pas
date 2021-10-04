@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeEventTimeEvent.pas
-Версия            1.0
+Версия            1.1
 Создан            31.08.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Классы событий: Таймер
@@ -15,7 +15,7 @@ unit sgeEventTimeEvent;
 interface
 
 uses
-  sgeTypes, sgeEventBase;
+  sgeEventBase;
 
 
 const

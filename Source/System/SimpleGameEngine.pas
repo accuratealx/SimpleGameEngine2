@@ -317,9 +317,6 @@ begin
   //Изменить флаг работы
   FWorking := False;
 
-  //Очистить список таймеров
-  FExtensionTimeEvent.TimeEventList.Clear;
-
   //Очистить список элементов графики
   FExtensionGraphic.DrawList.ClearLayers;
 
