@@ -80,7 +80,11 @@ begin
       El := FTimeEventList.Item[Idx];
 
       //Проверить на активность
-      if not El.Enable then Continue;
+      if not El.Enable then
+        begin
+        Inc(Idx);
+        Continue;
+        end;
 
       //Проверить, прошло время для выполнения или нет
       if El.IsTimePassed then
