@@ -48,7 +48,7 @@ var
   i: Integer;
 begin
   //Чёрный цвет
-  Result := sgeGetRGBA(0, 0, 0, 1);
+  Result := sgeGetRGBA(0, 0, 0, 255);
 
   //Подготовить список частей
   List := TsgeStringList.Create;
