@@ -15,29 +15,36 @@ unit sgeGUIPropertyGradient;
 interface
 
 uses
+  sgeSimpleParameters,
   sgeGUIProperty, sgeGUIPropertyColor;
 
 
 type
   TsgeGUIPropertyGradient = class(TsgeGUIProperty)
   private
-    FTopLeft: TsgeGUIPropertyColor;
-    FTopRight: TsgeGUIPropertyColor;
-    FBottomLeft: TsgeGUIPropertyColor;
-    FBottomRight: TsgeGUIPropertyColor;
+    FTopLeft: TsgeGUIPropertyColorExt;
+    FTopRight: TsgeGUIPropertyColorExt;
+    FBottomLeft: TsgeGUIPropertyColorExt;
+    FBottomRight: TsgeGUIPropertyColorExt;
+
+    function GetTopLeft: TsgeGUIPropertyColor;
+    function GetTopRight: TsgeGUIPropertyColor;
+    function GetBottomLeft: TsgeGUIPropertyColor;
+    function GetBottomRight: TsgeGUIPropertyColor;
   public
     constructor Create(AOwner: TObject); override;
     destructor  Destroy; override;
 
-    property TopLeft: TsgeGUIPropertyColor read FTopLeft;
-    property TopRight: TsgeGUIPropertyColor read FTopRight;
-    property BottomLeft: TsgeGUIPropertyColor read FBottomLeft;
-    property BottomRight: TsgeGUIPropertyColor read FBottomRight;
+    property TopLeft: TsgeGUIPropertyColor read GetTopLeft;
+    property TopRight: TsgeGUIPropertyColor read GetTopRight;
+    property BottomLeft: TsgeGUIPropertyColor read GetBottomLeft;
+    property BottomRight: TsgeGUIPropertyColor read GetBottomRight;
   end;
 
 
   TsgeGUIPropertyGradientExt = class(TsgeGUIPropertyGradient)
   public
+    procedure LoadParameters(Parameters: TsgeSimpleParameters; Prefix: String = '');
     procedure Draw;
   end;
 
@@ -52,15 +59,38 @@ type
   TsgeGUIElementExtended = class(TsgeGUIElement);
 
 
+function TsgeGUIPropertyGradient.GetTopLeft: TsgeGUIPropertyColor;
+begin
+  Result := FTopLeft;
+end;
+
+
+function TsgeGUIPropertyGradient.GetTopRight: TsgeGUIPropertyColor;
+begin
+  Result := FTopRight;
+end;
+
+
+function TsgeGUIPropertyGradient.GetBottomLeft: TsgeGUIPropertyColor;
+begin
+  Result := FBottomLeft;
+end;
+
+
+function TsgeGUIPropertyGradient.GetBottomRight: TsgeGUIPropertyColor;
+begin
+  Result := FBottomRight;
+end;
+
 
 constructor TsgeGUIPropertyGradient.Create(AOwner: TObject);
 begin
   inherited Create(AOwner);
 
-  FTopLeft := TsgeGUIPropertyColor.Create(AOwner);
-  FTopRight := TsgeGUIPropertyColor.Create(AOwner);
-  FBottomLeft := TsgeGUIPropertyColor.Create(AOwner);
-  FBottomRight := TsgeGUIPropertyColor.Create(AOwner);
+  FTopLeft := TsgeGUIPropertyColorExt.Create(AOwner);
+  FTopRight := TsgeGUIPropertyColorExt.Create(AOwner);
+  FBottomLeft := TsgeGUIPropertyColorExt.Create(AOwner);
+  FBottomRight := TsgeGUIPropertyColorExt.Create(AOwner);
 end;
 
 
@@ -74,6 +104,21 @@ begin
   inherited Destroy;
 end;
 
+
+procedure TsgeGUIPropertyGradientExt.LoadParameters(Parameters: TsgeSimpleParameters; Prefix: String);
+begin
+  //TopLeft
+  FTopLeft.LoadParameters(Parameters, Prefix + 'TopLeft.');
+
+  //TopRight
+  FTopRight.LoadParameters(Parameters, Prefix + 'TopRight.');
+
+  //BottomLeft
+  FBottomLeft.LoadParameters(Parameters, Prefix + 'BottomLeft.');
+
+  //BottomRight
+  FBottomRight.LoadParameters(Parameters, Prefix + 'BottomRight.');
+end;
 
 
 procedure TsgeGUIPropertyGradientExt.Draw;
