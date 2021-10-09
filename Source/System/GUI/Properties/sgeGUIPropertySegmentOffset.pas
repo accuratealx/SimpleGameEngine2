@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGUIPropertySegmentOffset.pas
-Версия            1.1
+Версия            1.2
 Создан            23.09.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          GUI: Свойство: Смещение для сегментного вывода спрайта
@@ -15,7 +15,7 @@ unit sgeGUIPropertySegmentOffset;
 interface
 
 uses
-  sgeTypes,
+  sgeTypes, sgeSimpleParameters,
   sgeGUIProperty;
 
 
@@ -43,6 +43,11 @@ type
     property Rect: TsgeIntRect read GetRect write SetRect;
   end;
 
+
+  TsgeGUIPropertySegmentOffsetExt = class(TsgeGUIPropertySegmentOffset)
+  public
+    procedure LoadParameters(Parameters: TsgeSimpleParameters; Prefix: String = '');
+  end;
 
 implementation
 
@@ -99,6 +104,32 @@ begin
 
   FBottom := ABottom;
   UpdateParent;
+end;
+
+
+
+procedure TsgeGUIPropertySegmentOffsetExt.LoadParameters(Parameters: TsgeSimpleParameters; Prefix: String);
+
+  procedure SetValue(ParamName: String; var Value: Word);
+  var
+    s: String;
+  begin
+    s := Prefix + ParamName;
+    if Parameters.Exist[s] then Value := Parameters.GetValue(s, 0);
+  end;
+
+begin
+  //Top
+  SetValue('Top', FTop);
+
+  //Left
+  SetValue('Left', FLeft);
+
+  //Right
+  SetValue('Right', FRight);
+
+  //Bottom
+  SetValue('Bottom', FBottom);
 end;
 
 
