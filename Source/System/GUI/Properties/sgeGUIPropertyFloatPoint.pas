@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGUIPropertyFloatPoint.pas
-Версия            1.0
+Версия            1.1
 Создан            30.09.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          GUI: Свойство: Дробная точка
@@ -15,6 +15,7 @@ unit sgeGUIPropertyFloatPoint;
 interface
 
 uses
+  sgeSimpleParameters,
   sgeGUIProperty;
 
 type
@@ -31,7 +32,14 @@ type
   end;
 
 
+  TsgeGUIPropertyFloatPointExt = class(TsgeGUIPropertyFloatPoint)
+  public
+    procedure LoadParameters(Parameters: TsgeSimpleParameters; Prefix: String = '');
+  end;
+
+
 implementation
+
 
 
 procedure TsgeGUIPropertyFloatPoint.SetX(AX: Single);
@@ -45,6 +53,25 @@ procedure TsgeGUIPropertyFloatPoint.SetY(AY: Single);
 begin
   FY := AY;
   UpdateParent;
+end;
+
+
+procedure TsgeGUIPropertyFloatPointExt.LoadParameters(Parameters: TsgeSimpleParameters; Prefix: String);
+
+  procedure SetValue(ParamName: String; var Value: Single);
+  var
+    s: String;
+  begin
+    s := Prefix + ParamName;
+    if Parameters.Exist[s] then Value := Parameters.GetValue(s, 0.0);
+  end;
+
+begin
+  //X
+  SetValue('X', FX);
+
+  //Y
+  SetValue('Y', FY);
 end;
 
 
