@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGUIPropertyVerticalAlign.pas
-Версия            1.0
+Версия            1.1
 Создан            01.10.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          GUI: Свойство: Вертикальное выравнивание
@@ -15,6 +15,7 @@ unit sgeGUIPropertyVerticalAlign;
 interface
 
 uses
+  sgeSimpleParameters,
   sgeGUIProperty;
 
 
@@ -40,6 +41,7 @@ type
 
   TsgeGUIPropertyVerticalAlignExt = class(TsgeGUIPropertyVerticalAlign)
   public
+    procedure LoadParameters(Parameters: TsgeSimpleParameters; Prefix: String = '');
     function GetOffset(BaseHeight, ElementHeight: Integer): Single;
   end;
 
@@ -74,6 +76,28 @@ begin
   FOffset := 0;
 end;
 
+
+procedure TsgeGUIPropertyVerticalAlignExt.LoadParameters(Parameters: TsgeSimpleParameters; Prefix: String);
+var
+  ParamName, s: String;
+begin
+  //Mode
+  ParamName := Prefix + 'Mode';
+  if Parameters.Exist[ParamName] then
+    begin
+    s := LowerCase(Parameters.GetValue(ParamName, ''));
+    case s of
+      'top'   : FMode := vamTop;
+      'middle': FMode := vamMiddle;
+      'bottom': FMode := vamBottom;
+      'user'  : FMode := vamUser;
+    end;
+    end;
+
+  //Offset
+  ParamName := Prefix + 'Offset';
+  if Parameters.Exist[ParamName] then FOffset := Parameters.GetValue(ParamName, 0);
+end;
 
 
 function TsgeGUIPropertyVerticalAlignExt.GetOffset(BaseHeight, ElementHeight: Integer): Single;
