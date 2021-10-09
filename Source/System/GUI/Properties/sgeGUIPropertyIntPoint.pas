@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGUIPropertyIntPoint.pas
-Версия            1.0
+Версия            1.1
 Создан            30.09.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          GUI: Свойство: Целочисленная точка
@@ -15,6 +15,7 @@ unit sgeGUIPropertyIntPoint;
 interface
 
 uses
+  sgeSimpleParameters,
   sgeGUIProperty;
 
 type
@@ -31,7 +32,15 @@ type
   end;
 
 
+  TsgeGUIPropertyIntPointExt = class(TsgeGUIPropertyIntPoint)
+  public
+    procedure LoadParameters(Parameters: TsgeSimpleParameters; Prefix: String = '');
+  end;
+
+
+
 implementation
+
 
 
 procedure TsgeGUIPropertyIntPoint.SetX(AX: Integer);
@@ -49,6 +58,25 @@ begin
 
   FY := AY;
   UpdateParent;
+end;
+
+
+procedure TsgeGUIPropertyIntPointExt.LoadParameters(Parameters: TsgeSimpleParameters; Prefix: String);
+
+  procedure SetValue(ParamName: String; var Value: Integer);
+  var
+    s: String;
+  begin
+    s := Prefix + ParamName;
+    if Parameters.Exist[s] then Value := Parameters.GetValue(s, 0);
+  end;
+
+begin
+  //X
+  SetValue('X', FX);
+
+  //Y
+  SetValue('Y', FY);
 end;
 
 
