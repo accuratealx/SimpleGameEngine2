@@ -16,7 +16,8 @@ unit sgeGUIForm;
 interface
 
 uses
-  sgeGUIElement, sgeGraphicElementSpriteCashed,
+  sgeGUIElement, sgeSimpleParameters,
+  sgeGraphicElementSpriteCashed,
   sgeGUIPropertyBackground;
 
 
@@ -29,7 +30,9 @@ type
 
     function GetBackground: TsgeGUIPropertyBackground;
   protected
-    procedure DrawBefore; override;
+    class function GetParameterSectionName: String; override;       //Имя секции
+    procedure LoadData(Data: TsgeSimpleParameters); override;       //Загрузить параметры
+    procedure DrawBefore; override;                                 //Отрисовать перед выводом детей
     procedure SetVisible(AVisible: Boolean); override;
     procedure SetAlpha(AAlpha: Single); override;
   public
@@ -51,6 +54,20 @@ uses
 function TsgeGUIForm.GetBackground: TsgeGUIPropertyBackground;
 begin
   Result := FBackground;
+end;
+
+
+class function TsgeGUIForm.GetParameterSectionName: String;
+begin
+  Result := 'Form'
+end;
+
+
+procedure TsgeGUIForm.LoadData(Data: TsgeSimpleParameters);
+begin
+  inherited LoadData(Data);
+
+  FBackground.LoadParameters(Data, 'Background.');
 end;
 
 

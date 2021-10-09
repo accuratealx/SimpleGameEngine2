@@ -15,7 +15,7 @@ unit sgeGUIElement;
 interface
 
 uses
-  sgeTypes, sgeTemplateObjectCollection,
+  sgeTypes, sgeSimpleParameters, sgeSimpleContainer, sgeTemplateObjectCollection,
   sgeGraphicSprite, sgeGraphicColor,
   sgeEventBase, sgeEventKeyboard, sgeEventMouse,
   sgeGUIPropertyConstrains;
@@ -33,7 +33,7 @@ type
 
 
   //Состояние элемента
-  TsgeGUIElementState = set of (esCreating, esDestroing, esCorrectSize, esRepaint, esRepaintParent);
+  TsgeGUIElementState = set of ({esCreating, esDestroing,} esLockUpdate, esCorrectSize, esRepaint, esRepaintParent);
 
 
   //Тип обработчика мыши
@@ -68,6 +68,7 @@ type
     FAutoSize: Boolean;                                             //Авторазмер
     FClickButton: TsgeMouseButton;                                  //Кнопка мыши для Click
     FConstrains: TsgeGUIPropertyConstrainsExt;                      //Ограничение размеров
+    FStyle: ShortString;                                            //Имя стиля
 
     //Вспомогательные параметры
     FEventMouseEntered: Boolean;                                    //Флаг захода мышки на элемент
@@ -104,15 +105,19 @@ type
     procedure Handler_MouseLeave(Mouse: TsgeEventMouse); virtual;
     procedure Handler_MouseEnter(Mouse: TsgeEventMouse); virtual;
     procedure Handler_MouseScroll(Mouse: TsgeEventMouse); virtual;
-    function Handler_ButtonDown(Keyboard: TsgeEventKeyboard): Boolean; virtual;
-    function Handler_ButtonUp(Keyboard: TsgeEventKeyboard): Boolean; virtual;
-    function Handler_ButtonChar(Keyboard: TsgeEventKeyboardChar): Boolean; virtual;
+    function  Handler_ButtonDown(Keyboard: TsgeEventKeyboard): Boolean; virtual;
+    function  Handler_ButtonUp(Keyboard: TsgeEventKeyboard): Boolean; virtual;
+    function  Handler_ButtonChar(Keyboard: TsgeEventKeyboardChar): Boolean; virtual;
 
     //Вспомогательные методы
     procedure GetPrefferedSize(var NewWidth, NewHeight: Integer); virtual;  //Взять предпочтительный размер элемента
     procedure CalculateAutosize(var NewWidth, NewHeight: Integer); virtual; //Расчёт авторазмер
     procedure Notify(Action: TsgeGUIElementState); virtual;         //Вызвать уведомление
-    procedure DrawChild;                                            //Нарисовать детей
+    procedure DrawChild; virtual;                                   //Нарисовать детей
+    class function GetParameterSectionName: String; virtual;        //Вернуть имя секции (У каждого класса своё имя)
+    procedure LoadData(Data: TsgeSimpleParameters); virtual;        //Загрузить параметры из массива
+    procedure LockUpdate;                                           //Запретить перерисовку
+    procedure UnLockUpdate;                                         //Разрешить перерисовку
 
     //Отрисовка
     procedure GraphicPrepare; virtual;                              //Подготовить графику
@@ -135,11 +140,11 @@ type
     procedure SetAlpha(AAlpha: Single); virtual;
     procedure SetFocused(AFocused: Boolean); virtual;
     procedure SetAutoSize(AAutoSize: Boolean); virtual;
+    procedure SetStyle(AStyle: ShortString); virtual;
 
     function  GetConstrains: TsgeGUIPropertyConstrains;
 
     //Методы Parent
-    procedure Repaint;
     procedure AddChild(Element: TsgeGUIElement);
     procedure DeleteChild(Element: TsgeGUIElement);
     procedure DeleteChild;
@@ -151,7 +156,9 @@ type
     function  MouseHandler(EventType: TsgeGUIElementMouseEventType; Mouse: TsgeEventMouse): Boolean; virtual;
     function  ButtonHandler(EventType: TsgeGUIElementButtonEventType; Keyboard: TsgeEventBase): Boolean; virtual;
 
+    procedure Repaint;
     procedure Draw; virtual;
+    procedure LoadParameters(Params: TsgeSimpleContainer);          //Загрузить параметры
 
     //Вспомогательные методы
     function  CursorInElement(X, Y: Integer): Boolean;              //Проверить нахождение курсора в элементе
@@ -174,6 +181,7 @@ type
     property Constrains: TsgeGUIPropertyConstrains read GetConstrains;
     property ClickButton: TsgeMouseButton read FClickButton write FClickButton;
     property ChildList: TsgeGUIElementList read FChildList;
+    property Style: ShortString read FStyle write SetStyle;
 
     //Обработчики
     property OnDrawBefore: TsgeGUIProcEvent read FOnDrawBefore write SetDrawBefore;
@@ -330,6 +338,12 @@ begin
   FAutoSize := AAutoSize;
 
   Notify([esCorrectSize]);
+end;
+
+
+procedure TsgeGUIElement.SetStyle(AStyle: ShortString);
+begin
+  FStyle := AStyle;
 end;
 
 
@@ -511,6 +525,37 @@ begin
 end;
 
 
+class function TsgeGUIElement.GetParameterSectionName: String;
+begin
+  Result := '';
+end;
+
+
+procedure TsgeGUIElement.LoadData(Data: TsgeSimpleParameters);
+begin
+  //Загрузка всякой шляпы
+  //Top
+  //Left
+
+
+  //Загрузка свойств
+  FConstrains.LoadParameters(Data, 'Constrains.');
+end;
+
+
+procedure TsgeGUIElement.LockUpdate;
+begin
+  Include(FState, esLockUpdate);
+end;
+
+
+procedure TsgeGUIElement.UnLockUpdate;
+begin
+  Exclude(FState, esLockUpdate);
+  Notify([esCorrectSize]);
+end;
+
+
 procedure TsgeGUIElement.GraphicPrepare;
 begin
   with SGE.ExtGraphic.Graphic do
@@ -524,7 +569,7 @@ begin
 
     //Стереть фон холста
     ColorBlend := False;
-    Color := cTransparent;
+    Color := cTransparentWhite;
     DrawRect(0, 0, FWidth, FHeight);
 
     ColorBlend := True;
@@ -659,7 +704,7 @@ end;
 constructor TsgeGUIElement.Create(Name: String; Left, Top, Width, Height: Integer; Parent: TsgeGUIElement);
 begin
   //Установить флаг создания
-  FState := [esCreating];
+  FState := [esLockUpdate];
 
   //Установить параметры
   FName := Name;
@@ -669,9 +714,10 @@ begin
   FFocused := False;
   FAutoSize := False;
   FClickButton := mbLeft;
+  FStyle := '';
 
   //Создать объекты
-  FCanvas := TsgeGraphicSprite.Create(Width, Height, cTransparent);
+  FCanvas := TsgeGraphicSprite.Create(Width, Height, cTransparentWhite);
   FChildList := TsgeGUIElementList.Create(False);
   FConstrains := TsgeGUIPropertyConstrainsExt.Create(Self);
 
@@ -682,14 +728,14 @@ begin
   SetParent(Parent);
 
   //Убрать флаг создания
-  Exclude(FState, esCreating);
+  Exclude(FState, esLockUpdate);
 end;
 
 
 destructor TsgeGUIElement.Destroy;
 begin
   //Установить флаг уничтожения объекта
-  Include(FState, esDestroing);
+  Include(FState, esLockUpdate);
 
   //Отключить захват мыши
   SGE.ExtGUI.ReleaseMouse(Self);
@@ -709,13 +755,7 @@ begin
   if FParent <> nil then FParent.DeleteChild(Self);
 
   //Убрать флаг уничтожения объекта
-  Exclude(FState, esDestroing);
-end;
-
-
-procedure TsgeGUIElement.Repaint;
-begin
-  Notify([esRepaint]);
+  Exclude(FState, esLockUpdate);
 end;
 
 
@@ -922,10 +962,16 @@ begin
 end;
 
 
+procedure TsgeGUIElement.Repaint;
+begin
+  Notify([esRepaint]);
+end;
+
+
 procedure TsgeGUIElement.Draw;
 begin
-  //Проверка на создание
-  if (esCreating in FState) or (esDestroing in FState) then Exit;
+  //Проверка на запрет обновления
+  if  (esLockUpdate in FState) then Exit;
 
   //Подготовить графику
   GraphicPrepare;
@@ -952,6 +998,38 @@ begin
 
   //Восстановить графику
   GraphicRestore;
+end;
+
+
+procedure TsgeGUIElement.LoadParameters(Params: TsgeSimpleContainer);
+const
+  Separartor = ':';
+var
+  Data: TsgeSimpleParameters;
+  SectionName: String;
+begin
+  Data := TsgeSimpleParameters.Create;
+  try
+
+    //Определить имя секции
+    SectionName := GetParameterSectionName;
+    if FStyle <> '' then SectionName := SectionName + Separartor + FStyle;
+
+    //Разобрать секцию на параметры
+    Data.FromString(Params.GetSection(SectionName));
+
+    //Заблокировать отрисовку
+    LockUpdate;
+
+    //Загрузить параметры
+    LoadData(Data);
+
+    //Разблокировать отрисовку
+    UnLockUpdate;
+
+  finally
+    Data.Free;
+  end;
 end;
 
 
