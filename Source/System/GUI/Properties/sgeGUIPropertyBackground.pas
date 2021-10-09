@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGUIPropertyBackground.pas
-Версия            1.0
+Версия            1.1
 Создан            22.09.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          GUI: Свойство: Фон элемента
@@ -15,6 +15,7 @@ unit sgeGUIPropertyBackground;
 interface
 
 uses
+  sgeSimpleParameters,
   sgeGUIProperty, sgeGUIPropertyColor, sgeGUIPropertyGradient, sgeGUIPropertySprite;
 
 
@@ -51,6 +52,7 @@ type
 
   TsgeGUIBackgroundExt = class(TsgeGUIPropertyBackground)
   public
+    procedure LoadParameters(Parameters: TsgeSimpleParameters; Prefix: String = '');
     procedure Draw;
   end;
 
@@ -108,6 +110,32 @@ begin
   inherited Destroy;
 end;
 
+
+procedure TsgeGUIBackgroundExt.LoadParameters(Parameters: TsgeSimpleParameters; Prefix: String);
+var
+  ParamName, s: String;
+begin
+  //Type
+  ParamName := Prefix + 'Type';
+  if Parameters.Exist[ParamName] then
+    begin
+    s := LowerCase(Parameters.GetValue(ParamName, ''));
+    case s of
+      'color'   : FType := pbtColor;
+      'gradient': FType := pbtGradient;
+      'sprite'  : FType := pbtSprite;
+    end;
+    end;
+
+  //Color
+  FColor.LoadParameters(Parameters, Prefix);
+
+  //Gradient
+  FGradient.LoadParameters(Parameters, Prefix + 'Gradient.');
+
+  //Sprite
+  FSprite.LoadParameters(Parameters, Prefix + 'Sprite.');
+end;
 
 
 procedure TsgeGUIBackgroundExt.Draw;
