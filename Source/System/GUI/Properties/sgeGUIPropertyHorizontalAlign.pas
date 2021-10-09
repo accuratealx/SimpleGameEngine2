@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGUIPropertyHorizontalAlign.pas
-Версия            1.0
+Версия            1.1
 Создан            01.10.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          GUI: Свойство: Горизонтальное выравнивание
@@ -15,6 +15,7 @@ unit sgeGUIPropertyHorizontalAlign;
 interface
 
 uses
+  sgeSimpleParameters,
   sgeGUIProperty;
 
 
@@ -40,6 +41,7 @@ type
 
   TsgeGUIPropertyHorizontalAlignExt = class(TsgeGUIPropertyHorizontalAlign)
   public
+    procedure LoadParameters(Parameters: TsgeSimpleParameters; Prefix: String = '');
     function GetOffset(BaseWidth, ElementWidth: Integer): Single;
   end;
 
@@ -74,6 +76,28 @@ begin
   FOffset := 0;
 end;
 
+
+procedure TsgeGUIPropertyHorizontalAlignExt.LoadParameters(Parameters: TsgeSimpleParameters; Prefix: String);
+var
+  ParamName, s: String;
+begin
+  //Mode
+  ParamName := Prefix + 'Mode';
+  if Parameters.Exist[ParamName] then
+    begin
+    s := LowerCase(Parameters.GetValue(ParamName, ''));
+    case s of
+      'left'  : FMode := hamLeft;
+      'middle': FMode := hamMiddle;
+      'right' : FMode := hamRight;
+      'user'  : FMode := hamUser;
+    end;
+    end;
+
+  //Offset
+  ParamName := Prefix + 'Offset';
+  if Parameters.Exist[ParamName] then FOffset := Parameters.GetValue(ParamName, 0);
+end;
 
 
 function TsgeGUIPropertyHorizontalAlignExt.GetOffset(BaseWidth, ElementWidth: Integer): Single;
