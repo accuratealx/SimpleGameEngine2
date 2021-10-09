@@ -15,6 +15,7 @@ unit sgeGUIPropertySprite;
 interface
 
 uses
+  sgeSimpleParameters,
   sgeGraphicSprite,
   sgeGUIProperty, sgeGUIPropertyScaleXY, sgeGUIPropertyHorizontalAlign, sgeGUIPropertyVerticalAlign,
   sgeGUIPropertySpriteRect, sgeGUIPropertyDrawMethod;
@@ -29,13 +30,15 @@ type
     FHorizontalAlign: TsgeGUIPropertyHorizontalAlignExt;            //Выравнивание по X
     FVerticalAlign: TsgeGUIPropertyVerticalAlignExt;                //Выравнивание по Y
     FDrawMode: TsgeGUIPropertySpriteRectExt;                        //Часть спрайта
-    FDrawMethod: TsgeGUIPropertyDrawMethod;                         //Метод вывода спрайта
+    FDrawMethod: TsgeGUIPropertyDrawMethodExt;                      //Метод вывода спрайта
 
     procedure SetSprite(ASprite: TsgeGraphicSprite);
+
     function  GetScale: TsgeGUIPropertyScaleXY;
     function  GetHorizontalAlign: TsgeGUIPropertyHorizontalAlign;
     function  GetVerticalAlign: TsgeGUIPropertyVerticalAlign;
     function  GetDrawMode: TsgeGUIPropertySpriteRect;
+    function  GetDrawMethod: TsgeGUIPropertyDrawMethod;
   public
     constructor Create(AOwner: TObject); override;
     destructor  Destroy; override;
@@ -44,7 +47,7 @@ type
     property HorizontalAlign: TsgeGUIPropertyHorizontalAlign read GetHorizontalAlign;
     property VerticalAlign: TsgeGUIPropertyVerticalAlign read GetVerticalAlign;
     property DrawMode: TsgeGUIPropertySpriteRect read GetDrawMode;
-    property DrawMethod: TsgeGUIPropertyDrawMethod read FDrawMethod;
+    property DrawMethod: TsgeGUIPropertyDrawMethod read GetDrawMethod;
 
     property Sprite: TsgeGraphicSprite read FSprite write SetSprite;
   end;
@@ -52,6 +55,7 @@ type
 
   TsgeGUIPropertySpriteExt = class(TsgeGUIPropertySprite)
   public
+    procedure LoadParameters(Parameters: TsgeSimpleParameters; Prefix: String = '');
     procedure Draw;
   end;
 
@@ -98,6 +102,12 @@ begin
 end;
 
 
+function TsgeGUIPropertySprite.GetDrawMethod: TsgeGUIPropertyDrawMethod;
+begin
+  Result := FDrawMethod;
+end;
+
+
 constructor TsgeGUIPropertySprite.Create(AOwner: TObject);
 begin
   inherited Create(AOwner);
@@ -107,7 +117,7 @@ begin
   FHorizontalAlign := TsgeGUIPropertyHorizontalAlignExt.Create(AOwner);
   FVerticalAlign := TsgeGUIPropertyVerticalAlignExt.Create(AOwner);
   FDrawMode := TsgeGUIPropertySpriteRectExt.Create(AOwner);
-  FDrawMethod := TsgeGUIPropertyDrawMethod.Create(AOwner);
+  FDrawMethod := TsgeGUIPropertyDrawMethodExt.Create(AOwner);
 
   //Задать параметры
   FSprite := nil;
@@ -125,6 +135,31 @@ begin
   inherited Destroy;
 end;
 
+
+procedure TsgeGUIPropertySpriteExt.LoadParameters(Parameters: TsgeSimpleParameters; Prefix: String);
+var
+  ParamName: String;
+begin
+  //Sprite
+  ParamName := Prefix + 'Name';
+  if Parameters.Exist[ParamName] then
+    FSprite := SGE.ExtResourceList.GetSprite(Parameters.GetValue(ParamName, 'Sprite'));
+
+  //Scale
+  FScale.LoadParameters(Parameters, Prefix + 'Scale.');
+
+  //HorizontalAlign
+  FHorizontalAlign.LoadParameters(Parameters, Prefix + 'HorizontalAlign.');
+
+  //VerticalAlign
+  FVerticalAlign.LoadParameters(Parameters, Prefix + 'VerticalAlign.');
+
+  //DrawMode
+  FDrawMode.LoadParameters(Parameters, Prefix + 'DrawMode.');
+
+  //DrawMethod
+  FDrawMethod.LoadParameters(Parameters, Prefix + 'DrawMethod.');
+end;
 
 
 procedure TsgeGUIPropertySpriteExt.Draw;
