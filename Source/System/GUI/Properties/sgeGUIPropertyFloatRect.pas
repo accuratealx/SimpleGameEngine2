@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGUIElementPropertyFloatRect.pas
-Версия            1.0
+Версия            1.1
 Создан            23.09.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          GUI: Свойство: Дробный прямоугольник
@@ -15,7 +15,7 @@ unit sgeGUIPropertyFloatRect;
 interface
 
 uses
-  sgeTypes,
+  sgeTypes, sgeSimpleParameters,
   sgeGUIProperty;
 
 
@@ -47,6 +47,12 @@ type
     property BottomRight: TsgeFloatPoint read GetBottomRight write SetBottomRight;
 
     property Rect: TsgeFloatRect read GetRect write SetRect;
+  end;
+
+
+  TsgeGUIPropertyFloatRectExt = class(TsgeGUIPropertyFloatRect)
+  public
+    procedure LoadParameters(Parameters: TsgeSimpleParameters; Prefix: String = '');
   end;
 
 
@@ -131,6 +137,31 @@ procedure TsgeGUIPropertyFloatRect.SetBottom(ABottom: Single);
 begin
   FBottom := ABottom;
   UpdateParent;
+end;
+
+
+procedure TsgeGUIPropertyFloatRectExt.LoadParameters(Parameters: TsgeSimpleParameters; Prefix: String);
+
+  procedure SetValue(ParamName: String; var Value: Single);
+  var
+    s: String;
+  begin
+    s := Prefix + ParamName;
+    if Parameters.Exist[s] then Value := Parameters.GetValue(s, 0.0);
+  end;
+
+begin
+  //Top
+  SetValue('Top', FTop);
+
+  //Left
+  SetValue('Left', FLeft);
+
+  //Right
+  SetValue('Right', FRight);
+
+  //Bottom
+  SetValue('Bottom', FBottom);
 end;
 
 
