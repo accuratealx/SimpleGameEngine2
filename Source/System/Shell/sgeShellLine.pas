@@ -42,7 +42,7 @@ end;
 
 function TsgeShellLine.Add(Text: String; Color: TsgeColor): TsgeShellLineItem;
 begin
-  Result := TsgeShellLineItem.Create(Text, Color, cTransparent);
+  Result := TsgeShellLineItem.Create(Text, Color, cTransparentBlack);
   inherited Add(Result);
 end;
 
