@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGUIPropertyScaleXY.pas
-Версия            1.0
+Версия            1.1
 Создан            30.09.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          GUI: Свойство: Масштаб по X и Y
@@ -15,7 +15,7 @@ unit sgeGUIPropertyScaleXY;
 interface
 
 uses
-  sgeTypes,
+  sgeTypes, sgeSimpleParameters,
   sgeGUIProperty, sgeGUIPropertyFloatPoint;
 
 
@@ -27,22 +27,26 @@ type
   TsgeGUIPropertyScaleXY = class(TsgeGUIProperty)
   private
     FMode: TsgeGUIPropertyScaleXYMode;
-    FUserSize: TsgeGUIPropertyFloatPoint;
-    FUserScale: TsgeGUIPropertyFloatPoint;
+    FUserSize: TsgeGUIPropertyFloatPointExt;
+    FUserScale: TsgeGUIPropertyFloatPointExt;
 
     procedure SetMode(AMode: TsgeGUIPropertyScaleXYMode);
+
+    function GetUserSize: TsgeGUIPropertyFloatPoint;
+    function GetUserScale: TsgeGUIPropertyFloatPoint;
   public
     constructor Create(AOwner: TObject); override;
     destructor  Destroy; override;
 
     property Mode: TsgeGUIPropertyScaleXYMode read FMode write SetMode;
-    property UserSize: TsgeGUIPropertyFloatPoint read FUserSize;
-    property UserScale: TsgeGUIPropertyFloatPoint read FUserScale;
+    property UserSize: TsgeGUIPropertyFloatPoint read GetUserSize;
+    property UserScale: TsgeGUIPropertyFloatPoint read GetUserScale;
   end;
 
 
   TsgeGUIPropertyScaleXYExt = class(TsgeGUIPropertyScaleXY)
   public
+    procedure LoadParameters(Parameters: TsgeSimpleParameters; Prefix: String = '');
     function GetSize(ParentWidth, ParentHeight, ElementWidth, ElementHeight: Integer): TsgeIntPoint;
   end;
 
@@ -60,13 +64,25 @@ begin
 end;
 
 
+function TsgeGUIPropertyScaleXY.GetUserSize: TsgeGUIPropertyFloatPoint;
+begin
+  Result := FUserSize;
+end;
+
+
+function TsgeGUIPropertyScaleXY.GetUserScale: TsgeGUIPropertyFloatPoint;
+begin
+  Result := FUserScale;
+end;
+
+
 constructor TsgeGUIPropertyScaleXY.Create(AOwner: TObject);
 begin
   inherited Create(AOwner);
 
-  FUserSize := TsgeGUIPropertyFloatPoint.Create(AOwner);
+  FUserSize := TsgeGUIPropertyFloatPointExt.Create(AOwner);
 
-  FUserScale := TsgeGUIPropertyFloatPoint.Create(AOwner);
+  FUserScale := TsgeGUIPropertyFloatPointExt.Create(AOwner);
   FUserScale.LockUpdate;
   FUserScale.X := 1;
   FUserScale.Y := 1;
@@ -84,6 +100,32 @@ begin
   inherited Destroy;
 end;
 
+
+procedure TsgeGUIPropertyScaleXYExt.LoadParameters(Parameters: TsgeSimpleParameters; Prefix: String);
+var
+  ParamName, s: String;
+begin
+  //Mode
+  ParamName := Prefix + 'Mode';
+  if Parameters.Exist[ParamName] then
+    begin
+    s := LowerCase(Parameters.GetValue(ParamName, ''));
+    case s of
+      'normal'   : FMode := smNormal;
+      'stretch'  : FMode := smStretch;
+      'fitin'    : FMode := smFitIn;
+      'fitout'   : FMode := smFitOut;
+      'usersize' : FMode := smUserSize;
+      'userscale': FMode := smUserScale;
+    end;
+    end;
+
+  //UserSize
+  FUserSize.LoadParameters(Parameters, Prefix + 'UserSize.');
+
+  //UserScale
+  FUserScale.LoadParameters(Parameters, Prefix + 'UserScale.');
+end;
 
 
 function TsgeGUIPropertyScaleXYExt.GetSize(ParentWidth, ParentHeight, ElementWidth, ElementHeight: Integer): TsgeIntPoint;
