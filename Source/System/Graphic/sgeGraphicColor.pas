@@ -70,8 +70,12 @@ const
   cAqua       : TsgeColor = (Red: 0;    Green: 1;    Blue: 1;    Alpha: 1);
   cWhite      : TsgeColor = (Red: 1;    Green: 1;    Blue: 1;    Alpha: 1);
 
-  //Отсебятина
-  cTransparent: TsgeColor = (Red: 0;    Green: 0;    Blue: 0;    Alpha: 0);
+  //Прозрачный
+  cTransparentBlack : TsgeColor = (Red: 0;    Green: 0;    Blue: 0;    Alpha: 0);
+  cTransparentWhite : TsgeColor = (Red: 1;    Green: 1;    Blue: 1;    Alpha: 0);
+  cTransparentRed   : TsgeColor = (Red: 1;    Green: 0;    Blue: 0;    Alpha: 0);
+  cTransparentGreen : TsgeColor = (Red: 0;    Green: 1;    Blue: 0;    Alpha: 0);
+  cTransparentBlue  : TsgeColor = (Red: 0;    Green: 0;    Blue: 1;    Alpha: 0);
 
 
 
