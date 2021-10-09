@@ -15,6 +15,7 @@ unit sgeGUIPropertyColor;
 interface
 
 uses
+  sgeSimpleParameters,
   sgeGraphicColor,
   sgeGUIProperty;
 
@@ -43,6 +44,7 @@ type
 
   TsgeGUIPropertyColorExt = class(TsgeGUIPropertyColor)
   public
+    procedure LoadParameters(Parameters: TsgeSimpleParameters; Prefix: String = '');
     procedure Draw;
   end;
 
@@ -50,7 +52,8 @@ type
 implementation
 
 uses
-  sgeVars;
+  sgeVars,
+  sgeGraphicColorUtils;
 
 
 procedure TsgeGUIPropertyColor.CheckValue(var Value: Single);
@@ -115,6 +118,19 @@ begin
 end;
 
 
+procedure TsgeGUIPropertyColorExt.LoadParameters(Parameters: TsgeSimpleParameters; Prefix: String);
+var
+  ParamName, s: String;
+begin
+  ParamName := Prefix + 'Color';
+  if Parameters.Exist[ParamName] then
+    begin
+    s := Parameters.GetValue(ParamName, '0.0.0.255');
+    FColor := sgeRGBAToColor(sgeStringToRGBA(s));
+    end;
+end;
+
+
 procedure TsgeGUIPropertyColorExt.Draw;
 begin
   with SGE.ExtGraphic.Graphic do
@@ -123,6 +139,7 @@ begin
     EraseBG;
     end;
 end;
+
 
 
 end.
