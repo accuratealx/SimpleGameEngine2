@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeStringUtils.pas
-Версия            1.0
+Версия            1.1
 Создан            14.08.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Вспомогательные математические функции
@@ -25,7 +25,11 @@ function sgeFloor(x: Double): integer;
 function sgeCeil(x: Single): Integer;
 function sgeCeil(x: Double): Integer;
 
+function sgeRadToDeg(Rad: Single): Single; inline;
+function sgeRadToDeg(Rad: Double): Double; inline;
 
+function sgeDegToRad(Deg: Single): Single; inline;
+function sgeDegToRad(Deg: Double): Double; inline;
 
 implementation
 
@@ -63,6 +67,30 @@ end;
 function sgeCeil(x: Double): Integer;
 begin
   Result := Trunc(x) + ord(Frac(x) > 0);
+end;
+
+
+function sgeRadToDeg(Rad: Single): Single;
+begin
+  Result := Rad * (180.0 / Pi);
+end;
+
+
+function sgeRadToDeg(Rad: Double): Double;
+begin
+  Result := Rad * (180.0 / Pi);
+end;
+
+
+function sgeDegToRad(Deg: Single): Single;
+begin
+  Result := Deg * (Pi / 180.0);
+end;
+
+
+function sgeDegToRad(Deg: Double): Double;
+begin
+  Result := Deg * (Pi / 180.0);
 end;
 
 
