@@ -33,7 +33,7 @@ type
 
 
   //Состояние элемента
-  TsgeGUIElementState = set of ({esCreating, esDestroing,} esLockUpdate, esCorrectSize, esRepaint, esRepaintParent);
+  TsgeGUIElementState = set of (esLockUpdate, esCorrectSize, esRepaint, esRepaintParent);
 
 
   //Тип обработчика мыши
@@ -218,7 +218,7 @@ type
 implementation
 
 uses
-  sgeVars, sgeGraphic, sgeMathUtils;
+  sgeVars, sgeGraphic, sgeMathUtils, sgeGUIUtils;
 
 
 function TsgeGUIElementList.IndexOf(Element: TsgeGUIElement): Integer;
@@ -532,14 +532,51 @@ end;
 
 
 procedure TsgeGUIElement.LoadData(Data: TsgeSimpleParameters);
+var
+  ParamName, s: String;
 begin
-  //Загрузка всякой шляпы
-  //Top
-  //Left
+  //ClickButton
+  ParamName := 'ClickButton';
+  if Data.Exist[ParamName] then
+    begin
+    s := LowerCase(Data.GetValue(ParamName, ''));
+    case s of
+      'left'  : FClickButton := mbLeft;
+      'middle': FClickButton := mbMiddle;
+      'right' : FClickButton := mbRight;
+      'extra1': FClickButton := mbExtra1;
+      'extra2': FClickButton := mbExtra2;
+    end;
+    end;
 
-
-  //Загрузка свойств
+  //Constrains
   FConstrains.LoadParameters(Data, 'Constrains.');
+
+  //Left
+  sgeGUISetValue(Data, 'Left', FLeft);
+
+  //Top
+  sgeGUISetValue(Data, 'Top', FTop);
+
+  //Width
+  sgeGUISetValue(Data, 'Width', FWidth, 100);
+
+  //Height
+  sgeGUISetValue(Data, 'Height', FHeight, 100);
+
+  //AutoSize
+  sgeGUISetValue(Data, 'AutoSize', FAutoSize, False);
+
+  //Enable
+  sgeGUISetValue(Data, 'Enable', FEnable, True);
+
+  //Visible
+  ParamName := 'Visible';
+  if Data.Exist[ParamName] then SetVisible(Data.GetValue(ParamName, True));
+
+  //Alpha
+  ParamName := 'Alpha';
+  if Data.Exist[ParamName] then SetAlpha(Data.GetValue(ParamName, 1));
 end;
 
 
