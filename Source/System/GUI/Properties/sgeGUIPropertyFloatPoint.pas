@@ -64,7 +64,7 @@ begin
   sgeGUISetValue(Parameters, Prefix + 'X', FX);
 
   //Y
-  sgeGUISetValue(Parameters, Prefix + 'Y', FX);
+  sgeGUISetValue(Parameters, Prefix + 'Y', FY);
 end;
 
 
