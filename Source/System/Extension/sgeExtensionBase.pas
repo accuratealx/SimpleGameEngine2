@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeExtensionBase.pas
-Версия            1.6
+Версия            1.7
 Создан            31.03.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс расширения: Базовый
@@ -41,6 +41,7 @@ type
     procedure DeleteObject(Name: String);
 
     //Список расширений
+    function  ExtensionExist(Name: String): Boolean;
     function  GetExtension(Name: String): TsgeExtensionBase;
     procedure AddExtension(Ext: TsgeExtensionBase);
     procedure DeleteExtension(Name: String);
@@ -87,6 +88,12 @@ procedure TsgeExtensionBase.DeleteObject(Name: String);
 begin
   if TsgeNamedObjectList(FObjectList).Exist(Name) then
     TsgeNamedObjectList(FObjectList).Delete(Name);
+end;
+
+
+function TsgeExtensionBase.ExtensionExist(Name: String): Boolean;
+begin
+  Result := TsgeExtensionList(FExtensionList).IndexOf(Name) <> -1;
 end;
 
 
