@@ -67,7 +67,8 @@ uses
   sgeGUIPropertyFloatPoint, sgeGUIPropertyColor, sgeGUIPropertyScaleXY, 
   sgeGUIPropertyIntPoint, sgeGUIPropertyHorizontalAlign, 
   sgeGUIPropertyVerticalAlign, sgeGUIPropertySpriteRect, 
-  sgeGUIPropertyDrawMethod, sgeGUITimer, sgeSystemFont, sgeJournal, sgeGUIUtils;
+  sgeGUIPropertyDrawMethod, sgeGUITimer, sgeSystemFont, sgeJournal, 
+  sgeGUIUtils, sgeGUISprite, sgeGUISpriteButton;
 
 implementation
 

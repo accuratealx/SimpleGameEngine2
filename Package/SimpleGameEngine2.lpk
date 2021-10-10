@@ -8,14 +8,14 @@
       <Version Value="11"/>
       <PathDelim Value="\"/>
       <SearchPaths>
-        <IncludeFiles Value="..\Source\System;..\Source\System\TimeEvent;..\Source\System\GUI\Properties"/>
-        <OtherUnitFiles Value="..\Source\ThirdParty\GDIPlus;..\Source\ThirdParty\OpenAL;..\Source\ThirdParty\OpenGL;..\Source\System;..\Source\System\Base;..\Source\System\Controllers;..\Source\System\Events;..\Source\System\Extension;..\Source\System\Graphic;..\Source\System\PackFiles;..\Source\System\Shell;..\Source\System\Sound;..\Source\System\Templates;..\Source\System\Utils;..\Source\System\Variables;..\Source\System\KeyCommand;..\Source\System\ShellCommands;..\Source\System\TimeEvent;..\Source\System\GUI;..\Source\System\GUI\Properties"/>
+        <IncludeFiles Value="..\Source\System"/>
+        <OtherUnitFiles Value="..\Source\ThirdParty\GDIPlus;..\Source\ThirdParty\OpenAL;..\Source\ThirdParty\OpenGL;..\Source\System;..\Source\System\Base;..\Source\System\Controllers;..\Source\System\Events;..\Source\System\Extension;..\Source\System\Graphic;..\Source\System\PackFiles;..\Source\System\Shell;..\Source\System\Sound;..\Source\System\Templates;..\Source\System\Utils;..\Source\System\Variables;..\Source\System\KeyCommand;..\Source\System\ShellCommands;..\Source\System\TimeEvent;..\Source\System\GUI;..\Source\System\GUI\Properties;..\Source\System\GUI\Components"/>
         <UnitOutputDirectory Value="..\~Tmp\Package\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
     </CompilerOptions>
     <Description Value="Simple Game Engine 2"/>
     <Version Major="1"/>
-    <Files Count="196">
+    <Files Count="198">
       <Item1>
         <Filename Value="..\Source\ThirdParty\GDIPlus\GDIPAPI.pas"/>
         <UnitName Value="GDIPAPI"/>
@@ -805,6 +805,14 @@
         <Filename Value="..\Source\System\GUI\sgeGUIUtils.pas"/>
         <UnitName Value="sgeGUIUtils"/>
       </Item196>
+      <Item197>
+        <Filename Value="..\Source\System\GUI\Components\sgeGUISprite.pas"/>
+        <UnitName Value="sgeGUISprite"/>
+      </Item197>
+      <Item198>
+        <Filename Value="..\Source\System\GUI\Components\sgeGUISpriteButton.pas"/>
+        <UnitName Value="sgeGUISpriteButton"/>
+      </Item198>
     </Files>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)"/>
