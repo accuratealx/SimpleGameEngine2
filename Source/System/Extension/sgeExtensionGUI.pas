@@ -93,10 +93,6 @@ type
     property Visible: Boolean read FVisible write SetVisible;
 
     property FormList: TsgeGUIFormList read FFormList;
-
-
-    { TODO : Шибануть лишнее }
-    property GUILayer: TsgeGraphicElementLayer read FGUILayer; experimental;
   end;
 
 
