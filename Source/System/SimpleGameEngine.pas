@@ -70,7 +70,7 @@ type
     function  EventWindowClose(Obj: TsgeEventBase): Boolean;        //Закрытие окна
     function  EventTime(Obj: TsgeEventBase): Boolean;               //Таймерное событие
   public
-    constructor Create; virtual;
+    constructor Create(InitSound: Boolean = True); virtual;
     destructor  Destroy; override;
 
     procedure AttachDefaultCommand;                                 //Привязать на кнопки стандартные действия
@@ -182,7 +182,7 @@ begin
 end;
 
 
-constructor TSimpleGameEngine.Create;
+constructor TSimpleGameEngine.Create(InitSound: Boolean);
 var
   JFile: String;
 begin
@@ -219,7 +219,8 @@ begin
     FExtensionGraphic := TsgeExtensionGraphic.Create(FObjectList);                  //Графика
     FExtensionPackFiles :=   TsgeExtensionPackList.Create(FObjectList);             //Файловые архивы
     FExtensionFileSystem := TsgeExtensionFileSystem.Create(FObjectList);            //Файловая система
-    FExtensionSound := TsgeExtensionSound.Create(FObjectList);                      //Звуковая система
+    if InitSound then
+       FExtensionSound := TsgeExtensionSound.Create(FObjectList);                   //Звуковая система
     FExtensionResourceList := TsgeExtensionResourceList.Create(FObjectList);        //Список ресурсов
     FExtensionControllers := TsgeExtensionControllers.Create(FObjectList);          //Контроллеры
     FExtensionShell := TsgeExtensionShell.Create(FObjectList);                      //Оболочка

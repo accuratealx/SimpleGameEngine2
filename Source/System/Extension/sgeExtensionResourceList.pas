@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeExtensionResourceList.pas
-Версия            1.5
+Версия            1.6
 Создан            14.05.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс расширения: Список ресурсов
@@ -18,7 +18,7 @@ interface
 uses
   sgeMemoryStream, sgeStringList, sgeSimpleParameters, sgeSimpleCommand,
   sgeExtensionBase,
-  sgeResourceList, sgeMetaInfoList, sgeExtensionFileSystem,
+  sgeResourceList, sgeMetaInfoList, sgeExtensionFileSystem, sgeExtensionSound,
   sgeSystemFont, sgeGraphicFont, sgeGraphicSprite, sgeGraphicAnimationFrames,
   sgeGraphicAnimation, sgeSimpleContainer, sgeSoundBuffer;
 
@@ -444,10 +444,8 @@ begin
     FDefault.StringList := TsgeStringList.Create;
     FDefault.Parameters := TsgeSimpleParameters.Create;
     FDefault.Container := TsgeSimpleContainer.Create;
-    try
+    if ExtensionExist(Extension_Sound) then
       FDefault.SoundBufer := TsgeSoundBuffer.CreateBlank;
-    except
-    end;
 
   except
     on E: EsgeException do
