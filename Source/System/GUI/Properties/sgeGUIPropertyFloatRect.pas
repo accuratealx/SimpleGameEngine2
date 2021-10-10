@@ -58,6 +58,8 @@ type
 
 implementation
 
+uses
+  sgeGUIUtils;
 
 
 function TsgeGUIPropertyFloatRect.GetTopLeft: TsgeFloatPoint;
@@ -141,27 +143,18 @@ end;
 
 
 procedure TsgeGUIPropertyFloatRectExt.LoadParameters(Parameters: TsgeSimpleParameters; Prefix: String);
-
-  procedure SetValue(ParamName: String; var Value: Single);
-  var
-    s: String;
-  begin
-    s := Prefix + ParamName;
-    if Parameters.Exist[s] then Value := Parameters.GetValue(s, 0.0);
-  end;
-
 begin
   //Top
-  SetValue('Top', FTop);
+  sgeGUISetValue(Parameters, Prefix + 'Top', FTop);
 
   //Left
-  SetValue('Left', FLeft);
+  sgeGUISetValue(Parameters, Prefix + 'Left', FLeft);
 
   //Right
-  SetValue('Right', FRight);
+  sgeGUISetValue(Parameters, Prefix + 'Right', FRight);
 
   //Bottom
-  SetValue('Bottom', FBottom);
+  sgeGUISetValue(Parameters, Prefix + 'Bottom', FBottom);
 end;
 
 

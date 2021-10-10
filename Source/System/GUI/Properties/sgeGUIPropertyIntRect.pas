@@ -55,7 +55,11 @@ type
     procedure LoadParameters(Parameters: TsgeSimpleParameters; Prefix: String = '');
   end;
 
+
 implementation
+
+uses
+  sgeGUIUtils;
 
 
 function TsgeGUIPropertyIntRect.GetTopLeft: TsgeIntPoint;
@@ -140,27 +144,18 @@ end;
 
 
 procedure TsgeGUIPropertyIntRectExt.LoadParameters(Parameters: TsgeSimpleParameters; Prefix: String);
-
-  procedure SetValue(ParamName: String; var Value: Integer);
-  var
-    s: String;
-  begin
-    s := Prefix + ParamName;
-    if Parameters.Exist[s] then Value := Parameters.GetValue(s, 0);
-  end;
-
 begin
   //Top
-  SetValue('Top', FTop);
+  sgeGUISetValue(Parameters, Prefix + 'Top', FTop);
 
   //Left
-  SetValue('Left', FLeft);
+  sgeGUISetValue(Parameters, Prefix + 'Left', FLeft);
 
   //Right
-  SetValue('Right', FRight);
+  sgeGUISetValue(Parameters, Prefix + 'Right', FRight);
 
   //Bottom
-  SetValue('Bottom', FBottom);
+  sgeGUISetValue(Parameters, Prefix + 'Bottom', FBottom);
 end;
 
 

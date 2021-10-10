@@ -41,6 +41,8 @@ type
 
 implementation
 
+uses
+  sgeGUIUtils;
 
 
 procedure TsgeGUIPropertyIntPoint.SetX(AX: Integer);
@@ -62,21 +64,12 @@ end;
 
 
 procedure TsgeGUIPropertyIntPointExt.LoadParameters(Parameters: TsgeSimpleParameters; Prefix: String);
-
-  procedure SetValue(ParamName: String; var Value: Integer);
-  var
-    s: String;
-  begin
-    s := Prefix + ParamName;
-    if Parameters.Exist[s] then Value := Parameters.GetValue(s, 0);
-  end;
-
 begin
   //X
-  SetValue('X', FX);
+  sgeGUISetValue(Parameters, Prefix + 'X', FX);
 
   //Y
-  SetValue('Y', FY);
+  sgeGUISetValue(Parameters, Prefix + 'Y', FY);
 end;
 
 
