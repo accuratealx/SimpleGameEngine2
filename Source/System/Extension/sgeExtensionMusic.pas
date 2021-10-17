@@ -15,7 +15,8 @@ unit sgeExtensionMusic;
 interface
 
 uses
-  sgeExtensionBase;
+  sgeExtensionBase,
+  sgeMusicPLayerTrackList;
 
 
 const
@@ -25,6 +26,7 @@ const
 type
   TsgeExtensionMusic = class(TsgeExtensionBase)
   private
+    FTrackList: TsgeMusicPlayerTrackList;
 
   protected
     class function GetName: String; override;
@@ -33,7 +35,7 @@ type
     constructor Create(ObjectList: TObject); override;
     destructor  Destroy; override;
 
-
+    property TrackList: TsgeMusicPlayerTrackList read FTrackList;
   end;
 
 
@@ -57,7 +59,8 @@ begin
   try
     inherited Create(ObjectList);
 
-    //
+    //Список дорожек
+    FTrackList := TsgeMusicPlayerTrackList.Create(True);
 
   except
     on E: EsgeException do
@@ -68,6 +71,8 @@ end;
 
 destructor TsgeExtensionMusic.Destroy;
 begin
+  FTrackList.Free;
+
   inherited Destroy;
 end;
 
