@@ -17,15 +17,21 @@ interface
 
 uses
   sgeSimpleParameters,
-  sgeGUIElement, sgeGUIPropertySegmentOffset,
+  sgeEventMouse, sgeGUIElement, sgeGUIPropertySegmentOffset,
   sgeGraphicSprite;
 
 
 type
   TsgeGUISpriteButton = class(TsgeGUIElement)
   private
+    type
+      TButtonState = (bsDisable, bsNormal, bsActive, bsPressed);
+
+  private
     FSprite: TsgeGraphicSprite;
     FOffset: TsgeGUIPropertySegmentOffsetExt;
+
+    FButtonState: TButtonState;
 
     procedure SetSprite(ASprite: TsgeGraphicSprite);
 
@@ -35,6 +41,10 @@ type
     procedure LoadData(Data: TsgeSimpleParameters); override;
     procedure DrawBefore; override;
 
+    procedure Handler_MouseEnter(Mouse: TsgeEventMouse); override;
+    procedure Handler_MouseLeave(Mouse: TsgeEventMouse); override;
+    procedure Handler_MouseDown(Mouse: TsgeEventMouse); override;
+    procedure Handler_MouseUp(Mouse: TsgeEventMouse); override;
   public
     constructor Create(Name: String; Left, Top, Width, Height: Integer; Parent: TsgeGUIElement = nil); override;
     destructor  Destroy; override;
@@ -96,7 +106,7 @@ procedure TsgeGUISpriteButton.DrawBefore;
 var
   DrawOpt: TsgeGraphicDrawOptions;
 begin
-  //Подготовить стандартныйе настройки вывода
+  //Подготовить стандартные настройки вывода
   DrawOpt := DefaultDrawOptions;
 
   //Установить спрайт
@@ -110,10 +120,65 @@ begin
   DrawOpt.Rect.Y2 := FHeight;
 
   //Поправить область вывода спрайта
-  DrawOpt.SpriteRect := sgeGetTextureTileRect(1, 4, 0, 1);
+  DrawOpt.SpriteRect := sgeGetTextureTileRect(1, 4, 0, Ord(FButtonState));
 
   //Вывод спрайта
   SGE.ExtGraphic.Graphic.DrawSpriteSegment(DrawOpt, FOffset.Rect);
+end;
+
+
+procedure TsgeGUISpriteButton.Handler_MouseEnter(Mouse: TsgeEventMouse);
+begin
+  if FEnable then
+    begin
+    FButtonState := bsActive;
+    Repaint;
+    end;
+
+  inherited Handler_MouseEnter(Mouse);
+end;
+
+
+procedure TsgeGUISpriteButton.Handler_MouseLeave(Mouse: TsgeEventMouse);
+begin
+  if FEnable then
+    begin
+    FButtonState := bsNormal;
+    Repaint;
+    end;
+
+  inherited Handler_MouseLeave(Mouse);
+end;
+
+
+procedure TsgeGUISpriteButton.Handler_MouseDown(Mouse: TsgeEventMouse);
+begin
+  if FEnable then
+    begin
+    //if FPressed then FButtonState := bsPressed else FButtonState := bsActive;
+    FButtonState := bsPressed;
+    Repaint;
+    end;
+
+  inherited Handler_MouseDown(Mouse);
+end;
+
+
+procedure TsgeGUISpriteButton.Handler_MouseUp(Mouse: TsgeEventMouse);
+
+  function IsMouseInElement: Boolean;
+  begin
+    Result := (Mouse.X >= 0) and (Mouse.X <= FWidth) and (Mouse.Y >= 0) and (Mouse.Y <= FHeight);
+  end;
+
+begin
+  if FEnable then
+    begin
+    if IsMouseInElement then FButtonState := bsActive else FButtonState := bsNormal;
+    Repaint;
+    end;
+
+  inherited Handler_MouseUp(Mouse);
 end;
 
 
@@ -124,6 +189,8 @@ begin
   FOffset := TsgeGUIPropertySegmentOffsetExt.Create(Self);
 
   FSprite := SGE.ExtResourceList.Default.Sprite;
+
+  FButtonState := bsNormal;
 
   Repaint;
 end;
