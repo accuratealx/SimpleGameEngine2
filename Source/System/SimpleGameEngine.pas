@@ -18,7 +18,7 @@ uses
   sgeErrorManager, sgeNamedObjectList, sgeExtensionList, sgeEventManager, sgeEventBase,
   sgeExtensionWindow, sgeExtensionGraphic, sgeExtensionPackList, sgeExtensionFileSystem, sgeExtensionShell,
   sgeExtensionResourceList, sgeExtensionStartParameters, sgeExtensionSound, sgeExtensionControllers,
-  sgeExtensionVariables, sgeExtensionKeyCommand, sgeExtensionTimeEvent, sgeExtensionGUI;
+  sgeExtensionVariables, sgeExtensionKeyCommand, sgeExtensionTimeEvent, sgeExtensionGUI, sgeExtensionMusic;
 
 
 const
@@ -30,6 +30,10 @@ const
 
 
 type
+  //Параметры инициализации ядра
+  TsgeInitOptions = set of (ioSound);
+
+
   //Основной класс движка
   TSimpleGameEngine = class
   private
@@ -51,12 +55,13 @@ type
     FExtensionPackFiles: TsgeExtensionPackList;                     //Расширение: Файловые архивы
     FExtensionFileSystem: TsgeExtensionFileSystem;                  //Расширение: Файловая система
     FExtensionResourceList: TsgeExtensionResourceList;              //Расширение: Список ресурсов
-    FExtensionSound: TsgeExtensionSound;                            //Расширение: Звуковая система
     FExtensionControllers: TsgeExtensionControllers;                //Расширение: Контроллеры
     FExtensionShell: TsgeExtensionShell;                            //Расширение: Оболочка
     FExtensionKeyCommand: TsgeExtensionKeyCommand;                  //Расширение: Команды на клавишах
     FExtensionTimeEvent: TsgeExtensionTimeEvent;                    //Расширение: Таймерные события
     FExtensionGUI: TsgeExtensionGUI;                                //Расширение: GUI
+    FExtensionSound: TsgeExtensionSound;                            //Расширение: Звуковая система
+    FExtensionMusic: TsgeExtensionMusic;                            //Расширение: Музыкальный проигрыватель
 
     //Свойства
     procedure SetDebug(ADebug: Boolean);
@@ -70,7 +75,7 @@ type
     function  EventWindowClose(Obj: TsgeEventBase): Boolean;        //Закрытие окна
     function  EventTime(Obj: TsgeEventBase): Boolean;               //Таймерное событие
   public
-    constructor Create(InitSound: Boolean = True); virtual;
+    constructor Create(Options: TsgeInitOptions = []); virtual;
     destructor  Destroy; override;
 
     procedure AttachDefaultCommand;                                 //Привязать на кнопки стандартные действия
@@ -97,12 +102,13 @@ type
     property ExtPackFiles: TsgeExtensionPackList read FExtensionPackFiles;
     property ExtFileSystem: TsgeExtensionFileSystem read FExtensionFileSystem;
     property ExtResourceList: TsgeExtensionResourceList read FExtensionResourceList;
-    property ExtSound: TsgeExtensionSound read FExtensionSound;
     property ExtControllers: TsgeExtensionControllers read FExtensionControllers;
     property ExtShell: TsgeExtensionShell read FExtensionShell;
     property ExtKeyCommand: TsgeExtensionKeyCommand read FExtensionKeyCommand;
     property ExtTimeEvent: TsgeExtensionTimeEvent read FExtensionTimeEvent;
     property ExtGUI: TsgeExtensionGUI read FExtensionGUI;
+    property ExtSound: TsgeExtensionSound read FExtensionSound;
+    property FExtMusic: TsgeExtensionMusic read FExtensionMusic;
   end;
 
 
@@ -182,7 +188,7 @@ begin
 end;
 
 
-constructor TSimpleGameEngine.Create(InitSound: Boolean);
+constructor TSimpleGameEngine.Create(Options: TsgeInitOptions);
 var
   JFile: String;
 begin
@@ -219,14 +225,17 @@ begin
     FExtensionGraphic := TsgeExtensionGraphic.Create(FObjectList);                  //Графика
     FExtensionPackFiles :=   TsgeExtensionPackList.Create(FObjectList);             //Файловые архивы
     FExtensionFileSystem := TsgeExtensionFileSystem.Create(FObjectList);            //Файловая система
-    if InitSound then
-       FExtensionSound := TsgeExtensionSound.Create(FObjectList);                   //Звуковая система
     FExtensionResourceList := TsgeExtensionResourceList.Create(FObjectList);        //Список ресурсов
     FExtensionControllers := TsgeExtensionControllers.Create(FObjectList);          //Контроллеры
     FExtensionShell := TsgeExtensionShell.Create(FObjectList);                      //Оболочка
     FExtensionKeyCommand := TsgeExtensionKeyCommand.Create(FObjectList);            //Команда на кнопках
     FExtensionTimeEvent := TsgeExtensionTimeEvent.Create(FObjectList);              //Таймерные события
     FExtensionGUI := TsgeExtensionGUI.Create(FObjectList);                          //GUI
+    if ioSound in Options then
+      begin
+      FExtensionSound := TsgeExtensionSound.Create(FObjectList);                    //Звуковая система
+      FExtensionMusic := TsgeExtensionMusic.Create(FObjectList);                    //Музыкальный проигрыватель
+      end;
 
 
   except
