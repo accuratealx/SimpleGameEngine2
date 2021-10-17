@@ -68,7 +68,8 @@ uses
   sgeGUIPropertyIntPoint, sgeGUIPropertyHorizontalAlign, 
   sgeGUIPropertyVerticalAlign, sgeGUIPropertySpriteRect, 
   sgeGUIPropertyDrawMethod, sgeGUITimer, sgeSystemFont, sgeJournal, 
-  sgeGUIUtils, sgeGUISprite, sgeGUISpriteButton;
+  sgeGUIUtils, sgeGUISprite, sgeGUISpriteButton, sgeExtensionMusic, 
+  sgeExtensionPackList, sgeMusicPLayerTrackList;
 
 implementation
 

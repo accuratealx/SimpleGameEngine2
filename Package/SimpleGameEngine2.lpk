@@ -8,14 +8,14 @@
       <Version Value="11"/>
       <PathDelim Value="\"/>
       <SearchPaths>
-        <IncludeFiles Value="..\Source\System"/>
-        <OtherUnitFiles Value="..\Source\ThirdParty\GDIPlus;..\Source\ThirdParty\OpenAL;..\Source\ThirdParty\OpenGL;..\Source\System;..\Source\System\Base;..\Source\System\Controllers;..\Source\System\Events;..\Source\System\Extension;..\Source\System\Graphic;..\Source\System\PackFiles;..\Source\System\Shell;..\Source\System\Sound;..\Source\System\Templates;..\Source\System\Utils;..\Source\System\Variables;..\Source\System\KeyCommand;..\Source\System\ShellCommands;..\Source\System\TimeEvent;..\Source\System\GUI;..\Source\System\GUI\Properties;..\Source\System\GUI\Components"/>
+        <IncludeFiles Value="..\Source\System;..\Source\System\MusicPlayer"/>
+        <OtherUnitFiles Value="..\Source\ThirdParty\GDIPlus;..\Source\ThirdParty\OpenAL;..\Source\ThirdParty\OpenGL;..\Source\System;..\Source\System\Base;..\Source\System\Controllers;..\Source\System\Events;..\Source\System\Extension;..\Source\System\Graphic;..\Source\System\PackFiles;..\Source\System\Shell;..\Source\System\Sound;..\Source\System\Templates;..\Source\System\Utils;..\Source\System\Variables;..\Source\System\KeyCommand;..\Source\System\ShellCommands;..\Source\System\TimeEvent;..\Source\System\GUI;..\Source\System\GUI\Properties;..\Source\System\GUI\Components;..\Source\System\MusicPlayer"/>
         <UnitOutputDirectory Value="..\~Tmp\Package\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
     </CompilerOptions>
     <Description Value="Simple Game Engine 2"/>
     <Version Major="1"/>
-    <Files Count="198">
+    <Files Count="202">
       <Item1>
         <Filename Value="..\Source\ThirdParty\GDIPlus\GDIPAPI.pas"/>
         <UnitName Value="GDIPAPI"/>
@@ -813,6 +813,22 @@
         <Filename Value="..\Source\System\GUI\Components\sgeGUISpriteButton.pas"/>
         <UnitName Value="sgeGUISpriteButton"/>
       </Item198>
+      <Item199>
+        <Filename Value="..\Source\System\Extension\sgeExtensionMusic.pas"/>
+        <UnitName Value="sgeExtensionMusic"/>
+      </Item199>
+      <Item200>
+        <Filename Value="..\Source\System\Extension\sgeExtensionPackList.pas"/>
+        <UnitName Value="sgeExtensionPackList"/>
+      </Item200>
+      <Item201>
+        <Filename Value="..\Source\System\MusicPlayer\sgeMusicPLayerTrack.pas"/>
+        <Type Value="Include"/>
+      </Item201>
+      <Item202>
+        <Filename Value="..\Source\System\MusicPlayer\sgeMusicPLayerTrackList.pas"/>
+        <UnitName Value="sgeMusicPLayerTrackList"/>
+      </Item202>
     </Files>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)"/>
