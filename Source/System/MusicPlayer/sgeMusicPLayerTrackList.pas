@@ -56,8 +56,8 @@ type
     function  GetNextTrack(Group: String = ''): TsgeMusicPLayerTrack;
     function  GetPrevTrack(Group: String = ''): TsgeMusicPLayerTrack;
 
-    procedure FromString(Str: String; Mode: TsgeMusicPlayerTrackListLoadMode = mptlmAdd);
-    procedure FromMemoryStream(Stream: TsgeMemoryStream; Mode: TsgeMusicPlayerTrackListLoadMode = mptlmAdd);
+    procedure FromString(Str: String; BasePath: String = ''; Mode: TsgeMusicPlayerTrackListLoadMode = mptlmAdd);
+    procedure FromMemoryStream(Stream: TsgeMemoryStream; BasePath: String = ''; Mode: TsgeMusicPlayerTrackListLoadMode = mptlmAdd);
     procedure LoadFromFile(FileName: String; Mode: TsgeMusicPlayerTrackListLoadMode = mptlmAdd);
 
     property CurrentTrack: TsgeMusicPLayerTrack read FCurrentTrack;
@@ -67,7 +67,7 @@ type
 implementation
 
 uses
-  sgeErrors, sgeSystemUtils, sgeOSPlatform;
+  sgeErrors, sgeSystemUtils, sgeOSPlatform, sgeFileUtils;
 
 const
   _UNITNAME = 'MusicPlayerTrackList';
@@ -370,7 +370,7 @@ begin
 end;
 
 
-procedure TsgeMusicPlayerTrackList.FromString(Str: String; Mode: TsgeMusicPlayerTrackListLoadMode);
+procedure TsgeMusicPlayerTrackList.FromString(Str: String; BasePath: String; Mode: TsgeMusicPlayerTrackListLoadMode);
 const
   Separator = ';';
   Comment = '#';
@@ -412,7 +412,7 @@ begin
 
       //Подготовить данные
       Name := sgeTrim(Line.Part[0]);
-      FileName := sgeTrim(Line.Part[1]);
+      FileName := BasePath + sgeTrim(Line.Part[1]);
       Group := '';
       if Line.Count > 2 then Group := sgeTrim(Line.Part[2]);
 
@@ -430,9 +430,9 @@ begin
 end;
 
 
-procedure TsgeMusicPlayerTrackList.FromMemoryStream(Stream: TsgeMemoryStream; Mode: TsgeMusicPlayerTrackListLoadMode);
+procedure TsgeMusicPlayerTrackList.FromMemoryStream(Stream: TsgeMemoryStream; BasePath: String; Mode: TsgeMusicPlayerTrackListLoadMode);
 begin
-  FromString(Stream.ToString, Mode);
+  FromString(Stream.ToString, BasePath, Mode);
 end;
 
 
@@ -455,7 +455,7 @@ begin
     end;
 
     //Загрузить
-    FromMemoryStream(Stream, Mode);
+    FromMemoryStream(Stream, sgeExtractFilePath(FileName), Mode);
 
   finally
     Stream.Free;
