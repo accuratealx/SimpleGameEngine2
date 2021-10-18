@@ -31,9 +31,9 @@ type
   private
     FCS: TsgeCriticalSection;
 
-    FCurrentTrack: TsgeMusicPLayerTrack;                            //Последняя запрашиваемая дорожка
+    FCurrentTrack: TsgeMusicPLayerTrack;
 
-    procedure GetTrackListByGroup(List: TsgeMusicPlayerTrackList; Group: String = ''); unimplemented;
+    procedure GetTrackListByGroup(List: TsgeMusicPlayerTrackList; Group: String = '');
 
   protected
     function GetItem(Index: Integer): TsgeMusicPLayerTrack; override;
@@ -47,13 +47,14 @@ type
 
     procedure Clear;
     procedure Add(Track: TsgeMusicPLayerTrack);
+    procedure Add(const Name, FileName: String; const Group: String = '');
     procedure Delete(Index: Integer);
     procedure Delete(Name: String);
     procedure DeleteByGroup(Group: String);
 
-    function  GetRandomTrack(Group: String = ''): TsgeMusicPLayerTrack; unimplemented;
-    function  GetNextTrack(Group: String = ''): TsgeMusicPLayerTrack; unimplemented;
-    function  GetPrevTrack(Group: String = ''): TsgeMusicPLayerTrack; unimplemented;
+    function  GetRandomTrack(Group: String = ''): TsgeMusicPLayerTrack;
+    function  GetNextTrack(Group: String = ''): TsgeMusicPLayerTrack;
+    function  GetPrevTrack(Group: String = ''): TsgeMusicPLayerTrack;
 
     procedure FromString(Str: String; Mode: TsgeMusicPlayerTrackListLoadMode = mptlmAdd);
     procedure FromMemoryStream(Stream: TsgeMemoryStream; Mode: TsgeMusicPlayerTrackListLoadMode = mptlmAdd);
@@ -76,9 +77,27 @@ const
   Err_CantReadFile = 'CantReadFile';
 
 
+
 procedure TsgeMusicPlayerTrackList.GetTrackListByGroup(List: TsgeMusicPlayerTrackList; Group: String);
+var
+  i: Integer;
+  isAdd: Boolean;
 begin
-  //Отобрать треки по группе
+  //Подготовить группу
+  Group := LowerCase(Group);
+
+  //Найти дорожки совпавшие по группе
+  for i := 0 to FCount - 1 do
+    begin
+    isAdd := False;
+
+    //Проверить совпадение
+    if Group = '' then isAdd := True else
+      if LowerCase(FList[i].Group) = Group then isAdd := True;
+
+    //Добавить в список
+    if isAdd then List.Add(FList[i]);
+    end;
 end;
 
 
@@ -173,6 +192,12 @@ begin
 end;
 
 
+procedure TsgeMusicPlayerTrackList.Add(const Name, FileName: String; const Group: String);
+begin
+  Add(TsgeMusicPLayerTrack.Create(Name, FileName, Group));
+end;
+
+
 procedure TsgeMusicPlayerTrackList.Delete(Index: Integer);
 begin
   FCS.Enter;
@@ -227,12 +252,27 @@ end;
 
 
 function TsgeMusicPlayerTrackList.GetRandomTrack(Group: String): TsgeMusicPLayerTrack;
+var
+  List: TsgeMusicPlayerTrackList;
 begin
+  Result := nil;
+
   FCS.Enter;
   try
 
-    //Получить список треков по группе
-    //Вернуть случайный
+    //Получить список дорожек по группе
+    List := TsgeMusicPlayerTrackList.Create(False);
+    GetTrackListByGroup(List, Group);
+
+    //Найти случайную дорожку
+    if List.Count > 0 then
+      Result := FList[Random(List.Count)];
+
+    //Почистить память
+    List.Free;
+
+    //Запомнить текущую дорожку
+    FCurrentTrack := Result;
 
   finally
     FCS.Leave;
@@ -241,12 +281,43 @@ end;
 
 
 function TsgeMusicPlayerTrackList.GetNextTrack(Group: String): TsgeMusicPLayerTrack;
+var
+  List: TsgeMusicPlayerTrackList;
+  Idx: Integer;
 begin
+  Result := nil;
+
   FCS.Enter;
   try
 
-    //Получить список треков по группе
-    //Вернуть следующий
+    //Получить список дорожек по группе
+    List := TsgeMusicPlayerTrackList.Create(False);
+    GetTrackListByGroup(List, Group);
+
+    if List.Count > 0 then
+      begin
+      //Определить индекс текущей дорожки
+      if FCurrentTrack <> nil then
+        begin
+        //Узнать индекс текущей дорожки
+        Idx := List.IndexOfName(FCurrentTrack.Name);
+        end else Idx := -1;
+
+      //Перейти на следующую дорожку
+      Inc(Idx);
+
+      //Если это последний, то с начала
+      if Idx > List.Count - 1 then Idx := 0;
+
+      //Вернуть следующую дорожку
+      Result := List.Item[Idx];
+      end;
+
+    //Почистить память
+    List.Free;
+
+    //Запомнить текущую дорожку
+    FCurrentTrack := Result;
 
   finally
     FCS.Leave;
@@ -255,12 +326,43 @@ end;
 
 
 function TsgeMusicPlayerTrackList.GetPrevTrack(Group: String): TsgeMusicPLayerTrack;
+var
+  List: TsgeMusicPlayerTrackList;
+  Idx: Integer;
 begin
+  Result := nil;
+
   FCS.Enter;
   try
 
-    //Получить список треков по группе
-    //Вернуть предыдущий
+    //Получить список дорожек по группе
+    List := TsgeMusicPlayerTrackList.Create(False);
+    GetTrackListByGroup(List, Group);
+
+    if List.Count > 0 then
+      begin
+      //Определить индекс текущей дорожки
+      if FCurrentTrack <> nil then
+        begin
+        //Узнать индекс текущей дорожки
+        Idx := List.IndexOfName(FCurrentTrack.Name);
+        end else Idx := -1;
+
+      //Перейти на следующую дорожку
+      Dec(Idx);
+
+      //Если это первый, то с конца
+      if Idx < 0 then Idx := List.Count - 1;
+
+      //Вернуть следующую дорожку
+      Result := List.Item[Idx];
+      end;
+
+    //Почистить память
+    List.Free;
+
+    //Запомнить текущую дорожку
+    FCurrentTrack := Result;
 
   finally
     FCS.Leave;
@@ -268,8 +370,6 @@ begin
 end;
 
 
-//# - Comment
-//Name; FileName; <Group>
 procedure TsgeMusicPlayerTrackList.FromString(Str: String; Mode: TsgeMusicPlayerTrackListLoadMode);
 const
   Separator = ';';
