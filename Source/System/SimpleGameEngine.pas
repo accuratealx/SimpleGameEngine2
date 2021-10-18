@@ -15,7 +15,7 @@ unit SimpleGameEngine;
 interface
 
 uses
-  sgeErrorManager, sgeNamedObjectList, sgeExtensionList, sgeEventManager, sgeEventBase,
+  sgeErrorManager, sgeNamedObjectList, sgeExtensionList, sgeEventManager, sgeEventBase, sgeSystemGlobalAtom,
   sgeExtensionWindow, sgeExtensionGraphic, sgeExtensionPackList, sgeExtensionFileSystem, sgeExtensionShell,
   sgeExtensionResourceList, sgeExtensionStartParameters, sgeExtensionSound, sgeExtensionControllers,
   sgeExtensionVariables, sgeExtensionKeyCommand, sgeExtensionTimeEvent, sgeExtensionGUI, sgeExtensionMusic;
@@ -30,8 +30,8 @@ const
 
 
 type
-  //Параметры инициализации ядра
-  TsgeInitOptions = set of (ioSound);
+  //Параметры инициализации ядра (Звук, Одна копия)
+  TsgeInitOptions = set of (ioSound, ioOneInstance);
 
 
   //Основной класс движка
@@ -42,6 +42,7 @@ type
     FDebug: Boolean;                                                //Режим отладки
 
     //Классы
+    FGlobalAtom: TsgeSystemGlobalAtom;                              //Глобальный атом
     FObjectList: TsgeNamedObjectList;                               //Список объектов
     FErrorManager: TsgeErrorManager;                                //Обработчик ошибок
     FEventManager: TsgeEventManager;                                //Обработчик событий
@@ -132,7 +133,6 @@ const
   spDebug = 'Debug';
 
 
-
 procedure TSimpleGameEngine.SetDebug(ADebug: Boolean);
 begin
   FDebug := ADebug;
@@ -192,6 +192,13 @@ constructor TSimpleGameEngine.Create(Options: TsgeInitOptions);
 var
   JFile: String;
 begin
+  //Проверить на запуск одной копии
+  if ioOneInstance in Options then
+    if sgeGlobalFindAtom(Object_SGE) <> 0 then Halt;
+
+  //Создать глобальный атом
+  FGlobalAtom := TsgeSystemGlobalAtom.Create(Object_SGE);
+
   //Записать себя в глобальную переменную
   sgeVars.SGE := Self;
 
@@ -278,6 +285,9 @@ begin
   FExtensionList.Free;
   FObjectList.Free;
   FEventManager.Free;
+
+  //Удалить глобальный атом
+  FGlobalAtom.Free;
 end;
 
 
