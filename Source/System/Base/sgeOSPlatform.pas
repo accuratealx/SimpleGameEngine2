@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeOSPlatform.pas
-Версия            1.8
+Версия            1.9
 Создан            27.04.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Функции взаимодействия с операционной системой
@@ -60,6 +60,9 @@ type
 
   //Запись для поиска файла
   TsgeSearchRec = TSearchRec;
+
+  //Атом
+  TAtom = Word;
 
 
 
@@ -153,6 +156,15 @@ function  sgeControllerExist(ID: Byte): Boolean;
 //Буфер обмена
 function sgeCopyToClipboard(Str: String): Integer;
 function sgeCopyFromClipboard(var Str: String): Integer;
+
+
+//Атомы
+function  sgeGlobalAddAtom(Name: ShortString): TAtom;
+procedure sgeGlobalDeleteAtom(Atom: TAtom);
+function  sgeGlobalFindAtom(Name: ShortString): TAtom;
+function  sgeGlobalGetAtomName(Atom: TAtom): ShortString;
+
+
 
 var
   OneSecFrequency: Int64;
@@ -713,6 +725,34 @@ begin
   Str := PWideChar(buf);                      //Преобразовать в строку Ansi
 
   SetLength(buf, 0);
+end;
+
+
+function sgeGlobalAddAtom(Name: ShortString): TAtom;
+begin
+  Result := Windows.GlobalAddAtom(PChar(String(Name)));
+end;
+
+
+procedure sgeGlobalDeleteAtom(Atom: TAtom);
+begin
+  Windows.GlobalDeleteAtom(Atom);
+end;
+
+
+function sgeGlobalFindAtom(Name: ShortString): TAtom;
+begin
+  Result := Windows.GlobalFindAtom(PChar(String(Name)));
+end;
+
+
+function sgeGlobalGetAtomName(Atom: TAtom): ShortString;
+var
+  Buf: array[0..255] of Char;
+  Len: Integer;
+begin
+  Len := Windows.GlobalGetAtomName(Atom, @Buf, 255);
+  Result := Copy(Buf, 0, Len);
 end;
 
 
