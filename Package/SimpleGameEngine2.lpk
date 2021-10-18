@@ -15,7 +15,7 @@
     </CompilerOptions>
     <Description Value="Simple Game Engine 2"/>
     <Version Major="1"/>
-    <Files Count="202">
+    <Files Count="203">
       <Item1>
         <Filename Value="..\Source\ThirdParty\GDIPlus\GDIPAPI.pas"/>
         <UnitName Value="GDIPAPI"/>
@@ -829,6 +829,10 @@
         <Filename Value="..\Source\System\MusicPlayer\sgeMusicPLayerTrackList.pas"/>
         <UnitName Value="sgeMusicPLayerTrackList"/>
       </Item202>
+      <Item203>
+        <Filename Value="..\Source\System\Base\sgeSystemGlobalAtom.pas"/>
+        <UnitName Value="sgeSystemGlobalAtom"/>
+      </Item203>
     </Files>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)"/>

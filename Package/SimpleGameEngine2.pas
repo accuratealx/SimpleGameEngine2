@@ -69,7 +69,7 @@ uses
   sgeGUIPropertyVerticalAlign, sgeGUIPropertySpriteRect, 
   sgeGUIPropertyDrawMethod, sgeGUITimer, sgeSystemFont, sgeJournal, 
   sgeGUIUtils, sgeGUISprite, sgeGUISpriteButton, sgeExtensionMusic, 
-  sgeExtensionPackList, sgeMusicPLayerTrackList;
+  sgeExtensionPackList, sgeMusicPLayerTrackList, sgeSystemGlobalAtom;
 
 implementation
 
