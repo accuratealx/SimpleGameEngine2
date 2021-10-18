@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeShellCommandBase.pas
-Версия            1.1
+Версия            1.2
 Создан            30.07.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Базовый класс команды оболочки
@@ -45,9 +45,10 @@ type
     FGroup: ShortString;
     FMinParamCount: Byte;
 
-    constructor Create(SGEObject: TObject; Name: ShortString; Group: ShortString = '');
   public
-    destructor Destroy; override;
+    constructor Create(SGEObject: TObject; Name: ShortString; Group: ShortString = '');
+    destructor  Destroy; override;
+
     procedure AfterConstruction; override;
 
     function GetFullName: String;
