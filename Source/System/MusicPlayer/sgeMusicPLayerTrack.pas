@@ -36,7 +36,7 @@ constructor TsgeMusicPLayerTrack.Create(Name: String; FileName: String; Group: S
 begin
   FName := Name;
   FFileName := FileName;
-  Group := FGroup;
+  FGroup := Group;
 end;
 
 
