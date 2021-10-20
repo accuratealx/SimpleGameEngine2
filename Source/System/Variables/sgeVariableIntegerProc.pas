@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeVariableIntegerProc.pas
-Версия            1.0
+Версия            1.1
 Создан            23.08.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс переменной: Целое число: Ссылка на метод
@@ -74,7 +74,7 @@ begin
   if Getter = nil then
     raise EsgeException.Create(_UNITNAME, Err_VariableGetterIsEmpty);
 
-  inherited Create(Name, DefValue, False, MinValue, MaxValue);
+  inherited Create(Name, DefValue, False, True, MinValue, MaxValue);
 
   //Методы изменения
   FSetter := Setter;

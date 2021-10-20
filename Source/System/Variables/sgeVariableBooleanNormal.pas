@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeVariableBoolean.pas
-Версия            1.0
+Версия            1.1
 Создан            22.07.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс переменной: Булевая переменная: Значение
@@ -60,7 +60,7 @@ end;
 
 constructor TsgeVariableBooleanNormal.Create(Name: ShortString; Value: Boolean; DefValue: Boolean; ReadOnly: Boolean; TrueStr: ShortString; FalseStr: ShortString);
 begin
-  inherited Create(Name, DefValue, ReadOnly, TrueStr, FalseStr);
+  inherited Create(Name, DefValue, ReadOnly, False, TrueStr, FalseStr);
 
   SetValue(Value);
 end;

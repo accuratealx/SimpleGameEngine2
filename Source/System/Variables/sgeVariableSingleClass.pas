@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeVariableSingleClass.pas
-Версия            1.0
+Версия            1.1
 Создан            19.07.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс переменной: Дробное число одинарной точности: Ссылка на метод класса
@@ -74,7 +74,7 @@ begin
   if Getter = nil then
     raise EsgeException.Create(_UNITNAME, Err_VariableGetterIsEmpty);
 
-  inherited Create(Name, DefValue, False, MinValue, MaxValue);
+  inherited Create(Name, DefValue, False, True, MinValue, MaxValue);
 
   //Методы изменения
   FSetter := Setter;

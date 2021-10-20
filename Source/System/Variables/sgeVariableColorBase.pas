@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeVariableColorBase.pas
-Версия            1.0
+Версия            1.1
 Создан            22.08.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс переменной: Цвет: Базовый
@@ -30,7 +30,7 @@ type
     procedure SetValue(AValue: TsgeRGBA); virtual; abstract;
     function  GetValue: TsgeRGBA; virtual; abstract;
   public
-    constructor Create(Name: ShortString; DefValue: TsgeRGBA; ReadOnly: Boolean = False);
+    constructor Create(Name: ShortString; DefValue: TsgeRGBA; ReadOnly: Boolean; Imbedded: Boolean);
 
     procedure SetDefaultValue; override;
 
@@ -56,9 +56,9 @@ begin
 end;
 
 
-constructor TsgeVariableColorBase.Create(Name: ShortString; DefValue: TsgeRGBA; ReadOnly: Boolean);
+constructor TsgeVariableColorBase.Create(Name: ShortString; DefValue: TsgeRGBA; ReadOnly: Boolean; Imbedded: Boolean);
 begin
-  inherited Create(Name, ReadOnly);
+  inherited Create(Name, ReadOnly, Imbedded);
 
   //Тип переменной
   FValueType := vtString;

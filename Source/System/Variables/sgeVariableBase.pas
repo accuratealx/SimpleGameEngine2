@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeVariableBase.pas
-Версия            1.0
+Версия            1.2
 Создан            18.07.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс переменной: Базовый
@@ -30,18 +30,20 @@ type
   protected
     FName: ShortString;                                             //Имя переменной
     FReadOnly: Boolean;                                             //Флаг "Только для чтения"
+    FImbedded: Boolean;                                             //Флаг "Системная"
     FValueType: TsgeVariableType;                                   //Тип переменной
 
     procedure SetStrValue(Str: String); virtual; abstract;          //Метод изменения значения через строку
     function  GetStrValue: String; virtual; abstract;               //Метод получения значения как строку
 
   public
-    constructor Create(Name: ShortString; ReadOnly: Boolean = False); virtual;
+    constructor Create(Name: ShortString; ReadOnly: Boolean; Imbedded: Boolean);
 
     procedure SetDefaultValue; virtual; abstract;                   //Установить значение по умолчанию
 
     property Name: ShortString read FName;
     property ReadOnly: Boolean read FReadOnly;
+    property Imbedded: Boolean read FImbedded;
     property StrValue: String read GetStrValue write SetStrValue;
     property ValueType: TsgeVariableType read FValueType;
   end;
@@ -50,10 +52,11 @@ type
 implementation
 
 
-constructor TsgeVariableBase.Create(Name: ShortString; ReadOnly: Boolean);
+constructor TsgeVariableBase.Create(Name: ShortString; ReadOnly: Boolean; Imbedded: Boolean);
 begin
   FName := Name;
   FReadOnly := ReadOnly;
+  FImbedded := Imbedded;
 end;
 
 

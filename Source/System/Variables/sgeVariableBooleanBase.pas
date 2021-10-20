@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeVariableBooleanBase.pas
-Версия            1.0
+Версия            1.1
 Создан            22.07.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс переменной: Булевая переменная: Базовый
@@ -32,7 +32,7 @@ type
     procedure SetValue(AValue: Boolean); virtual; abstract;
     function  GetValue: Boolean; virtual; abstract;
   public
-    constructor Create(Name: ShortString; DefValue: Boolean; ReadOnly: Boolean = False; TrueStr: ShortString = 'True'; FalseStr: ShortString = 'False');
+    constructor Create(Name: ShortString; DefValue: Boolean; ReadOnly: Boolean; Imbedded: Boolean; TrueStr: ShortString = 'True'; FalseStr: ShortString = 'False');
 
     procedure SetDefaultValue; override;
 
@@ -67,9 +67,9 @@ begin
 end;
 
 
-constructor TsgeVariableBooleanBase.Create(Name: ShortString; DefValue: Boolean; ReadOnly: Boolean; TrueStr: ShortString; FalseStr: ShortString);
+constructor TsgeVariableBooleanBase.Create(Name: ShortString; DefValue: Boolean; ReadOnly: Boolean; Imbedded: Boolean; TrueStr: ShortString; FalseStr: ShortString);
 begin
-  inherited Create(Name, ReadOnly);
+  inherited Create(Name, ReadOnly, Imbedded);
 
   //Тип переменной
   FValueType := vtBoolean;

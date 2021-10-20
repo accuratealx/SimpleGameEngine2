@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeVariableSingleNormal.pas
-Версия            1.0
+Версия            1.1
 Создан            19.07.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс переменной: Дробное число одинарной точности: Значение
@@ -64,7 +64,7 @@ end;
 
 constructor TsgeVariableSingleNormal.Create(Name: ShortString; Value: Single; DefValue: Single; ReadOnly: Boolean; MinValue: Single; MaxValue: Single);
 begin
-  inherited Create(Name, DefValue, ReadOnly, MinValue, MaxValue);
+  inherited Create(Name, DefValue, ReadOnly, False, MinValue, MaxValue);
 
   SetValue(Value);
 end;

@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeVariableIntegerNormal.pas
-Версия            1.0
+Версия            1.1
 Создан            19.07.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс переменной: Целое число: Значение
@@ -64,7 +64,7 @@ end;
 
 constructor TsgeVariableIntegerNormal.Create(Name: ShortString; Value: Integer; DefValue: Integer; ReadOnly: Boolean; MinValue: Integer; MaxValue: Integer);
 begin
-  inherited Create(Name, DefValue, ReadOnly, MinValue, MaxValue);
+  inherited Create(Name, DefValue, ReadOnly, False, MinValue, MaxValue);
 
   SetValue(Value);
 end;

@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeVariableIntegerBase.pas
-Версия            1.0
+Версия            1.1
 Создан            19.07.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс переменной: Целое число: Базовый
@@ -34,7 +34,7 @@ type
 
     procedure CheckValue(var AValue: Integer);
   public
-    constructor Create(Name: ShortString; DefValue: Integer; ReadOnly: Boolean = False; MinValue: Integer = -MaxInt; MaxValue: Integer = MaxInt);
+    constructor Create(Name: ShortString; DefValue: Integer; ReadOnly: Boolean; Imbedded: Boolean; MinValue: Integer = -MaxInt; MaxValue: Integer = MaxInt);
 
     procedure SetDefaultValue; override;
 
@@ -72,9 +72,9 @@ begin
 end;
 
 
-constructor TsgeVariableIntegerBase.Create(Name: ShortString; DefValue: Integer; ReadOnly: Boolean; MinValue: Integer; MaxValue: Integer);
+constructor TsgeVariableIntegerBase.Create(Name: ShortString; DefValue: Integer; ReadOnly: Boolean; Imbedded: Boolean; MinValue: Integer; MaxValue: Integer);
 begin
-  inherited Create(Name, ReadOnly);
+  inherited Create(Name, ReadOnly, Imbedded);
 
   //Тип переменной
   FValueType := vtInteger;

@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeShellCommand_Variable_Clear.pas
-Версия            1.0
+Версия            1.1
 Создан            31.07.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Команда одолочки
@@ -53,7 +53,7 @@ begin
   Result := inherited Execute(Command);
   SGE := TSimpleGameEngine(FSGE);
 
-  SGE.ExtVariables.Variables.Clear;
+  SGE.ExtVariables.Variables.DeleteNonSystem;
 end;
 
 

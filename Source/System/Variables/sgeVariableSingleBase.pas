@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeVariableSingleBase.pas
-Версия            1.0
+Версия            1.1
 Создан            20.07.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс переменной: Дробное число одинарной точности: Базовый
@@ -34,7 +34,7 @@ type
 
     procedure CheckValue(var AValue: Single);
   public
-    constructor Create(Name: ShortString; DefValue: Single; ReadOnly: Boolean = False; MinValue: single = 1.5E-45; MaxValue: single = 3.4E38);
+    constructor Create(Name: ShortString; DefValue: Single; ReadOnly: Boolean; Imbedded: Boolean; MinValue: single = 1.5E-45; MaxValue: single = 3.4E38);
 
     procedure SetDefaultValue; override;
 
@@ -72,9 +72,9 @@ begin
 end;
 
 
-constructor TsgeVariableSingleBase.Create(Name: ShortString; DefValue: Single; ReadOnly: Boolean; MinValue: single; MaxValue: single);
+constructor TsgeVariableSingleBase.Create(Name: ShortString; DefValue: Single; ReadOnly: Boolean; Imbedded: Boolean; MinValue: single; MaxValue: single);
 begin
-  inherited Create(Name, ReadOnly);
+  inherited Create(Name, ReadOnly, Imbedded);
 
   //Тип переменной
   FValueType := vtSingle;

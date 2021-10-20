@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeVariableBooleanClass.pas
-Версия            1.0
+Версия            1.1
 Создан            22.07.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс переменной: Булевая переменная: Ссылка на метод класса
@@ -70,7 +70,7 @@ begin
   if Getter = nil then
     raise EsgeException.Create(_UNITNAME, Err_VariableGetterIsEmpty);
 
-  inherited Create(Name, DefValue, False, TrueStr, FalseStr);
+  inherited Create(Name, DefValue, False, True, TrueStr, FalseStr);
 
   //Методы изменения
   FSetter := Setter;

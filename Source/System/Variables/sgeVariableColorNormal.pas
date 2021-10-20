@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeVariableColorNormal.pas
-Версия            1.0
+Версия            1.1
 Создан            22.08.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс переменной: Цвет: Значение
@@ -60,7 +60,7 @@ end;
 
 constructor TsgeVariableColorNormal.Create(Name: ShortString; Value: TsgeRGBA; DefValue: TsgeRGBA; ReadOnly: Boolean);
 begin
-  inherited Create(Name, DefValue, ReadOnly);
+  inherited Create(Name, DefValue, ReadOnly, True);
 
   SetValue(Value);
 end;

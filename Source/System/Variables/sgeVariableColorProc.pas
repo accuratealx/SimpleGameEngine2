@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeVariableColorProc.pas
-Версия            1.0
+Версия            1.1
 Создан            23.08.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс переменной: Цвет: Ссылка на метод
@@ -70,7 +70,7 @@ begin
   if Getter = nil then
     raise EsgeException.Create(_UNITNAME, Err_VariableGetterIsEmpty);
 
-  inherited Create(Name, DefValue, False);
+  inherited Create(Name, DefValue, False, True);
 
   //Методы изменения
   FSetter := Setter;

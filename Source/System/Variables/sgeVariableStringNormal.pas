@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeVariableStringNormal.pas
-Версия            1.0
+Версия            1.1
 Создан            19.07.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс переменной: Строка: Значение
@@ -60,7 +60,7 @@ end;
 
 constructor TsgeVariableStringNormal.Create(Name: ShortString; Value: String; DefValue: String; ReadOnly: Boolean);
 begin
-  inherited Create(Name, DefValue, ReadOnly);
+  inherited Create(Name, DefValue, ReadOnly, False);
 
   SetValue(Value);
 end;

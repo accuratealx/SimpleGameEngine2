@@ -25,6 +25,7 @@ type
   TsgeVariableList = class(TsgeVariableListTemplate)
   public
     function  IndexOf(Name: ShortString): Integer;
+    procedure DeleteNonSystem;                                      //Удалить несистемные переменные
     procedure Delete(Name: ShortString);
   end;
 
@@ -46,6 +47,18 @@ begin
       Result := i;
       Break;
       end;
+end;
+
+
+procedure TsgeVariableList.DeleteNonSystem;
+var
+  i: Integer;
+begin
+  for i := FCount - 1 downto 0 do
+    begin
+    if FList[i].Imbedded = False then
+      inherited Delete(i);
+    end;
 end;
 
 
