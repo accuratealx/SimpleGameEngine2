@@ -1,8 +1,8 @@
 {
 Пакет             Simple Game Engine 2
-Файл              sgeTemplateCollection.pas
-Версия            1.2
-Создан            14.06.2021
+Файл              sgeTemplateObjectCollection.pas
+Версия            1.1
+Создан            29.06.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс-шаблон: Коллекция
 }
@@ -17,16 +17,16 @@ interface
 type
   generic TsgeTemplateCollection<T> = class
   protected
+    FFreeObjects: Boolean;
     FCount: Integer;
     FList: array of T;
 
     function GetItem(Index: Integer): T;
   public
-    constructor Create; virtual;
+    constructor Create(FreeObjects: Boolean = False);
     destructor  Destroy; override;
 
-    procedure Clear; virtual;
-
+    procedure Clear;
     procedure Add(Item: T);
     procedure Delete(Index: Integer);
     procedure Insert(Index: Integer; Item: T);
@@ -60,8 +60,9 @@ begin
 end;
 
 
-constructor TsgeTemplateCollection.Create;
+constructor TsgeTemplateCollection.Create(FreeObjects: Boolean);
 begin
+  FFreeObjects := FreeObjects;
   FCount := 0;
 end;
 
@@ -73,7 +74,14 @@ end;
 
 
 procedure TsgeTemplateCollection.Clear;
+var
+  i: Integer;
 begin
+  //Удалить память объектов
+  if FFreeObjects then
+    for i := 0 to FCount - 1 do
+      TObject(FList[i]).Free;
+
   //Поправить параметры
   FCount := 0;
 
@@ -98,6 +106,9 @@ begin
   if (Index < 0) or (Index > FCount) then
     raise EsgeException.Create(_UNITNAME, Err_IndexOutOfBounds, sgeIntToStr(Index));
 
+  //Удалить память объекта
+  if FFreeObjects then  TObject(FList[Index]).Free;
+
   //Сдвинуть хвост
   for i := Index to c - 1 do
     FList[i] := FList[i + 1];
@@ -117,12 +128,12 @@ begin
   if (Index < 0) or (Index > FCount) then
     raise EsgeException.Create(_UNITNAME, Err_IndexOutOfBounds, sgeIntToStr(Index));
 
-  //Раздвинуть
+  //Увеличить массив на один элемент
   SetLength(FList, FCount + 1);
   for i := FCount downto Index + 1 do
     FList[i] := FList[i - 1];
 
-  //Вставить
+  //Вставить элемент
   FList[Index] := Item;
 
   //Увеличить счётчик
