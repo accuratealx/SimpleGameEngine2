@@ -19,35 +19,33 @@ type
   protected
     type
       PListItem = ^TListItem;
-      TListItem = record                                //Одна запись под хранение элемента
+      TListItem = record                                            //Одна запись под хранение элемента
         Item: T;
         Prev: PListItem;
         Next: PListItem;
       end;
 
   protected
-    FCount: Integer;                                    //Количество элементов
-    FFirst: PListItem;                                  //Первый элемент
-    FLast: PListItem;                                   //Последний элемент
+    FFreeObjects: Boolean;                                          //Удалять объекты
+    FCount: Integer;                                                //Количество элементов
+    FFirst: PListItem;                                              //Первый элемент
+    FLast: PListItem;                                               //Последний элемент
 
     //Вспомогательные методы
-    function  GetItemByIndex(Index: Integer): PListItem; //Найти указатель на элемент по индексу
+    function  GetItemByIndex(Index: Integer): PListItem;            //Найти указатель на элемент по индексу
     procedure DeleteItemByPointer(Item: PListItem);
 
     //Свойства
     function GetItem(Index: Integer): T;
   public
-    constructor Create;
+    constructor Create(FreeObjects: Boolean = False);
     destructor  Destroy; override;
 
-    function  IndexOfItem(Item: T): Integer;
-
-    procedure ClearItem; virtual;
-
-    procedure AddItem(Item: T);
-    procedure DeleteItem(Index: Integer);
-    procedure DeleteItem(Item: T);
-    procedure InsertItem(Index: Integer; Item: T);
+    procedure Clear;
+    procedure Add(Item: T);
+    procedure Delete(Index: Integer);
+    procedure Delete(Item: T);
+    procedure Insert(Index: Integer; Item: T);
 
     property Count: Integer read FCount;
     property Item[Index: Integer]: T read GetItem;
@@ -127,6 +125,10 @@ begin
   if Item^.Next <> nil then Item^.Next^.Prev := Item^.Prev else FLast := Item^.Prev;    //Следующий элемент
   if Item^.Prev <> nil then Item^.Prev^.Next := Item^.Next else FFirst := Item^.Next;   //Предыдущий элемент
 
+  //Удалить память объекта
+  if FFreeObjects then
+    TObject(Item).Free;
+
   //Удалить память текущей записи
   Dispose(Item);
 
@@ -148,8 +150,9 @@ begin
 end;
 
 
-constructor TsgeTemplateList.Create;
+constructor TsgeTemplateList.Create(FreeObjects: Boolean);
 begin
+  FFreeObjects := FreeObjects;
   FCount := 0;
   FFirst := nil;
   FLast := nil;
@@ -158,35 +161,11 @@ end;
 
 destructor TsgeTemplateList.Destroy;
 begin
-  ClearItem;
+  Clear;
 end;
 
 
-function TsgeTemplateList.IndexOfItem(Item: T): Integer;
-var
-  Idx: Integer;
-  P: PListItem;
-begin
-  //Значение по умолчаню
-  Result := -1;
-
-  Idx := 0;
-  P := FFirst;
-  while P <> nil do
-    begin
-    if P^.Item = Item then
-      begin
-      Result := Idx;
-      Break;
-      end;
-
-    Inc(Idx);
-    P := P^.Next;
-    end;
-end;
-
-
-procedure TsgeTemplateList.ClearItem;
+procedure TsgeTemplateList.Clear;
 var
   P, D: PListItem;
 begin
@@ -196,6 +175,10 @@ begin
   P := FFirst;
   while P <> nil do
     begin
+    //Освободить память объекта
+    if FFreeObjects then
+      TObject(P^.Item).Free;
+
     //Освободить память
     D := P;
     P := P^.Next;
@@ -209,7 +192,7 @@ begin
 end;
 
 
-procedure TsgeTemplateList.AddItem(Item: T);
+procedure TsgeTemplateList.Add(Item: T);
 var
   I: PListItem;
 begin
@@ -237,7 +220,7 @@ begin
 end;
 
 
-procedure TsgeTemplateList.DeleteItem(Index: Integer);
+procedure TsgeTemplateList.Delete(Index: Integer);
 var
   P: PListItem;
 begin
@@ -252,7 +235,7 @@ begin
 end;
 
 
-procedure TsgeTemplateList.DeleteItem(Item: T);
+procedure TsgeTemplateList.Delete(Item: T);
 var
   Idx: Integer;
   P: PListItem;
@@ -279,7 +262,7 @@ begin
 end;
 
 
-procedure TsgeTemplateList.InsertItem(Index: Integer; Item: T);
+procedure TsgeTemplateList.Insert(Index: Integer; Item: T);
 var
   PRight, PLeft, PNew: PListItem;
 begin
