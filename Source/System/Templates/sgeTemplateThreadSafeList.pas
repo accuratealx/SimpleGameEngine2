@@ -130,7 +130,7 @@ begin
 
   //Удалить память объекта
   if FFreeObjects then
-    TObject(Item^).Free;
+    TObject(Item^.Item).Free;
 
   //Удалить память текущей записи
   Dispose(Item);
