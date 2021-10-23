@@ -741,8 +741,11 @@ end;
 
 
 function sgeGlobalFindAtom(Name: ShortString): TAtom;
+var
+  s: String;
 begin
-  Result := Windows.GlobalFindAtom(PChar(String(Name)));
+  s := Name;
+  Result := Windows.GlobalFindAtom(PChar(s));
 end;
 
 

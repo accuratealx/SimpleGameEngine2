@@ -6,6 +6,7 @@
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Вспомогательные функции графики
 }
+{$Include Defines.inc}
 
 unit sgeGraphicUtils;
 

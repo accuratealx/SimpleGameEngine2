@@ -6,6 +6,7 @@
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс-шаблон: Потокобезопасная коллекция
 }
+{$Include Defines.inc}
 
 unit sgeTemplateThreadSafeCollection;
 
@@ -81,10 +82,9 @@ end;
 
 destructor TsgeTemplateThreadSafeCollection.Destroy;
 begin
-  FCS.Free;
-
-  //Очистить память
   Clear;
+
+  FCS.Free;
 end;
 
 

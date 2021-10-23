@@ -29,15 +29,15 @@ type
 
   TsgeScreenFade = class
   private
-    FValues: array of Single;     //Массив прозрачностей для градиента
-    FEnable: Boolean;             //Активность
-    FStartTime: Int64;            //Время запуска
-    FTime: Cardinal;              //Длительность в мс
-    FColor: TsgeColor;            //Промежуточный цвет
-    FCallBackProc: TsgeScreenFadeProc;  //Обработчик прошедшего времени
+    FValues: array of Single;                                       //Массив прозрачностей для градиента
+    FEnable: Boolean;                                               //Активность
+    FStartTime: Int64;                                              //Время запуска
+    FTime: Cardinal;                                                //Длительность в мс
+    FColor: TsgeColor;                                              //Промежуточный цвет
+    FCallBackProc: TsgeScreenFadeProc;                              //Обработчик прошедшего времени
 
-    FTimeBegin: Boolean;          //Флаг срабатывания начала
-    FTimeMiddle: Boolean;         //Флаг срабатывания середины
+    FTimeBegin: Boolean;                                            //Флаг срабатывания начала
+    FTimeMiddle: Boolean;                                           //Флаг срабатывания середины
 
     procedure ValuesClear;
     procedure ValuesAdd(aValue: Single);

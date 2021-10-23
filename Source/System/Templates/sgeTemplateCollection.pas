@@ -6,6 +6,7 @@
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс-шаблон: Коллекция
 }
+{$Include Defines.inc}
 
 unit sgeTemplateCollection;
 
@@ -45,10 +46,8 @@ const
 
 implementation
 
-
 uses
   sgeErrors, sgeSystemUtils;
-
 
 
 function TsgeTemplateCollection.GetItem(Index: Integer): T;

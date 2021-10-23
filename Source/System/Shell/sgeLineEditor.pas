@@ -17,7 +17,6 @@ interface
 uses
   sgeTypes;
 
-
 type
   TsgeLineEditor = class
   private

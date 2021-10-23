@@ -16,7 +16,8 @@ unit sgeShellCommandParameterFloat;
 interface
 
 uses
-  sgeStringList, sgeShellCommandParameterBase;
+  sgeStringList,
+  sgeShellCommandParameterBase;
 
 
 type

@@ -6,6 +6,7 @@
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс-шаблон: Потокобезопасный связный список
 }
+{$Include Defines.inc}
 
 unit sgeTemplateThreadSafeList;
 
@@ -173,9 +174,9 @@ end;
 
 destructor TsgeTemplateThreadSafeList.Destroy;
 begin
-  FCS.Free;
-
   Clear;
+
+  FCS.Free;
 end;
 
 

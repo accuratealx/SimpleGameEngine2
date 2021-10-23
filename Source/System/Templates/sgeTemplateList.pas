@@ -6,13 +6,13 @@
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс-шаблон: Связный список
 }
+{$Include Defines.inc}
 
 unit sgeTemplateList;
 
 {$mode objfpc}{$H+}
 
 interface
-
 
 type
   generic TsgeTemplateList<T> = class

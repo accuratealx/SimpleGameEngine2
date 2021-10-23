@@ -6,8 +6,8 @@
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Глобальные переменные
 }
-
 {$Include Defines.inc}
+
 unit sgeVars;
 
 {$mode objfpc}{$H+}
@@ -19,10 +19,12 @@ uses
 
 
 var
-  SGE: TSimpleGameEngine;                                           //Ссылка на основной класс
+  //Ссылка на основной класс
+  SGE: TSimpleGameEngine;
 
 
 implementation
+
 
 end.
 

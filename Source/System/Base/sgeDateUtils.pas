@@ -14,10 +14,8 @@ unit sgeDateUtils;
 
 interface
 
-
 type
   TDateTime = type Double;
-
 
 
 function sgeNow: TDateTime;

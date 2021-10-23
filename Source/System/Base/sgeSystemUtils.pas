@@ -37,7 +37,6 @@ function  sgePos(const Substr, Source: String; Offset: SizeInt = 1): SizeInt;
 
 
 
-
 implementation
 
 uses

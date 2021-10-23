@@ -7,7 +7,6 @@
 Описание          GUI: Форма
 }
 {$Include Defines.inc}
-{$ModeSwitch duplicatelocals+}
 
 unit sgeGUIForm;
 
@@ -102,7 +101,7 @@ begin
   FGraphicElement := TsgeGraphicElementSpriteCashed.Create(Left, Top, Width, Height, FCanvas);
 
   //Добавить элемент в список отрисовки
-  SGE.ExtGraphic.DrawList.AddElement(FGraphicElement, 'GUI');
+  SGE.ExtGraphic.LayerList.AddElement(FGraphicElement, 'GUI');
 
   //Создать свойство фона
   FBackground := TsgeGUIBackgroundExt.Create(Self);

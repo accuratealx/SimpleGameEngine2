@@ -16,12 +16,12 @@ unit sgeShellCommandParameterInteger;
 interface
 
 uses
-  sgeStringList, sgeShellCommandParameterBase;
+  sgeStringList,
+  sgeShellCommandParameterBase;
 
 
 type
   TsgeShellCommandParameterInteger = class(TsgeShellCommandParameterBase)
-  private
   public
     constructor Create(Name: ShortString; Required: Boolean; PrefixRequired: Boolean = False; PrefixList: TsgeStringList = nil);
   end;

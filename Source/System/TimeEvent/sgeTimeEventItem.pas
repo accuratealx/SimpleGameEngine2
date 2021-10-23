@@ -118,7 +118,7 @@ end;
 
 destructor TsgeTimeEventItem.Destroy;
 begin
-  //Удалить себя из списока
+  //Удалить себя из списка
   SGE.ExtTimeEvent.TimeEventList.Delete(Self);
 end;
 
