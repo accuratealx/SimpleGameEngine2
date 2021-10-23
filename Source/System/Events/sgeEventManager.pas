@@ -16,7 +16,7 @@ interface
 
 uses
   sgeErrors, sgeCriticalSection, sgeSystemEvent,
-  sgeEventBase, sgeEventList, sgeEventSubscriber, sgeEventSubscriberGroupList;
+  sgeEventBase, sgeEventList, sgeEventSubscriberGroupList;
 
 
 const
@@ -39,26 +39,12 @@ type
     constructor Create;
     destructor  Destroy; override;
 
-    //Управление списками
-    procedure ClearEvents;                                                  //Очистить список событий
-    procedure ClearSubscribers;                                             //Очистить список подписчиков
-
-    //Публикация
-    procedure Publish(EventName: String; EventObj: TsgeEventBase = nil);    //Добавить событие в очередь
-
-    //Подписка
-    function Subscribe(EventName: String; Handler: TsgeEventHandler; Priority: Word = 0; Enable: Boolean = True): TsgeEventSubscriber;
-
-    //Отписка
-    procedure UnSubscribe(EventName: String; Handler: TsgeEventHandler);    //Отписаться от события по имени и обработчику
-    procedure UnSubscribe(EventName: String; Obj: TObject);                 //Отписаться от события по имени и объекту
-    procedure UnSubscribe(Handler: TsgeEventHandler);                       //Отписаться от событий по обработчику
-    procedure UnSubscribe(Obj: TObject);                                    //Отписаться от событий по объекту
-
-    //Доставка
+    procedure Publish(EventObj: TsgeEventBase = nil);                       //Добавить событие в очередь
     procedure DispatchEvents;                                               //Метод обработки событий
 
-    //Свойства
+    property EventList: TsgeEventList read FEventList;
+    property SubscriberGroupList: TsgeEventSubscriberGroupList read FSubscriberGroupList;
+
     property ErrorHandler: TsgeErrorHandler read FErrorHandler write FErrorHandler;
   end;
 
@@ -81,95 +67,36 @@ begin
   FCS := TsgeCriticalSection.Create;
   FEvent := TsgeSystemEvent.Create(True, False);
 
-  FEventList := TsgeEventList.Create;
-  FSubscriberGroupList := TsgeEventSubscriberGroupList.Create;
+  FEventList := TsgeEventList.Create(True);
+  FSubscriberGroupList := TsgeEventSubscriberGroupList.Create(True);
 end;
 
 
 destructor TsgeEventManager.Destroy;
 begin
-  FCS.Enter;     //Поднять флаг изменения списка, если потоки что-то пишут
+  //Поднять флаг изменения списка, если потоки что-то пишут
+  FCS.Enter;
 
   FSubscriberGroupList.Free;
   FEventList.Free;
-
   FEvent.Free;
   FCS.Free;
 end;
 
 
-procedure TsgeEventManager.ClearEvents;
-begin
-  FCS.Enter;
-  FEventList.Clear;
-  FCS.Leave;
-end;
-
-
-procedure TsgeEventManager.ClearSubscribers;
-begin
-  FCS.Enter;
-  FSubscriberGroupList.Clear;
-  FCS.Leave;
-end;
-
-
-procedure TsgeEventManager.Publish(EventName: String; EventObj: TsgeEventBase);
+procedure TsgeEventManager.Publish(EventObj: TsgeEventBase);
 begin
   //Добавить событие
-  FCS.Enter;
-  FEventList.Add(EventName, EventObj);
-  FCS.Leave;
+  FEventList.Add(EventObj);
 
   //Поднять флаг доставки события
   FEvent.Up;
 end;
 
 
-function TsgeEventManager.Subscribe(EventName: String; Handler: TsgeEventHandler; Priority: Word; Enable: Boolean): TsgeEventSubscriber;
-begin
-  FCS.Enter;
-  Result := FSubscriberGroupList.Subscribe(EventName, Handler, Priority, Enable);
-  FCS.Leave;
-end;
-
-
-procedure TsgeEventManager.UnSubscribe(EventName: String; Handler: TsgeEventHandler);
-begin
-  FCS.Enter;
-  FSubscriberGroupList.UnSubscribe(EventName, Handler);
-  FCS.Leave;
-end;
-
-
-procedure TsgeEventManager.UnSubscribe(EventName: String; Obj: TObject);
-begin
-  FCS.Enter;
-  FSubscriberGroupList.UnSubscribe(EventName, Obj);
-  FCS.Leave;
-end;
-
-
-procedure TsgeEventManager.UnSubscribe(Handler: TsgeEventHandler);
-begin
-  FCS.Enter;
-  FSubscriberGroupList.UnSubscribe(Handler);
-  FCS.Leave;
-end;
-
-
-procedure TsgeEventManager.UnSubscribe(Obj: TObject);
-begin
-  FCS.Enter;
-  FSubscriberGroupList.UnSubscribe(Obj);
-  FCS.Leave;
-end;
-
-
 procedure TsgeEventManager.DispatchEvents;
 var
   Idx, i: Integer;
-  EventName: String;
   EventObj: TsgeEventBase;
   SubscriberList: TsgeEventSubscriberList;
 begin
@@ -179,15 +106,14 @@ begin
   //Рассылаем события
   while FEventList.Count <> 0 do
     begin
-    //Определить параметры события
-    EventName := FEventList.Item[0].Name;
-    EventObj := FEventList.Item[0].Obj;
+    //Получить событие
+    EventObj := FEventList.Item[0];
 
     //Заблокировать подписчиков
     FSubscriberGroupList.Lock;
 
     //Найти группу
-    Idx := FSubscriberGroupList.IndexOf(EventName);
+    Idx := FSubscriberGroupList.IndexOf(EventObj.Name);
 
     if Idx <> -1 then
       begin
@@ -216,10 +142,10 @@ begin
     //Разблокировать подписчиков
     FSubscriberGroupList.Unlock;
 
+
+
     //Удалить объект события
-    FCS.Enter;
     FEventList.Delete(0);
-    FCS.Leave;
     end;
 end;
 

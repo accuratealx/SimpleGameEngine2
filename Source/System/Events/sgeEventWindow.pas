@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeEventWindow.pas
-Версия            1.4
+Версия            1.5
 Создан            02.05.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Классы событий: Окно
@@ -11,6 +11,7 @@
 unit sgeEventWindow;
 
 {$mode objfpc}{$H+}
+{$ModeSwitch duplicatelocals+}
 
 interface
 
@@ -40,7 +41,7 @@ type
     FWidth: Integer;
     FHeight: Integer;
   public
-    constructor Create(Width, Height: Integer);
+    constructor Create(Name: ShortString; Width, Height: Integer);
 
     property Width: Integer read FWidth;
     property Height: Integer read FHeight;
@@ -50,8 +51,10 @@ type
 implementation
 
 
-constructor TsgeEventWindowSize.Create(Width, Height: Integer);
+constructor TsgeEventWindowSize.Create(Name: ShortString; Width, Height: Integer);
 begin
+  inherited Create(Name);
+
   FWidth := Width;
   FHeight := Height;
 end;
