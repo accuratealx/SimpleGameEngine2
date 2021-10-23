@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeEventSubscriberGroup.pas
-Версия            1.0
+Версия            1.1
 Создан            12.07.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Кдасс группы подписчиков
@@ -21,8 +21,8 @@ uses
 type
   TsgeEventSubscriberGroup = class
   private
-    FName: ShortString;                                             //Имя события
     FSubscribers: TsgeEventSubscriberList;                          //Список подписчиков
+    FName: ShortString;                                             //Имя события
 
   public
     constructor Create(Name: ShortString);
@@ -38,8 +38,9 @@ implementation
 
 constructor TsgeEventSubscriberGroup.Create(Name: ShortString);
 begin
+  FSubscribers := TsgeEventSubscriberList.Create(True);
+
   FName := Name;
-  FSubscribers := TsgeEventSubscriberList.Create;
 end;
 
 

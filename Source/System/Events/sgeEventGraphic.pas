@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeEventGraphic.pas
-Версия            1.0
+Версия            1.1
 Создан            06.05.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Классы событий: Графика
@@ -11,6 +11,7 @@
 unit sgeEventGraphic;
 
 {$mode objfpc}{$H+}
+{$ModeSwitch duplicatelocals+}
 
 interface
 
@@ -27,7 +28,7 @@ type
   private
     FPassedTime: TsgePassedTime;
   public
-    constructor Create(PassedTime: TsgePassedTime);
+    constructor Create(Name: ShortString; PassedTime: TsgePassedTime);
 
     property PassedTime: TsgePassedTime read FPassedTime;
   end;
@@ -38,8 +39,10 @@ type
 implementation
 
 
-constructor TsgeEventGraphicFade.Create(PassedTime: TsgePassedTime);
+constructor TsgeEventGraphicFade.Create(Name: ShortString; PassedTime: TsgePassedTime);
 begin
+  inherited Create(Name);
+
   FPassedTime := PassedTime;
 end;
 

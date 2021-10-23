@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeEventControllers.pas
-Версия            1.2
+Версия            1.3
 Создан            22.05.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Классы событий: Контроллеры
@@ -53,7 +53,7 @@ type
   private
     FID: Byte;
   public
-    constructor Create(ID: Byte);
+    constructor Create(Name: ShortString; ID: Byte);
 
     property ID: Byte read FID;
   end;
@@ -64,7 +64,7 @@ type
   private
     FButtonID: Byte;
   public
-    constructor Create(ID: Byte; ButtonID: Byte); reintroduce;
+    constructor Create(Name: ShortString; ID: Byte; ButtonID: Byte); reintroduce;
 
     property ButtonID: Byte read FButtonID;
   end;
@@ -75,7 +75,7 @@ type
   private
     FDirection: TsgeControllerPovDirection;
   public
-    constructor Create(ID: Byte; Direction: TsgeControllerPovDirection); reintroduce;
+    constructor Create(Name: ShortString; ID: Byte; Direction: TsgeControllerPovDirection); reintroduce;
 
     property Direction: TsgeControllerPovDirection read FDirection;
   end;
@@ -87,7 +87,7 @@ type
     FAxis: TsgeControllerAxisType;
     FTilt: TsgeControllerAxisTilt;
   public
-    constructor Create(ID: Byte; Axis: TsgeControllerAxisType; Tilt: TsgeControllerAxisTilt); reintroduce;
+    constructor Create(Name: ShortString; ID: Byte; Axis: TsgeControllerAxisType; Tilt: TsgeControllerAxisTilt); reintroduce;
 
     property Axis: TsgeControllerAxisType read FAxis;
     property Tilt: TsgeControllerAxisTilt read FTilt;
@@ -102,7 +102,7 @@ type
     FPrevValue: Integer;
 
   public
-    constructor Create(ID: Byte; Axis: TsgeControllerAxisType; Value, PrevValue: Integer); reintroduce;
+    constructor Create(Name: ShortString; ID: Byte; Axis: TsgeControllerAxisType; Value, PrevValue: Integer); reintroduce;
 
     property Axis: TsgeControllerAxisType read FAxis;
     property Value: Integer read FValue;
@@ -116,41 +116,47 @@ implementation
 
 
 
-constructor TsgeEventController.Create(ID: Byte);
+constructor TsgeEventController.Create(Name: ShortString; ID: Byte);
 begin
+  inherited Create(Name);
+
   FID := ID;
 end;
 
 
 
-constructor TsgeEventControllerButton.Create(ID: Byte; ButtonID: Byte);
+constructor TsgeEventControllerButton.Create(Name: ShortString; ID: Byte; ButtonID: Byte);
 begin
-  inherited Create(ID);
+  inherited Create(Name, ID);
+
   FButtonID := ButtonID;
 end;
 
 
 
-constructor TsgeEventControllerPOV.Create(ID: Byte; Direction: TsgeControllerPovDirection);
+constructor TsgeEventControllerPOV.Create(Name: ShortString; ID: Byte; Direction: TsgeControllerPovDirection);
 begin
-  inherited Create(ID);
+  inherited Create(Name, ID);
+
   FDirection := Direction;
 end;
 
 
 
-constructor TsgeEventControllerAxis.Create(ID: Byte; Axis: TsgeControllerAxisType; Tilt: TsgeControllerAxisTilt);
+constructor TsgeEventControllerAxis.Create(Name: ShortString; ID: Byte; Axis: TsgeControllerAxisType; Tilt: TsgeControllerAxisTilt);
 begin
-  inherited Create(ID);
+  inherited Create(Name, ID);
+
   FAxis := Axis;
   FTilt := Tilt;
 end;
 
 
 
-constructor TsgeEventControllerAxisValue.Create(ID: Byte; Axis: TsgeControllerAxisType; Value, PrevValue: Integer);
+constructor TsgeEventControllerAxisValue.Create(Name: ShortString; ID: Byte; Axis: TsgeControllerAxisType; Value, PrevValue: Integer);
 begin
-  inherited Create(ID);
+  inherited Create(Name, ID);
+
   FAxis := Axis;
   FValue := Value;
   FPrevValue := PrevValue;

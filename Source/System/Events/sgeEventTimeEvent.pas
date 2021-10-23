@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeEventTimeEvent.pas
-Версия            1.1
+Версия            1.2
 Создан            31.08.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Классы событий: Таймер
@@ -11,6 +11,7 @@
 unit sgeEventTimeEvent;
 
 {$mode objfpc}{$H+}
+{$ModeSwitch duplicatelocals+}
 
 interface
 
@@ -31,19 +32,20 @@ type
   private
     FProc: TsgeTimeEventProc;
   public
-    constructor Create(Proc: TsgeTimeEventProc);
+    constructor Create(Name: ShortString; Proc: TsgeTimeEventProc);
 
     property Proc: TsgeTimeEventProc read FProc;
   end;
 
 
 
-
 implementation
 
 
-constructor TsgeEventTimeEvent.Create(Proc: TsgeTimeEventProc);
+constructor TsgeEventTimeEvent.Create(Name: ShortString; Proc: TsgeTimeEventProc);
 begin
+  inherited Create(Name);
+
   FProc := Proc;
 end;
 
