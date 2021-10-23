@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeEventSubscriberGroupList.pas
-Версия            1.4
+Версия            1.5
 Создан            12.07.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс списка групп подписчиков
@@ -15,80 +15,30 @@ unit sgeEventSubscriberGroupList;
 interface
 
 uses
-  sgeCriticalSection,
-  sgeTemplateObjectCollection, sgeEventBase, sgeEventSubscriber, sgeEventSubscriberGroup;
+  sgeTemplateThreadSafeCollection,
+  sgeEventBase, sgeEventSubscriber, sgeEventSubscriberGroup;
+
 
 type
-  //Шаблон списка
-  TsgeEventSubscriberGroupListTemplate = specialize TsgeTemplateObjectCollection<TsgeEventSubscriberGroup>;
-
-
-  //Список групп подписчиков
-  TsgeEventSubscriberGroupList = class(TsgeEventSubscriberGroupListTemplate)
-  private
-    FCS: TsgeCriticalSection;
-
+  TsgeEventSubscriberGroupList = class(specialize TsgeTemplateThreadSafeCollection<TsgeEventSubscriberGroup>)
   public
-    constructor Create; reintroduce;
-    destructor  Destroy; override;
-
-    function IndexOf(Name: ShortString): Integer;
-
     procedure Lock;
     procedure Unlock;
 
-    procedure Clear;
-    procedure Add(Name: String);
-    procedure Delete(Index: Integer);
+    function  IndexOf(Name: ShortString): Integer;
 
     function  Subscribe(EventName: ShortString; Handler: TsgeEventHandler; Priority: Word = 0; Enable: Boolean = True): TsgeEventSubscriber;
 
-    procedure UnSubscribe(EventName: ShortString; Handler: TsgeEventHandler);
-    procedure UnSubscribe(EventName: ShortString; Obj: TObject);
-    procedure UnSubscribe(Handler: TsgeEventHandler);
-    procedure UnSubscribe(Obj: TObject);
+    procedure UnSubscribe(EventName: ShortString; Handler: TsgeEventHandler); //Отписаться от события по имени и обработчику
+    procedure UnSubscribe(EventName: ShortString; Obj: TObject);              //Отписаться от события по имени и объекту
+    procedure UnSubscribe(Handler: TsgeEventHandler);                         //Отписаться от событий по обработчику
+    procedure UnSubscribe(Obj: TObject);                                      //Отписаться от событий по объекту
   end;
 
 
 implementation
 
 
-
-constructor TsgeEventSubscriberGroupList.Create;
-begin
-  inherited Create;
-  FCS := TsgeCriticalSection.Create;
-end;
-
-
-destructor TsgeEventSubscriberGroupList.Destroy;
-begin
-  FCS.Free;
-  inherited Destroy;
-end;
-
-
-function TsgeEventSubscriberGroupList.IndexOf(Name: ShortString): Integer;
-var
-  i: Integer;
-begin
-  FCS.Enter;
-  try
-
-    Result := -1;
-
-    Name := LowerCase(Name);
-    for i := 0 to FCount - 1 do
-      if Name = LowerCase(FList[i].Name) then
-        begin
-        Result := i;
-        Break;
-        end;
-
-  finally
-    FCS.Leave;
-  end;
-end;
 
 
 procedure TsgeEventSubscriberGroupList.Lock;
@@ -103,38 +53,23 @@ begin
 end;
 
 
-procedure TsgeEventSubscriberGroupList.Clear;
+function TsgeEventSubscriberGroupList.IndexOf(Name: ShortString): Integer;
+var
+  i: Integer;
 begin
   FCS.Enter;
   try
 
-    inherited Clear;
+    Result := -1;
 
-  finally
-    FCS.Leave;
-  end;
-end;
-
-
-procedure TsgeEventSubscriberGroupList.Add(Name: String);
-begin
-  FCS.Enter;
-  try
-
-    inherited Add(TsgeEventSubscriberGroup.Create(Name));
-
-  finally
-    FCS.Leave;
-  end;
-end;
-
-
-procedure TsgeEventSubscriberGroupList.Delete(Index: Integer);
-begin
-  FCS.Enter;
-  try
-
-    inherited Delete(Index);
+    //Поиск совпадения по имени
+    Name := LowerCase(Name);
+    for i := 0 to FCount - 1 do
+      if Name = LowerCase(FList[i].Name) then
+        begin
+        Result := i;
+        Break;
+        end;
 
   finally
     FCS.Leave;
@@ -155,7 +90,7 @@ begin
     //Если нет группы, то создать
     if Idx = -1 then
       begin
-      Add(EventName);
+      Add(TsgeEventSubscriberGroup.Create(EventName));
       Idx := FCount - 1;
       end;
 
@@ -266,7 +201,7 @@ begin
       if FList[i].Subscribers.Count = 0 then
         begin
         Delete(i);
-        Dec(i)
+        Dec(i);
         end;
       end;
 

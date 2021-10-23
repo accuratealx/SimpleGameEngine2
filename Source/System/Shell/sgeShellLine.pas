@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeShellLine.pas
-Версия            1.0
+Версия            1.1
 Создан            10.08.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс линии строки оболочки
@@ -15,14 +15,13 @@ unit sgeShellLine;
 interface
 
 uses
-  sgeTemplateObjectCollection, sgeShellLineItem, sgeGraphicColor;
+  sgeTemplateCollection,
+  sgeGraphicColor,
+  sgeShellLineItem;
 
 
 type
-  TsgeShellLineTemplate = specialize TsgeTemplateObjectCollection<TsgeShellLineItem>;
-
-
-  TsgeShellLine = class(TsgeShellLineTemplate)
+  TsgeShellLine = class(specialize TsgeTemplateCollection<TsgeShellLineItem>)
   public
     constructor Create;
 

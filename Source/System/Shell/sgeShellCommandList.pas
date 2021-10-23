@@ -11,41 +11,23 @@
 unit sgeShellCommandList;
 
 {$mode objfpc}{$H+}
-{$ModeSwitch duplicatelocals+}
 
 interface
 
 uses
-  sgeCriticalSection,
-  sgeShellCommand, sgeTemplateObjectCollection;
+  sgeTemplateThreadSafeCollection,
+  sgeShellCommand;
 
 type
-  TsgeShellCommandListTemplate = specialize TsgeTemplateObjectCollection<TsgeShellCommand>;
-
-
-  TsgeShellCommandList = class(TsgeShellCommandListTemplate)
+  TsgeShellCommandList = class(specialize TsgeTemplateThreadSafeCollection<TsgeShellCommand>)
   type
     TMatchType = (mtName, mtGroup);
-  private
-    FCS: TsgeCriticalSection;
-
-    function GetItem(Index: Integer): TsgeShellCommand;
   public
-    constructor Create(FreeObjects: Boolean = True); override;
-    destructor  Destroy; override;
-
-    procedure Lock;
-    procedure UnLock;
+    procedure GetMatchCommandList(Name: ShortString; MatchType: TMatchType; List: TsgeShellCommandList);
 
     function  IndexOf(Command: TsgeShellCommand): Integer;
 
-    //Вернуть список подходящих команд
-    procedure GetMatchCommandList(Name: ShortString; MatchType: TMatchType; List: TsgeShellCommandList);
-
-    procedure Clear;
     procedure Add(Command: TsgeShellCommand);
-    procedure Delete(Index: Integer);
-    procedure Insert(Index: Integer; Item: TsgeShellCommand);
   end;
 
 
@@ -59,63 +41,6 @@ const
 
   Err_CommandAlreadyExist = 'CommandAlreadyExist';
 
-
-function TsgeShellCommandList.GetItem(Index: Integer): TsgeShellCommand;
-begin
-  FCS.Enter;
-  try
-
-    Result := inherited GetItem(Index);
-
-  finally
-    FCS.Leave;
-  end;
-end;
-
-
-constructor TsgeShellCommandList.Create(FreeObjects: Boolean);
-begin
-  inherited Create(FreeObjects);
-  FCS := TsgeCriticalSection.Create;
-end;
-
-
-destructor TsgeShellCommandList.Destroy;
-begin
-  FCS.Free;
-  inherited Destroy;
-end;
-
-
-procedure TsgeShellCommandList.Lock;
-begin
-  FCS.Enter;
-end;
-
-
-procedure TsgeShellCommandList.UnLock;
-begin
-  FCS.Leave;
-end;
-
-
-function TsgeShellCommandList.IndexOf(Command: TsgeShellCommand): Integer;
-var
-  i: Integer;
-  CommandName: String;
-begin
-  FCS.Enter;
-  try
-    Result := -1;
-
-    CommandName := LowerCase(Command.GetFullName);
-    for i := 0 to FCount - 1 do
-      if CommandName = LowerCase(FList[i].GetFullName) then Exit(i);
-
-  finally
-    FCS.Leave;
-  end;
-end;
 
 
 procedure TsgeShellCommandList.GetMatchCommandList(Name: ShortString; MatchType: TMatchType; List: TsgeShellCommandList);
@@ -141,12 +66,19 @@ begin
 end;
 
 
-procedure TsgeShellCommandList.Clear;
+function TsgeShellCommandList.IndexOf(Command: TsgeShellCommand): Integer;
+var
+  i: Integer;
+  CommandName: String;
 begin
   FCS.Enter;
   try
 
-    inherited Clear;
+    Result := -1;
+
+    CommandName := LowerCase(Command.GetFullName);
+    for i := 0 to FCount - 1 do
+      if CommandName = LowerCase(FList[i].GetFullName) then Exit(i);
 
   finally
     FCS.Leave;
@@ -170,31 +102,6 @@ begin
   end;
 end;
 
-
-procedure TsgeShellCommandList.Delete(Index: Integer);
-begin
-  FCS.Enter;
-  try
-
-    inherited Delete(Index);
-
-  finally
-    FCS.Leave;
-  end;
-end;
-
-
-procedure TsgeShellCommandList.Insert(Index: Integer; Item: TsgeShellCommand);
-begin
-  FCS.Enter;
-  try
-
-    inherited Insert(Index, Item);
-
-  finally
-    FCS.Leave;
-  end;
-end;
 
 
 end.

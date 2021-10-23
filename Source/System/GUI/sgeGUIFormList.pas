@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGUIFormList.pas
-Версия            1.1
+Версия            1.2
 Создан            04.09.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          GUI: Список форм
@@ -15,14 +15,11 @@ unit sgeGUIFormList;
 interface
 
 uses
-  sgeTemplateObjectCollection, sgeGUIForm;
+  sgeTemplateCollection, sgeGUIForm;
 
 
 type
-  TsgeGUIFormListTemplate = specialize TsgeTemplateObjectCollection<TsgeGUIForm>;
-
-
-  TsgeGUIFormList = class(TsgeGUIFormListTemplate)
+  TsgeGUIFormList = class(specialize TsgeTemplateCollection<TsgeGUIForm>)
   private
   public
     function  IndexOf(Form: TsgeGUIForm): Integer;
@@ -58,7 +55,8 @@ var
   Idx: Integer;
 begin
   Idx := IndexOf(Form);
-  if Idx <> -1 then inherited Delete(Idx);
+  if Idx <> -1 then
+    inherited Delete(Idx);
 end;
 
 

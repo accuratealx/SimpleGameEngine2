@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGraphicElementLayerList.pas
-Версия            1.2
+Версия            1.4
 Создан            14.06.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Список слоёв элементов отисовки
@@ -11,30 +11,28 @@
 unit sgeGraphicElementLayerList;
 
 {$mode objfpc}{$H+}
-{$ModeSwitch duplicatelocals+}
 
 interface
 
 uses
-  sgeGraphicElementLayer, sgeTemplateObjectCollection, sgeGraphicElementBase;
+  sgeTemplateThreadSafeCollection,
+  sgeGraphicElementLayer, sgeGraphicElementBase;
 
 
 type
-  TsgeGraphicElementLayerTemplate = specialize TsgeTemplateObjectCollection<TsgeGraphicElementLayer>;
-
-
-  //Список слоёв
-  TsgeGraphicElementLayerList = class(TsgeGraphicElementLayerTemplate)
+  TsgeGraphicElementLayerList = class(specialize TsgeTemplateThreadSafeCollection<TsgeGraphicElementLayer>)
   private
     procedure Sort;
-    function  LayerIndexOf(Index: Word): Integer;                                         //Найти индекс слоя по номеру
 
     function  GetLayerVisible(Index: Integer): Boolean;
     procedure SetLayerVisible(Index: Integer; AVisible: Boolean);
   public
+    procedure Lock;
+    procedure UnLock;
+
     function  IndexOf(Name: String): Integer;                                             //Найти индекс слоя по имени
 
-    procedure AddLayer(Item: TsgeGraphicElementLayer);                                    //Добавить слой
+    function  Add(Name: String; Index: Word; Visible: Boolean = True): TsgeGraphicElementLayer;
     procedure Delete(Index: Integer);
     procedure Delete(Name: String);                                                       //Удалить слой
 
@@ -73,36 +71,47 @@ begin
 end;
 
 
-function TsgeGraphicElementLayerList.LayerIndexOf(Index: Word): Integer;
-var
-  i: Integer;
-begin
-  Result := -1;
-
-  for i := 0 to FCount - 1 do
-    if FList[i].Index = Index then
-      begin
-      Result := i;
-      Break;
-      end;
-end;
-
-
 function TsgeGraphicElementLayerList.GetLayerVisible(Index: Integer): Boolean;
 begin
-  if (Index < 0) or (Index > FCount - 1) then
-    raise EsgeException.Create(_UNITNAME, Err_IndexOutOfBounds, sgeIntToStr(Index));
+  FCS.Enter;
+  try
 
-  Result := FList[Index].Visible;
+    if (Index < 0) or (Index > FCount - 1) then
+      raise EsgeException.Create(_UNITNAME, Err_IndexOutOfBounds, sgeIntToStr(Index));
+
+    Result := FList[Index].Visible;
+
+  finally
+    FCS.Leave;
+  end;
 end;
 
 
 procedure TsgeGraphicElementLayerList.SetLayerVisible(Index: Integer; AVisible: Boolean);
 begin
-  if (Index < 0) or (Index > FCount - 1) then
-    raise EsgeException.Create(_UNITNAME, Err_IndexOutOfBounds, sgeIntToStr(Index));
+  FCS.Enter;
+  try
 
-  FList[Index].Visible := AVisible;
+    if (Index < 0) or (Index > FCount - 1) then
+      raise EsgeException.Create(_UNITNAME, Err_IndexOutOfBounds, sgeIntToStr(Index));
+
+    FList[Index].Visible := AVisible;
+
+  finally
+    FCS.Leave;
+  end;
+end;
+
+
+procedure TsgeGraphicElementLayerList.Lock;
+begin
+  FCS.Enter;
+end;
+
+
+procedure TsgeGraphicElementLayerList.UnLock;
+begin
+  FCS.Leave;
 end;
 
 
@@ -110,26 +119,47 @@ function TsgeGraphicElementLayerList.IndexOf(Name: String): Integer;
 var
   i: Integer;
 begin
-  Result := -1;
+  FCS.Enter;
+  try
 
-  Name := LowerCase(Name);
-  for i := 0 to FCount - 1 do
-    if LowerCase(FList[i].Name) = Name then
-      begin
-      Result := i;
-      Break;
-      end;
+    Result := -1;
+
+    Name := LowerCase(Name);
+    for i := 0 to FCount - 1 do
+      if LowerCase(FList[i].Name) = Name then
+        begin
+        Result := i;
+        Break;
+        end;
+
+  finally
+    FCS.Leave;
+  end;
 end;
 
 
-procedure TsgeGraphicElementLayerList.AddLayer(Item: TsgeGraphicElementLayer);
+function TsgeGraphicElementLayerList.Add(Name: String; Index: Word; Visible: Boolean): TsgeGraphicElementLayer;
 begin
-  //Добавить слой
-  inherited Add(Item);
+  FCS.Enter;
+  try
 
-  //Упорядочить
-  Sort;
+    //Проверить слой на существование
+    if IndexOf(Name) <> - 1 then Exit;
+
+    //Создать слой
+    Result := TsgeGraphicElementLayer.Create(Name, Index, Visible);
+
+    //Добавить в список
+    inherited Add(Result);
+
+    //Упорядочить
+    Sort;
+
+  finally
+    FCS.Leave;
+  end;
 end;
+
 
 procedure TsgeGraphicElementLayerList.Delete(Index: Integer);
 begin
@@ -157,20 +187,27 @@ procedure TsgeGraphicElementLayerList.AddElement(DrawElement: TsgeGraphicElement
 var
   Idx: Integer;
 begin
-  //Если нет слоя, то добавить в слой по умолчанию
-  Idx := IndexOf(LayerName);
-  if Idx = -1 then
-    begin
-    Idx := IndexOf('');
+  FCS.Enter;
+  try
+
+    //Если нет слоя, то добавить в слой по умолчанию
+    Idx := IndexOf(LayerName);
     if Idx = -1 then
       begin
-      AddLayer(TsgeGraphicElementLayer.Create('', 0));
       Idx := IndexOf('');
+      if Idx = -1 then
+        begin
+        Add('', 0, True);
+        Idx := IndexOf('');
+        end;
       end;
-    end;
 
-  //Добавить элемент в слой
-  FList[Idx].Elements.Add(DrawElement);
+    //Добавить элемент в слой
+    FList[Idx].Elements.Add(DrawElement);
+
+  finally
+    FCS.Leave;
+  end;
 end;
 
 

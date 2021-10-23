@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeMusicPLayerTrackList.pas
-Версия            1.0
+Версия            1.2
 Создан            17.10.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          MusicPlayer: Список дорожек
@@ -15,7 +15,7 @@ unit sgeMusicPLayerTrackList;
 interface
 
 uses
-  sgeCriticalSection, sgeStringList, sgeMemoryStream, sgeTemplateObjectCollection,
+  sgeStringList, sgeMemoryStream, sgeTemplateThreadSafeCollection,
   sgeMusicPLayerTrack;
 
 
@@ -24,28 +24,15 @@ type
   TsgeMusicPlayerTrackListLoadMode = (mptlmAdd, mptlmReplace);
 
 
-  TsgeMusicPlayerTrackListTemplate = specialize TsgeTemplateObjectCollection<TsgeMusicPLayerTrack>;
-
-
-  TsgeMusicPlayerTrackList = class(TsgeMusicPlayerTrackListTemplate)
+  TsgeMusicPlayerTrackList = class(specialize TsgeTemplateThreadSafeCollection<TsgeMusicPLayerTrack>)
   private
-    FCS: TsgeCriticalSection;
-
     FCurrentTrack: TsgeMusicPLayerTrack;
 
     procedure GetTrackListByGroup(List: TsgeMusicPlayerTrackList; Group: String = '');
-
-  protected
-    function GetItem(Index: Integer): TsgeMusicPLayerTrack; override;
-
   public
-    constructor Create(FreeObjects: Boolean = True); override;
-    destructor  Destroy; override;
-
     function IndexOfName(Name: String): Integer;
     function IndexOfGroup(Group: String): Integer;
 
-    procedure Clear;
     procedure Add(Track: TsgeMusicPLayerTrack);
     procedure Add(const Name, FileName: String; const Group: String = '');
     procedure Delete(Index: Integer);
@@ -101,35 +88,6 @@ begin
 end;
 
 
-function TsgeMusicPlayerTrackList.GetItem(Index: Integer): TsgeMusicPLayerTrack;
-begin
-  FCS.Enter;
-  try
-
-    Result := inherited GetItem(Index);
-
-  finally
-    FCS.Leave;
-  end;
-end;
-
-
-constructor TsgeMusicPlayerTrackList.Create(FreeObjects: Boolean);
-begin
-  inherited Create(FreeObjects);
-
-  FCS := sgeCriticalSection.TsgeCriticalSection.Create;
-end;
-
-
-destructor TsgeMusicPlayerTrackList.Destroy;
-begin
-  FCS.Free;
-
-  inherited Destroy;
-end;
-
-
 function TsgeMusicPlayerTrackList.IndexOfName(Name: String): Integer;
 var
   i: Integer;
@@ -159,19 +117,6 @@ begin
     Group := LowerCase(Group);
     for i := 0 to FCount - 1 do
       if Group = LowerCase(FList[i].Group) then Exit(i);
-
-  finally
-    FCS.Leave;
-  end;
-end;
-
-
-procedure TsgeMusicPlayerTrackList.Clear;
-begin
-  FCS.Enter;
-  try
-
-    inherited Clear;
 
   finally
     FCS.Leave;
@@ -381,6 +326,7 @@ var
 begin
   FCS.Enter;
   try
+
     //Проверить на затирание дорожек
     if Mode = mptlmReplace then Clear;
 

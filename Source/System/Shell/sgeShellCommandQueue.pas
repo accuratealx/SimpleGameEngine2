@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeShellCommandQueue.pas
-Версия            1.0
+Версия            1.1
 Создан            01.08.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс очереди команд на выполнение
@@ -15,73 +15,18 @@ unit sgeShellCommandQueue;
 interface
 
 uses
-  sgeTemplateList, sgeCriticalSection;
+  sgeTemplateThreadSafeList;
 
 
 type
-  TsgeShellCommandQueueTemplate = specialize TsgeTemplateList<String>;
-
-
-  TsgeShellCommandQueue = class(TsgeShellCommandQueueTemplate)
-  private
-    FCS: TsgeCriticalSection;
-
+  TsgeShellCommandQueue = class(specialize TsgeTemplateThreadSafeList<String>)
   public
-    constructor Create;
-    destructor  Destroy; override;
-
-    procedure ClearItem;
-    procedure Add(Command: String);
-
     function PullFirstCommand: String;
   end;
 
 
 
 implementation
-
-
-
-constructor TsgeShellCommandQueue.Create;
-begin
-  inherited Create;
-
-  FCS := TsgeCriticalSection.Create;
-end;
-
-
-destructor TsgeShellCommandQueue.Destroy;
-begin
-  FCS.Free;
-
-  inherited Destroy;
-end;
-
-
-procedure TsgeShellCommandQueue.ClearItem;
-begin
-  FCS.Enter;
-  try
-
-    inherited ClearItem;
-
-  finally
-    FCS.Leave;
-  end;
-end;
-
-
-procedure TsgeShellCommandQueue.Add(Command: String);
-begin
-  FCS.Enter;
-  try
-
-    AddItem(Command);
-
-  finally
-    FCS.Leave;
-  end;
-end;
 
 
 function TsgeShellCommandQueue.PullFirstCommand: String;
@@ -95,7 +40,7 @@ begin
       Result := GetItem(0);
 
       //Удалить первую команду
-      inherited DeleteItem(0);
+      inherited Delete(0);
       end;
 
   finally

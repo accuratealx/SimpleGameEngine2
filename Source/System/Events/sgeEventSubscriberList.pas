@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeEventSubscriberList.pas
-Версия            1.2
+Версия            1.3
 Создан            25.03.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс списка подписчиков
@@ -15,21 +15,16 @@ unit sgeEventSubscriberList;
 interface
 
 uses
-  sgeTemplateObjectCollection, sgeEventBase, sgeEventSubscriber;
+  sgeTemplateCollection, sgeEventBase, sgeEventSubscriber;
 
 
 type
-  //Шаблон
-  TsgeEventSubscriberTemplate = specialize TsgeTemplateObjectCollection<TsgeEventSubscriber>;
-
-
-  //Список подписчиков
-  TsgeEventSubscriberList = class(TsgeEventSubscriberTemplate)
+  TsgeEventSubscriberList = class(specialize TsgeTemplateCollection<TsgeEventSubscriber>)
   private
     procedure Sort;
 
   public
-    function IndexOf(Handler: TsgeEventHandler): Integer;
+    function IndexOfHandler(Handler: TsgeEventHandler): Integer;
 
     procedure Add(Subscriber: TsgeEventSubscriber);
     function  Add(Handler: TsgeEventHandler; Priority: Word = 0; Enable: Boolean = True): TsgeEventSubscriber;
@@ -60,7 +55,7 @@ begin
 end;
 
 
-function TsgeEventSubscriberList.IndexOf(Handler: TsgeEventHandler): Integer;
+function TsgeEventSubscriberList.IndexOfHandler(Handler: TsgeEventHandler): Integer;
 var
   i: Integer;
 begin
@@ -78,7 +73,7 @@ end;
 procedure TsgeEventSubscriberList.Add(Subscriber: TsgeEventSubscriber);
 begin
   //Проверить есть ли уже подписчик
-  if IndexOf(Subscriber.Handler) <> -1 then Exit;
+  if IndexOfHandler(Subscriber.Handler) <> -1 then Exit;
 
   //Добавить элемент
   inherited Add(Subscriber);
@@ -90,8 +85,17 @@ end;
 
 function TsgeEventSubscriberList.Add(Handler: TsgeEventHandler; Priority: Word; Enable: Boolean): TsgeEventSubscriber;
 begin
+  //Проверить есть ли уже подписчик
+  if IndexOfHandler(Handler) <> -1 then Exit;
+
+  //Создать подписчика
   Result := TsgeEventSubscriber.Create(Handler, Priority, Enable);
+
+  //Добавить элемент
   Add(Result);
+
+  //Упорядочить
+  Sort;
 end;
 
 
@@ -103,7 +107,7 @@ end;
 
 procedure TsgeEventSubscriberList.Delete(Handler: TsgeEventHandler);
 begin
-  Delete(IndexOf(Handler));
+  Delete(IndexOfHandler(Handler));
 end;
 
 

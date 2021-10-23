@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeShellCommandParameterList.pas
-Версия            1.0
+Версия            1.1
 Создан            08.08.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс список параметров команды оболочки
@@ -15,17 +15,12 @@ unit sgeShellCommandParameterList;
 interface
 
 uses
-  sgeTemplateObjectCollection, sgeStringList, sgeShellCommandParameterBase,
+  sgeTemplateCollection, sgeStringList, sgeShellCommandParameterBase,
   sgeShellCommandParameterInteger, sgeShellCommandParameterFloat, sgeShellCommandParameterString;
 
 
 type
-  TsgeShellCommandParameterListTemplate = specialize TsgeTemplateObjectCollection<TsgeShellCommandParameterBase>;
-
-
-  //Список параметров
-  TsgeShellCommandParameterList = class(TsgeShellCommandParameterListTemplate)
-  private
+  TsgeShellCommandParameterList = class(specialize TsgeTemplateCollection<TsgeShellCommandParameterBase>)
   public
     procedure AddInteger(Name: ShortString; Required: Boolean = True; PrefixRequired: Boolean = False; PrefixList: TsgeStringList = nil);
     procedure AddFloat(Name: ShortString; Required: Boolean = True; PrefixRequired: Boolean = False; PrefixList: TsgeStringList = nil);

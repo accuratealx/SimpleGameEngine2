@@ -15,14 +15,11 @@ unit sgeShellScriptList;
 interface
 
 uses
-  sgeTemplateObjectCollection, sgeShellScript;
+  sgeTemplateCollection, sgeShellScript;
 
 
 type
-  TsgeShellScriptListTemplate = specialize TsgeTemplateObjectCollection<TsgeShellScript>;
-
-
-  TsgeShellScriptList = class(TsgeShellScriptListTemplate)
+  TsgeShellScriptList = class(specialize TsgeTemplateCollection<TsgeShellScript>)
   private
   public
     function IndexOf(Name: ShortString): Integer;
@@ -37,7 +34,7 @@ type
 implementation
 
 uses
-  sgeErrors, sgeSystemUtils;
+  sgeErrors;
 
 const
   _UNITNAME = 'ShellScriptList';

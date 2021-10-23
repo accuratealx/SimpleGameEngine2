@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeControllerList.pas
-Версия            1.2
+Версия            1.3
 Создан            22.05.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс хранилища подключённых устройств
@@ -15,33 +15,17 @@ unit sgeControllerList;
 interface
 
 uses
+  sgeTemplateCollection,
   sgeController;
 
 
 type
-  TsgeControllerList = class
-  private
-    FList: array of TsgeController;
-
-    function  GetCount: Byte;
-
-    function  GetItem(Index: Byte): TsgeController;
+  TsgeControllerList = class(specialize TsgeTemplateCollection<TsgeController>)
   public
-    destructor  Destroy; override;
-
-    procedure Add(Controller: TsgeController);
-    procedure Delete(Index: Byte);
-
-    procedure Clear;
     procedure Reset;
     procedure Change(Idx1, Idx2: Byte);
-
-    function Exist(DriverID: Byte): Boolean;
-
-    property Count: Byte read GetCount;
-    property Item[Index: Byte]: TsgeController read GetItem;
+    function  Exist(DriverID: Byte): Boolean;
   end;
-
 
 
 
@@ -58,71 +42,11 @@ const
 
 
 
-function TsgeControllerList.GetCount: Byte;
-begin
-  Result := Length(FList);
-end;
-
-
-function TsgeControllerList.GetItem(Index: Byte): TsgeController;
-begin
-  if Index > GetCount - 1 then
-    raise EsgeException.Create(_UNITNAME, Err_IndexOutOfBounds, sgeIntToStr(Index));
-
-  Result := FList[Index];
-end;
-
-
-destructor TsgeControllerList.Destroy;
-begin
-  Clear;
-end;
-
-
-procedure TsgeControllerList.Add(Controller: TsgeController);
-var
-  c: Integer;
-begin
-  c := GetCount;
-  SetLength(FList, c + 1);
-  FList[c] := Controller;
-end;
-
-
-procedure TsgeControllerList.Delete(Index: Byte);
-var
-  i, c: Integer;
-begin
-  c := GetCount - 1;
-  if Index > c then Exit;
-
-  FList[Index].Free;
-
-  for i := Index to c - 1 do
-    FList[i] := FList[i + 1];
-
-  SetLength(FList, c);
-end;
-
-
-procedure TsgeControllerList.Clear;
-var
-  i, c: Integer;
-begin
-  c := GetCount - 1;
-  for i := 0 to c do
-    FList[i].Free;
-
-  SetLength(FList, 0);
-end;
-
-
 procedure TsgeControllerList.Reset;
 var
-  i, c: Integer;
+  i: Integer;
 begin
-  c := GetCount - 1;
-  for i := 0 to c do
+  for i := 0 to FCount - 1 do
     FList[i].Reset;
 end;
 
@@ -131,10 +55,10 @@ procedure TsgeControllerList.Change(Idx1, Idx2: Byte);
 var
   J: TsgeController;
 begin
-  if Idx1 < GetCount then
+  if Idx1 < FCount then
     raise EsgeException.Create(_UNITNAME, Err_IndexOutOfBounds, sgeIntToStr(Idx1));
 
-  if Idx2 < GetCount then
+  if Idx2 < FCount then
     raise EsgeException.Create(_UNITNAME, Err_IndexOutOfBounds, sgeIntToStr(Idx2));
 
   //Поменять местами
@@ -146,17 +70,13 @@ end;
 
 function TsgeControllerList.Exist(DriverID: Byte): Boolean;
 var
-  i, c: Integer;
+  i: Integer;
 begin
   Result := False;
 
-  c := GetCount - 1;
-  for i := 0 to c do
+  for i := 0 to FCount - 1 do
     if DriverID = FList[i].DriverID then
-      begin
-      Result := True;
-      Break;
-      end;
+      Exit(True);
 end;
 
 

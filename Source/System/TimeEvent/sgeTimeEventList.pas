@@ -1,13 +1,12 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeTimeEventList.pas
-Версия            1.1
+Версия            1.3
 Создан            31.08.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Список таймерных элементов
 }
 {$Include Defines.inc}
-{$ModeSwitch duplicatelocals+}
 
 unit sgeTimeEventList;
 
@@ -16,21 +15,13 @@ unit sgeTimeEventList;
 interface
 
 uses
-  sgeCriticalSection, sgeTemplateCollection, sgeTimeEventItem;
+  sgeTemplateThreadSafeCollection,
+  sgeTimeEventItem;
 
 
 type
-  TsgeTimeEventListTemplate = specialize TsgeTemplateCollection<TsgeTimeEventItem>;
-
-
-  TsgeTimeEventList = class(TsgeTimeEventListTemplate)
-  private
-    FCS: TsgeCriticalSection;
-
+  TsgeTimeEventList = class(specialize TsgeTemplateThreadSafeCollection<TsgeTimeEventItem>)
   public
-    constructor Create; override;
-    destructor  Destroy; override;
-
     function IndexOf(AItem: TsgeTimeEventItem): Integer;
 
     procedure Lock;
@@ -43,21 +34,6 @@ type
 
 implementation
 
-
-constructor TsgeTimeEventList.Create;
-begin
-  inherited Create;
-
-  FCS := TsgeCriticalSection.Create;
-end;
-
-
-destructor TsgeTimeEventList.Destroy;
-begin
-  FCS.Free;
-
-  inherited Destroy;
-end;
 
 
 function TsgeTimeEventList.IndexOf(AItem: TsgeTimeEventItem): Integer;
@@ -95,7 +71,8 @@ begin
   FCS.Enter;
   try
 
-    inherited Add(AItem);
+    if IndexOf(AItem) = -1 then
+      inherited Add(AItem);
 
   finally
     FCS.Leave;

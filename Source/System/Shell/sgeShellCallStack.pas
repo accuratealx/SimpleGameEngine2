@@ -1,3 +1,13 @@
+{
+Пакет             Simple Game Engine 2
+Файл              sgeShellCallStack.pas
+Версия            1.1
+Создан            28.08.2021
+Автор             Творческий человек  (accuratealx@gmail.com)
+Описание          Стек вызовов скрипта оболочки
+}
+{$Include Defines.inc}
+
 unit sgeShellCallStack;
 
 {$mode objfpc}{$H+}
@@ -5,15 +15,11 @@ unit sgeShellCallStack;
 interface
 
 uses
-  sgeTemplateObjectCollection, sgeShellCallStackItem;
+  sgeTemplateCollection, sgeShellCallStackItem;
 
 
 type
-  //Шаблон списка
-  TsgeShellCallStackTemplate = specialize TsgeTemplateObjectCollection<TsgeShellStackItem>;
-
-
-  TsgeShellCallStack = class(TsgeShellCallStackTemplate)
+  TsgeShellCallStack = class(specialize TsgeTemplateCollection<TsgeShellStackItem>)
   private
   public
     function Add(ScriptName: ShortString; Pos: Integer = 0): TsgeShellStackItem;
@@ -31,6 +37,7 @@ implementation
 function TsgeShellCallStack.Add(ScriptName: ShortString; Pos: Integer): TsgeShellStackItem;
 begin
   Result := TsgeShellStackItem.Create(ScriptName, Pos);
+
   inherited Add(Result);
 end;
 

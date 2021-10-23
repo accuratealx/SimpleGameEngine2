@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeShellLineList.pas
-Версия            1.0
+Версия            1.2
 Создан            10.08.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс списка строк линий оболочки
@@ -15,14 +15,13 @@ unit sgeShellLineList;
 interface
 
 uses
-  sgeTemplateObjectCollection, sgeGraphicColor, sgeShellLine;
+  sgeTemplateCollection,
+  sgeGraphicColor,
+  sgeShellLine;
 
 
 type
-  TsgeShellLineListTemplate = specialize TsgeTemplateObjectCollection<TsgeShellLine>;
-
-
-  TsgeShellLineList = class(TsgeShellLineListTemplate)
+  TsgeShellLineList = class(specialize TsgeTemplateCollection<TsgeShellLine>)
   private
     FMaxLines: Word;
 
@@ -47,7 +46,8 @@ implementation
 procedure TsgeShellLineList.CheckNumberItems;
 begin
   //Удалить лишние строки с начала
-  while FCount > FMaxLines do Delete(0);
+  while FCount > FMaxLines do
+    Delete(0);
 end;
 
 

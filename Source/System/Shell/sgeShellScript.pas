@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeShellScript.pas
-Версия            1.0
+Версия            1.1
 Создан            24.08.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Сценарий оболочки
@@ -19,12 +19,10 @@ uses
 
 
 type
-  TsgeShellScriptTemplate = specialize TsgeTemplateCollection<String>;
-
-
-  TsgeShellScript = class(TsgeShellScriptTemplate)
+  TsgeShellScript = class(specialize TsgeTemplateCollection<String>)
   private
     FName: ShortString;
+
   public
     constructor Create(Name: ShortString);
     constructor Create(Name: ShortString; Lines: String);

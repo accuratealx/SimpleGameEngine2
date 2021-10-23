@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGraphicElementList.pas
-Версия            1.1
+Версия            1.2
 Создан            14.06.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Список элементов отисовки
@@ -19,18 +19,10 @@ uses
 
 
 type
-  TsgeGraphicElementListTemplate = specialize TsgeTemplateList<TsgeGraphicElementBase>;
-
-
-  TsgeGraphicElementList = class(TsgeGraphicElementListTemplate)
+  TsgeGraphicElementList = class(specialize TsgeTemplateList<TsgeGraphicElementBase>)
   private
     FIterator: PListItem;
-
   public
-    procedure ClearItem; override;
-
-    procedure Add(Element: TsgeGraphicElementBase);
-
     function  GetFirst: TsgeGraphicElementBase;           //Взять первый элемент
     function  GetNext: TsgeGraphicElementBase;            //Следующий элемент
     procedure DeleteCurrentElement;                       //Удалить текущий элемент
@@ -38,38 +30,6 @@ type
 
 
 implementation
-
-
-procedure TsgeGraphicElementList.ClearItem;
-var
-  P, D: PListItem;
-begin
-  if FCount = 0 then Exit;
-
-  //Пробежать по элементам
-  P := FFirst;
-  while P <> nil do
-    begin
-    //Удалить объект
-    P^.Item.Free;
-
-    //Освободить память
-    D := P;
-    P := P^.Next;
-    Dispose(D);
-    end;
-
-  //Поправить параметры
-  FCount := 0;
-  FFirst := nil;
-  FLast := nil;
-end;
-
-
-procedure TsgeGraphicElementList.Add(Element: TsgeGraphicElementBase);
-begin
-  AddItem(Element);
-end;
 
 
 function TsgeGraphicElementList.GetFirst: TsgeGraphicElementBase;
@@ -115,12 +75,10 @@ begin
   //Сместить указатель на следующий элемент
   FIterator := FIterator^.Next;
 
-  //Почистить память объекта
-  P^.Item.Free;
-
   //Удалить текущий элемент
   DeleteItemByPointer(P);
 end;
+
 
 end.
 
