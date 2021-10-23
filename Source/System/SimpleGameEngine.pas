@@ -18,7 +18,7 @@ uses
   sgeErrorManager, sgeNamedObjectList, sgeExtensionList, sgeEventManager, sgeEventBase,
   sgeExtensionWindow, sgeExtensionGraphic, sgeExtensionPackList, sgeExtensionFileSystem, sgeExtensionShell,
   sgeExtensionResourceList, sgeExtensionStartParameters, sgeExtensionSound, sgeExtensionControllers,
-  sgeExtensionVariables, sgeExtensionKeyCommand, sgeExtensionTimeEvent, sgeExtensionGUI, sgeExtensionMusic;
+  sgeExtensionVariables, sgeExtensionKeyCommand, sgeExtensionTimeEvent, sgeExtensionGUI, sgeExtensionMusicPlayer;
 
 
 const
@@ -61,7 +61,7 @@ type
     FExtensionTimeEvent: TsgeExtensionTimeEvent;                    //Расширение: Таймерные события
     FExtensionGUI: TsgeExtensionGUI;                                //Расширение: GUI
     FExtensionSound: TsgeExtensionSound;                            //Расширение: Звуковая система
-    FExtensionMusic: TsgeExtensionMusic;                            //Расширение: Музыкальный проигрыватель
+    FExtensionMusicPlayer: TsgeExtensionMusicPlayer;                //Расширение: Музыкальный проигрыватель
 
     //Свойства
     procedure SetDebug(ADebug: Boolean);
@@ -108,7 +108,7 @@ type
     property ExtTimeEvent: TsgeExtensionTimeEvent read FExtensionTimeEvent;
     property ExtGUI: TsgeExtensionGUI read FExtensionGUI;
     property ExtSound: TsgeExtensionSound read FExtensionSound;
-    property FExtMusic: TsgeExtensionMusic read FExtensionMusic;
+    property FExtMusicPlayer: TsgeExtensionMusicPlayer read FExtensionMusicPlayer;
   end;
 
 
@@ -233,7 +233,7 @@ begin
     if ioSound in Options then
       begin
       FExtensionSound := TsgeExtensionSound.Create(FObjectList);                    //Звуковая система
-      FExtensionMusic := TsgeExtensionMusic.Create(FObjectList);                    //Музыкальный проигрыватель
+      FExtensionMusicPlayer := TsgeExtensionMusicPlayer.Create(FObjectList);        //Музыкальный проигрыватель
       end;
 
 
