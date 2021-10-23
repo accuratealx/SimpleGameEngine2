@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeExtensionWindow.pas
-Версия            1.7
+Версия            1.8
 Создан            31.03.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс расширения: Окно
@@ -70,7 +70,8 @@ type
 implementation
 
 uses
-  sgeErrors, sgeEventWindow, sgeEventKeyboard, sgeEventMouse;
+  sgeErrors,
+  sgeEventBase, sgeEventWindow, sgeEventKeyboard, sgeEventMouse;
 
 
 var
@@ -266,51 +267,53 @@ begin
 
   case Msg of
     WM_CLOSE:
-      EventManager.Publish(Event_WindowClose);
+      EventManager.Publish(TsgeEventBase.Create(Event_WindowClose));
 
 
     WM_SETFOCUS:
-      EventManager.Publish(Event_WindowSetFocus);
+      EventManager.Publish(TsgeEventBase.Create(Event_WindowSetFocus));
 
 
     WM_KILLFOCUS:
-      EventManager.Publish(Event_WindowLostFocus);
+      EventManager.Publish(TsgeEventBase.Create(Event_WindowLostFocus));
 
 
     WM_SHOWWINDOW:
-      if wParam = 1 then EventManager.Publish(Event_WindowShow) else EventManager.Publish(Event_WindowHide);
+      if wParam = 1 then EventManager.Publish(TsgeEventBase.Create(Event_WindowShow)) else
+        EventManager.Publish(TsgeEventBase.Create(Event_WindowHide));
 
 
     WM_ACTIVATE:
-      if wParam = WA_INACTIVE then EventManager.Publish(Event_WindowDeActivate) else EventManager.Publish(Event_WindowActivate);
+      if wParam = WA_INACTIVE then EventManager.Publish(TsgeEventBase.Create(Event_WindowDeActivate)) else
+        EventManager.Publish(TsgeEventBase.Create(Event_WindowActivate));
 
 
     WM_CHAR:
-      EventManager.Publish(Event_KeyboardChar, TsgeEventKeyboardChar.Create(chr(wParam), GetKeyboardButtons));
+      EventManager.Publish(TsgeEventKeyboardChar.Create(Event_KeyboardChar, chr(wParam), GetKeyboardButtons));
 
 
     WM_KEYDOWN, WM_SYSKEYDOWN:
-      EventManager.Publish(Event_KeyboardDown, TsgeEventKeyboard.Create(wParam, GetKeyboardButtons, (lParam shr 30) = 0));
+      EventManager.Publish(TsgeEventKeyboard.Create(Event_KeyboardDown, wParam, GetKeyboardButtons, (lParam shr 30) = 0));
 
 
     WM_KEYUP, WM_SYSKEYUP:
-      EventManager.Publish(Event_KeyboardUp, TsgeEventKeyboard.Create(wParam, GetKeyboardButtons, False));
+      EventManager.Publish(TsgeEventKeyboard.Create(Event_KeyboardUp, wParam, GetKeyboardButtons, False));
 
 
     WM_LBUTTONDOWN, WM_MBUTTONDOWN, WM_RBUTTONDOWN, WM_XBUTTONDOWN:
-      EventManager.Publish(Event_MouseDown, TsgeEventMouse.Create(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), GetMouseButtons(wParam), GetKeyboardButtons));
+      EventManager.Publish(TsgeEventMouse.Create(Event_MouseDown, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), GetMouseButtons(wParam), GetKeyboardButtons));
 
 
     WM_LBUTTONUP, WM_MBUTTONUP, WM_RBUTTONUP, WM_XBUTTONUP:
-      EventManager.Publish(Event_MouseUp, TsgeEventMouse.Create(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), GetMouseButtons(wParam), GetKeyboardButtons));
+      EventManager.Publish(TsgeEventMouse.Create(Event_MouseUp, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), GetMouseButtons(wParam), GetKeyboardButtons));
 
 
     WM_LBUTTONDBLCLK, WM_MBUTTONDBLCLK, WM_RBUTTONDBLCLK, WM_XBUTTONDBLCLK:
-      EventManager.Publish(Event_MouseDoubleClick, TsgeEventMouse.Create(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), GetMouseButtons(wParam), GetKeyboardButtons));
+      EventManager.Publish(TsgeEventMouse.Create(Event_MouseDoubleClick, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), GetMouseButtons(wParam), GetKeyboardButtons));
 
 
     WM_MOUSEWHEEL:
-      EventManager.Publish(Event_MouseScroll, TsgeEventMouse.Create(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), GetMouseButtons(wParam), GetKeyboardButtons, GetMouseScrollDelta(wParam)));
+      EventManager.Publish(TsgeEventMouse.Create(Event_MouseScroll, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), GetMouseButtons(wParam), GetKeyboardButtons, GetMouseScrollDelta(wParam)));
 
 
     WM_MOUSEMOVE:
@@ -324,28 +327,28 @@ begin
         begin
         FMouseOut := False;
         SetMouseTrackEvent;
-        EventManager.Publish(Event_MouseEnter, TsgeEventMouse.Create(CursorPos.X, CursorPos.Y, GetMouseButtons(wParam), GetKeyboardButtons));
+        EventManager.Publish(TsgeEventMouse.Create(Event_MouseEnter, CursorPos.X, CursorPos.Y, GetMouseButtons(wParam), GetKeyboardButtons));
         end;
 
-      EventManager.Publish(Event_MouseMove, TsgeEventMouse.Create(CursorPos.X, CursorPos.Y, GetMouseButtons(wParam), GetKeyboardButtons));
+      EventManager.Publish(TsgeEventMouse.Create(Event_MouseMove, CursorPos.X, CursorPos.Y, GetMouseButtons(wParam), GetKeyboardButtons));
       end;
 
 
     WM_MOUSELEAVE:
       begin
       FMouseOut := True;
-      EventManager.Publish(Event_MouseLeave, TsgeEventMouse.Create(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), GetMouseButtons(wParam), GetKeyboardButtons));
+      EventManager.Publish(TsgeEventMouse.Create(Event_MouseLeave, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), GetMouseButtons(wParam), GetKeyboardButtons));
       end;
 
 
     WM_SIZE:
       begin
-      EventManager.Publish(Event_WindowSize, TsgeEventWindowSize.Create(LOWORD(lParam), HIWORD(lParam)));
+      EventManager.Publish(TsgeEventWindowSize.Create(Event_WindowSize, LOWORD(lParam), HIWORD(lParam)));
 
       case wParam of
-        SIZE_RESTORED : EventManager.Publish(Event_WindowRestore);
-        SIZE_MINIMIZED: EventManager.Publish(Event_WindowMinimize);
-        SIZE_MAXIMIZED: EventManager.Publish(Event_WindowMaximize);
+        SIZE_RESTORED : EventManager.Publish(TsgeEventBase.Create(Event_WindowRestore));
+        SIZE_MINIMIZED: EventManager.Publish(TsgeEventBase.Create(Event_WindowMinimize));
+        SIZE_MAXIMIZED: EventManager.Publish(TsgeEventBase.Create(Event_WindowMaximize));
       end;
       end;
 

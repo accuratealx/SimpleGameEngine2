@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeExtensionTimeEvent.pas
-Версия            1.1
+Версия            1.3
 Создан            29.08.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс расширения: Таймерные события
@@ -15,7 +15,8 @@ unit sgeExtensionTimeEvent;
 interface
 
 uses
-  sgeExtensionBase, sgeThread, sgeTimeEventList, sgeTimeEventItem, sgeEventTimeEvent;
+  sgeExtensionBase, sgeThread,
+  sgeTimeEventList, sgeTimeEventItem, sgeEventTimeEvent;
 
 
 const
@@ -93,7 +94,7 @@ begin
         El.IncTimes;
 
         //Событие срабатывания таймера
-        EventManager.Publish(Event_TimeEvent, TsgeEventTimeEvent.Create(El.Proc));
+        EventManager.Publish(TsgeEventTimeEvent.Create(Event_TimeEvent, El.Proc));
 
         //Проверить на предел по количеству выполнений
         if (El.Times <> -1) and (El.TimesCount >= El.Times) then
@@ -156,7 +157,7 @@ begin
 
     //Создать объекты
     FThread := TsgeThread.Create(@ThreadProc, True, False);
-    FTimeEventList := TsgeTimeEventList.Create;
+    FTimeEventList := TsgeTimeEventList.Create(False);
 
     //Параметры
     FDelay := 1;

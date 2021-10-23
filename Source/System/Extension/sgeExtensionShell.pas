@@ -197,26 +197,26 @@ type
 procedure TsgeExtensionShell.RegisterEventHandlers;
 begin
   //Клавиатура
-  FEventSubscriber[0] := EventManager.Subscribe(Event_KeyboardDown, TsgeEventHandler(@Handler_KeyDown), EventPriorityMax, False);
-  FEventSubscriber[1] := EventManager.Subscribe(Event_KeyboardUp, TsgeEventHandler(@Handler_KeyUp), EventPriorityMax, False);
-  FEventSubscriber[2] := EventManager.Subscribe(Event_KeyboardChar, TsgeEventHandler(@Handler_KeyChar),  EventPriorityMaxMinusOne, False);
+  FEventSubscriber[0] := EventManager.SubscriberGroupList.Subscribe(Event_KeyboardDown, TsgeEventHandler(@Handler_KeyDown), EventPriorityMax, False);
+  FEventSubscriber[1] := EventManager.SubscriberGroupList.Subscribe(Event_KeyboardUp, TsgeEventHandler(@Handler_KeyUp), EventPriorityMax, False);
+  FEventSubscriber[2] := EventManager.SubscriberGroupList.Subscribe(Event_KeyboardChar, TsgeEventHandler(@Handler_KeyChar),  EventPriorityMaxMinusOne, False);
 
   //Мышь
-  FEventSubscriber[3] := EventManager.Subscribe(Event_MouseMove, TsgeEventHandler(@Handler_MouseMove), EventPriorityMax, False);
-  FEventSubscriber[4] := EventManager.Subscribe(Event_MouseDown, TsgeEventHandler(@Handler_MouseDown), EventPriorityMax, False);
-  FEventSubscriber[5] := EventManager.Subscribe(Event_MouseUp, TsgeEventHandler(@Handler_MouseUp), EventPriorityMax, False);
-  FEventSubscriber[6] := EventManager.Subscribe(Event_MouseScroll, TsgeEventHandler(@Handler_MouseWheel), EventPriorityMax, False);
-  FEventSubscriber[7] := EventManager.Subscribe(Event_MouseDoubleClick, TsgeEventHandler(@Handler_MouseDblClick), EventPriorityMax, False);
+  FEventSubscriber[3] := EventManager.SubscriberGroupList.Subscribe(Event_MouseMove, TsgeEventHandler(@Handler_MouseMove), EventPriorityMax, False);
+  FEventSubscriber[4] := EventManager.SubscriberGroupList.Subscribe(Event_MouseDown, TsgeEventHandler(@Handler_MouseDown), EventPriorityMax, False);
+  FEventSubscriber[5] := EventManager.SubscriberGroupList.Subscribe(Event_MouseUp, TsgeEventHandler(@Handler_MouseUp), EventPriorityMax, False);
+  FEventSubscriber[6] := EventManager.SubscriberGroupList.Subscribe(Event_MouseScroll, TsgeEventHandler(@Handler_MouseWheel), EventPriorityMax, False);
+  FEventSubscriber[7] := EventManager.SubscriberGroupList.Subscribe(Event_MouseDoubleClick, TsgeEventHandler(@Handler_MouseDblClick), EventPriorityMax, False);
 
   //Измение размеров окна
-  EventManager.Subscribe(Event_WindowSize, TsgeEventHandler(@Event_WindowResize), EventPriorityMaxMinusOne, True);
+  EventManager.SubscriberGroupList.Subscribe(Event_WindowSize, TsgeEventHandler(@Event_WindowResize), EventPriorityMaxMinusOne, True);
 end;
 
 
 procedure TsgeExtensionShell.UnRegisterEventHandlers;
 begin
   //Отписаться от всех событий
-  EventManager.UnSubscribe(Self);
+  EventManager.SubscriberGroupList.UnSubscribe(Self);
 end;
 
 
@@ -469,48 +469,51 @@ begin
   Mode := ModeEmpty;
   if LowerCase(Cmd.Part[0]) = 'autor' then Mode := ModeAutor;
 
-  //Найти имена команд без имени группы
-  MatchList := TsgeShellCommandList.Create(False);
-  FCommandList.GetMatchCommandList(Cmd.Part[0], mtName, MatchList); //Получить список
+  try
+    //Найти имена команд без имени группы
+    MatchList := TsgeShellCommandList.Create(False);
+    FCommandList.GetMatchCommandList(Cmd.Part[0], mtName, MatchList); //Получить список
 
-  //Определить результат поиска
-  Match := MatchError;                                              //Нет команды
-  if MatchList.Count = 1 then Match := MatchOneCommand;             //Одна команда
-  if MatchList.Count > 1 then Match := MatchDuplicate;              //Больше одной
+    //Определить результат поиска
+    Match := MatchError;                                              //Нет команды
+    if MatchList.Count = 1 then Match := MatchOneCommand;             //Одна команда
+    if MatchList.Count > 1 then Match := MatchDuplicate;              //Больше одной
 
-  //Обработать результат поиска без групп
-  case Match of
-    MatchError:
-      begin
-      //Найти список команд с полным именем
-      FCommandList.GetMatchCommandList(Cmd.Part[0], mtGroup, MatchList);
-
-      //Если есть хоть одна запись, то запомнить указатель
-      if MatchList.Count = 1 then Command := MatchList.Item[0];
-      end;
-
-    MatchOneCommand:
-      Command := MatchList.Item[0];
-
-    MatchDuplicate:
-      begin
-      //Подготовить список найденных комманд для ошибки
-      c := MatchList.Count - 1;
-      s := '';
-      for i := 0 to c do
+    //Обработать результат поиска без групп
+    case Match of
+      MatchError:
         begin
-        S := S + MatchList.Item[i].GetFullName;
-        if i <> c then S := S + ', ';
+        //Найти список команд с полным именем
+        FCommandList.GetMatchCommandList(Cmd.Part[0], mtGroup, MatchList);
+
+        //Если есть хоть одна запись, то запомнить указатель
+        if MatchList.Count = 1 then Command := MatchList.Item[0];
         end;
 
-      //Обработать ошибку
-      ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_MultipleCommand, S));
-      Exit;
-      end;
+      MatchOneCommand:
+        Command := MatchList.Item[0];
+
+      MatchDuplicate:
+        begin
+        //Подготовить список найденных комманд для ошибки
+        c := MatchList.Count - 1;
+        s := '';
+        for i := 0 to c do
+          begin
+          S := S + MatchList.Item[i].GetFullName;
+          if i <> c then S := S + ', ';
+          end;
+
+        //Обработать ошибку
+        ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_MultipleCommand, S));
+        Exit;
+        end;
+    end;
+
+  finally
+    MatchList.Free;
   end;
 
-  //Почистить память
-  MatchList.Free;
 
   //Проверить указатель команды
   if Command <> nil then Mode := ModeCommand;
@@ -677,7 +680,7 @@ begin
   if FStopExecuting and not FDestroying then
     begin
     ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_BreakByUser));  //Обработать ошибку
-    RepaintThread;                                                  //Перерисовать оболочку
+    RepaintThread;                                                                //Перерисовать оболочку
     end;
 end;
 
@@ -946,7 +949,7 @@ begin
   List.Free;
 
   //Перерисовать оболочку
-  RepaintInner;
+  RepaintThread;
 end;
 
 
@@ -1005,10 +1008,10 @@ begin
     FCommandQueue := TsgeShellCommandQueue.Create;
     FCommandHistory := TsgeCommandHistory.Create;
     FScriptList := TsgeShellScriptList.Create(True);
-    FCallStack := TsgeShellCallStack.Create;
+    FCallStack := TsgeShellCallStack.Create(True);
     FJournal := TsgeShellLineList.Create;
     FAliases := TsgeSimpleParameters.Create;
-    FCommandList := TsgeShellCommandList.Create;
+    FCommandList := TsgeShellCommandList.Create(True);
     FEditor := TsgeLineEditor.Create;
     FFont := TsgeGraphicFont.Create('Lucida Console', 14, [gfaBold]);
 
@@ -1045,14 +1048,14 @@ begin
     FCanvas := TsgeGraphicSprite.Create(500, 300);
 
     //Создать слой отрисовки
-    FExtGraphic.DrawList.AddLayer(Extension_Shell, $FF);
+    FExtGraphic.LayerList.Add(Extension_Shell, $FF);
 
     //Создать элемент отрисовки
     FElementSprite := TsgeGraphicElementSpriteCashed.Create(0, 0, FCanvas.Width, FCanvas.Height, FCanvas);
     FElementSprite.Visible := False;
 
     //Добавить элемент в список отрисовки
-    FExtGraphic.DrawList.AddElement(FElementSprite, Extension_Shell);
+    FExtGraphic.LayerList.AddElement(FElementSprite, Extension_Shell);
 
     //Перерисовать оболочку
     RepaintInner;

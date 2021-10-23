@@ -1,11 +1,12 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeExtensionControllers.pas
-Версия            1.4
+Версия            1.5
 Создан            20.05.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс расширения: Контроллеры
 }
+{$Include Defines.inc}
 
 unit sgeExtensionControllers;
 
@@ -122,47 +123,47 @@ begin
           begin
           //Отпускание кнопки
           if (not Joy.CurrentInfo.Buttons[btnIdx].Down) and Joy.LastInfo.Buttons[btnIdx].Down then
-            EventManager.Publish(Event_ControllerButtonUp, TsgeEventControllerButton.Create(Idx, btnIdx));
+            EventManager.Publish(TsgeEventControllerButton.Create(Event_ControllerButtonUp, Idx, btnIdx));
 
           //Нажатие кнопки
           if Joy.CurrentInfo.Buttons[btnIdx].Down and (not Joy.LastInfo.Buttons[btnIdx].Down) then
-            EventManager.Publish(Event_ControllerButtonDown, TsgeEventControllerButton.Create(idx, btnIdx));
+            EventManager.Publish(TsgeEventControllerButton.Create(Event_ControllerButtonDown, idx, btnIdx));
           end;
 
 
         //Проверить изменения POV X
         case GetPadEventType(Joy.CurrentInfo.Pov.X, Joy.LastInfo.Pov.X) of
-          etMinDown     : EventManager.Publish(Event_ControllerPovDown, TsgeEventControllerPOV.Create(Idx, cpdLeft));
-          etMinUp       : EventManager.Publish(Event_ControllerPovUp, TsgeEventControllerPOV.Create(Idx, cpdLeft));
-          etMaxDown     : EventManager.Publish(Event_ControllerPovDown, TsgeEventControllerPOV.Create(Idx, cpdRight));
-          etMaxUp       : EventManager.Publish(Event_ControllerPovUp, TsgeEventControllerPOV.Create(Idx, cpdRight));
+          etMinDown     : EventManager.Publish(TsgeEventControllerPOV.Create(Event_ControllerPovDown, Idx, cpdLeft));
+          etMinUp       : EventManager.Publish(TsgeEventControllerPOV.Create(Event_ControllerPovUp, Idx, cpdLeft));
+          etMaxDown     : EventManager.Publish(TsgeEventControllerPOV.Create(Event_ControllerPovDown, Idx, cpdRight));
+          etMaxUp       : EventManager.Publish(TsgeEventControllerPOV.Create(Event_ControllerPovUp, Idx, cpdRight));
           etMinUpMaxDown:
             begin
-            EventManager.Publish(Event_ControllerPovUp, TsgeEventControllerPOV.Create(Idx, cpdLeft));
-            EventManager.Publish(Event_ControllerPovDown, TsgeEventControllerPOV.Create(Idx, cpdRight));
+            EventManager.Publish(TsgeEventControllerPOV.Create(Event_ControllerPovUp, Idx, cpdLeft));
+            EventManager.Publish(TsgeEventControllerPOV.Create(Event_ControllerPovDown, Idx, cpdRight));
             end;
           etMaxUpMinDown:
             begin
-            EventManager.Publish(Event_ControllerPovUp, TsgeEventControllerPOV.Create(Idx, cpdRight));
-            EventManager.Publish(Event_ControllerPovDown, TsgeEventControllerPOV.Create(Idx, cpdLeft));
+            EventManager.Publish(TsgeEventControllerPOV.Create(Event_ControllerPovUp, Idx, cpdRight));
+            EventManager.Publish(TsgeEventControllerPOV.Create(Event_ControllerPovDown, Idx, cpdLeft));
             end;
         end;
 
         //Проверить изменения POV Y
         case GetPadEventType(Joy.CurrentInfo.Pov.Y, Joy.LastInfo.Pov.Y) of
-          etMinDown     : EventManager.Publish(Event_ControllerPovDown, TsgeEventControllerPOV.Create(Idx, cpdDown));
-          etMinUp       : EventManager.Publish(Event_ControllerPovUp, TsgeEventControllerPOV.Create(Idx, cpdDown));
-          etMaxDown     : EventManager.Publish(Event_ControllerPovDown, TsgeEventControllerPOV.Create(Idx, cpdUp));
-          etMaxUp       : EventManager.Publish(Event_ControllerPovUp, TsgeEventControllerPOV.Create(Idx, cpdUp));
+          etMinDown     : EventManager.Publish(TsgeEventControllerPOV.Create(Event_ControllerPovDown, Idx, cpdDown));
+          etMinUp       : EventManager.Publish(TsgeEventControllerPOV.Create(Event_ControllerPovUp, Idx, cpdDown));
+          etMaxDown     : EventManager.Publish(TsgeEventControllerPOV.Create(Event_ControllerPovDown, Idx, cpdUp));
+          etMaxUp       : EventManager.Publish(TsgeEventControllerPOV.Create(Event_ControllerPovUp, Idx, cpdUp));
           etMinUpMaxDown:
             begin
-            EventManager.Publish(Event_ControllerPovUp, TsgeEventControllerPOV.Create(Idx, cpdDown));
-            EventManager.Publish(Event_ControllerPovDown, TsgeEventControllerPOV.Create(Idx, cpdUp));
+            EventManager.Publish(TsgeEventControllerPOV.Create(Event_ControllerPovUp, Idx, cpdDown));
+            EventManager.Publish(TsgeEventControllerPOV.Create(Event_ControllerPovDown, Idx, cpdUp));
             end;
           etMaxUpMinDown:
             begin
-            EventManager.Publish(Event_ControllerPovUp, TsgeEventControllerPOV.Create(Idx, cpdUp));
-            EventManager.Publish(Event_ControllerPovDown, TsgeEventControllerPOV.Create(Idx, cpdDown));
+            EventManager.Publish(TsgeEventControllerPOV.Create(Event_ControllerPovUp, Idx, cpdUp));
+            EventManager.Publish(TsgeEventControllerPOV.Create(Event_ControllerPovDown, Idx, cpdDown));
             end;
         end;
 
@@ -172,25 +173,25 @@ begin
           begin
           //Наклоны оси
           case GetAxisEventType(Joy.CurrentInfo.Axis[i].RawValue, Joy.LastInfo.Axis[i].RawValue, TsgeControllerHack(Joy).GetAxisRawMiddleValue(I)) of
-            etMinDown     : EventManager.Publish(Event_ControllerAxisDown, TsgeEventControllerAxis.Create(Idx, I, catMin));
-            etMinUp       : EventManager.Publish(Event_ControllerAxisUp, TsgeEventControllerAxis.Create(Idx, I, catMin));
-            etMaxDown     : EventManager.Publish(Event_ControllerAxisDown, TsgeEventControllerAxis.Create(Idx, I, catMax));
-            etMaxUp       : EventManager.Publish(Event_ControllerAxisUp, TsgeEventControllerAxis.Create(Idx, I, catMax));
+            etMinDown     : EventManager.Publish(TsgeEventControllerAxis.Create(Event_ControllerAxisDown, Idx, I, catMin));
+            etMinUp       : EventManager.Publish(TsgeEventControllerAxis.Create(Event_ControllerAxisUp, Idx, I, catMin));
+            etMaxDown     : EventManager.Publish(TsgeEventControllerAxis.Create(Event_ControllerAxisDown, Idx, I, catMax));
+            etMaxUp       : EventManager.Publish(TsgeEventControllerAxis.Create(Event_ControllerAxisUp, Idx, I, catMax));
             etMinUpMaxDown:
               begin
-              EventManager.Publish(Event_ControllerAxisUp, TsgeEventControllerAxis.Create(Idx, I, catMin));
-              EventManager.Publish(Event_ControllerAxisDown, TsgeEventControllerAxis.Create(Idx, I, catMax));
+              EventManager.Publish(TsgeEventControllerAxis.Create(Event_ControllerAxisUp, Idx, I, catMin));
+              EventManager.Publish(TsgeEventControllerAxis.Create(Event_ControllerAxisDown, Idx, I, catMax));
               end;
             etMaxUpMinDown:
               begin
-              EventManager.Publish(Event_ControllerAxisUp, TsgeEventControllerAxis.Create(Idx, I, catMax));
-              EventManager.Publish(Event_ControllerAxisDown, TsgeEventControllerAxis.Create(Idx, I, catMin));
+              EventManager.Publish(TsgeEventControllerAxis.Create(Event_ControllerAxisUp, Idx, I, catMax));
+              EventManager.Publish(TsgeEventControllerAxis.Create(Event_ControllerAxisDown, Idx, I, catMin));
               end;
           end;
 
           //Изменение значения
           if Joy.CurrentInfo.Axis[I].Value <> Joy.LastInfo.Axis[I].Value then
-            EventManager.Publish(Event_ControllerAxisValue, TsgeEventControllerAxisValue.Create(Idx, I,  Joy.CurrentInfo.Axis[I].Value, Joy.LastInfo.Axis[I].Value));
+            EventManager.Publish(TsgeEventControllerAxisValue.Create(Event_ControllerAxisValue, Idx, I,  Joy.CurrentInfo.Axis[I].Value, Joy.LastInfo.Axis[I].Value));
           end;
 
 
@@ -200,7 +201,7 @@ begin
 
       except
         //Сказать что отвалился
-        EventManager.Publish(Event_ControllerDetach, TsgeEventController.Create(Idx));
+        EventManager.Publish(TsgeEventController.Create(Event_ControllerDetach, Idx));
 
         //Убить устройство
         FControllerList.Delete(idx);
@@ -247,7 +248,7 @@ begin
         FControllerList.Add(Joy);
 
         //Событие, новый джойстик
-        EventManager.Publish(Event_ControllerAttach, TsgeEventController.Create(FControllerList.Count - 1));
+        EventManager.Publish(TsgeEventController.Create(Event_ControllerAttach, FControllerList.Count - 1));
       except
       end;
 
@@ -337,7 +338,7 @@ begin
 
     //Классы
     FThread := TsgeThread.Create(nil, True, False);
-    FControllerList := TsgeControllerList.Create;
+    FControllerList := TsgeControllerList.Create(True);
 
     //Параметры
     FEnable := False;
@@ -362,7 +363,7 @@ end;
 destructor TsgeExtensionControllers.Destroy;
 begin
   //Отписаться от событий
-  EventManager.UnSubscribe(Self);
+  EventManager.SubscriberGroupList.UnSubscribe(Self);
 
   //Классы
   FThread.Free;

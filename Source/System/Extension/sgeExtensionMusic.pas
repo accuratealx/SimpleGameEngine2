@@ -17,7 +17,7 @@ interface
 uses
   sgeThread, sgeSoundSource, sgeSoundBuffer,
   sgeExtensionBase,
-  sgeMusicPLayerTrackList;
+  sgeMusicPLayerTrackList, sgeMusicPLayerTaskList;
 
 
 const
@@ -42,6 +42,7 @@ type
     //Классы
     FThread: TsgeThread;
     FTrackList: TsgeMusicPlayerTrackList;
+    FTaskList: TsgeMusicPLayerTaskList;
     FSource: TsgeSoundSource;
     FBuffer: TsgeSoundBuffer;
 
@@ -123,13 +124,12 @@ begin
     inherited Create(ObjectList);
 
     //Создать классы
-    FTrackList := TsgeMusicPlayerTrackList.Create(True);
     FThread := TsgeThread.Create;
-
+    FTrackList := TsgeMusicPlayerTrackList.Create(True);
+    FTaskList := TsgeMusicPLayerTaskList.Create(True);
     FSource := TsgeSoundSource.Create;
     FSource.RelativePos := True;
     FSource.Gain := 1;
-
     FBuffer := TsgeSoundBuffer.CreateBlank;
 
     //Установить параметры
@@ -160,6 +160,7 @@ begin
   FThread.Free;
   FBuffer.Free;
   FSource.Free;
+  FTaskList.Free;
   FTrackList.Free;
 
   inherited Destroy;

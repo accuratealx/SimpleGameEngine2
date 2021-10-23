@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeExtensionGraphic.pas
-Версия            1.6
+Версия            1.7
 Создан            14.04.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс расширения: Графика
@@ -16,9 +16,11 @@ interface
 
 uses
   sgeTypes, sgeThread, sgeMemoryStream,
-  sgeExtensionBase, sgeGraphicColor, sgeGraphicDrawList, sgeGraphicElementBase, sgeGraphicFPS,
-  sgeCounter, sgeScreenFade, sgeEventBase, sgeEventWindow,
-  sgeGraphic, sgeExtensionWindow, sgeWindow;
+  sgeGraphicColor, sgeGraphic,
+  sgeCounter, sgeWindow,
+  sgeExtensionBase, sgeGraphicElementLayerList, sgeGraphicElementBase, sgeGraphicFPS,
+  sgeScreenFade, sgeEventBase, sgeEventWindow,
+  sgeExtensionWindow;
 
 
 const
@@ -40,7 +42,7 @@ type
     FExtWindow: TsgeExtensionWindow;
 
     //Классы
-    FDrawList: TsgeGraphicDrawList;                                 //Класс слоёв отрисовки
+    FLayerList: TsgeGraphicElementLayerList;                        //Класс слоёв отрисовки
     FGraphicInner: TsgeGraphic;                                     //Класс графики для потока рендера сцены
     FGraphic: TsgeGraphic;                                          //Класс графики для основного потока
     FThread: TsgeThread;                                            //Поток основного класса графики
@@ -103,7 +105,7 @@ type
 
     //Объекты
     property Graphic: TsgeGraphic read FGraphic;
-    property DrawList: TsgeGraphicDrawList read FDrawList;
+    property LayerList: TsgeGraphicElementLayerList read FLayerList;
     property FPS: TsgeGraphicFPS read FFPS;
 
     //Параметры
@@ -207,13 +209,13 @@ var
   Layer: TsgeGraphicElementLayer;
 begin
   //Заблокировать список
-  FDrawList.Lock;
+  FLayerList.Lock;
 
   //Вывод слоёв
-  for I := 0 to FDrawList.LayerList.Count - 1 do
+  for I := 0 to FLayerList.Count - 1 do
     begin
     //Ссылка на слой
-    Layer := FDrawList.LayerList.Item[I];
+    Layer := FLayerList.Item[I];
 
     //Проверить видимость слоя
     if not Layer.Visible then Continue;
@@ -243,7 +245,7 @@ begin
     end;
 
   //Разблокировать список
-  FDrawList.UnLock;
+  FLayerList.UnLock;
 end;
 
 
@@ -327,7 +329,7 @@ end;
 
 procedure TsgeExtensionGraphic.FadeCallBackProc(Time: TsgePassedTime);
 begin
-  EventManager.Publish(Event_GraphicFade, TsgeEventGraphicFade.Create(Time));
+  EventManager.Publish(TsgeEventGraphicFade.Create(Event_GraphicFade, Time));
 end;
 
 
@@ -393,13 +395,13 @@ begin
     FGraphic.Activate;
 
     //Создать объекты
-    FDrawList := TsgeGraphicDrawList.Create;
+    FLayerList := TsgeGraphicElementLayerList.Create(True);
     FFPS := TsgeGraphicFPS.Create;
     FFPSCounter := TsgeCounter.Create(1000);
     FFade := TsgeScreenFade.Create;
 
     //Установить обработчик изменения размеров окна
-    EventManager.Subscribe(Event_WindowSize, TsgeEventHandler(@Event_WindowResize), $FFFF, True);
+    EventManager.SubscriberGroupList.Subscribe(Event_WindowSize, TsgeEventHandler(@Event_WindowResize), $FFFF, True);
 
     //Установить метод отрисовки
     FThread.LoopProc := @SystemDraw;
@@ -413,7 +415,7 @@ end;
 destructor TsgeExtensionGraphic.Destroy;
 begin
   //Отписаться от событий
-  EventManager.UnSubscribe(Self);
+  EventManager.SubscriberGroupList.UnSubscribe(Self);
 
   //Прибить поток
   if FThread <> nil then
@@ -428,7 +430,7 @@ begin
   FGraphic.Done;
   FGraphic.Free;
   FGraphicInner.Free;
-  FDrawList.Free;
+  FLayerList.Free;
   FFPS.Free;
   FFPSCounter.Free;
   FFade.Free;

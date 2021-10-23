@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeExtensionKeyCommand.pas
-Версия            1.5
+Версия            1.6
 Создан            01.08.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс расширения: Команда на кнопках
@@ -11,7 +11,6 @@
 unit sgeExtensionKeyCommand;
 
 {$mode objfpc}{$H+}
-{$ModeSwitch duplicatelocals+}
 
 interface
 
@@ -116,30 +115,30 @@ end;
 procedure TsgeExtensionKeyCommand.RegisterEventHandlers;
 begin
   //Клавиатура
-  EventManager.Subscribe(Event_KeyboardDown, TsgeEventHandler(@Handler_KeyDown), EventPriorityMaxMinusOne, True);
-  EventManager.Subscribe(Event_KeyboardUp, TsgeEventHandler(@Handler_KeyUp), EventPriorityMaxMinusOne, True);
-  EventManager.Subscribe(Event_KeyboardChar, TsgeEventHandler(@Handler_KeyChar), EventPriorityMax, True);
+  EventManager.SubscriberGroupList.Subscribe(Event_KeyboardDown, TsgeEventHandler(@Handler_KeyDown), EventPriorityMaxMinusOne, True);
+  EventManager.SubscriberGroupList.Subscribe(Event_KeyboardUp, TsgeEventHandler(@Handler_KeyUp), EventPriorityMaxMinusOne, True);
+  EventManager.SubscriberGroupList.Subscribe(Event_KeyboardChar, TsgeEventHandler(@Handler_KeyChar), EventPriorityMax, True);
 
   //Мышь
-  EventManager.Subscribe(Event_MouseDown, TsgeEventHandler(@Handler_MouseDown), EventPriorityMaxMinusOne, True);
-  EventManager.Subscribe(Event_MouseUp, TsgeEventHandler(@Handler_MouseUp), EventPriorityMaxMinusOne, True);
-  EventManager.Subscribe(Event_MouseScroll, TsgeEventHandler(@Handler_MouseWheel), EventPriorityMaxMinusOne, True);
-  EventManager.Subscribe(Event_MouseDoubleClick, TsgeEventHandler(@Handler_MouseDblClick), EventPriorityMaxMinusOne, True);
+  EventManager.SubscriberGroupList.Subscribe(Event_MouseDown, TsgeEventHandler(@Handler_MouseDown), EventPriorityMaxMinusOne, True);
+  EventManager.SubscriberGroupList.Subscribe(Event_MouseUp, TsgeEventHandler(@Handler_MouseUp), EventPriorityMaxMinusOne, True);
+  EventManager.SubscriberGroupList.Subscribe(Event_MouseScroll, TsgeEventHandler(@Handler_MouseWheel), EventPriorityMaxMinusOne, True);
+  EventManager.SubscriberGroupList.Subscribe(Event_MouseDoubleClick, TsgeEventHandler(@Handler_MouseDblClick), EventPriorityMaxMinusOne, True);
 
   //Контроллеры
-  EventManager.Subscribe(Event_ControllerButtonDown, TsgeEventHandler(@Handler_JoystickButtonDown), EventPriorityMaxMinusOne, True);
-  EventManager.Subscribe(Event_ControllerButtonUp, TsgeEventHandler(@Handler_JoystickButtonUp), EventPriorityMaxMinusOne, True);
-  EventManager.Subscribe(Event_ControllerPovDown, TsgeEventHandler(@Handler_JoystickPadDown), EventPriorityMaxMinusOne, True);
-  EventManager.Subscribe(Event_ControllerPovUp, TsgeEventHandler(@Handler_JoystickPadUp), EventPriorityMaxMinusOne, True);
-  EventManager.Subscribe(Event_ControllerAxisDown, TsgeEventHandler(@Handler_JoystickAxisDown), EventPriorityMaxMinusOne, True);
-  EventManager.Subscribe(Event_ControllerAxisUp, TsgeEventHandler(@Handler_JoystickAxisUp), EventPriorityMaxMinusOne, True);
+  EventManager.SubscriberGroupList.Subscribe(Event_ControllerButtonDown, TsgeEventHandler(@Handler_JoystickButtonDown), EventPriorityMaxMinusOne, True);
+  EventManager.SubscriberGroupList.Subscribe(Event_ControllerButtonUp, TsgeEventHandler(@Handler_JoystickButtonUp), EventPriorityMaxMinusOne, True);
+  EventManager.SubscriberGroupList.Subscribe(Event_ControllerPovDown, TsgeEventHandler(@Handler_JoystickPadDown), EventPriorityMaxMinusOne, True);
+  EventManager.SubscriberGroupList.Subscribe(Event_ControllerPovUp, TsgeEventHandler(@Handler_JoystickPadUp), EventPriorityMaxMinusOne, True);
+  EventManager.SubscriberGroupList.Subscribe(Event_ControllerAxisDown, TsgeEventHandler(@Handler_JoystickAxisDown), EventPriorityMaxMinusOne, True);
+  EventManager.SubscriberGroupList.Subscribe(Event_ControllerAxisUp, TsgeEventHandler(@Handler_JoystickAxisUp), EventPriorityMaxMinusOne, True);
 end;
 
 
 procedure TsgeExtensionKeyCommand.UnRegisterEventHandlers;
 begin
   //Отписаться от всех событий
-  EventManager.UnSubscribe(Self);
+  EventManager.SubscriberGroupList.UnSubscribe(Self);
 end;
 
 

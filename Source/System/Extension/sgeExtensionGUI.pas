@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeExtensionGUI.pas
-Версия            1.0
+Версия            1.1
 Создан            03.09.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс расширения: Графический интерфейс пользователя
@@ -136,24 +136,24 @@ end;
 procedure TsgeExtensionGUI.RegisterEventHandlers;
 begin
   //Клавиатура
-  FEventSubscriber[0] := EventManager.Subscribe(Event_KeyboardDown, TsgeEventHandler(@Handler_KeyDown), EventPriorityMaxMinusTwo, True);
-  FEventSubscriber[1] := EventManager.Subscribe(Event_KeyboardUp, TsgeEventHandler(@Handler_KeyUp), EventPriorityMaxMinusTwo, True);
-  FEventSubscriber[2] := EventManager.Subscribe(Event_KeyboardChar, TsgeEventHandler(@Handler_KeyChar), EventPriorityMaxMinusTwo, True);
+  FEventSubscriber[0] := EventManager.SubscriberGroupList.Subscribe(Event_KeyboardDown, TsgeEventHandler(@Handler_KeyDown), EventPriorityMaxMinusTwo, True);
+  FEventSubscriber[1] := EventManager.SubscriberGroupList.Subscribe(Event_KeyboardUp, TsgeEventHandler(@Handler_KeyUp), EventPriorityMaxMinusTwo, True);
+  FEventSubscriber[2] := EventManager.SubscriberGroupList.Subscribe(Event_KeyboardChar, TsgeEventHandler(@Handler_KeyChar), EventPriorityMaxMinusTwo, True);
 
   //Мышь
-  FEventSubscriber[3] := EventManager.Subscribe(Event_MouseEnter, TsgeEventHandler(@Handler_MouseEnter), EventPriorityMaxMinusTwo, True);
-  FEventSubscriber[4] := EventManager.Subscribe(Event_MouseLeave, TsgeEventHandler(@Handler_MouseLeave), EventPriorityMaxMinusTwo, True);
-  FEventSubscriber[5] := EventManager.Subscribe(Event_MouseMove, TsgeEventHandler(@Handler_MouseMove), EventPriorityMaxMinusTwo, True);
-  FEventSubscriber[6] := EventManager.Subscribe(Event_MouseDown, TsgeEventHandler(@Handler_MouseDown), EventPriorityMaxMinusTwo, True);
-  FEventSubscriber[7] := EventManager.Subscribe(Event_MouseUp, TsgeEventHandler(@Handler_MouseUp), EventPriorityMaxMinusTwo, True);
-  FEventSubscriber[8] := EventManager.Subscribe(Event_MouseScroll, TsgeEventHandler(@Handler_MouseWheel), EventPriorityMaxMinusTwo, True);
-  FEventSubscriber[9] := EventManager.Subscribe(Event_MouseDoubleClick, TsgeEventHandler(@Handler_MouseDblClick), EventPriorityMaxMinusTwo, True);
+  FEventSubscriber[3] := EventManager.SubscriberGroupList.Subscribe(Event_MouseEnter, TsgeEventHandler(@Handler_MouseEnter), EventPriorityMaxMinusTwo, True);
+  FEventSubscriber[4] := EventManager.SubscriberGroupList.Subscribe(Event_MouseLeave, TsgeEventHandler(@Handler_MouseLeave), EventPriorityMaxMinusTwo, True);
+  FEventSubscriber[5] := EventManager.SubscriberGroupList.Subscribe(Event_MouseMove, TsgeEventHandler(@Handler_MouseMove), EventPriorityMaxMinusTwo, True);
+  FEventSubscriber[6] := EventManager.SubscriberGroupList.Subscribe(Event_MouseDown, TsgeEventHandler(@Handler_MouseDown), EventPriorityMaxMinusTwo, True);
+  FEventSubscriber[7] := EventManager.SubscriberGroupList.Subscribe(Event_MouseUp, TsgeEventHandler(@Handler_MouseUp), EventPriorityMaxMinusTwo, True);
+  FEventSubscriber[8] := EventManager.SubscriberGroupList.Subscribe(Event_MouseScroll, TsgeEventHandler(@Handler_MouseWheel), EventPriorityMaxMinusTwo, True);
+  FEventSubscriber[9] := EventManager.SubscriberGroupList.Subscribe(Event_MouseDoubleClick, TsgeEventHandler(@Handler_MouseDblClick), EventPriorityMaxMinusTwo, True);
 end;
 
 
 procedure TsgeExtensionGUI.UnregisterEventHandlers;
 begin
-  EventManager.UnSubscribe(Self);
+  EventManager.SubscriberGroupList.UnSubscribe(Self);
 end;
 
 
@@ -349,7 +349,7 @@ begin
     RegisterEventHandlers;
 
     //Создать слой отрисовки GUI
-    FGUILayer := FExtGraphic.DrawList.AddLayer(Extension_GUI, $FE, True);
+    FGUILayer := FExtGraphic.LayerList.Add(Extension_GUI, $FE, True);
 
   except
     on E: EsgeException do
