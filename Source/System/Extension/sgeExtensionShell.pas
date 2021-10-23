@@ -949,6 +949,7 @@ begin
   List.Free;
 
   //Перерисовать оболочку
+  RepaintInner;
   RepaintThread;
 end;
 
