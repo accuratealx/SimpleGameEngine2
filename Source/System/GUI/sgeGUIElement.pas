@@ -15,7 +15,7 @@ unit sgeGUIElement;
 interface
 
 uses
-  sgeTypes, sgeSimpleParameters, sgeSimpleContainer, sgeTemplateObjectCollection,
+  sgeTypes, sgeSimpleParameters, sgeSimpleContainer, sgeTemplateCollection,
   sgeGraphicSprite, sgeGraphicColor,
   sgeEventBase, sgeEventKeyboard, sgeEventMouse,
   sgeGUIPropertyConstrains;
@@ -205,8 +205,7 @@ type
 
 
   //Список элементов
-  TsgeGUIElementListTemplate = specialize TsgeTemplateObjectCollection<TsgeGUIElement>;
-  TsgeGUIElementList = class(TsgeGUIElementListTemplate)
+  TsgeGUIElementList = class(specialize TsgeTemplateCollection<TsgeGUIElement>)
   public
     function  IndexOf(Element: TsgeGUIElement): Integer;
     procedure Delete(Index: Integer);
@@ -789,7 +788,8 @@ begin
   FCanvas.Free;
 
   //Удалить себя у родителя
-  if FParent <> nil then FParent.DeleteChild(Self);
+  if FParent <> nil then
+    FParent.DeleteChild(Self);
 
   //Убрать флаг уничтожения объекта
   Exclude(FState, esLockUpdate);
@@ -849,7 +849,7 @@ begin
       begin
       ChildHandled := False;
 
-      MouseChild := TsgeEventMouse.Create(Mouse.X, Mouse.Y, Mouse.MouseButtons, Mouse.KeyboardButtons, Mouse.Delta);
+      MouseChild := TsgeEventMouse.Create('', Mouse.X, Mouse.Y, Mouse.MouseButtons, Mouse.KeyboardButtons, Mouse.Delta);
 
       //Проверить детей
       for i := 0 to FChildList.Count - 1 do
@@ -914,7 +914,7 @@ begin
 
     emetMove:
       begin
-      MouseChild := TsgeEventMouse.Create(Mouse.X, Mouse.Y, Mouse.MouseButtons, Mouse.KeyboardButtons, Mouse.Delta);
+      MouseChild := TsgeEventMouse.Create('', Mouse.X, Mouse.Y, Mouse.MouseButtons, Mouse.KeyboardButtons, Mouse.Delta);
 
       //Проверить заход и уход мыши с элементов
       for i := 0 to FChildList.Count - 1 do
