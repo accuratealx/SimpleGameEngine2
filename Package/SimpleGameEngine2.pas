@@ -68,9 +68,10 @@ uses
   sgeGUIPropertyIntPoint, sgeGUIPropertyHorizontalAlign, 
   sgeGUIPropertyVerticalAlign, sgeGUIPropertySpriteRect, 
   sgeGUIPropertyDrawMethod, sgeGUITimer, sgeSystemFont, sgeJournal, 
-  sgeGUIUtils, sgeGUISprite, sgeGUISpriteButton, sgeExtensionMusic, 
-  sgeExtensionPackList, sgeMusicPLayerTrackList, sgeSystemGlobalAtom, 
-  sgeMusicPLayerTaskBase, sgeMusicPLayerTaskList, sgeTemplateList;
+  sgeGUIUtils, sgeGUISprite, sgeGUISpriteButton, sgeExtensionMusicPlayer, 
+  sgeExtensionPackList, sgeMusicPlayerTrackList, sgeSystemGlobalAtom, 
+  sgeMusicPlayerTaskBase, sgeMusicPlayerTaskList, sgeTemplateList, 
+  sgeMusicPlayerTaskPlay, sgeMusicPlayerTaskStop, sgeMusicPlayerTaskVolume;
 
 implementation
 
