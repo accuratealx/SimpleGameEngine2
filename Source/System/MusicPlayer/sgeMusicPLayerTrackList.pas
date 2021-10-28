@@ -1,14 +1,14 @@
 {
 Пакет             Simple Game Engine 2
-Файл              sgeMusicPLayerTrackList.pas
-Версия            1.2
+Файл              sgeMusicPlayerTrackList.pas
+Версия            1.3
 Создан            17.10.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          MusicPlayer: Список дорожек
 }
 {$Include Defines.inc}
 
-unit sgeMusicPLayerTrackList;
+unit sgeMusicPlayerTrackList;
 
 {$mode objfpc}{$H+}
 
@@ -16,7 +16,7 @@ interface
 
 uses
   sgeStringList, sgeMemoryStream, sgeTemplateThreadSafeCollection,
-  sgeMusicPLayerTrack;
+  sgeMusicPlayerTrack;
 
 
 type
@@ -24,7 +24,7 @@ type
   TsgeMusicPlayerTrackListLoadMode = (mptlmAdd, mptlmReplace);
 
 
-  TsgeMusicPlayerTrackList = class(specialize TsgeTemplateThreadSafeCollection<TsgeMusicPLayerTrack>)
+  TsgeMusicPlayerTrackList = class(specialize TsgeTemplateThreadSafeCollection<TsgeMusicPlayerTrack>)
   private
     FCurrentTrack: TsgeMusicPLayerTrack;
 
@@ -60,8 +60,8 @@ const
   _UNITNAME = 'MusicPlayerTrackList';
 
   Err_TrackNotFound = 'TrackNotFound';
-  Err_FileNotFound = 'FileNotFound';
-  Err_CantReadFile = 'CantReadFile';
+  Err_FileNotFound  = 'FileNotFound';
+  Err_CantReadFile  = 'CantReadFile';
 
 
 
@@ -148,6 +148,11 @@ begin
   FCS.Enter;
   try
 
+    //Поправить текушую дорожку
+    if FList[Index] = FCurrentTrack then
+      FCurrentTrack := nil;
+
+    //Удалить
     inherited Delete(Index);
 
   finally
@@ -163,11 +168,13 @@ begin
   FCS.Enter;
   try
 
+    //Найти индекс дорожки
     idx := IndexOfName(Name);
     if idx = -1 then
       raise EsgeException.Create(_UNITNAME, Err_TrackNotFound, Name);
 
-    inherited Delete(idx);
+    //Удалить
+    Delete(idx);
 
   finally
     FCS.Leave;
@@ -188,7 +195,6 @@ begin
       Delete(idx);
       idx := IndexOfGroup(Group);
       end;
-
 
   finally
     FCS.Leave;
@@ -326,6 +332,8 @@ var
 begin
   FCS.Enter;
   try
+    //Удалить текушую дорожку
+    FCurrentTrack := nil;
 
     //Проверить на затирание дорожек
     if Mode = mptlmReplace then Clear;
