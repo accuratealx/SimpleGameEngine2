@@ -1,6 +1,6 @@
 {
 Пакет             Simple Game Engine 2
-Файл              sgeMusicPLayerTaskList.pas
+Файл              sgeMusicPlayerTaskList.pas
 Версия            1.0
 Создан            21.10.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
@@ -8,7 +8,7 @@
 }
 {$Include Defines.inc}
 
-unit sgeMusicPLayerTaskList;
+unit sgeMusicPlayerTaskList;
 
 {$mode objfpc}{$H+}
 
@@ -19,7 +19,7 @@ uses
   sgeMusicPLayerTaskBase;
 
 type
-  TsgeMusicPLayerTaskList = class(specialize TsgeTemplateThreadSafeList<TsgeMusicPlayerTaskBase>)
+  TsgeMusicPlayerTaskList = class(specialize TsgeTemplateThreadSafeList<TsgeMusicPlayerTaskBase>)
   end;
 
 
