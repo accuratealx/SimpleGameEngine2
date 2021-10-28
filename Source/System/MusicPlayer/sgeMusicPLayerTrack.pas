@@ -1,6 +1,6 @@
 {
 Пакет             Simple Game Engine 2
-Файл              sgeMusicPLayerTrack.pas
+Файл              sgeMusicPlayerTrack.pas
 Версия            1.0
 Создан            17.10.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
@@ -8,14 +8,14 @@
 }
 {$Include Defines.inc}
 
-unit sgeMusicPLayerTrack;
+unit sgeMusicPlayerTrack;
 
 {$mode objfpc}{$H+}
 
 interface
 
 type
-  TsgeMusicPLayerTrack = class
+  TsgeMusicPlayerTrack = class
   private
     FName: String;
     FGroup: String;
@@ -32,7 +32,7 @@ type
 implementation
 
 
-constructor TsgeMusicPLayerTrack.Create(Name: String; FileName: String; Group: String);
+constructor TsgeMusicPlayerTrack.Create(Name: String; FileName: String; Group: String);
 begin
   FName := Name;
   FFileName := FileName;
