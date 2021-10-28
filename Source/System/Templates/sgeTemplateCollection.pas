@@ -106,7 +106,7 @@ begin
     raise EsgeException.Create(_UNITNAME, Err_IndexOutOfBounds, sgeIntToStr(Index));
 
   //Удалить память объекта
-  if FFreeObjects then  TObject(FList[Index]).Free;
+  if FFreeObjects then TObject(FList[Index]).Free;
 
   //Сдвинуть хвост
   for i := Index to c - 1 do
