@@ -108,7 +108,7 @@ type
     property ExtTimeEvent: TsgeExtensionTimeEvent read FExtensionTimeEvent;
     property ExtGUI: TsgeExtensionGUI read FExtensionGUI;
     property ExtSound: TsgeExtensionSound read FExtensionSound;
-    property FExtMusicPlayer: TsgeExtensionMusicPlayer read FExtensionMusicPlayer;
+    property ExtMusicPlayer: TsgeExtensionMusicPlayer read FExtensionMusicPlayer;
   end;
 
 
