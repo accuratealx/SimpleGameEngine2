@@ -15,7 +15,7 @@
     </CompilerOptions>
     <Description Value="Simple Game Engine 2"/>
     <Version Major="1"/>
-    <Files Count="208">
+    <Files Count="217">
       <Item1>
         <Filename Value="..\Source\ThirdParty\GDIPlus\GDIPAPI.pas"/>
         <UnitName Value="GDIPAPI"/>
@@ -601,12 +601,12 @@
         <UnitName Value="sgeStringUtils"/>
       </Item146>
       <Item147>
-        <Filename Value="..\Source\System\Variables\sgeVariableStringBase.pas"/>
-        <UnitName Value="sgeVariableStringBase"/>
+        <Filename Value="..\Source\System\Variables\sgeVariableEnumBase.pas"/>
+        <UnitName Value="sgeVariableEnumBase"/>
       </Item147>
       <Item148>
-        <Filename Value="..\Source\System\Variables\sgeVariableStringNormal.pas"/>
-        <UnitName Value="sgeVariableStringNormal"/>
+        <Filename Value="..\Source\System\Variables\sgeVariableEnumNormal.pas"/>
+        <UnitName Value="sgeVariableEnumNormal"/>
       </Item148>
       <Item149>
         <Filename Value="..\Source\System\Variables\sgeVariableStringProc.pas"/>
@@ -853,6 +853,42 @@
         <Filename Value="..\Source\System\MusicPlayer\sgeMusicPlayerTaskVolume.pas"/>
         <UnitName Value="sgeMusicPlayerTaskVolume"/>
       </Item208>
+      <Item209>
+        <Filename Value="..\Source\System\Variables\sgeVariableBooleanClass.pas"/>
+        <UnitName Value="sgeVariableBooleanClass"/>
+      </Item209>
+      <Item210>
+        <Filename Value="..\Source\System\Variables\sgeVariableColorClass.pas"/>
+        <UnitName Value="sgeVariableColorClass"/>
+      </Item210>
+      <Item211>
+        <Filename Value="..\Source\System\Variables\sgeVariableEnumProc.pas"/>
+        <UnitName Value="sgeVariableEnumProc"/>
+      </Item211>
+      <Item212>
+        <Filename Value="..\Source\System\Variables\sgeVariableIntegerClass.pas"/>
+        <UnitName Value="sgeVariableIntegerClass"/>
+      </Item212>
+      <Item213>
+        <Filename Value="..\Source\System\Variables\sgeVariableSingleClass.pas"/>
+        <UnitName Value="sgeVariableSingleClass"/>
+      </Item213>
+      <Item214>
+        <Filename Value="..\Source\System\Variables\sgeVariableStringBase.pas"/>
+        <UnitName Value="sgeVariableStringBase"/>
+      </Item214>
+      <Item215>
+        <Filename Value="..\Source\System\Variables\sgeVariableStringClass.pas"/>
+        <UnitName Value="sgeVariableStringClass"/>
+      </Item215>
+      <Item216>
+        <Filename Value="..\Source\System\Variables\sgeVariableStringNormal.pas"/>
+        <UnitName Value="sgeVariableStringNormal"/>
+      </Item216>
+      <Item217>
+        <Filename Value="..\Source\System\Variables\sgeVariableEnumClass.pas"/>
+        <UnitName Value="sgeVariableEnumClass"/>
+      </Item217>
     </Files>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)"/>

@@ -53,7 +53,7 @@ uses
   sgeShellCommand_System_Sleep, sgeShellLine, sgeShellLineItem, 
   sgeShellLineList, sgeShellCommand_System_Write, 
   sgeShellCommand_System_Screenshot, sgeShellCommand_System_Label, 
-  sgeStringUtils, sgeVariableStringBase, sgeVariableStringNormal, 
+  sgeStringUtils, sgeVariableEnumBase, sgeVariableEnumNormal, 
   sgeVariableStringProc, sgeVariables, sgeShellScript, sgeShellScriptList, 
   sgeShellCallStack, sgeShellCallStackItem, sgeShellCommand_System_Exit, 
   sgeShellCommand_System_Procedure, sgeShellCommand_System_Return, 
@@ -71,7 +71,10 @@ uses
   sgeGUIUtils, sgeGUISprite, sgeGUISpriteButton, sgeExtensionMusicPlayer, 
   sgeExtensionPackList, sgeMusicPlayerTrackList, sgeSystemGlobalAtom, 
   sgeMusicPlayerTaskBase, sgeMusicPlayerTaskList, sgeTemplateList, 
-  sgeMusicPlayerTaskPlay, sgeMusicPlayerTaskStop, sgeMusicPlayerTaskVolume;
+  sgeMusicPlayerTaskPlay, sgeMusicPlayerTaskStop, sgeMusicPlayerTaskVolume, 
+  sgeVariableBooleanClass, sgeVariableColorClass, sgeVariableEnumProc, 
+  sgeVariableIntegerClass, sgeVariableSingleClass, sgeVariableStringBase, 
+  sgeVariableStringClass, sgeVariableStringNormal, sgeVariableEnumClass;
 
 implementation
 
