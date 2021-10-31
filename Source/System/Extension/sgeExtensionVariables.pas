@@ -16,12 +16,14 @@ unit sgeExtensionVariables;
 interface
 
 uses
+  sgeStringList,
   sgeExtensionBase, sgeVariableList, sgeGraphicColor,
   sgeVariableIntegerNormal, sgeVariableIntegerClass, sgeVariableIntegerProc,
   sgeVariableSingleNormal, sgeVariableSingleClass, sgeVariableSingleProc,
   sgeVariableStringNormal, sgeVariableStringClass, sgeVariableStringProc,
   sgeVariableBooleanNormal, sgeVariableBooleanClass, sgeVariableBooleanProc,
-  sgeVariableColorNormal, sgeVariableColorClass, sgeVariableColorProc;
+  sgeVariableColorNormal, sgeVariableColorClass, sgeVariableColorProc,
+  sgeVariableEnumNormal, sgeVariableEnumClass, sgeVariableEnumProc;
 
 
 const
@@ -42,21 +44,38 @@ type
     destructor  Destroy; override;
 
     //Добавление новых переменных
+    //Integer
     function AddInteger(Name: ShortString; Value: Integer; DefValue: Integer; ReadOnly: Boolean = False; MinValue: Integer = -MaxInt; MaxValue: Integer = MaxInt): TsgeVariableIntegerNormal;
     function AddInteger(Name: ShortString; DefValue: Integer; Setter: TsgeVariableIntegerClassSetter; Getter: TsgeVariableIntegerClassGetter; MinValue: Integer = -MaxInt; MaxValue: Integer = MaxInt): TsgeVariableIntegerClass;
     function AddInteger(Name: ShortString; DefValue: Integer; Setter: TsgeVariableIntegerProcSetter; Getter: TsgeVariableIntegerProcGetter; MinValue: Integer = -MaxInt; MaxValue: Integer = MaxInt): TsgeVariableIntegerProc;
+
+    //Single
     function AddSingle(Name: ShortString; Value: Single; DefValue: Single; ReadOnly: Boolean = False; MinValue: single = 1.5E-45; MaxValue: single = 3.4E38): TsgeVariableSingleNormal;
     function AddSingle(Name: ShortString; DefValue: Single; Getter: TsgeVariableSingleClassGetter; Setter: TsgeVariableSingleClassSetter = nil; MinValue: single = 1.5E-45; MaxValue: single = 3.4E38): TsgeVariableSingleClass;
     function AddSingle(Name: ShortString; DefValue: Single; Getter: TsgeVariableSingleProcGetter; Setter: TsgeVariableSingleProcSetter = nil; MinValue: single = 1.5E-45; MaxValue: single = 3.4E38): TsgeVariableSingleProc;
+
+    //String
     function AddString(Name: ShortString; Value: String; DefValue: String; ReadOnly: Boolean = False): TsgeVariableStringNormal;
     function AddString(Name: ShortString; DefValue: String; Getter: TsgeVariableStringClassGetter; Setter: TsgeVariableStringClassSetter = nil): TsgeVariableStringClass;
     function AddString(Name: ShortString; DefValue: String; Getter: TsgeVariableStringProcGetter; Setter: TsgeVariableStringProcSetter = nil): TsgeVariableStringProc;
+
+    //Boolean
     function AddBoolean(Name: ShortString; Value: Boolean; DefValue: Boolean; ReadOnly: Boolean = False; TrueStr: ShortString = 'True'; FalseStr: ShortString = 'False'): TsgeVariableBooleanNormal;
     function AddBoolean(Name: ShortString; DefValue: Boolean; Getter: TsgeVariableBooleanClassGetter; Setter: TsgeVariableBooleanClassSetter = nil; TrueStr: ShortString = 'True'; FalseStr: ShortString = 'False'): TsgeVariableBooleanClass;
     function AddBoolean(Name: ShortString; DefValue: Boolean; Getter: TsgeVariableBooleanProcGetter; Setter: TsgeVariableBooleanProcSetter = nil; TrueStr: ShortString = 'True'; FalseStr: ShortString = 'False'): TsgeVariableBooleanProc;
+
+    //Color
     function AddColor(Name: ShortString; Value: TsgeRGBA; DefValue: TsgeRGBA; ReadOnly: Boolean = False): TsgeVariableColorNormal;
     function AddColor(Name: ShortString; DefValue: TsgeRGBA; Getter: TsgeVariableColorClassGetter; Setter: TsgeVariableColorClassSetter = nil): TsgeVariableColorClass;
     function AddColor(Name: ShortString; DefValue: TsgeRGBA; Getter: TsgeVariableColorProcGetter; Setter: TsgeVariableColorProcSetter = nil): TsgeVariableColorProc;
+
+    //Enum
+    function AddEnum(Name: ShortString; Value: String; List: TsgeStringList; DefValue: Word; ReadOnly: Boolean): TsgeVariableEnumNormal;
+    function AddEnum(Name: ShortString; Value: String; Values: String; Separator: String; DefValue: Word; ReadOnly: Boolean): TsgeVariableEnumNormal;
+    function AddEnum(Name: ShortString; List: TsgeStringList; DefValue: Word; Getter: TsgeVariableEnumClassGetter; Setter: TsgeVariableEnumClassSetter): TsgeVariableEnumClass;
+    function AddEnum(Name: ShortString; Values: String; Separator: String; DefValue: Word; Getter: TsgeVariableEnumClassGetter; Setter: TsgeVariableEnumClassSetter): TsgeVariableEnumClass;
+    function AddEnum(Name: ShortString; List: TsgeStringList; DefValue: Word; Getter: TsgeVariableEnumProcGetter; Setter: TsgeVariableEnumProcSetter): TsgeVariableEnumProc;
+    function AddEnum(Name: ShortString; Values: String; Separator: String; DefValue: Word; Getter: TsgeVariableEnumProcGetter; Setter: TsgeVariableEnumProcSetter): TsgeVariableEnumProc;
 
     //Изменить значение переменной
     procedure SetInteger(Name: ShortString; Value: Integer);
@@ -64,6 +83,7 @@ type
     procedure SetString(Name: ShortString; Value: String);
     procedure SetBoolean(Name: ShortString; Value: Boolean);
     procedure SetColor(Name: ShortString; Value: TsgeRGBA);
+    procedure SetEnum(Name: ShortString; Value: String);
 
     //Классы
     property Variables: TsgeVariableList read FVariableList;
@@ -285,6 +305,72 @@ begin
 end;
 
 
+function TsgeExtensionVariables.AddEnum(Name: ShortString; Value: String; List: TsgeStringList; DefValue: Word; ReadOnly: Boolean): TsgeVariableEnumNormal;
+begin
+  //Проверить на существование
+  CheckVariableExist(Name);
+
+  //Добавить
+  Result := TsgeVariableEnumNormal.Create(Name, Value, List, DefValue, ReadOnly);
+  FVariableList.Add(Result);
+end;
+
+
+function TsgeExtensionVariables.AddEnum(Name: ShortString; Value: String; Values: String; Separator: String; DefValue: Word; ReadOnly: Boolean): TsgeVariableEnumNormal;
+begin
+  //Проверить на существование
+  CheckVariableExist(Name);
+
+  //Добавить
+  Result := TsgeVariableEnumNormal.Create(Name, Value, Values, Separator, DefValue, ReadOnly);
+  FVariableList.Add(Result);
+end;
+
+
+function TsgeExtensionVariables.AddEnum(Name: ShortString; List: TsgeStringList; DefValue: Word; Getter: TsgeVariableEnumClassGetter; Setter: TsgeVariableEnumClassSetter): TsgeVariableEnumClass;
+begin
+  //Проверить на существование
+  CheckVariableExist(Name);
+
+  //Добавить
+  Result := TsgeVariableEnumClass.Create(Name, List, DefValue, Getter, Setter);
+  FVariableList.Add(Result);
+end;
+
+
+function TsgeExtensionVariables.AddEnum(Name: ShortString; Values: String; Separator: String; DefValue: Word; Getter: TsgeVariableEnumClassGetter; Setter: TsgeVariableEnumClassSetter): TsgeVariableEnumClass;
+begin
+  //Проверить на существование
+  CheckVariableExist(Name);
+
+  //Добавить
+  Result := TsgeVariableEnumClass.Create(Name, Values, Separator, DefValue, Getter, Setter);
+  FVariableList.Add(Result);
+end;
+
+
+function TsgeExtensionVariables.AddEnum(Name: ShortString; List: TsgeStringList; DefValue: Word; Getter: TsgeVariableEnumProcGetter; Setter: TsgeVariableEnumProcSetter): TsgeVariableEnumProc;
+begin
+  //Проверить на существование
+  CheckVariableExist(Name);
+
+  //Добавить
+  Result := TsgeVariableEnumProc.Create(Name, List, DefValue, Getter, Setter);
+  FVariableList.Add(Result);
+end;
+
+
+function TsgeExtensionVariables.AddEnum(Name: ShortString; Values: String; Separator: String; DefValue: Word; Getter: TsgeVariableEnumProcGetter; Setter: TsgeVariableEnumProcSetter): TsgeVariableEnumProc;
+begin
+  //Проверить на существование
+  CheckVariableExist(Name);
+
+  //Добавить
+  Result := TsgeVariableEnumProc.Create(Name, Values, Separator, DefValue, Getter, Setter);
+  FVariableList.Add(Result);
+end;
+
+
 procedure TsgeExtensionVariables.SetInteger(Name: ShortString; Value: Integer);
 var
   Idx: Integer;
@@ -299,7 +385,8 @@ var
   Idx: Integer;
 begin
   Idx := FVariableList.IndexOf(Name);
-  if Idx = -1 then AddSingle(Name, Value, 0, False) else FVariableList.Item[Idx].StrValue := sgeFloatToStr(Value);
+  if Idx = -1 then AddSingle(Name, Value, 0, False)
+    else FVariableList.Item[Idx].StrValue := sgeFloatToStr(Value);
 end;
 
 
@@ -308,7 +395,8 @@ var
   Idx: Integer;
 begin
   Idx := FVariableList.IndexOf(Name);
-  if Idx = -1 then AddString(Name, Value, '', False) else FVariableList.Item[Idx].StrValue := Value;
+  if Idx = -1 then AddString(Name, Value, '', False)
+    else FVariableList.Item[Idx].StrValue := Value;
 end;
 
 
@@ -317,7 +405,8 @@ var
   Idx: Integer;
 begin
   Idx := FVariableList.IndexOf(Name);
-  if Idx = -1 then AddBoolean(Name, Value, False, False) else FVariableList.Item[Idx].StrValue := sgeBoolToStr(Value);
+  if Idx = -1 then AddBoolean(Name, Value, False, False)
+    else FVariableList.Item[Idx].StrValue := sgeBoolToStr(Value);
 end;
 
 
@@ -326,7 +415,18 @@ var
   Idx: Integer;
 begin
   Idx := FVariableList.IndexOf(Name);
-  if Idx = -1 then AddColor(Name, Value, sgeGetRGBA(0, 0, 0, 1), False) else FVariableList.Item[Idx].StrValue := sgeRGBAToString(Value);
+  if Idx = -1 then AddColor(Name, Value, sgeGetRGBA(0, 0, 0, 1), False)
+    else FVariableList.Item[Idx].StrValue := sgeRGBAToString(Value);
+end;
+
+
+procedure TsgeExtensionVariables.SetEnum(Name: ShortString; Value: String);
+var
+  Idx: Integer;
+begin
+  Idx := FVariableList.IndexOf(Name);
+  if Idx = -1 then AddEnum(Name, Value, Value, '', 0, False)  //Если Enum с именем "Name" нет, то создать c одним значением
+    else FVariableList.Item[Idx].StrValue := Value;
 end;
 
 
