@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeShellCommandParameter.pas
-Версия            1.0
+Версия            1.1
 Создан            08.08.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс параметра оболочки: Базовый
@@ -33,7 +33,7 @@ type
 	  FPrefixRequired: Boolean;
   	FPrefixList: TsgeStringList;
   public
-    constructor Create(ParamType: TsgeShellCommandParameterType; Name: ShortString; Required: Boolean; PrefixRequired: Boolean; PrefixList: TsgeStringList);
+    constructor Create(ParamType: TsgeShellCommandParameterType; Name: ShortString; Required: Boolean; PrefixRequired: Boolean; PrefixList: String; Separator: String);
     destructor  Destroy; override;
 
     property ParamType: TsgeShellCommandParameterType read FParamType;
@@ -43,16 +43,35 @@ type
     property PrefixList: TsgeStringList read FPrefixList;
   end;
 
+
 implementation
 
+uses
+  sgeErrors;
 
-constructor TsgeShellCommandParameterBase.Create(ParamType: TsgeShellCommandParameterType; Name: ShortString; Required: Boolean; PrefixRequired: Boolean; PrefixList: TsgeStringList);
+const
+  _UNITNAME = 'ShellCommandParameterBase';
+
+  Err_ZeroPrefixList = 'ZeroPrefixList';
+
+
+constructor TsgeShellCommandParameterBase.Create(ParamType: TsgeShellCommandParameterType; Name: ShortString; Required: Boolean; PrefixRequired: Boolean; PrefixList: String; Separator: String);
 begin
+  //Проверить количество префиксов
+  if Length(PrefixList) < 1 then
+    raise EsgeException.Create(_UNITNAME, Err_ZeroPrefixList);
+
   //Создать список префиксов
   FPrefixList := TsgeStringList.Create;
 
-  //Скопировать список префиксов
-  if PrefixList <> nil then FPrefixList.CopyFrom(PrefixList);
+  //Установить разделитель
+  FPrefixList.Separator := Separator;
+
+  //Разобрать на строки
+  FPrefixList.FromString(PrefixList);
+
+  //Оnпилить лишнее
+  FPrefixList.Trim;
 
   //Записать параметры
   FParamType := ParamType;

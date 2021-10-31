@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeShellCommandParameterList.pas
-Версия            1.1
+Версия            1.2
 Создан            08.08.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс список параметров команды оболочки
@@ -15,16 +15,16 @@ unit sgeShellCommandParameterList;
 interface
 
 uses
-  sgeTemplateCollection, sgeStringList, sgeShellCommandParameterBase,
+  sgeTemplateCollection, sgeShellCommandParameterBase,
   sgeShellCommandParameterInteger, sgeShellCommandParameterFloat, sgeShellCommandParameterString;
 
 
 type
   TsgeShellCommandParameterList = class(specialize TsgeTemplateCollection<TsgeShellCommandParameterBase>)
   public
-    procedure AddInteger(Name: ShortString; Required: Boolean = True; PrefixRequired: Boolean = False; PrefixList: TsgeStringList = nil);
-    procedure AddFloat(Name: ShortString; Required: Boolean = True; PrefixRequired: Boolean = False; PrefixList: TsgeStringList = nil);
-    procedure AddString(Name: ShortString; Required: Boolean = True; PrefixRequired: Boolean = False; PrefixList: TsgeStringList = nil);
+    procedure AddInteger(Name: ShortString; Required: Boolean = True; PrefixRequired: Boolean = False; PrefixList: String = ''; Separator: String = ',');
+    procedure AddFloat(Name: ShortString; Required: Boolean = True; PrefixRequired: Boolean = False; PrefixList: String = ''; Separator: String = ',');
+    procedure AddString(Name: ShortString; Required: Boolean = True; PrefixRequired: Boolean = False; PrefixList: String = ''; Separator: String = ',');
   end;
 
 
@@ -32,21 +32,21 @@ type
 implementation
 
 
-procedure TsgeShellCommandParameterList.AddInteger(Name: ShortString; Required: Boolean; PrefixRequired: Boolean; PrefixList: TsgeStringList);
+procedure TsgeShellCommandParameterList.AddInteger(Name: ShortString; Required: Boolean; PrefixRequired: Boolean; PrefixList: String; Separator: String);
 begin
-  Add(TsgeShellCommandParameterInteger.Create(Name, Required, PrefixRequired, PrefixList));
+  Add(TsgeShellCommandParameterInteger.Create(Name, Required, PrefixRequired, PrefixList, Separator));
 end;
 
 
-procedure TsgeShellCommandParameterList.AddFloat(Name: ShortString; Required: Boolean; PrefixRequired: Boolean; PrefixList: TsgeStringList);
+procedure TsgeShellCommandParameterList.AddFloat(Name: ShortString; Required: Boolean; PrefixRequired: Boolean; PrefixList: String; Separator: String);
 begin
-  Add(TsgeShellCommandParameterFloat.Create(Name, Required, PrefixRequired, PrefixList));
+  Add(TsgeShellCommandParameterFloat.Create(Name, Required, PrefixRequired, PrefixList, Separator));
 end;
 
 
-procedure TsgeShellCommandParameterList.AddString(Name: ShortString; Required: Boolean; PrefixRequired: Boolean; PrefixList: TsgeStringList);
+procedure TsgeShellCommandParameterList.AddString(Name: ShortString; Required: Boolean; PrefixRequired: Boolean; PrefixList: String; Separator: String);
 begin
-  Add(TsgeShellCommandParameterString.Create(Name, Required, PrefixRequired, PrefixList));
+  Add(TsgeShellCommandParameterString.Create(Name, Required, PrefixRequired, PrefixList, Separator));
 end;
 
 
