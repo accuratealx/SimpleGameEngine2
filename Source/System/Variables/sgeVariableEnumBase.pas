@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeVariableEnumBase.pas
-Версия            1.0
+Версия            1.1
 Создан            30.10.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс переменной: Перечисление: Базовый
@@ -32,7 +32,6 @@ type
     procedure SetValue(AValue: String); virtual; abstract;
     function  GetValue: String; virtual; abstract;
   public
-    constructor Create(Name: ShortString; List: TsgeStringList; DefValue: Word; ReadOnly: Boolean; Imbedded: Boolean);
     constructor Create(Name: ShortString; Values: String; Separator: String; DefValue: Word; ReadOnly: Boolean; Imbedded: Boolean);
     destructor  Destroy; override;
 
@@ -57,7 +56,6 @@ const
 
 
 
-
 procedure TsgeVariableEnumBase.SetStrValue(Str: String);
 begin
   Value := Str;
@@ -70,23 +68,20 @@ begin
 end;
 
 
-constructor TsgeVariableEnumBase.Create(Name: ShortString; List: TsgeStringList; DefValue: Word; ReadOnly: Boolean; Imbedded: Boolean);
+constructor TsgeVariableEnumBase.Create(Name: ShortString; Values: String; Separator: String; DefValue: Word; ReadOnly: Boolean; Imbedded: Boolean);
 begin
   //Проверить количество значений
-  if List.Count < 1 then
+  if Length(Values) < 1 then
     raise EsgeException.Create(_UNITNAME, Err_ZeroEnum);
-
-  //Проверить значение по умолчанию
-  if DefValue > List.Count - 1 then
-    raise EsgeException.Create(_UNITNAME, Err_DefaultIndexOutOfBounds, sgeIntToStr(DefValue));
 
   inherited Create(Name, ReadOnly, Imbedded);
 
   //Создать список
   FList := TsgeStringList.Create;
 
-  //Подготовить список допустимых значений
-  FList.CopyFrom(List);
+  //Разобрать на параметры
+  FList.Separator := Separator;
+  FList.FromString(Values);
 
   //Обрезать лишние пробелы
   FList.Trim;
@@ -94,25 +89,12 @@ begin
   //Тип переменной
   FValueType := vtEnum;
 
+  //Проверить значение по умолчанию
+  if DefValue > List.Count - 1 then
+    raise EsgeException.Create(_UNITNAME, Err_DefaultIndexOutOfBounds, sgeIntToStr(DefValue));
+
   //Запомнить значение по умолчанию
   FDefaultValue := DefValue;
-end;
-
-
-constructor TsgeVariableEnumBase.Create(Name: ShortString; Values: String; Separator: String; DefValue: Word; ReadOnly: Boolean; Imbedded: Boolean);
-var
-  Lst: TsgeStringList;
-begin
-  Lst := TsgeStringList.Create;
-  try
-
-    Lst.Separator := Separator;
-    Lst.FromString(Values);
-    Create(Name, Lst, DefValue, ReadOnly, Imbedded);
-
-  finally
-    Lst.Free;
-  end;
 end;
 
 

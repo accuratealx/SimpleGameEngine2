@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeExtensionVariables.pas
-Версия            1.6
+Версия            1.7
 Создан            20.07.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс расширения: Переменные
@@ -16,7 +16,6 @@ unit sgeExtensionVariables;
 interface
 
 uses
-  sgeStringList,
   sgeExtensionBase, sgeVariableList, sgeGraphicColor,
   sgeVariableIntegerNormal, sgeVariableIntegerClass, sgeVariableIntegerProc,
   sgeVariableSingleNormal, sgeVariableSingleClass, sgeVariableSingleProc,
@@ -70,11 +69,8 @@ type
     function AddColor(Name: ShortString; DefValue: TsgeRGBA; Getter: TsgeVariableColorProcGetter; Setter: TsgeVariableColorProcSetter = nil): TsgeVariableColorProc;
 
     //Enum
-    function AddEnum(Name: ShortString; Value: String; List: TsgeStringList; DefValue: Word; ReadOnly: Boolean): TsgeVariableEnumNormal;
     function AddEnum(Name: ShortString; Value: String; Values: String; Separator: String; DefValue: Word; ReadOnly: Boolean): TsgeVariableEnumNormal;
-    function AddEnum(Name: ShortString; List: TsgeStringList; DefValue: Word; Getter: TsgeVariableEnumClassGetter; Setter: TsgeVariableEnumClassSetter): TsgeVariableEnumClass;
     function AddEnum(Name: ShortString; Values: String; Separator: String; DefValue: Word; Getter: TsgeVariableEnumClassGetter; Setter: TsgeVariableEnumClassSetter): TsgeVariableEnumClass;
-    function AddEnum(Name: ShortString; List: TsgeStringList; DefValue: Word; Getter: TsgeVariableEnumProcGetter; Setter: TsgeVariableEnumProcSetter): TsgeVariableEnumProc;
     function AddEnum(Name: ShortString; Values: String; Separator: String; DefValue: Word; Getter: TsgeVariableEnumProcGetter; Setter: TsgeVariableEnumProcSetter): TsgeVariableEnumProc;
 
     //Изменить значение переменной
@@ -305,17 +301,6 @@ begin
 end;
 
 
-function TsgeExtensionVariables.AddEnum(Name: ShortString; Value: String; List: TsgeStringList; DefValue: Word; ReadOnly: Boolean): TsgeVariableEnumNormal;
-begin
-  //Проверить на существование
-  CheckVariableExist(Name);
-
-  //Добавить
-  Result := TsgeVariableEnumNormal.Create(Name, Value, List, DefValue, ReadOnly);
-  FVariableList.Add(Result);
-end;
-
-
 function TsgeExtensionVariables.AddEnum(Name: ShortString; Value: String; Values: String; Separator: String; DefValue: Word; ReadOnly: Boolean): TsgeVariableEnumNormal;
 begin
   //Проверить на существование
@@ -327,17 +312,6 @@ begin
 end;
 
 
-function TsgeExtensionVariables.AddEnum(Name: ShortString; List: TsgeStringList; DefValue: Word; Getter: TsgeVariableEnumClassGetter; Setter: TsgeVariableEnumClassSetter): TsgeVariableEnumClass;
-begin
-  //Проверить на существование
-  CheckVariableExist(Name);
-
-  //Добавить
-  Result := TsgeVariableEnumClass.Create(Name, List, DefValue, Getter, Setter);
-  FVariableList.Add(Result);
-end;
-
-
 function TsgeExtensionVariables.AddEnum(Name: ShortString; Values: String; Separator: String; DefValue: Word; Getter: TsgeVariableEnumClassGetter; Setter: TsgeVariableEnumClassSetter): TsgeVariableEnumClass;
 begin
   //Проверить на существование
@@ -345,17 +319,6 @@ begin
 
   //Добавить
   Result := TsgeVariableEnumClass.Create(Name, Values, Separator, DefValue, Getter, Setter);
-  FVariableList.Add(Result);
-end;
-
-
-function TsgeExtensionVariables.AddEnum(Name: ShortString; List: TsgeStringList; DefValue: Word; Getter: TsgeVariableEnumProcGetter; Setter: TsgeVariableEnumProcSetter): TsgeVariableEnumProc;
-begin
-  //Проверить на существование
-  CheckVariableExist(Name);
-
-  //Добавить
-  Result := TsgeVariableEnumProc.Create(Name, List, DefValue, Getter, Setter);
   FVariableList.Add(Result);
 end;
 

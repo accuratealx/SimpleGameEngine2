@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeVariableEnumNormal.pas
-Версия            1.0
+Версия            1.1
 Создан            19.07.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс переменной: Перечисление: Значение
@@ -16,7 +16,6 @@ unit sgeVariableEnumNormal;
 interface
 
 uses
-  sgeStringList,
   sgeVariableEnumBase;
 
 
@@ -30,7 +29,6 @@ type
     procedure SetValue(AValue: String); override;
 
   public
-    constructor Create(Name: ShortString; Value: String; List: TsgeStringList; DefValue: Word; ReadOnly: Boolean);
     constructor Create(Name: ShortString; Value: String; Values: String; Separator: String; DefValue: Word; ReadOnly: Boolean);
   end;
 
@@ -66,14 +64,6 @@ begin
     raise EsgeException.Create(_UNITNAME, Err_UnknownValue, AValue);
 
   FValue := FList.Part[Idx];
-end;
-
-
-constructor TsgeVariableEnumNormal.Create(Name: ShortString; Value: String; List: TsgeStringList; DefValue: Word; ReadOnly: Boolean);
-begin
-  inherited Create(Name, List, DefValue, ReadOnly, False);
-
-  SetValue(Value);
 end;
 
 

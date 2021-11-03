@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeVariableEnumProc.pas
-Версия            1.0
+Версия            1.1
 Создан            31.10.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс переменной: Перечисление: Ссылка на метод
@@ -16,7 +16,6 @@ unit sgeVariableEnumProc;
 interface
 
 uses
-  sgeStringList,
   sgeVariableEnumBase;
 
 
@@ -36,7 +35,6 @@ type
     procedure SetValue(AValue: String); override;
 
   public
-    constructor Create(Name: ShortString; List: TsgeStringList; DefValue: Word; Getter: TsgeVariableEnumProcGetter; Setter: TsgeVariableEnumProcSetter);
     constructor Create(Name: ShortString; Values: String; Separator: String; DefValue: Word; Getter: TsgeVariableEnumProcGetter; Setter: TsgeVariableEnumProcSetter);
   end;
 
@@ -72,23 +70,6 @@ begin
     raise EsgeException.Create(_UNITNAME, Err_UnknownValue, AValue);
 
   FSetter(AValue);
-end;
-
-
-constructor TsgeVariableEnumProc.Create(Name: ShortString; List: TsgeStringList; DefValue: Word; Getter: TsgeVariableEnumProcGetter; Setter: TsgeVariableEnumProcSetter);
-begin
-  //Проверить метод чтения
-  if Getter = nil then
-    raise EsgeException.Create(_UNITNAME, Err_VariableGetterIsEmpty);
-
-  inherited Create(Name, List, DefValue, False, True);
-
-  //Методы изменения
-  FSetter := Setter;
-  FGetter := Getter;
-
-  //Поправить флаг только для чтения
-  FReadOnly := not Assigned(FSetter);
 end;
 
 
