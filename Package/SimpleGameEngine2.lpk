@@ -15,7 +15,7 @@
     </CompilerOptions>
     <Description Value="Simple Game Engine 2"/>
     <Version Major="1"/>
-    <Files Count="217">
+    <Files Count="218">
       <Item1>
         <Filename Value="..\Source\ThirdParty\GDIPlus\GDIPAPI.pas"/>
         <UnitName Value="GDIPAPI"/>
@@ -705,8 +705,8 @@
         <UnitName Value="sgeVars"/>
       </Item172>
       <Item173>
-        <Filename Value="..\Source\System\Events\sgeEventGraphic.pas"/>
-        <UnitName Value="sgeEventGraphic"/>
+        <Filename Value="..\Source\System\Events\sgeEventMusicPLayer.pas"/>
+        <UnitName Value="sgeEventMusicPLayer"/>
       </Item173>
       <Item174>
         <Filename Value="..\Source\System\Events\sgeEventKeyboard.pas"/>
@@ -889,6 +889,10 @@
         <Filename Value="..\Source\System\Variables\sgeVariableEnumClass.pas"/>
         <UnitName Value="sgeVariableEnumClass"/>
       </Item217>
+      <Item218>
+        <Filename Value="..\Source\System\Events\sgeEventGraphic.pas"/>
+        <UnitName Value="sgeEventGraphic"/>
+      </Item218>
     </Files>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)"/>

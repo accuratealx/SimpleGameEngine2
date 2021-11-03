@@ -62,19 +62,20 @@ uses
   sgeShellCommand_System_Call, sgeShellCommand_Script_Clear, 
   sgeExtensionTimeEvent, sgeShellCommand_Script_Delete, 
   sgeShellCommand_System_Stop, sgeTimeEventList, sgeGUIElement, sgeGUIForm, 
-  sgeGUIFormList, sgeVars, sgeEventGraphic, sgeEventKeyboard, sgeEventMouse, 
-  sgeGUIPropertySegmentOffset, sgeGUIPropertyIntRect, sgeGUIPropertyFloatRect, 
-  sgeGUIPropertyFloatPoint, sgeGUIPropertyColor, sgeGUIPropertyScaleXY, 
-  sgeGUIPropertyIntPoint, sgeGUIPropertyHorizontalAlign, 
-  sgeGUIPropertyVerticalAlign, sgeGUIPropertySpriteRect, 
-  sgeGUIPropertyDrawMethod, sgeGUITimer, sgeSystemFont, sgeJournal, 
-  sgeGUIUtils, sgeGUISprite, sgeGUISpriteButton, sgeExtensionMusicPlayer, 
-  sgeExtensionPackList, sgeMusicPlayerTrackList, sgeSystemGlobalAtom, 
-  sgeMusicPlayerTaskBase, sgeMusicPlayerTaskList, sgeTemplateList, 
-  sgeMusicPlayerTaskPlay, sgeMusicPlayerTaskStop, sgeMusicPlayerTaskVolume, 
-  sgeVariableBooleanClass, sgeVariableColorClass, sgeVariableEnumProc, 
-  sgeVariableIntegerClass, sgeVariableSingleClass, sgeVariableStringBase, 
-  sgeVariableStringClass, sgeVariableStringNormal, sgeVariableEnumClass;
+  sgeGUIFormList, sgeVars, sgeEventMusicPlayer, sgeEventKeyboard, 
+  sgeEventMouse, sgeGUIPropertySegmentOffset, sgeGUIPropertyIntRect, 
+  sgeGUIPropertyFloatRect, sgeGUIPropertyFloatPoint, sgeGUIPropertyColor, 
+  sgeGUIPropertyScaleXY, sgeGUIPropertyIntPoint, 
+  sgeGUIPropertyHorizontalAlign, sgeGUIPropertyVerticalAlign, 
+  sgeGUIPropertySpriteRect, sgeGUIPropertyDrawMethod, sgeGUITimer, 
+  sgeSystemFont, sgeJournal, sgeGUIUtils, sgeGUISprite, sgeGUISpriteButton, 
+  sgeExtensionMusicPlayer, sgeExtensionPackList, sgeMusicPlayerTrackList, 
+  sgeSystemGlobalAtom, sgeMusicPlayerTaskBase, sgeMusicPlayerTaskList, 
+  sgeTemplateList, sgeMusicPlayerTaskPlay, sgeMusicPlayerTaskStop, 
+  sgeMusicPlayerTaskVolume, sgeVariableBooleanClass, sgeVariableColorClass, 
+  sgeVariableEnumProc, sgeVariableIntegerClass, sgeVariableSingleClass, 
+  sgeVariableStringBase, sgeVariableStringClass, sgeVariableStringNormal, 
+  sgeVariableEnumClass, sgeEventGraphic;
 
 implementation
 
