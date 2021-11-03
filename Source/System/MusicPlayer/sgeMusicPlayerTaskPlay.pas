@@ -37,6 +37,7 @@ implementation
 
 uses
   sgeErrors, sgeVars, sgeMemoryStream,
+  sgeEventMusicPlayer,
   sgeExtensionMusicPlayer;
 
 type
@@ -90,6 +91,9 @@ begin
 
     //Запустить проигрывание
     ExtMusic.FSource.Play;
+
+    //Добавить событие старта
+    SGE.EventManager.Publish(TsgeEventMusicPlayerStart.Create(Event_MusicPLayerStart, FTrack));
 
   finally
     Ms.Free;

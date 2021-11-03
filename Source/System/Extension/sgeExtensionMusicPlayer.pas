@@ -243,9 +243,9 @@ begin
     FSource.Gain := 0;
 
     //Установить параметры
-    FVolume := 0.3;
+    FVolume := 0.5;
     FChangeMode := cmRandom;
-    FRepeatmode := rmNone;
+    FRepeatmode := rmList;
     FThreadDelay := 10;
     FGroup := '';
 

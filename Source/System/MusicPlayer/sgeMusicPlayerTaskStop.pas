@@ -30,6 +30,7 @@ implementation
 
 uses
   sgeVars,
+  sgeEventBase, sgeEventMusicPlayer,
   sgeExtensionMusicPlayer;
 
 type
@@ -62,6 +63,9 @@ begin
 
   //Поправить громкость точно по свойству
   ExtMusic.Fsource.Gain := 0;
+
+  //Добавить событие останова
+  SGE.EventManager.Publish(TsgeEventBase.Create(Event_MusicPLayerStop));
 end;
 
 
