@@ -46,21 +46,9 @@ type
 
 implementation
 
-uses
-  sgeErrors;
-
-const
-  _UNITNAME = 'ShellCommandParameterBase';
-
-  Err_ZeroPrefixList = 'ZeroPrefixList';
-
 
 constructor TsgeShellCommandParameterBase.Create(ParamType: TsgeShellCommandParameterType; Name: ShortString; Required: Boolean; PrefixRequired: Boolean; PrefixList: String; Separator: String);
 begin
-  //Проверить количество префиксов
-  if Length(PrefixList) < 1 then
-    raise EsgeException.Create(_UNITNAME, Err_ZeroPrefixList);
-
   //Создать список префиксов
   FPrefixList := TsgeStringList.Create;
 
