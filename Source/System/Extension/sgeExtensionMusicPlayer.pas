@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeExtensionMusic.pas
-Версия            1.0
+Версия            1.1
 Создан            17.10.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс расширения: Музыкальный проигрыватель
@@ -350,11 +350,11 @@ end;
 
 procedure TsgeExtensionMusicPlayer.Stop;
 begin
-  //Проверка на проигрышь
-  if GetState = psStop then Exit;
-
   //Удалить текущие задачи
   FTaskList.Clear;
+
+  //Проверка на проигрышь
+  if GetState = psStop then Exit;
 
   //Добавить задачу остановки
   FTaskList.Add(TsgeMusicPlayerTaskStop.Create);
