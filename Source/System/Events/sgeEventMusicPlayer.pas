@@ -16,7 +16,7 @@ unit sgeEventMusicPlayer;
 interface
 
 uses
-  sgeTypes, sgeEventBase,
+  sgeEventBase,
   sgeMusicPlayerTrack;
 
 
