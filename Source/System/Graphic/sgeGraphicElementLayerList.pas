@@ -37,6 +37,7 @@ type
     procedure Delete(Name: String);                                                       //Удалить слой
 
     procedure AddElement(DrawElement: TsgeGraphicElementBase; LayerName: string = '');    //Добавить элемент
+    procedure MoveElementToListEnd(DrawElement: TsgeGraphicElementBase; LayerName: string = '');  //Переместить элемент в конец списка
 
     property Visible[Index: Integer]: Boolean read GetLayerVisible write SetLayerVisible;
   end;
@@ -204,6 +205,25 @@ begin
 
     //Добавить элемент в слой
     FList[Idx].Elements.Add(DrawElement);
+
+  finally
+    FCS.Leave;
+  end;
+end;
+
+
+procedure TsgeGraphicElementLayerList.MoveElementToListEnd(DrawElement: TsgeGraphicElementBase; LayerName: string);
+var
+  Idx: Integer;
+begin
+  FCS.Enter;
+  try
+
+    //Найти слой
+    Idx := IndexOf(LayerName);
+
+    //Подвинуть элемент в конец списка
+    if Idx <> -1 then FList[Idx].Elements.MoveToEnd(DrawElement);
 
   finally
     FCS.Leave;
