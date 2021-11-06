@@ -32,8 +32,10 @@ type
     class function GetParameterSectionName: String; override;       //Имя секции
     procedure LoadData(Data: TsgeSimpleParameters); override;       //Загрузить параметры
     procedure DrawBefore; override;                                 //Отрисовать перед выводом детей
+
     procedure SetVisible(AVisible: Boolean); override;
     procedure SetAlpha(AAlpha: Single); override;
+    procedure SetFocused(AFocused: Boolean); override;
   public
     constructor Create(AName: String; ALeft, ATop, AWidth, AHeight: Integer; AParent: TsgeGUIElement = nil); override;
     destructor  Destroy; override;
@@ -48,6 +50,9 @@ implementation
 
 uses
   sgeVars;
+
+const
+  GUILayer = 'GUI';
 
 
 function TsgeGUIForm.GetBackground: TsgeGUIPropertyBackground;
@@ -92,6 +97,17 @@ begin
   FGraphicElement.Update;
 end;
 
+procedure TsgeGUIForm.SetFocused(AFocused: Boolean);
+begin
+  inherited SetFocused(AFocused);
+
+  //Изменить Z-Index в списке форм
+  SGE.ExtGUI.FormList.ToTopIndex(Self);
+
+  //Поместить графический элемент в конец списка
+  SGE.ExtGraphic.LayerList.MoveElementToListEnd(FGraphicElement, GUILayer);
+end;
+
 
 constructor TsgeGUIForm.Create(AName: String; ALeft, ATop, AWidth, AHeight: Integer; AParent: TsgeGUIElement);
 begin
@@ -101,7 +117,7 @@ begin
   FGraphicElement := TsgeGraphicElementSpriteCashed.Create(Left, Top, Width, Height, FCanvas);
 
   //Добавить элемент в список отрисовки
-  SGE.ExtGraphic.LayerList.AddElement(FGraphicElement, 'GUI');
+  SGE.ExtGraphic.LayerList.AddElement(FGraphicElement, GUILayer);
 
   //Создать свойство фона
   FBackground := TsgeGUIBackgroundExt.Create(Self);

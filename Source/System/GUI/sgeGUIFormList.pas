@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGUIFormList.pas
-Версия            1.2
+Версия            1.3
 Создан            04.09.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          GUI: Список форм
@@ -22,6 +22,8 @@ type
   TsgeGUIFormList = class(specialize TsgeTemplateCollection<TsgeGUIForm>)
   private
   public
+    procedure ToTopIndex(Form: TsgeGUIForm);                        //Переместить форму в конец списка
+
     function  IndexOf(Form: TsgeGUIForm): Integer;
 
     procedure Delete(Index: Integer);
@@ -31,6 +33,21 @@ type
 
 implementation
 
+
+procedure TsgeGUIFormList.ToTopIndex(Form: TsgeGUIForm);
+var
+  Idx: Integer;
+begin
+  Idx := IndexOf(Form);
+  if Idx <> -1 then
+    begin
+    //Удалить из текущей позиции
+    Delete(Idx);
+
+    //Добавить форму в хвост
+    Add(Form);
+    end;
+end;
 
 
 function TsgeGUIFormList.IndexOf(Form: TsgeGUIForm): Integer;
