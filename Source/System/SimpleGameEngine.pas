@@ -24,10 +24,6 @@ uses
 const
   Object_SGE = 'ObjectSGE';
 
-  //Имена событий
-  Event_KernelCreate  = 'Kernel.Create';
-  Event_KernelDestroy = 'Kernel.Destroy';
-
 
 type
   //Параметры инициализации ядра (Звук)
@@ -255,22 +251,13 @@ begin
 
   //Зарегестрировать системные обработчики событий
   RegisterEventHandlers;
-
-  //Событие создания
-  FEventManager.Publish(TsgeEventBase.Create(Event_KernelCreate));
 end;
 
 
 destructor TSimpleGameEngine.Destroy;
 begin
-  //Остановить приложение
-  Stop;
-
   //Отписать системные обработчики событий
   UnregisterEventHandlers;
-
-  //Событие разрушения
-  FEventManager.Publish(TsgeEventBase.Create(Event_KernelDestroy));
 
   //Классы
   FErrorManager.Free;
