@@ -120,7 +120,7 @@ begin
     begin
     Inc(i);
 
-    if TMethod(FList[i].Handler).Data = @Obj then
+    if TObject(TMethod(FList[i].Handler).Data) = Obj then
       begin
       Delete(i);
       Dec(i)

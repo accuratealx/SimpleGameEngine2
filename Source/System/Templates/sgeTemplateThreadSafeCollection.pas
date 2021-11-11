@@ -94,6 +94,7 @@ var
 begin
   FCS.Enter;
   try
+    if FCount = 0 then Exit;
 
     //Удалить память объектов
     if FFreeObjects then
