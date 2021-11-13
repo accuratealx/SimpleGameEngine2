@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeExtensionControllers.pas
-Версия            1.5
+Версия            1.6
 Создан            20.05.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс расширения: Контроллеры
@@ -36,7 +36,7 @@ type
     FEnable: Boolean;                                               //Активность потока
     FScanDelay: Word;                                               //Задержка между опросами контроллеров
     FAutoScan: Boolean;                                             //Автосканирование контроллеров
-    FAutoScanInterval: Cardinal;                                    //Интервал сканирования новых контроллеров
+    FAutoScanDelay: Cardinal;                                       //Задержка между сканированием новых контроллеров
 
     //Вспомогательные переменные
     FMaxControllerCount: Byte;
@@ -55,7 +55,7 @@ type
     function  GetAxisEventType(Current, Previvous, Middle: Integer): TEventType;  //Определить тип события на оси
 
     procedure SetEnable(AEnable: Boolean);
-    procedure SetScanInterval(AInterval: Cardinal);
+    procedure SetScanDelay(ADelay: Cardinal);
   protected
     class function GetName: String; override;
 
@@ -69,7 +69,7 @@ type
     property Enable: Boolean read FEnable write SetEnable;
     property ScanDelay: Word read FScanDelay write FScanDelay;
     property AutoScan: Boolean read FAutoScan write FAutoScan;
-    property AutoScanInterval: Cardinal read FAutoScanInterval write FAutoScanInterval;
+    property AutoScanDelay: Cardinal read FAutoScanDelay write FAutoScanDelay;
   end;
 
 
@@ -317,11 +317,11 @@ begin
 end;
 
 
-procedure TsgeExtensionControllers.SetScanInterval(AInterval: Cardinal);
+procedure TsgeExtensionControllers.SetScanDelay(ADelay: Cardinal);
 begin
-  FAutoScanInterval := AInterval;
+  FAutoScanDelay := ADelay;
 
-  FInnerScanDelay := FAutoScanInterval div 1000;
+  FInnerScanDelay := FAutoScanDelay div 1000;
 end;
 
 
@@ -345,7 +345,7 @@ begin
     FScanDelay := 50;
     FAutoScan := False;
     FMaxControllerCount := sgeGetMaxControllerCount;
-    FAutoScanInterval := 5000;
+    FAutoScanDelay := 5000;
 
     //Определить контроллеры
     FThread.RunProcAndWait(@ScanControllers, tpemSuspend);

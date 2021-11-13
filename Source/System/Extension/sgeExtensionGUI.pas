@@ -15,6 +15,7 @@ unit sgeExtensionGUI;
 interface
 
 uses
+  sgeTypes,
   sgeExtensionBase, sgeEventBase, sgeEventKeyboard, sgeEventMouse, sgeEventSubscriber,
   sgeGraphicElementLayer, sgeExtensionGraphic, sgeGUIFormList, sgeGUIElement;
 
@@ -25,7 +26,7 @@ const
 type
   TsgeExtensionGUI = class(TsgeExtensionBase)
   const
-    MAX_SUB_COUNT = 9;
+    MAX_SUB_COUNT = 8;
   private
     //Ссылки
     FExtGraphic: TsgeExtensionGraphic;
@@ -37,6 +38,7 @@ type
     //Вспомогательные параметры
     FCapturedElement: TsgeGUIElement;                               //Ссылка на элемент, захвативший события мыши
     FFocusedElement: TsgeGUIElement;                                //Элемент имеющий фокус ввода
+    FLastElementAtCursor: TsgeGUIElement;                           //Последний элемент под курсором
 
     //Параметры
     FEnable: Boolean;
@@ -57,7 +59,6 @@ type
     function  Handler_KeyUp(EventObj: TsgeEventKeyboard): Boolean;
     function  Handler_KeyChar(EventObj: TsgeEventKeyboardChar): Boolean;
 
-    function  Handler_MouseEnter(EventObj: TsgeEventMouse): Boolean;
     function  Handler_MouseLeave(EventObj: TsgeEventMouse): Boolean;
     function  Handler_MouseMove(EventObj: TsgeEventMouse): Boolean;
     function  Handler_MouseDown(EventObj: TsgeEventMouse): Boolean;
@@ -70,6 +71,7 @@ type
 
     //Вспомогательные функции
     procedure ClearForms;
+    function  ElementAtCursor(X, Y: Integer): TsgeGUIElement;
   protected
     class function GetName: String; override;
 
@@ -82,7 +84,6 @@ type
     //Мышь
     procedure MouseCapture(Element: TsgeGUIElement);                          //Установить захват мыши
     procedure ReleaseMouse(Element: TsgeGUIElement);                          //Отменить захват мыши
-    procedure ReleaseMouse;                                                   //Отменить захват мыши
 
     //Активный элемент
     procedure SetFocus(Element: TsgeGUIElement);                              //Установить фокус ввода на элемент
@@ -100,13 +101,10 @@ type
 implementation
 
 uses
-  sgeTypes, sgeErrors, sgeOSPlatform, sgeGUIForm;
+  sgeErrors, sgeOSPlatform, sgeGUIForm;
 
 const
-  _UNITNAME = 'ExtensionGUI';
-
-type
-  TsgeGUIFormHack = class(TsgeGUIForm);
+  _UNITNAME = 'ExtensionGSUI';
 
 
 procedure TsgeExtensionGUI.SetEnable(AEnable: Boolean);
@@ -141,13 +139,12 @@ begin
   FEventSubscriber[2] := EventManager.SubscriberGroupList.Subscribe(Event_KeyboardChar, TsgeEventHandler(@Handler_KeyChar), EventPriorityMaxMinusTwo, True);
 
   //Мышь
-  FEventSubscriber[3] := EventManager.SubscriberGroupList.Subscribe(Event_MouseEnter, TsgeEventHandler(@Handler_MouseEnter), EventPriorityMaxMinusTwo, True);
-  FEventSubscriber[4] := EventManager.SubscriberGroupList.Subscribe(Event_MouseLeave, TsgeEventHandler(@Handler_MouseLeave), EventPriorityMaxMinusTwo, True);
-  FEventSubscriber[5] := EventManager.SubscriberGroupList.Subscribe(Event_MouseMove, TsgeEventHandler(@Handler_MouseMove), EventPriorityMaxMinusTwo, True);
-  FEventSubscriber[6] := EventManager.SubscriberGroupList.Subscribe(Event_MouseDown, TsgeEventHandler(@Handler_MouseDown), EventPriorityMaxMinusTwo, True);
-  FEventSubscriber[7] := EventManager.SubscriberGroupList.Subscribe(Event_MouseUp, TsgeEventHandler(@Handler_MouseUp), EventPriorityMaxMinusTwo, True);
-  FEventSubscriber[8] := EventManager.SubscriberGroupList.Subscribe(Event_MouseScroll, TsgeEventHandler(@Handler_MouseWheel), EventPriorityMaxMinusTwo, True);
-  FEventSubscriber[9] := EventManager.SubscriberGroupList.Subscribe(Event_MouseDoubleClick, TsgeEventHandler(@Handler_MouseDblClick), EventPriorityMaxMinusTwo, True);
+  FEventSubscriber[3] := EventManager.SubscriberGroupList.Subscribe(Event_MouseLeave, TsgeEventHandler(@Handler_MouseLeave), EventPriorityMaxMinusTwo, True);
+  FEventSubscriber[4] := EventManager.SubscriberGroupList.Subscribe(Event_MouseMove, TsgeEventHandler(@Handler_MouseMove), EventPriorityMaxMinusTwo, True);
+  FEventSubscriber[5] := EventManager.SubscriberGroupList.Subscribe(Event_MouseDown, TsgeEventHandler(@Handler_MouseDown), EventPriorityMaxMinusTwo, True);
+  FEventSubscriber[6] := EventManager.SubscriberGroupList.Subscribe(Event_MouseUp, TsgeEventHandler(@Handler_MouseUp), EventPriorityMaxMinusTwo, True);
+  FEventSubscriber[7] := EventManager.SubscriberGroupList.Subscribe(Event_MouseScroll, TsgeEventHandler(@Handler_MouseWheel), EventPriorityMaxMinusTwo, True);
+  FEventSubscriber[8] := EventManager.SubscriberGroupList.Subscribe(Event_MouseDoubleClick, TsgeEventHandler(@Handler_MouseDblClick), EventPriorityMaxMinusTwo, True);
 end;
 
 
@@ -175,15 +172,9 @@ begin
 end;
 
 
-function TsgeExtensionGUI.Handler_MouseEnter(EventObj: TsgeEventMouse): Boolean;
-begin
-  Result := MouseHandler(emetEnter, EventObj);
-end;
-
-
 function TsgeExtensionGUI.Handler_MouseLeave(EventObj: TsgeEventMouse): Boolean;
 begin
-  Result := MouseHandler(emetLeave, EventObj);
+  Result := MouseHandler(emetMove, EventObj);
 end;
 
 
@@ -219,93 +210,74 @@ end;
 
 function TsgeExtensionGUI.MouseHandler(EventType: TsgeGUIElementMouseEventType; Mouse: TsgeEventMouse): Boolean;
 var
-  i: Integer;
-  Pt: TsgeIntPoint;
   Form: TsgeGUIForm;
+  Element: TsgeGUIElement;
+  MousePoint, Pt: TsgeIntPoint;
 begin
-  //Проверить монопольный доступ к событиям мыши
-  if FCapturedElement <> nil then
-    begin
-    Result := True;
-    Pt := FCapturedElement.GetGlobalPos;
-    Mouse.ChangeXY(Mouse.X - Pt.X, Mouse.Y - Pt.Y);
-    FCapturedElement.MouseHandler(EventType, Mouse);
-    Exit;
-    end;
-
-
-
+  //Передавать событие
   Result := False;
 
-  //Просмотреть формы
-  for i := 0 to FFormList.Count - 1 do
+  //Найти элемент для передачи события
+  if FCapturedElement <> nil then Element := FCapturedElement
+    else Element := ElementAtCursor(Mouse.X, Mouse.Y);
+
+  //Сохранить координаты мыши
+  MousePoint := Mouse.Pos;
+
+  //Проверить событие MouseEnter, MouseLeave
+  if EventType = emetMove then
     begin
-    //Ссылка
-    Form := FFormList.Item[i];
-
-    //Обработать тип события
-    case EventType of
-      emetDown, emetUp, emetScroll, emetDblClick:
+    if FLastElementAtCursor <> Element then
+      begin
+      //Уход мыши
+      if FLastElementAtCursor <> nil then
         begin
-        if Form.CursorInElement(Mouse.X, Mouse.Y) then
-          begin
-          //Координаты относительно элемента
-          Mouse.ChangeXY(Mouse.X - Form.Left, Mouse.Y - Form.Top);
-
-          //Вызвать обработчик
-          Result := Form.MouseHandler(EventType, Mouse);
-          if Result then Break;
-          end;
+        Pt := FLastElementAtCursor.GetGlobalPos;
+        Mouse.ChangeXY(MousePoint.X - Pt.X, MousePoint.Y - Pt.Y);
+        FLastElementAtCursor.MouseHandler(emetLeave, Mouse);
         end;
 
-
-      emetMove:
+      //Заход мыши
+      if Element <> nil then
         begin
-        //Движение над формой
-        if Form.CursorInElement(Mouse.X, Mouse.Y) then
-          begin
-
-          //Координаты относительно элемента
-          Mouse.ChangeXY(Mouse.X - Form.Left, Mouse.Y - Form.Top);
-
-          //Если флаг захода мыши не установлен, то выполнить
-          if not TsgeGUIFormHack(Form).FEventMouseEntered then
-            begin
-            TsgeGUIFormHack(Form).FEventMouseEntered := True;
-            Form.MouseHandler(emetEnter, Mouse);
-            end;
-
-          //Движение мыши
-          Result := Form.MouseHandler(emetMove, Mouse);
-          end
-          else begin
-            if TsgeGUIFormHack(Form).FEventMouseEntered then
-              begin
-              TsgeGUIFormHack(Form).FEventMouseEntered := False;
-              Form.MouseHandler(emetLeave, Mouse);
-              end;
-          end;
+        Pt := Element.GetGlobalPos;
+        Mouse.ChangeXY(MousePoint.X - Pt.X, MousePoint.Y - Pt.Y);
+        Element.MouseHandler(emetEnter, Mouse);
         end;
-
-
-      emetLeave:
-        begin
-        //Просмотреть формы на предмет выхода за границы
-        if not Form.CursorInElement(Mouse.X, Mouse.Y) then
-          begin
-            if TsgeGUIFormHack(Form).FEventMouseEntered then
-              begin
-              TsgeGUIFormHack(Form).FEventMouseEntered := False;
-              Form.MouseHandler(emetLeave, Mouse);
-              end;
-          end;
-        end;
-
+      end;
     end;
 
+  //Запомнить последний элемент под курсором
+  FLastElementAtCursor := Element;
 
+  //Проверить что элемент найден
+  if Element = nil then Exit;
 
-    end;  //for
+  //Если элемент найден, то подавить событие
+  Result := True;
+
+  //Поправить координаты относительно текущего элемента
+  Pt := Element.GetGlobalPos;
+  Mouse.ChangeXY(MousePoint.X - Pt.X, MousePoint.Y - Pt.Y);
+
+  //Передать событие элементу
+  case EventType of
+    emetUp, emetMove, emetScroll, emetDblClick:
+      Element.MouseHandler(EventType, Mouse);
+
+    emetDown:
+      begin
+      //Найти форму
+      Form := TsgeGUIForm(Element.GetTopParent);
+
+      //Сделать форму активной
+      SetFocus(Form);
+
+      //Выполнить обработчик элемента
+      Element.MouseHandler(EventType, Mouse);
+      end;
+  end;
+
 end;
 
 
@@ -325,6 +297,61 @@ begin
   //Удалить объекты
   while FFormList.Count > 0 do
     FFormList.Item[0].Free;
+end;
+
+
+function TsgeExtensionGUI.ElementAtCursor(X, Y: Integer): TsgeGUIElement;
+
+  function CursorInElement(Element: TsgeGUIElement; X, Y: Integer): Boolean;
+  begin
+    Result := (X >= Element.Left) and
+              (X <= Element.Left + Element.Width) and
+              (Y >= Element.Top) and
+              (Y <= Element.Top + Element.Height);
+  end;
+
+  function ProcessElement(Element: TsgeGUIElement; X, Y: Integer): TsgeGUIElement;
+  var
+    Xl, Yl, i: Integer;
+    E: TsgeGUIElement;
+  begin
+    Result := nil;
+
+    //Если элемент неактивен, то выход
+    if not Element.Visible or not Element.Enable then Exit;
+
+    //Проверить нахождение координат в текщум объекте
+    if CursorInElement(Element, X, Y) then
+      begin
+
+      //Результат по умолчанию
+      Result := Element;
+
+      //Поправить координаты относительно текущего элемента
+      Xl := X - Element.Left;
+      Yl := Y - Element.Top;
+
+      //Проверить детей
+      for i := 0 to Element.ChildList.Count - 1 do
+        begin
+        E := ProcessElement(Element.ChildList.Item[i], Xl, Yl);
+        if E <> nil then Exit(E);
+        end;
+      end;
+  end;
+
+var
+  i: Integer;
+  E: TsgeGUIElement;
+begin
+  Result := nil;
+
+  //Перебрать формы
+  for i := FFormList.Count - 1 downto 0 do
+    begin
+    E := ProcessElement(FFormList.Item[i], X, Y);
+    if E <> nil then Exit(E);
+    end;
 end;
 
 
@@ -350,6 +377,11 @@ begin
 
     //Создать слой отрисовки GUI
     FGUILayer := FExtGraphic.LayerList.Add(Extension_GUI, $FE, True);
+
+    //Установить параметры
+    FVisible := True;
+    FVisible := True;
+    FLastElementAtCursor := nil;
 
   except
     on E: EsgeException do
@@ -393,14 +425,7 @@ end;
 
 procedure TsgeExtensionGUI.ReleaseMouse(Element: TsgeGUIElement);
 begin
-  if FCapturedElement = Element then
-    FCapturedElement := nil;
-end;
-
-
-procedure TsgeExtensionGUI.ReleaseMouse;
-begin
-  FCapturedElement := nil;
+  if FCapturedElement = Element then FCapturedElement := nil;
 end;
 
 
