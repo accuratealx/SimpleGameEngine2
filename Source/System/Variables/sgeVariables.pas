@@ -28,13 +28,13 @@ var
   SGE: TSimpleGameEngine;
 
 
-{$region Shell}
+{$Region Shell}
 procedure ExtensionShell_SetEnable(AEnable: Boolean);
 begin
   SGE.ExtShell.Enable := AEnable;
 end;
 
-function  ExtensionShell_GetEnable: Boolean;
+function ExtensionShell_GetEnable: Boolean;
 begin
   Result := SGE.ExtShell.Enable;
 end;
@@ -45,7 +45,7 @@ begin
   SGE.ExtShell.BGColor := sgeRGBAToColor(AColor);
 end;
 
-function  ExtensionShell_GetBGColor: TsgeRGBA;
+function ExtensionShell_GetBGColor: TsgeRGBA;
 begin
   Result := sgeColorToRGBA(SGE.ExtShell.BGColor);
 end;
@@ -56,7 +56,7 @@ begin
   SGE.ExtShell.EditorTextColor := sgeRGBAToColor(AColor);
 end;
 
-function  ExtensionShell_GetEditorTextColor: TsgeRGBA;
+function ExtensionShell_GetEditorTextColor: TsgeRGBA;
 begin
   Result := sgeColorToRGBA(SGE.ExtShell.EditorTextColor);
 end;
@@ -67,7 +67,7 @@ begin
   SGE.ExtShell.EditorSelectColor := sgeRGBAToColor(AColor);
 end;
 
-function  ExtensionShell_GetEditorSelectColor: TsgeRGBA;
+function ExtensionShell_GetEditorSelectColor: TsgeRGBA;
 begin
   Result := sgeColorToRGBA(SGE.ExtShell.EditorSelectColor);
 end;
@@ -78,7 +78,7 @@ begin
   SGE.ExtShell.EditorCursorColor := sgeRGBAToColor(AColor);
 end;
 
-function  ExtensionShell_GetEditorCursorColor: TsgeRGBA;
+function ExtensionShell_GetEditorCursorColor: TsgeRGBA;
 begin
   Result := sgeColorToRGBA(SGE.ExtShell.EditorCursorColor);
 end;
@@ -89,7 +89,7 @@ begin
   SGE.ExtShell.ErrorColor := sgeRGBAToColor(AColor);
 end;
 
-function  ExtensionShell_GetErrorColor: TsgeRGBA;
+function ExtensionShell_GetErrorColor: TsgeRGBA;
 begin
   Result := sgeColorToRGBA(SGE.ExtShell.ErrorColor);
 end;
@@ -100,7 +100,7 @@ begin
   SGE.ExtShell.TextColor := sgeRGBAToColor(AColor);
 end;
 
-function  ExtensionShell_GetTextColor: TsgeRGBA;
+function ExtensionShell_GetTextColor: TsgeRGBA;
 begin
   Result := sgeColorToRGBA(SGE.ExtShell.TextColor);
 end;
@@ -111,12 +111,63 @@ begin
   SGE.ExtShell.NoteColor := sgeRGBAToColor(AColor);
 end;
 
-function  ExtensionShell_GetNoteColor: TsgeRGBA;
+function ExtensionShell_GetNoteColor: TsgeRGBA;
 begin
   Result := sgeColorToRGBA(SGE.ExtShell.NoteColor);
 end;
 {$EndRegion Shell}
 
+
+{$Region Controllers}
+procedure ExtensionControllers_SetEnable(AEnable: Boolean);
+begin
+  SGE.ExtControllers.Enable := AEnable;
+end;
+
+function ExtensionControllers_GetEnable: Boolean;
+begin
+  Result := SGE.ExtControllers.Enable;
+end;
+
+
+procedure ExtensionControllers_SetScanDelay(ADelay: Integer);
+begin
+  SGE.ExtControllers.ScanDelay := ADelay;
+end;
+
+function ExtensionControllers_GetScanDelay: Integer;
+begin
+  Result := SGE.ExtControllers.ScanDelay;
+end;
+
+
+procedure ExtensionControllers_SetAutoScan(AEnable: Boolean);
+begin
+  SGE.ExtControllers.AutoScan := AEnable;
+end;
+
+function ExtensionControllers_GetAutoScan: Boolean;
+begin
+  Result := SGE.ExtControllers.AutoScan;
+end;
+
+
+procedure ExtensionControllers_SetAutoScanDelay(ADelay: Integer);
+begin
+  SGE.ExtControllers.AutoScanDelay := ADelay;
+end;
+
+function ExtensionControllers_GetAutoScanDelay: Integer;
+begin
+  Result := SGE.ExtControllers.AutoScanDelay;
+end;
+
+
+function ExtensionControllers_GetCount: Integer;
+begin
+  Result := SGE.ExtControllers.ControllerList.Count;
+end;
+{$EndRegion Controllers}
 
 
 
@@ -130,6 +181,7 @@ begin
   //Добавить переменные
   with SGE.ExtVariables do
     begin
+    //Shell
     AddBoolean('Shell.Enable', False, @ExtensionShell_GetEnable, @ExtensionShell_SetEnable, 'On', 'Off');
     AddColor('Shell.BGColor', sgeGetRGBA(0, 0, 0, 128), @ExtensionShell_GetBGColor, @ExtensionShell_SetBGColor);
     AddColor('Shell.EditorTextColor', sgeGetRGBA(255, 255, 255, 255), @ExtensionShell_GetEditorTextColor, @ExtensionShell_SetEditorTextColor);
@@ -138,8 +190,14 @@ begin
     AddColor('Shell.ErrorColor', sgeGetRGBA(255, 0, 0, 255), @ExtensionShell_GetErrorColor, @ExtensionShell_SetErrorColor);
     AddColor('Shell.TextColor', sgeGetRGBA(255, 255, 255, 255), @ExtensionShell_GetTextColor, @ExtensionShell_SetTextColor);
     AddColor('Shell.NoteColor', sgeGetRGBA(255, 255, 255, 128), @ExtensionShell_GetNoteColor, @ExtensionShell_SetNoteColor);
-    end;
 
+    //Controllers
+    AddBoolean('Controllers.Enable', False, @ExtensionControllers_GetEnable, @ExtensionControllers_SetEnable, 'On', 'Off');
+    AddInteger('Controllers.ScanDelay', 50, @ExtensionControllers_SetScanDelay, @ExtensionControllers_GetScanDelay, 0, 1000);
+    AddBoolean('Controllers.AutoScan', False, @ExtensionControllers_GetAutoScan, @ExtensionControllers_SetAutoScan, 'On', 'Off');
+    AddInteger('Controllers.AutoScanDelay', 50, @ExtensionControllers_SetAutoScanDelay, @ExtensionControllers_GetAutoScanDelay, 1000, 10000);
+    AddInteger('Controllers.Count', 50, nil, @ExtensionControllers_GetCount);
+    end;
 end;
 
 
