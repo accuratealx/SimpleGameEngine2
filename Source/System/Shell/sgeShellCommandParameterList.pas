@@ -16,15 +16,17 @@ interface
 
 uses
   sgeTemplateCollection, sgeShellCommandParameterBase,
-  sgeShellCommandParameterInteger, sgeShellCommandParameterFloat, sgeShellCommandParameterString;
+  sgeShellCommandParameterInteger, sgeShellCommandParameterFloat, sgeShellCommandParameterString,
+  sgeShellCommandParameterEnum;
 
 
 type
   TsgeShellCommandParameterList = class(specialize TsgeTemplateCollection<TsgeShellCommandParameterBase>)
   public
-    procedure AddInteger(Name: ShortString; Required: Boolean = True; PrefixRequired: Boolean = False; PrefixList: String = ''; Separator: String = ',');
-    procedure AddFloat(Name: ShortString; Required: Boolean = True; PrefixRequired: Boolean = False; PrefixList: String = ''; Separator: String = ',');
-    procedure AddString(Name: ShortString; Required: Boolean = True; PrefixRequired: Boolean = False; PrefixList: String = ''; Separator: String = ',');
+    procedure AddInteger(Name: ShortString; Required: Boolean = True; PrefixRequired: Boolean = False; PrefixList: String = ''; PrefixSeparator: String = ',');
+    procedure AddFloat(Name: ShortString; Required: Boolean = True; PrefixRequired: Boolean = False; PrefixList: String = ''; PrefixSeparator: String = ',');
+    procedure AddString(Name: ShortString; Required: Boolean = True; PrefixRequired: Boolean = False; PrefixList: String = ''; PrefixSeparator: String = ',');
+    procedure AddEnum(Name: ShortString; Values: String; Separator: String; Required: Boolean; PrefixRequired: Boolean = False; PrefixList: String = ''; PrefixSeparator: String = ',');
   end;
 
 
@@ -32,21 +34,27 @@ type
 implementation
 
 
-procedure TsgeShellCommandParameterList.AddInteger(Name: ShortString; Required: Boolean; PrefixRequired: Boolean; PrefixList: String; Separator: String);
+procedure TsgeShellCommandParameterList.AddInteger(Name: ShortString; Required: Boolean; PrefixRequired: Boolean; PrefixList: String; PrefixSeparator: String);
 begin
-  Add(TsgeShellCommandParameterInteger.Create(Name, Required, PrefixRequired, PrefixList, Separator));
+  Add(TsgeShellCommandParameterInteger.Create(Name, Required, PrefixRequired, PrefixList, PrefixSeparator));
 end;
 
 
-procedure TsgeShellCommandParameterList.AddFloat(Name: ShortString; Required: Boolean; PrefixRequired: Boolean; PrefixList: String; Separator: String);
+procedure TsgeShellCommandParameterList.AddFloat(Name: ShortString; Required: Boolean; PrefixRequired: Boolean; PrefixList: String; PrefixSeparator: String);
 begin
-  Add(TsgeShellCommandParameterFloat.Create(Name, Required, PrefixRequired, PrefixList, Separator));
+  Add(TsgeShellCommandParameterFloat.Create(Name, Required, PrefixRequired, PrefixList, PrefixSeparator));
 end;
 
 
-procedure TsgeShellCommandParameterList.AddString(Name: ShortString; Required: Boolean; PrefixRequired: Boolean; PrefixList: String; Separator: String);
+procedure TsgeShellCommandParameterList.AddString(Name: ShortString; Required: Boolean; PrefixRequired: Boolean; PrefixList: String; PrefixSeparator: String);
 begin
-  Add(TsgeShellCommandParameterString.Create(Name, Required, PrefixRequired, PrefixList, Separator));
+  Add(TsgeShellCommandParameterString.Create(Name, Required, PrefixRequired, PrefixList, PrefixSeparator));
+end;
+
+
+procedure TsgeShellCommandParameterList.AddEnum(Name: ShortString; Values: String; Separator: String; Required: Boolean; PrefixRequired: Boolean; PrefixList: String; PrefixSeparator: String);
+begin
+  Add(TsgeShellCommandParameterEnum.Create(Name, Values, Separator, Required, PrefixRequired, PrefixList, PrefixSeparator));
 end;
 
 
