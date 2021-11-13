@@ -129,11 +129,8 @@ end;
 
 procedure TsgeGUISpriteButton.Handler_MouseEnter(Mouse: TsgeEventMouse);
 begin
-  if FEnable then
-    begin
-    FButtonState := bsActive;
-    Repaint;
-    end;
+  if FPressed then FButtonState := bsPressed else FButtonState := bsActive;
+  Repaint;
 
   inherited Handler_MouseEnter(Mouse);
 end;
@@ -141,11 +138,8 @@ end;
 
 procedure TsgeGUISpriteButton.Handler_MouseLeave(Mouse: TsgeEventMouse);
 begin
-  if FEnable then
-    begin
-    FButtonState := bsNormal;
-    Repaint;
-    end;
+  FButtonState := bsNormal;
+  Repaint;
 
   inherited Handler_MouseLeave(Mouse);
 end;
@@ -153,30 +147,17 @@ end;
 
 procedure TsgeGUISpriteButton.Handler_MouseDown(Mouse: TsgeEventMouse);
 begin
-  if FEnable then
-    begin
-    //if FPressed then FButtonState := bsPressed else FButtonState := bsActive;
-    FButtonState := bsPressed;
-    Repaint;
-    end;
+  if FPressed then FButtonState := bsPressed;
+  Repaint;
 
   inherited Handler_MouseDown(Mouse);
 end;
 
 
 procedure TsgeGUISpriteButton.Handler_MouseUp(Mouse: TsgeEventMouse);
-
-  function IsMouseInElement: Boolean;
-  begin
-    Result := (Mouse.X >= 0) and (Mouse.X <= FWidth) and (Mouse.Y >= 0) and (Mouse.Y <= FHeight);
-  end;
-
 begin
-  if FEnable then
-    begin
-    if IsMouseInElement then FButtonState := bsActive else FButtonState := bsNormal;
-    Repaint;
-    end;
+  FButtonState := bsActive;
+  Repaint;
 
   inherited Handler_MouseUp(Mouse);
 end;

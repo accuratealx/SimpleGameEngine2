@@ -37,7 +37,7 @@ type
 
 
   //Тип обработчика мыши
-  TsgeGUIElementMouseEventType = (emetDown, emetUp, emetMove, emetEnter, emetLeave, emetScroll, emetDblClick);
+  TsgeGUIElementMouseEventType = (emetDown, emetUp, emetMove, emetScroll, emetEnter, emetLeave, emetDblClick);
 
 
   //Тип обработчика клавиатуры
@@ -71,7 +71,6 @@ type
     FStyle: ShortString;                                            //Имя стиля
 
     //Вспомогательные параметры
-    FEventMouseEntered: Boolean;                                    //Флаг захода мышки на элемент
     FPressed: Boolean;                                              //Флаг нажатия для Click
 
     //Обработчики событий
@@ -105,9 +104,9 @@ type
     procedure Handler_MouseLeave(Mouse: TsgeEventMouse); virtual;
     procedure Handler_MouseEnter(Mouse: TsgeEventMouse); virtual;
     procedure Handler_MouseScroll(Mouse: TsgeEventMouse); virtual;
-    function  Handler_ButtonDown(Keyboard: TsgeEventKeyboard): Boolean; virtual;
-    function  Handler_ButtonUp(Keyboard: TsgeEventKeyboard): Boolean; virtual;
-    function  Handler_ButtonChar(Keyboard: TsgeEventKeyboardChar): Boolean; virtual;
+    procedure Handler_ButtonDown(Keyboard: TsgeEventKeyboard); virtual;
+    procedure Handler_ButtonUp(Keyboard: TsgeEventKeyboard); virtual;
+    procedure Handler_ButtonChar(Keyboard: TsgeEventKeyboardChar); virtual;
 
     //Вспомогательные методы
     procedure GetPrefferedSize(var NewWidth, NewHeight: Integer); virtual;  //Взять предпочтительный размер элемента
@@ -161,8 +160,8 @@ type
     procedure LoadParameters(Params: TsgeSimpleContainer);          //Загрузить параметры
 
     //Вспомогательные методы
-    function  CursorInElement(X, Y: Integer): Boolean;              //Проверить нахождение курсора в элементе
-    function  GetGlobalPos: TsgeIntPoint;                           //Узнать координаты элемента относительно формы
+    function  GetTopParent: TsgeGUIElement;                         //Вернуть родителя верхнего уровня
+    function  GetGlobalPos: TsgeIntPoint;                           //Узнать глобальные координаты элемента
 
     //Параметры
     property Canvas: TsgeGraphicSprite read FCanvas;
@@ -217,7 +216,7 @@ type
 implementation
 
 uses
-  sgeVars, sgeGraphic, sgeMathUtils, sgeGUIUtils;
+  sgeVars, sgeGraphic, sgeGUIUtils;
 
 
 function TsgeGUIElementList.IndexOf(Element: TsgeGUIElement): Integer;
@@ -424,24 +423,21 @@ begin
 end;
 
 
-function TsgeGUIElement.Handler_ButtonDown(Keyboard: TsgeEventKeyboard): Boolean;
+procedure TsgeGUIElement.Handler_ButtonDown(Keyboard: TsgeEventKeyboard);
 begin
-  Result := Assigned(FOnButtonDown);
-  if Result then FOnButtonDown(Self, Keyboard);
+  if Assigned(FOnButtonDown) then FOnButtonDown(Self, Keyboard);
 end;
 
 
-function TsgeGUIElement.Handler_ButtonUp(Keyboard: TsgeEventKeyboard): Boolean;
+procedure TsgeGUIElement.Handler_ButtonUp(Keyboard: TsgeEventKeyboard);
 begin
-  Result := Assigned(FOnButtonUp);
-  if Result then FOnButtonUp(Self, Keyboard);
+  if Assigned(FOnButtonUp) then FOnButtonUp(Self, Keyboard);
 end;
 
 
-function TsgeGUIElement.Handler_ButtonChar(Keyboard: TsgeEventKeyboardChar): Boolean;
+procedure TsgeGUIElement.Handler_ButtonChar(Keyboard: TsgeEventKeyboardChar);
 begin
-  Result := Assigned(FOnButtonChar);
-  if Result then FOnButtonChar(Self, Keyboard);
+  if Assigned(FOnButtonChar) then FOnButtonChar(Self, Keyboard);
 end;
 
 
@@ -774,7 +770,7 @@ begin
   Include(FState, esLockUpdate);
 
   //Отключить захват мыши
-  SGE.ExtGUI.ReleaseMouse(Self);
+  //SGE.ExtGUI.ReleaseMouse(Self);
 
   //Убрать фокус с элемента
   SGE.ExtGUI.LostFocus(Self);
@@ -825,176 +821,81 @@ end;
 
 function TsgeGUIElement.MouseHandler(EventType: TsgeGUIElementMouseEventType; Mouse: TsgeEventMouse): Boolean;
 
-  function IsMouseInElement: Boolean;
+  function PointInElement(Pt: TsgeIntPoint): Boolean;
   begin
-    Result := (Mouse.X >= 0) and (Mouse.X <= FWidth) and (Mouse.Y >= 0) and (Mouse.Y <= FHeight);
+    Result := (Pt.X >= 0) and (Pt.X <= FWidth) and (Pt.Y >= 0) and (Pt.Y <= FHeight);
   end;
 
-var
-  i: Integer;
-  El: TsgeGUIElement;
-  ChildHandled: Boolean;
-  MouseChild: TsgeEventMouse;
 begin
   Result := False;
-
-  if not FVisible then Exit;
-  if not FEnable then Exit;
-
+  if not FVisible or not FEnable then Exit;
   Result := True;
 
-  //Обработать тип события
+  //Обработать событие
   case EventType of
-    emetDown, emetUp, emetScroll, emetDblClick:
+    emetDown:
       begin
-      ChildHandled := False;
-
-      MouseChild := TsgeEventMouse.Create('', Mouse.X, Mouse.Y, Mouse.MouseButtons, Mouse.KeyboardButtons, Mouse.Delta);
-
-      //Проверить детей
-      for i := 0 to FChildList.Count - 1 do
+      if PointInElement(Mouse.Pos) then
         begin
-        El := FChildList.Item[i];
-
-        MouseChild.ChangeXY(Mouse.X - El.Left, Mouse.Y - El.Top);
-
-        if El.CursorInElement(Mouse.X, Mouse.Y) then
+        //Запомнить флаг нажатия, если нужная кнопка
+        if FClickButton in Mouse.MouseButtons then
           begin
-          El.MouseHandler(EventType, Mouse);
-          ChildHandled := True;
-          Break;
+          FPressed := True;
+          SGE.ExtGUI.MouseCapture(Self);
           end;
-        end;
 
-      MouseChild.Free;
+        //Обработчик нажатия мыши
+        Handler_MouseDown(Mouse);
 
-
-      //Собственный обработчик если не выполнился у дочернего элемента
-      if not ChildHandled then
-        case EventType of
-          emetDown:
-            begin
-            //Установить фокус ввода
-            SGE.ExtGUI.SetFocus(Self);
-
-            if FClickButton in Mouse.MouseButtons then
-              begin
-              FPressed := True;
-              SGE.ExtGUI.MouseCapture(Self);
-              end;
-
-            Handler_MouseDown(Mouse);
-            end;
-
-          emetUp:
-            begin
-            //Проверить событие MouseClick
-            if FPressed and IsMouseInElement then
-              begin
-              FPressed := False;
-              Handler_MouseClick(Mouse);
-              end;
-
-            SGE.ExtGUI.ReleaseMouse;
-
-            Handler_MouseUp(Mouse);
-            end;
-
-          emetScroll:
-            Handler_MouseScroll(Mouse);
-
-          emetDblClick:
-            begin
-            SGE.ExtGUI.SetFocus(Self);                              //Установить фокус ввода
-            Handler_MouseDoubleClick(Mouse);
-            end;
+        //Установить фокус ввода
+        SGE.ExtGUI.SetFocus(Self);
         end;
       end;
 
+    emetUp:
+      begin
+      if PointInElement(Mouse.Pos) then
+        begin
+        //Событие OnClick
+        if FPressed then Handler_MouseClick(Mouse);
+
+        //Обработчик отпускания мыши
+        Handler_MouseUp(Mouse);
+        end;
+
+      //Сбросить флаг нажатия
+      FPressed := False;
+      SGE.ExtGUI.ReleaseMouse(Self);
+      end;
 
     emetMove:
-      begin
-      MouseChild := TsgeEventMouse.Create('', Mouse.X, Mouse.Y, Mouse.MouseButtons, Mouse.KeyboardButtons, Mouse.Delta);
+       Handler_MouseMove(Mouse);
 
-      //Проверить заход и уход мыши с элементов
-      for i := 0 to FChildList.Count - 1 do
-        begin
-        El := FChildList.Item[i];
+    emetScroll:
+      Handler_MouseScroll(Mouse);
 
-        MouseChild.ChangeXY(Mouse.X - El.Left, Mouse.Y - El.Top);
-
-        if El.CursorInElement(Mouse.X, Mouse.Y) then
-          begin
-            //Заход мыши
-            if not TsgeGUIElement(El).FEventMouseEntered then
-              begin
-              TsgeGUIElement(El).FEventMouseEntered := True;
-              El.MouseHandler(emetEnter, MouseChild);
-              end;
-          end
-          else begin
-            //Выход мыши
-            if TsgeGUIElement(El).FEventMouseEntered then
-              begin
-              TsgeGUIElement(El).FEventMouseEntered := False;
-              El.MouseHandler(emetLeave, MouseChild);
-              end;
-            end;
-          end;  //For
-
-      MouseChild.Free;
-
-
-      //Проверить дочерние элементы
-      ChildHandled := False;
-      for i := 0 to FChildList.Count - 1 do
-        begin
-        El := FChildList.Item[i];
-
-        if El.CursorInElement(Mouse.X, Mouse.Y) then
-          begin
-          Mouse.ChangeXY(Mouse.X - El.Left, Mouse.Y - El.Top);
-          El.MouseHandler(emetMove, Mouse);
-          ChildHandled := True;
-          //Break;
-          end;
-        end;
-
-      //Собственный обработчик если не выполнился у дочернего элемента
-      if not ChildHandled then Handler_MouseMove(Mouse);
-      end;
-
-
-    emetEnter:
-      begin
-      Handler_MouseEnter(Mouse);
-      MouseHandler(emetMove, Mouse);
-      end;
-
+    emetDblClick:
+      Handler_MouseDoubleClick(Mouse);
 
     emetLeave:
-      begin
       Handler_MouseLeave(Mouse);
-      MouseHandler(emetMove, Mouse);
-      end;
 
-  end;  //case
+    emetEnter:
+      Handler_MouseEnter(Mouse);
+  end;
 end;
 
 
 function TsgeGUIElement.ButtonHandler(EventType: TsgeGUIElementButtonEventType; Keyboard: TsgeEventBase): Boolean;
 begin
   Result := False;
-
-  if not FVisible then Exit;
-  if not FEnable then Exit;
-
+  if not FVisible or not FEnable then Exit;
   Result := True;
 
   case EventType of
-    ebetDown: Result := Handler_ButtonDown(TsgeEventKeyboard(Keyboard));
-    ebetUp  : Result := Handler_ButtonUp(TsgeEventKeyboard(Keyboard));
-    ebetChar: Result := Handler_ButtonChar(TsgeEventKeyboardChar(Keyboard));
+    ebetDown: Handler_ButtonDown(TsgeEventKeyboard(Keyboard));
+    ebetUp  : Handler_ButtonUp(TsgeEventKeyboard(Keyboard));
+    ebetChar: Handler_ButtonChar(TsgeEventKeyboardChar(Keyboard));
   end;
 end;
 
@@ -1070,12 +971,12 @@ begin
 end;
 
 
-function TsgeGUIElement.CursorInElement(X, Y: Integer): Boolean;
+function TsgeGUIElement.GetTopParent: TsgeGUIElement;
 begin
-  if FParent = nil then
-    Result := (X >= FLeft) and (X <= FLeft + FWidth) and (Y >= FTop) and (Y <= FTop + FHeight)
-      else Result := (X >= sgeMax(0, FLeft)) and (X <= sgeMin(FParent.Width,  FLeft + FWidth)) and
-                     (Y >= sgeMax(0, FTop)) and (Y <= sgeMin(FParent.Height, FTop + FHeight));
+  Result := Self;
+
+  if FParent <> nil then
+    Result := FParent.GetTopParent;
 end;
 
 
@@ -1097,4 +998,5 @@ end;
 
 
 end.
+
 
