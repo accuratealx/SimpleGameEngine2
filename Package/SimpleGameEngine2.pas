@@ -45,7 +45,7 @@ uses
   sgeKeyCommandTypes, sgeKeyCommandJoystickPadInfo, 
   sgeKeyCommandJoystickAxisTiltInfo, sgeGraphicElementSpriteCashed, 
   sgeShellCommandParameterBase, sgeShellCommandParameterString, 
-  sgeShellCommandParameterList, sgeShellCommandParameterInteger, 
+  sgeShellCommandParameterList, sgeShellCommandParameterEnum, 
   sgeShellCommandParameterFloat, sgeShellCommand_System_ReadLn, 
   sgeShellCommands, sgeShellCommand_System_ReadKey, 
   sgeShellCommand_Variable_Clear, sgeShellCommand_Dialog_Message, 

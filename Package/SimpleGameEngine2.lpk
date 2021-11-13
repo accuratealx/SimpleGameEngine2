@@ -533,8 +533,8 @@
         <UnitName Value="sgeShellCommandParameterList"/>
       </Item129>
       <Item130>
-        <Filename Value="..\Source\System\Shell\sgeShellCommandParameterInteger.pas"/>
-        <UnitName Value="sgeShellCommandParameterInteger"/>
+        <Filename Value="..\Source\System\Shell\sgeShellCommandParameterEnum.pas"/>
+        <UnitName Value="sgeShellCommandParameterEnum"/>
       </Item130>
       <Item131>
         <Filename Value="..\Source\System\Shell\sgeShellCommandParameterFloat.pas"/>
