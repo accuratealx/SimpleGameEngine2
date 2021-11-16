@@ -75,7 +75,7 @@ uses
   sgeMusicPlayerTaskVolume, sgeVariableBooleanClass, sgeVariableColorClass, 
   sgeVariableEnumProc, sgeVariableIntegerClass, sgeVariableSingleClass, 
   sgeVariableStringBase, sgeVariableStringClass, sgeVariableStringNormal, 
-  sgeVariableEnumClass, sgeEventGraphic;
+  sgeVariableEnumClass, sgeEventGraphic, sgeGUIToggleSpriteButton;
 
 implementation
 

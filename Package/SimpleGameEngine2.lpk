@@ -15,7 +15,7 @@
     </CompilerOptions>
     <Description Value="Simple Game Engine 2"/>
     <Version Major="1"/>
-    <Files Count="218">
+    <Files Count="219">
       <Item1>
         <Filename Value="..\Source\ThirdParty\GDIPlus\GDIPAPI.pas"/>
         <UnitName Value="GDIPAPI"/>
@@ -893,6 +893,10 @@
         <Filename Value="..\Source\System\Events\sgeEventGraphic.pas"/>
         <UnitName Value="sgeEventGraphic"/>
       </Item218>
+      <Item219>
+        <Filename Value="..\Source\System\GUI\Components\sgeGUIToggleSpriteButton.pas"/>
+        <UnitName Value="sgeGUIToggleSpriteButton"/>
+      </Item219>
     </Files>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)"/>
