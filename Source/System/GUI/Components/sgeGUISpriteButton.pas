@@ -37,9 +37,14 @@ type
 
     function GetOffset: TsgeGUIPropertySegmentOffset;
   protected
+    FColCount: Word;
+
+    function GetColSpriteIndex: Word; virtual;
+
     class function GetParameterSectionName: String; override;
     procedure LoadData(Data: TsgeSimpleParameters); override;
     procedure DrawBefore; override;
+    procedure SetEnable(AEnabled: Boolean); override;
 
     procedure Handler_MouseEnter(Mouse: TsgeEventMouse); override;
     procedure Handler_MouseLeave(Mouse: TsgeEventMouse); override;
@@ -77,6 +82,12 @@ end;
 function TsgeGUISpriteButton.GetOffset: TsgeGUIPropertySegmentOffset;
 begin
   Result := FOffset;
+end;
+
+
+function TsgeGUISpriteButton.GetColSpriteIndex: Word;
+begin
+  Result := 0;
 end;
 
 
@@ -120,10 +131,18 @@ begin
   DrawOpt.Rect.Y2 := FHeight;
 
   //Поправить область вывода спрайта
-  DrawOpt.SpriteRect := sgeGetTextureTileRect(1, 4, 0, Ord(FButtonState));
+  DrawOpt.SpriteRect := sgeGetTextureTileRect(FColCount, 4, GetColSpriteIndex, Ord(FButtonState));
 
   //Вывод спрайта
   SGE.ExtGraphic.Graphic.DrawSpriteSegment(DrawOpt, FOffset.Rect);
+end;
+
+
+procedure TsgeGUISpriteButton.SetEnable(AEnabled: Boolean);
+begin
+  if AEnabled then FButtonState := bsNormal else FButtonState := bsDisable;
+
+  inherited SetEnable(AEnabled);
 end;
 
 
@@ -172,6 +191,7 @@ begin
   FSprite := SGE.ExtResourceList.Default.Sprite;
 
   FButtonState := bsNormal;
+  FColCount := 1;
 
   Repaint;
 end;
