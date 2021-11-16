@@ -217,12 +217,11 @@ begin
   //Передавать событие
   Result := False;
 
-  //Найти элемент для передачи события
-  if FCapturedElement <> nil then Element := FCapturedElement
-    else Element := ElementAtCursor(Mouse.X, Mouse.Y);
-
   //Сохранить координаты мыши
   MousePoint := Mouse.Pos;
+
+  //Узнать элемент под курсором
+  Element := ElementAtCursor(Mouse.X, Mouse.Y);
 
   //Проверить событие MouseEnter, MouseLeave
   if EventType = emetMove then
@@ -245,13 +244,22 @@ begin
         Element.MouseHandler(emetEnter, Mouse);
         end;
       end;
+
+    //Запомнить последний элемент под курсором
+    FLastElementAtCursor := Element;
     end;
 
-  //Запомнить последний элемент под курсором
-  FLastElementAtCursor := Element;
+  //Если монопольный захват событи мыши, то поправить
+  if FCapturedElement <> nil then
+    Element := FCapturedElement;
 
   //Проверить что элемент найден
-  if Element = nil then Exit;
+  if Element = nil then
+    begin
+    //Если нажали вне GUI формы, то сбросить фокус ввода
+    if EventType = emetDown then SetFocus(nil);
+    Exit;
+    end;
 
   //Если элемент найден, то подавить событие
   Result := True;

@@ -152,7 +152,7 @@ type
     destructor  Destroy; override;
 
     //Обработчики событий
-    function  MouseHandler(EventType: TsgeGUIElementMouseEventType; Mouse: TsgeEventMouse): Boolean; virtual;
+    procedure MouseHandler(EventType: TsgeGUIElementMouseEventType; Mouse: TsgeEventMouse); virtual;
     function  ButtonHandler(EventType: TsgeGUIElementButtonEventType; Keyboard: TsgeEventBase): Boolean; virtual;
 
     procedure Repaint;
@@ -241,7 +241,7 @@ var
   Idx: Integer;
 begin
   Idx := IndexOf(Element);
-  if Idx <> -1 then inherited Delete(Idx);
+  if Idx <> -1 then Delete(Idx);
 end;
 
 
@@ -292,6 +292,10 @@ begin
   if FEnable = AEnabled then Exit;
 
   FEnable := AEnabled;
+
+  //Если элемент неактивен, то убрать монопольный захват мыши
+  if not FEnable then SGE.ExtGUI.ReleaseMouse(Self);
+
   Repaint;
 end;
 
@@ -770,7 +774,7 @@ begin
   Include(FState, esLockUpdate);
 
   //Отключить захват мыши
-  //SGE.ExtGUI.ReleaseMouse(Self);
+  SGE.ExtGUI.ReleaseMouse(Self);
 
   //Убрать фокус с элемента
   SGE.ExtGUI.LostFocus(Self);
@@ -819,7 +823,7 @@ begin
 end;
 
 
-function TsgeGUIElement.MouseHandler(EventType: TsgeGUIElementMouseEventType; Mouse: TsgeEventMouse): Boolean;
+procedure TsgeGUIElement.MouseHandler(EventType: TsgeGUIElementMouseEventType; Mouse: TsgeEventMouse);
 
   function PointInElement(Pt: TsgeIntPoint): Boolean;
   begin
@@ -827,9 +831,8 @@ function TsgeGUIElement.MouseHandler(EventType: TsgeGUIElementMouseEventType; Mo
   end;
 
 begin
-  Result := False;
+  //Если неактивен, то выход
   if not FVisible or not FEnable then Exit;
-  Result := True;
 
   //Обработать событие
   case EventType of
@@ -875,7 +878,7 @@ begin
       Handler_MouseScroll(Mouse);
 
     emetDblClick:
-      Handler_MouseDoubleClick(Mouse);
+      if PointInElement(Mouse.Pos) then Handler_MouseDoubleClick(Mouse);
 
     emetLeave:
       Handler_MouseLeave(Mouse);
