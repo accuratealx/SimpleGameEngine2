@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeVariables.pas
-Версия            1.0
+Версия            1.1
 Создан            24.08.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Методы виртуальных переменных
@@ -21,7 +21,8 @@ procedure sgeVariables_Init(SGEObject: TObject);
 implementation
 
 uses
-  SimpleGameEngine, sgeGraphicColor;
+  SimpleGameEngine, sgeGraphicColor,
+  sgeExtensionMusicPlayer;
 
 
 var
@@ -170,6 +171,99 @@ end;
 {$EndRegion Controllers}
 
 
+{$Region Sound}
+procedure ExtensionSound_SetVolume(AVolume: Single);
+begin
+  SGE.ExtSound.Sound.Gain := AVolume;
+end;
+
+function ExtensionSound_GetVolume: Single;
+begin
+  Result := SGE.ExtSound.Sound.Gain;
+end;
+{$EndRegion Sound}
+
+
+{$Region Music}
+procedure ExtensionMusic_SetVolume(AVolume: Single);
+begin
+  SGE.ExtMusicPlayer.Volume := AVolume;
+end;
+
+function ExtensionMusic_GetVolume: Single;
+begin
+  Result := SGE.ExtMusicPlayer.Volume;
+end;
+
+
+procedure ExtensionMusic_SetFadeTime(AFadeTime: Integer);
+begin
+  SGE.ExtMusicPlayer.FadeTime := AFadeTime;
+end;
+
+function ExtensionMusic_GetFadeTime: Integer;
+begin
+  Result := SGE.ExtMusicPlayer.FadeTime;
+end;
+
+
+procedure ExtensionMusic_SetChangeMode(AChangeMode: String);
+var
+  Cm: TsgeExtensionMusicPlayerChangeMode;
+begin
+  case AChangeMode of
+    'Random'  : Cm := cmRandom;
+    'Forward' : Cm := cmForward;
+    'Backward': Cm := cmBackward;
+  end;
+
+  SGE.ExtMusicPlayer.ChangeMode := Cm;
+end;
+
+function ExtensionMusic_GetChangeMode: String;
+begin
+  case SGE.ExtMusicPlayer.ChangeMode of
+    cmRandom  : Result := 'Random';
+    cmForward : Result := 'Forward';
+    cmBackward: Result := 'Backward';
+  end;
+end;
+
+
+procedure ExtensionMusic_SetRepeatMode(ARepeatMode: String);
+var
+  Rm: TsgeExtensionMusicPlayerRepeatMode;
+begin
+  case ARepeatMode of
+    'None'  : Rm := rmNone;
+    'Track' : Rm := rmTrack;
+    'List'  : Rm := rmList;
+  end;
+
+  SGE.ExtMusicPlayer.RepeatMode:= Rm;
+end;
+
+function ExtensionMusic_GetRepeatMode: String;
+begin
+  case SGE.ExtMusicPlayer.RepeatMode of
+    rmNone  : Result := 'None';
+    rmTrack : Result := 'Track';
+    rmList  : Result := 'List';
+  end;
+end;
+
+
+procedure ExtensionMusic_SetGroup(AGroup: String);
+begin
+  SGE.ExtMusicPlayer.Group := AGroup;
+end;
+
+function ExtensionMusic_GetGroup: String;
+begin
+  Result := SGE.ExtMusicPlayer.Group;
+end;
+{$EndRegion Music}
+
 
 
 //////////////////////////////////////////////////
@@ -193,10 +287,23 @@ begin
 
     //Controllers
     AddBoolean('Controllers.Enable', False, @ExtensionControllers_GetEnable, @ExtensionControllers_SetEnable, 'On', 'Off');
-    AddInteger('Controllers.ScanDelay', 50, @ExtensionControllers_SetScanDelay, @ExtensionControllers_GetScanDelay, 0, 1000);
+    AddInteger('Controllers.ScanDelay', 50, @ExtensionControllers_GetScanDelay, @ExtensionControllers_SetScanDelay, 0, 1000);
     AddBoolean('Controllers.AutoScan', False, @ExtensionControllers_GetAutoScan, @ExtensionControllers_SetAutoScan, 'On', 'Off');
-    AddInteger('Controllers.AutoScanDelay', 50, @ExtensionControllers_SetAutoScanDelay, @ExtensionControllers_GetAutoScanDelay, 1000, 10000);
-    AddInteger('Controllers.Count', 50, nil, @ExtensionControllers_GetCount);
+    AddInteger('Controllers.AutoScanDelay', 50, @ExtensionControllers_GetAutoScanDelay, @ExtensionControllers_SetAutoScanDelay, 1000, 10000);
+    AddInteger('Controllers.Count', 50, @ExtensionControllers_GetCount, nil);
+
+    if SGE.ExtSound <> nil then
+      begin
+      //Sound
+      AddSingle('Sound.Volume', 0.5, @ExtensionSound_GetVolume, @ExtensionSound_SetVolume, 0, 1);
+
+      //Music
+      AddSingle('Music.Volume', 0.5, @ExtensionMusic_GetVolume, @ExtensionMusic_SetVolume, 0, 1);
+      AddInteger('Music.FadeTime', 3000, @ExtensionMusic_GetFadeTime, @ExtensionMusic_SetFadeTime, 0, $FF);
+      AddEnum('Music.ChangeMode', 'Random, Forward, Backward', ',', 0, @ExtensionMusic_GetChangeMode, @ExtensionMusic_SetChangeMode);
+      AddEnum('Music.RepeatMode', 'None, Track, List', ',', 2, @ExtensionMusic_GetRepeatMode, @ExtensionMusic_SetRepeatMode);
+      AddString('Music.Group', '', @ExtensionMusic_GetGroup, @ExtensionMusic_SetGroup);
+      end;
     end;
 end;
 
