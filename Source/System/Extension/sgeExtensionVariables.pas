@@ -45,8 +45,8 @@ type
     //Добавление новых переменных
     //Integer
     function AddInteger(Name: ShortString; Value: Integer; DefValue: Integer; ReadOnly: Boolean = False; MinValue: Integer = -MaxInt; MaxValue: Integer = MaxInt): TsgeVariableIntegerNormal;
-    function AddInteger(Name: ShortString; DefValue: Integer; Setter: TsgeVariableIntegerClassSetter; Getter: TsgeVariableIntegerClassGetter; MinValue: Integer = -MaxInt; MaxValue: Integer = MaxInt): TsgeVariableIntegerClass;
-    function AddInteger(Name: ShortString; DefValue: Integer; Setter: TsgeVariableIntegerProcSetter; Getter: TsgeVariableIntegerProcGetter; MinValue: Integer = -MaxInt; MaxValue: Integer = MaxInt): TsgeVariableIntegerProc;
+    function AddInteger(Name: ShortString; DefValue: Integer; Getter: TsgeVariableIntegerClassGetter; Setter: TsgeVariableIntegerClassSetter; MinValue: Integer = -MaxInt; MaxValue: Integer = MaxInt): TsgeVariableIntegerClass;
+    function AddInteger(Name: ShortString; DefValue: Integer; Getter: TsgeVariableIntegerProcGetter; Setter: TsgeVariableIntegerProcSetter; MinValue: Integer = -MaxInt; MaxValue: Integer = MaxInt): TsgeVariableIntegerProc;
 
     //Single
     function AddSingle(Name: ShortString; Value: Single; DefValue: Single; ReadOnly: Boolean = False; MinValue: single = 1.5E-45; MaxValue: single = 3.4E38): TsgeVariableSingleNormal;
@@ -147,7 +147,7 @@ begin
 end;
 
 
-function TsgeExtensionVariables.AddInteger(Name: ShortString; DefValue: Integer; Setter: TsgeVariableIntegerClassSetter; Getter: TsgeVariableIntegerClassGetter; MinValue: Integer; MaxValue: Integer): TsgeVariableIntegerClass;
+function TsgeExtensionVariables.AddInteger(Name: ShortString; DefValue: Integer; Getter: TsgeVariableIntegerClassGetter; Setter: TsgeVariableIntegerClassSetter; MinValue: Integer; MaxValue: Integer): TsgeVariableIntegerClass;
 begin
   //Проверить на существование
   CheckVariableExist(Name);
@@ -158,7 +158,7 @@ begin
 end;
 
 
-function TsgeExtensionVariables.AddInteger(Name: ShortString; DefValue: Integer; Setter: TsgeVariableIntegerProcSetter; Getter: TsgeVariableIntegerProcGetter; MinValue: Integer; MaxValue: Integer): TsgeVariableIntegerProc;
+function TsgeExtensionVariables.AddInteger(Name: ShortString; DefValue: Integer; Getter: TsgeVariableIntegerProcGetter; Setter: TsgeVariableIntegerProcSetter; MinValue: Integer; MaxValue: Integer): TsgeVariableIntegerProc;
 begin
   //Проверить на существование
   CheckVariableExist(Name);
