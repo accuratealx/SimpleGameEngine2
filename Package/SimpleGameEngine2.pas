@@ -61,7 +61,7 @@ uses
   sgeShellCommand_System_Run, sgeShellCommandsUtils, 
   sgeShellCommand_System_Call, sgeShellCommand_Script_Clear, 
   sgeExtensionTimeEvent, sgeShellCommand_Script_Delete, 
-  sgeShellCommand_System_Stop, sgeTimeEventList, sgeGUIElement, sgeGUIForm, 
+  sgeShellCommand_Music_Random, sgeTimeEventList, sgeGUIElement, sgeGUIForm, 
   sgeGUIFormList, sgeVars, sgeEventMusicPlayer, sgeEventKeyboard, 
   sgeEventMouse, sgeGUIPropertySegmentOffset, sgeGUIPropertyIntRect, 
   sgeGUIPropertyFloatRect, sgeGUIPropertyFloatPoint, sgeGUIPropertyColor, 
@@ -75,7 +75,10 @@ uses
   sgeMusicPlayerTaskVolume, sgeVariableBooleanClass, sgeVariableColorClass, 
   sgeVariableEnumProc, sgeVariableIntegerClass, sgeVariableSingleClass, 
   sgeVariableStringBase, sgeVariableStringClass, sgeVariableStringNormal, 
-  sgeVariableEnumClass, sgeEventGraphic, sgeGUIToggleSpriteButton;
+  sgeVariableEnumClass, sgeEventGraphic, sgeGUIToggleSpriteButton, 
+  sgeShellCommand_Music_Next, sgeShellCommand_Music_Play, 
+  sgeShellCommand_Music_Prev, sgeShellCommand_Music_Stop, 
+  sgeShellCommand_System_Stop;
 
 implementation
 
