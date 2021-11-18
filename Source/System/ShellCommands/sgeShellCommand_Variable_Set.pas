@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeShellCommand_Variable_Set.pas
-Версия            1.0
+Версия            1.1
 Создан            31.07.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Команда одолочки
@@ -43,6 +43,10 @@ implementation
 uses
   SimpleGameEngine, sgeErrors;
 
+const
+  _UNITNAME = 'ShellCommand_Variable_Set';
+
+  Err_CantChangeValue = 'CantChangeValue';
 
 
 constructor TsgeShellCommand_Variable_Set.Create(SGEObject: TObject);
@@ -64,7 +68,8 @@ begin
   try
     SGE.ExtVariables.SetString(Command.Part[1], Command.Part[2]);
   except
-    Result := sgeCreateErrorString(_UNITNAME, Err_VariableIsReadOnly, Command.Part[1]);
+    on E: EsgeException do
+      Result := sgeCreateErrorString(_UNITNAME, Err_CantChangeValue, Command.Part[1], E.Message);
   end;
 end;
 
