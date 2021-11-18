@@ -20,6 +20,7 @@ uses
 const
   //Группы
   Group_System    = 'System';
+  Group_Music     = 'Music';
   Group_Shell     = 'Shell';
   Group_Variables = 'Variable';
   Group_Script    = 'Script';
@@ -29,6 +30,7 @@ const
   _UNITNAME = 'ShellCommand';
 
   Err_VariableIsReadOnly = 'VariableIsReadOnly';
+  Err_CantPlayMusic = 'CantPlayMusic';
 
 
 type
