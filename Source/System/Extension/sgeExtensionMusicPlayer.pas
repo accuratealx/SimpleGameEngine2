@@ -46,7 +46,7 @@ type
 
     //Параметры
     FChangeMode: TsgeExtensionMusicPlayerChangeMode;                //Режим смены дорожек
-    FRepeatmode: TsgeExtensionMusicPlayerRepeatMode;                //Режим повторения
+    FRepeatMode: TsgeExtensionMusicPlayerRepeatMode;                //Режим повторения
     FGroup: String;                                                 //Текущая группа
 
     //Вспомогательные параметры
@@ -88,7 +88,7 @@ type
 
     property Volume: Single read FVolume write SetVolume;
     property ChangeMode: TsgeExtensionMusicPlayerChangeMode read FChangeMode write FChangeMode;
-    property Repeatmode: TsgeExtensionMusicPlayerRepeatMode read FRepeatmode write FRepeatmode;
+    property RepeatMode: TsgeExtensionMusicPlayerRepeatMode read FRepeatMode write FRepeatMode;
     property Group: String read FGroup write FGroup;
     property FadeTime: Word read FFadeTime write SetFadeTime;
     property State: TsgeExtensionMusicPlayerSate read GetState;
@@ -144,14 +144,14 @@ begin
         Stop;
 
         //Проверить режим проигрывания
-        if FRepeatmode <> rmNone then
+        if FRepeatMode <> rmNone then
           begin
           //Текуший трек
-          if FRepeatmode = rmTrack then
+          if FRepeatMode = rmTrack then
             Track := FTrackList.CurrentTrack;
 
           //Список
-          if FRepeatmode = rmList then
+          if FRepeatMode = rmList then
             Track := GetNextTrackByMode;
 
           //Проверить дорожку
@@ -245,12 +245,12 @@ begin
     //Установить параметры
     FVolume := 0.5;
     FChangeMode := cmRandom;
-    FRepeatmode := rmList;
+    FRepeatMode := rmList;
     FThreadDelay := 10;
     FGroup := '';
 
     //Задать время затухания
-    SetFadeTime(5000);
+    SetFadeTime(3000);
 
     //Установить метод потока
     FThread.LoopProc := @ThreadProc;
@@ -288,10 +288,7 @@ procedure TsgeExtensionMusicPlayer.Play(Track: TsgeMusicPlayerTrack);
 begin
   //Проверить дорожку
   if Track = nil then
-    begin
-    ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_TrackIsEmpty, FGroup));
-    Exit;
-    end;
+    raise EsgeException.Create(_UNITNAME, Err_TrackIsEmpty, FGroup);
 
   //Если проигрыватель играет, то остановить
   if GetState = psPlay then Stop;
@@ -311,10 +308,7 @@ begin
 
   //Проверить индекс
   if Idx = -1 then
-    begin
-    ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_TrackNotFound, TrackName));
-    Exit;
-    end;
+    raise  EsgeException.Create(_UNITNAME, Err_TrackNotFound, TrackName);
 
   //Ссылка на дорожку
   Track := FTrackList.Item[Idx];
