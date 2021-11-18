@@ -69,7 +69,7 @@ begin
   if Idx = -1 then
     raise EsgeException.Create(_UNITNAME, Err_UnknownValue, AValue);
 
-  FSetter(AValue);
+  FSetter(FList.Part[Idx]);
 end;
 
 
