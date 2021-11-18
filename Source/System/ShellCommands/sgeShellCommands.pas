@@ -21,6 +21,9 @@ procedure sgeShellCommands_Init(SGEObject: TObject);
 implementation
 
 uses
+  SimpleGameEngine,
+
+  //Shell
   sgeShellCommand_System_Stop,
   sgeShellCommand_System_Read,
   sgeShellCommand_System_ReadLn,
@@ -36,20 +39,31 @@ uses
   sgeShellCommand_System_Run,
   sgeShellCommand_System_Call,
 
+  //Variable
   sgeShellCommand_Variable_Set,
   sgeShellCommand_Variable_Delete,
   sgeShellCommand_Variable_Clear,
 
+  //Script
   sgeShellCommand_Script_Load,
   sgeShellCommand_Script_Delete,
   sgeShellCommand_Script_Clear,
 
+  //Music
+  sgeShellCommand_Music_Play,
+  sgeShellCommand_Music_Stop,
+  sgeShellCommand_Music_Next,
+  sgeShellCommand_Music_Prev,
+  sgeShellCommand_Music_Random,
+
+  //WinDialogs
   sgeShellCommand_Dialog_Message;
 
 
 
 procedure sgeShellCommands_Init(SGEObject: TObject);
 begin
+  //System
   TsgeShellCommand_System_Stop.Create(SGEObject);
   TsgeShellCommand_System_Read.Create(SGEObject);
   TsgeShellCommand_System_ReadLn.Create(SGEObject);
@@ -65,14 +79,27 @@ begin
   TsgeShellCommand_System_Run.Create(SGEObject);
   TsgeShellCommand_System_Call.Create(SGEObject);
 
+  //Variables
   TsgeShellCommand_Variable_Set.Create(SGEObject);
   TsgeShellCommand_Variable_Delete.Create(SGEObject);
   TsgeShellCommand_Variable_Clear.Create(SGEObject);
 
+  //Script
   TsgeShellCommand_Script_Load.Create(SGEObject);
   TsgeShellCommand_Script_Delete.Create(SGEObject);
   TsgeShellCommand_Script_Clear.Create(SGEObject);
 
+  //Music
+  if TSimpleGameEngine(SGEObject).ExtMusicPlayer <> nil then
+    begin
+    TsgeShellCommand_Music_Play.Create(SGEObject);
+    TsgeShellCommand_Music_Stop.Create(SGEObject);
+    TsgeShellCommand_Music_Next.Create(SGEObject);
+    TsgeShellCommand_Music_Prev.Create(SGEObject);
+    TsgeShellCommand_Music_Random.Create(SGEObject);
+    end;
+
+  //WinDialogs
   TsgeShellCommand_Dialog_Message.Create(SGEObject);
 end;
 
