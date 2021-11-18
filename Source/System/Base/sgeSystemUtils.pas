@@ -175,7 +175,10 @@ end;
 
 
 
-
+initialization
+begin
+  SysUtils.DefaultFormatSettings.DecimalSeparator:= '.';
+end;
 
 
 end.
