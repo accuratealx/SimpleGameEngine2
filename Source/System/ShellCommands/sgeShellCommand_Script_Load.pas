@@ -46,7 +46,6 @@ uses
 const
   _UNITNAME = 'ShellCommand_Script_Load';
 
-  //Err_ScriptExist   = 'ScriptExist';
   Err_FileNotFound  = 'FileNotFound';
   Err_CantReadFile  = 'CantReadFile';
   Err_CantLoadFile  = 'CantLoadFile';
