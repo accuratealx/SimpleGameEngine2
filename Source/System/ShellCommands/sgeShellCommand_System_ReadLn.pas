@@ -41,7 +41,7 @@ uses
   SimpleGameEngine, sgeSystemUtils, sgeExtensionShell;
 
 type
-  TsgeExtensionShellHack = class(TsgeExtensionShell);
+  TsgeExtensionShellExt = class(TsgeExtensionShell);
 
 
 constructor TsgeShellCommand_System_ReadLn.Create(SGEObject: TObject);
@@ -61,13 +61,13 @@ begin
   SGE := TSimpleGameEngine(FSGE);
 
   //Изменить флажок в оболочке, что бы при вводе поднять флаг события
-  TsgeExtensionShellHack(SGE.ExtShell).FreadLnMode := True;
+  TsgeExtensionShellExt(SGE.ExtShell).FreadLnMode := True;
 
   //Перерисовать оболочку
-  TsgeExtensionShellHack(SGE.ExtShell).RepaintThread;
+  RepaintShell;
 
   //Ждать пока пользователь не нажмет на Enter
-  TsgeExtensionShellHack(SGE.ExtShell).FEvent.Wait;
+  TsgeExtensionShellExt(SGE.ExtShell).FEvent.Wait;
 
   //Определить нужно ли записывать значение в переменную
   if Command.Count > 1 then
@@ -86,7 +86,7 @@ begin
   SGE.ExtShell.Editor.Line := '';
 
   //Перерисовать оболочку
-  TsgeExtensionShellHack(SGE.ExtShell).RepaintThread;
+  RepaintShell;
 end;
 
 

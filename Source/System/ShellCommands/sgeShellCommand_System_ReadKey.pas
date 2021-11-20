@@ -42,7 +42,7 @@ uses
   SimpleGameEngine, sgeSystemUtils, sgeOSPlatform,  sgeSystemEvent, sgeExtensionShell;
 
 type
-  TsgeExtensionShellHack = class(TsgeExtensionShell);
+  TsgeExtensionShellExt = class(TsgeExtensionShell);
 
 
 
@@ -71,31 +71,31 @@ begin
     sgeTryStrToInt(Command.Part[2], Timeout);
 
   //Поднять флаг чтения символа
-  TsgeExtensionShellHack(SGE.ExtShell).FReadKeyMode := True;
+  TsgeExtensionShellExt(SGE.ExtShell).FReadKeyMode := True;
 
   //Перерисовать оболочку
-  TsgeExtensionShellHack(SGE.ExtShell).RepaintThread;
+  RepaintShell;
 
   //Ждать пока пользователь не нажмет на Enter
-  case TsgeExtensionShellHack(SGE.ExtShell).FEvent.Wait(Timeout) of
+  case TsgeExtensionShellExt(SGE.ExtShell).FEvent.Wait(Timeout) of
 
     //Выход по нажатию кнопки
     sewrEvent:
       begin
       VarName := Command.Part[1];                                     //Имя переменной
-      VarValue := TsgeExtensionShellHack(SGE.ExtShell).FreadKeyChar;  //Значение переменной
+      VarValue := TsgeExtensionShellExt(SGE.ExtShell).FreadKeyChar;  //Значение переменной
       SGE.ExtVariables.SetInteger(VarName, VarValue);                 //Изменить значение переменной
       end;
 
     //Не дождался нажатия
     sewrTimeOut:
       begin
-      TsgeExtensionShellHack(SGE.ExtShell).FReadKeyMode := False;     //Опустить флаг чтения символа
+      TsgeExtensionShellExt(SGE.ExtShell).FReadKeyMode := False;     //Опустить флаг чтения символа
       end;
   end;
 
   //Перерисовать оболочку
-  TsgeExtensionShellHack(SGE.ExtShell).RepaintThread;
+  RepaintShell;
 end;
 
 

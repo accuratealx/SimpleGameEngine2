@@ -47,6 +47,7 @@ type
     FGroup: ShortString;
     FMinParamCount: Byte;
 
+    procedure RepaintShell;
   public
     constructor Create(SGEObject: TObject; Name: ShortString; Group: ShortString = '');
     destructor  Destroy; override;
@@ -67,8 +68,16 @@ type
 implementation
 
 uses
-  SimpleGameEngine;
+  SimpleGameEngine, sgeExtensionShell;
 
+type
+  TsgeExtensionShellExt = class(TsgeExtensionShell);
+
+
+procedure TsgeShellCommand.RepaintShell;
+begin
+  TsgeExtensionShellExt(TSimpleGameEngine(FSGE).ExtShell).RepaintThread;
+end;
 
 
 constructor TsgeShellCommand.Create(SGEObject: TObject; Name: ShortString; Group: ShortString);
