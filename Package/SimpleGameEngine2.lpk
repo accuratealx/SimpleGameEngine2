@@ -15,7 +15,7 @@
     </CompilerOptions>
     <Description Value="Simple Game Engine 2"/>
     <Version Major="1"/>
-    <Files Count="224">
+    <Files Count="227">
       <Item1>
         <Filename Value="..\Source\ThirdParty\GDIPlus\GDIPAPI.pas"/>
         <UnitName Value="GDIPAPI"/>
@@ -917,6 +917,18 @@
         <Filename Value="..\Source\System\ShellCommands\sgeShellCommand_System_Stop.pas"/>
         <UnitName Value="sgeShellCommand_System_Stop"/>
       </Item224>
+      <Item225>
+        <Filename Value="..\Source\System\GUI\Properties\sgeGUIPropertyFont.pas"/>
+        <UnitName Value="sgeGUIPropertyFont"/>
+      </Item225>
+      <Item226>
+        <Filename Value="..\Source\System\GUI\Components\sgeGUILabel.pas"/>
+        <UnitName Value="sgeGUILabel"/>
+      </Item226>
+      <Item227>
+        <Filename Value="..\Source\System\GUI\Properties\sgeGUIPropertyLabel.pas"/>
+        <UnitName Value="sgeGUIPropertyLabel"/>
+      </Item227>
     </Files>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)"/>
