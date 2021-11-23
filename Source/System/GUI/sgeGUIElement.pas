@@ -111,6 +111,7 @@ type
     //Вспомогательные методы
     procedure GetPrefferedSize(var NewWidth, NewHeight: Integer); virtual;  //Взять предпочтительный размер элемента
     procedure CalculateAutosize(var NewWidth, NewHeight: Integer); virtual; //Расчёт авторазмер
+    procedure CheckMinimalSize(var NewWidth, NewHeight: Integer); virtual;  //Проверка наименьших размеров
     procedure Notify(Action: TsgeGUIElementState); virtual;         //Вызвать уведомление
     procedure DrawChild; virtual;                                   //Нарисовать детей
     class function GetParameterSectionName: String; virtual;        //Вернуть имя секции (У каждого класса своё имя)
@@ -453,7 +454,8 @@ begin
   //Проверить ограничение размера
   FConstrains.Check(NewWidth, NewHeight);
 
-  //Проверку на наименьший размер ?
+  //Проверку на наименьший размер
+  CheckMinimalSize(NewWidth, NewHeight);
 end;
 
 
@@ -464,8 +466,18 @@ begin
 end;
 
 
+procedure TsgeGUIElement.CheckMinimalSize(var NewWidth, NewHeight: Integer);
+begin
+  //Заглушка. Тут код проверки на наименьший возможный размер
+end;
+
+
 procedure TsgeGUIElement.Notify(Action: TsgeGUIElementState);
 begin
+  //Если запрет обновления, то выход
+  if esLockUpdate in FState then Exit;
+
+  //Добавить новое состояние
   FState := FState + Action;
 
   //Поправить размеры
