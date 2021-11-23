@@ -32,6 +32,9 @@ type
   public
     constructor Create(AOwner: TObject); override;
 
+    function GetTextWidth(const Txt: String): Integer;
+    function GetTextHeight(const Txt: String): Integer;
+
     property Name: String read FName write SetName;
     property Height: Word read GetHeight;
     property Size: Word read GetSize;
@@ -88,6 +91,18 @@ begin
 
   //Шрифт по умолчанию
   FFont := SGE.ExtResourceList.Default.Font;
+end;
+
+
+function TsgeGUIPropertyFont.GetTextWidth(const Txt: String): Integer;
+begin
+  Result := FFont.GetStringWidth(Txt);
+end;
+
+
+function TsgeGUIPropertyFont.GetTextHeight(const Txt: String): Integer;
+begin
+  Result := FFont.GetStringHeight(Txt);
 end;
 
 
