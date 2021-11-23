@@ -33,6 +33,8 @@ type
     class function GetParameterSectionName: String; override;
     procedure LoadData(Data: TsgeSimpleParameters); override;
     procedure DrawBefore; override;
+    procedure CalculateAutosize(var NewWidth, NewHeight: Integer); override;
+    procedure CheckMinimalSize(var NewWidth, NewHeight: Integer); override;
   public
     constructor Create(Name: String; Left, Top, Width, Height: Integer; Parent: TsgeGUIElement = nil); override;
     destructor  Destroy; override;
@@ -89,6 +91,25 @@ begin
 
   //Вывод метки
   FLabel.Draw;
+end;
+
+
+procedure TsgeGUILabel.CalculateAutosize(var NewWidth, NewHeight: Integer);
+begin
+  NewWidth := FLabel.Font.GetTextWidth(FLabel.Text);
+  NewHeight := FLabel.Font.GetTextHeight(FLabel.Text);
+end;
+
+
+procedure TsgeGUILabel.CheckMinimalSize(var NewWidth, NewHeight: Integer);
+var
+  W, H: Integer;
+begin
+  W := FLabel.Font.GetTextWidth(FLabel.Text);
+  H := FLabel.Font.GetTextHeight(FLabel.Text);
+
+  if NewWidth < W then NewWidth := W;
+  if NewHeight < H then NewHeight := H;
 end;
 
 
