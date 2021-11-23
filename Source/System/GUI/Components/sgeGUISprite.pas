@@ -82,6 +82,8 @@ begin
   FSprite.Scale.Mode := smStretch;
   FSprite.UnlockUpdate;
   FSprite.Sprite := SGE.ExtResourceList.Default.Sprite;
+
+  Repaint;
 end;
 
 

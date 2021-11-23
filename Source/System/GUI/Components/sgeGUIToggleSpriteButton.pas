@@ -90,6 +90,8 @@ begin
   inherited Create(Name, Left, Top, Width, Height, Parent);
 
   FColCount := 2;
+
+  Repaint;
 end;
 
 
