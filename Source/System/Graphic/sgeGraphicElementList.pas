@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGraphicElementList.pas
-Версия            1.2
+Версия            1.3
 Создан            14.06.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Список элементов отисовки
@@ -22,6 +22,7 @@ type
   TsgeGraphicElementList = class(specialize TsgeTemplateList<TsgeGraphicElementBase>)
   private
     FIterator: PListItem;
+
   public
     function  IndexOf(aItem: TsgeGraphicElementBase): PListItem;    //Найти элемент по Data
     procedure MoveToEnd(Element: TsgeGraphicElementBase);           //Переместить элемент в конец списка
@@ -88,24 +89,22 @@ begin
   FIterator := FFirst;
 
   //Проверить на пустое значение
-  if FIterator = nil then Exit;
-
-  Result := FIterator^.Item;
+  if FIterator <> nil then
+    Result := FIterator^.Item;
 end;
 
 
 function TsgeGraphicElementList.GetNext: TsgeGraphicElementBase;
 begin
+  //Результат по умолчанию
   Result := nil;
-
-  //Проверить на конец списка
-  if FIterator = nil then Exit;
-
-  //Вернуть текущий элемент
-  Result := FIterator^.Item;
 
   //Сместить на следующий элемент
   FIterator := FIterator^.Next;
+
+  //Проверить на пустое значение
+  if FIterator <> nil then
+    Result := FIterator^.Item;
 end;
 
 
