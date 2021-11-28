@@ -94,6 +94,7 @@ type
     property Visible: Boolean read FVisible write SetVisible;
 
     property FormList: TsgeGUIFormList read FFormList;
+    property GUILayer: TsgeGraphicElementLayer read FGUILayer;
   end;
 
 
