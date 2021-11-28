@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeExtensionGraphic.pas
-Версия            1.7
+Версия            1.8
 Создан            14.04.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс расширения: Графика
@@ -182,8 +182,13 @@ begin
   //Увеличить счётчик кадров
   FFPSCounter.Inc;
 
+  //Сохранить состояние
+  FGraphicInner.PushAttrib;
+  FGraphicInner.Reset;
+  FGraphicInner.ResetDrawOptions;
+
   //Стереть фон
-  if FAutoEraseBG then FGraphic.EraseBG;
+  if FAutoEraseBG then FGraphicInner.EraseBG;
 
   //Вывод елементов
   DrawElements;
@@ -194,8 +199,11 @@ begin
   //Вывод FPS
   if FFPS.Enable then DrawFPS;
 
+  //Восстановить состояние
+  FGraphicInner.PopAttrib;
+
   //Смена кадров
-  case FGraphic.RenderBuffer of
+  case FGraphicInner.RenderBuffer of
     grbBack : FGraphicInner.SwapBuffers;
     grbFront: FGraphicInner.Finish;
   end;
@@ -220,6 +228,17 @@ begin
     //Проверить видимость слоя
     if not Layer.Visible then Continue;
 
+    //Настроить графику графики
+    FGraphicInner.PushAttrib;
+    FGraphicInner.Reset;
+    FGraphicInner.ResetDrawOptions;
+
+    //Поправить смещение
+    FGraphicInner.SetPos(Layer.Offset);
+
+    //Поправить масштаб
+    FGraphicInner.SetScale(Layer.Scale, Layer.Scale);
+
     //Обработать элементы в слое
     El := Layer.Elements.GetFirst;
     while El <> nil do
@@ -242,6 +261,8 @@ begin
       El := Layer.Elements.GetNext;
       end;
 
+    //Восстановить параметры графики
+    FGraphicInner.PopAttrib;
     end;
 
   //Разблокировать список
@@ -255,6 +276,12 @@ var
   TxtW, TxtH: Integer;
   s: String;
 begin
+  //Подготовить графику
+  FGraphicInner.PushAttrib;
+  FGraphicInner.Reset;
+  FGraphicInner.ColorBlend := True;
+
+  //FPS
   s := FFPSCounter.StrCount;
 
   //Размеры текста
@@ -282,6 +309,9 @@ begin
   //Вывод FPS
   FGraphicInner.Color := FFPS.Color;
   FGraphicInner.DrawText(X, Y, FFPS.Font, s);
+
+  //Восстановить графику
+  FGraphicInner.PopAttrib;
 end;
 
 
@@ -289,7 +319,6 @@ procedure TsgeExtensionGraphic.DrawFade;
 begin
   //Подготовить графику
   FGraphicInner.PushAttrib;
-  FGraphicInner.ResetDrawOptions;
   FGraphicInner.PoligonMode := gpmFill;
   FGraphicInner.ColorBlend := True;
 
@@ -297,7 +326,6 @@ begin
   FGraphicInner.Color := FFade.GetColor;
   FGraphicInner.doCoordinateType := gctClassic;
   FGraphicInner.DrawRect(0, 0, FGraphic.Width, FGraphic.Height);
-  FGraphicInner.ResetDrawOptions;
 
   //Восстановить графику
   FGraphicInner.PopAttrib;
