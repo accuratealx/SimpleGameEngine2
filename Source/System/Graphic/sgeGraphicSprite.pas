@@ -399,7 +399,7 @@ begin
   CalcTiles;
 
   //Залить цветом
-  FillChessBoard(8);
+  FillChessBoard(4);
 
   //Костыль
   glFinish;
