@@ -47,7 +47,7 @@ type
 implementation
 
 uses
-  sgeVars;
+  sgeVars, sgeGraphicColor;
 
 
 function TsgeGUILabel.GetLabel: TsgeGUIPropertyLabel;
@@ -117,8 +117,13 @@ constructor TsgeGUILabel.Create(Name: String; Left, Top, Width, Height: Integer;
 begin
   inherited Create(Name, Left, Top, Width, Height, Parent);
 
+  LockUpdate;
+
   FLabel := TsgeGUIPropertyLabelExt.Create(Self);
   FBGColor := TsgeGUIPropertyColorExt.Create(Self);
+  FBGColor.Color := cTransparentBlack;
+
+  UnLockUpdate;
 
   Repaint;
 end;
