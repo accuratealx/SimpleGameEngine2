@@ -40,12 +40,14 @@ type
     FKeyboardButtons: TsgeKeyboardButtons;
 
     function GetPos: TsgeIntPoint;
+    function GetFloatPos: TsgeFloatPoint;
   public
     constructor Create(Name: ShortString; X, Y: Integer; MouseButtons: TsgeMouseButtons; KeyboardButtons: TsgeKeyboardButtons; Delta: Integer = 0);
 
     procedure ChangeXY(X, Y: Integer);
 
     property Pos: TsgeIntPoint read GetPos;
+    property FloatPos: TsgeFloatPoint read GetFloatPos;
     property X: Integer read FX;
     property Y: Integer read FY;
     property Delta: Integer read FDelta;
@@ -60,6 +62,13 @@ implementation
 
 
 function TsgeEventMouse.GetPos: TsgeIntPoint;
+begin
+  Result.X := FX;
+  Result.Y := FY;
+end;
+
+
+function TsgeEventMouse.GetFloatPos: TsgeFloatPoint;
 begin
   Result.X := FX;
   Result.Y := FY;
