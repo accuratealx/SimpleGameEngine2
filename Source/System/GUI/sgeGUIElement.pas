@@ -616,11 +616,8 @@ begin
     PoligonMode := gpmFill;
 
     //Стереть фон холста
-    ColorBlend := False;
-    Color := cTransparentWhite;
-    DrawRect(0, 0, FWidth, FHeight);
-
-    ColorBlend := True;
+    BGColor := cTransparentWhite;
+    EraseBG;
     end;
 end;
 
@@ -631,7 +628,6 @@ begin
     begin
     RenderSprite := nil;
     RenderPlace := grpScreen;
-    ResetDrawOptions;
     PopAttrib;
     Finish;
     end;
@@ -640,17 +636,13 @@ end;
 
 procedure TsgeGUIElement.DrawBefore;
 begin
-  with SGE.ExtGraphic.Graphic do
-    begin
-    BGColor := cRed;
-    EraseBG;
-    end;
+  //Отрисовка перед выводом детей
 end;
 
 
 procedure TsgeGUIElement.DrawAfter;
 begin
-
+  //Отрисовка после вывода детей
 end;
 
 
@@ -924,7 +916,7 @@ end;
 procedure TsgeGUIElement.Draw;
 begin
   //Проверка на запрет обновления
-  if  (esLockUpdate in FState) then Exit;
+  if (esLockUpdate in FState) then Exit;
 
   //Подготовить графику
   GraphicPrepare;
