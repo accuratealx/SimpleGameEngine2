@@ -55,7 +55,7 @@ type
 
     procedure ThreadProc;                                           //Метод потока
 
-    function GetNextTrackByMode: TsgeMusicPlayerTrack;              //Взять следующую дорожку
+    function GetNextTrackByMode(aGroup: String): TsgeMusicPlayerTrack;  //Взять следующую дорожку
 
     //Свойства
     procedure SetVolume(AVolume: Single);
@@ -152,7 +152,7 @@ begin
 
           //Список
           if FRepeatMode = rmList then
-            Track := GetNextTrackByMode;
+            Track := GetNextTrackByMode(FGroup);
 
           //Проверить дорожку
           if Track <> nil then FTaskList.Add(TsgeMusicPlayerTaskPlay.Create(Track))
@@ -175,16 +175,16 @@ begin
 end;
 
 
-function TsgeExtensionMusicPlayer.GetNextTrackByMode: TsgeMusicPlayerTrack;
+function TsgeExtensionMusicPlayer.GetNextTrackByMode(aGroup: String): TsgeMusicPlayerTrack;
 begin
   //Значение по умолчанию
   Result := nil;
 
   //Взять следующую дорожку
   case FChangeMode of
-    cmRandom  : Result := FTrackList.GetRandomTrack(FGroup);
-    cmForward : Result := FTrackList.GetNextTrack(FGroup);
-    cmBackward: Result := FTrackList.GetPrevTrack(FGroup);
+    cmRandom  : Result := FTrackList.GetRandomTrack(aGroup);
+    cmForward : Result := FTrackList.GetNextTrack(aGroup);
+    cmBackward: Result := FTrackList.GetPrevTrack(aGroup);
   end;
 end;
 
@@ -320,7 +320,7 @@ end;
 
 procedure TsgeExtensionMusicPlayer.Play;
 begin
-  Play(GetNextTrackByMode);
+  Play(GetNextTrackByMode(FGroup));
 end;
 
 
