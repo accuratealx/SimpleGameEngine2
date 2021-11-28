@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGraphicElementLayer.pas
-Версия            1.1
+Версия            1.2
 Создан            14.07.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс слоя графических элементов
@@ -15,6 +15,7 @@ unit sgeGraphicElementLayer;
 interface
 
 uses
+  sgeTypes,
   sgeGraphicElementList;
 
 
@@ -26,6 +27,8 @@ type
     FName: ShortString;                       //Имя
     FVisible: Boolean;                        //Видимость
     FIndex: Word;                             //Индекс приоритета
+    FOffset: TsgeFloatPoint;
+    FScale: Single;
 
   public
     constructor Create(Name: ShortString; Index: Word = 0; Visible: Boolean = True);
@@ -34,6 +37,8 @@ type
     property Name: ShortString read FName;
     property Index: Word read FIndex;
     property Visible: Boolean read FVisible write FVisible;
+    property Offset: TsgeFloatPoint read FOffset write FOffset;
+    property Scale: Single read FScale write FScale;
 
     property Elements: TsgeGraphicElementList read FElementList;
   end;
@@ -49,6 +54,7 @@ begin
   FName := Name;
   FIndex := Index;
   FVisible := Visible;
+  FScale := 1;
 end;
 
 
