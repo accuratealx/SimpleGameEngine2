@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGraphic.pas
-Версия            1.8
+Версия            1.9
 Создан            27.04.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс графики
@@ -155,8 +155,10 @@ type
     procedure PopAttrib;
 
     procedure SetScale(X, Y: Single);
+    procedure SetScale(Pos: TsgeFloatPoint);
     procedure SetRotate(Angle: Single);
     procedure SetPos(X, Y: Single);
+    procedure SetPos(Pos: TsgeFloatPoint);
 
     procedure SetLineStipple(Scale: Integer; Pattern: Word);
     procedure SetLineStipple(Scale: Integer; Mode: TsgeGraphicLineStipple);
@@ -1014,6 +1016,12 @@ begin
 end;
 
 
+procedure TsgeGraphic.SetScale(Pos: TsgeFloatPoint);
+begin
+  SetScale(Pos.X, Pos.Y);
+end;
+
+
 procedure TsgeGraphic.SetRotate(Angle: Single);
 begin
   glRotatef(Angle, 0, 0, 1);
@@ -1023,6 +1031,12 @@ end;
 procedure TsgeGraphic.SetPos(X, Y: Single);
 begin
   glTranslatef(X, Y, 0);
+end;
+
+
+procedure TsgeGraphic.SetPos(Pos: TsgeFloatPoint);
+begin
+  SetPos(Pos.X, Pos.Y);
 end;
 
 
