@@ -11,7 +11,7 @@
 unit sgeVariableBooleanClass;
 
 {$mode objfpc}{$H+}
-{$ModeSwitch duplicatelocals}
+{$ModeSwitch duplicatelocals+}
 
 interface
 

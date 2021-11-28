@@ -11,7 +11,7 @@
 unit sgeVariableColorBase;
 
 {$mode objfpc}{$H+}
-{$ModeSwitch duplicatelocals}
+{$ModeSwitch duplicatelocals+}
 
 interface
 

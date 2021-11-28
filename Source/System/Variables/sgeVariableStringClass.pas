@@ -11,7 +11,7 @@
 unit sgeVariableStringClass;
 
 {$mode objfpc}{$H+}
-{$ModeSwitch duplicatelocals}
+{$ModeSwitch duplicatelocals+}
 
 interface
 

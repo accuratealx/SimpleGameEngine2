@@ -11,7 +11,7 @@
 unit sgeGraphic;
 
 {$mode objfpc}{$H+}{$Inline On}
-{$ModeSwitch duplicatelocals On}
+{$ModeSwitch duplicatelocals+}
 
 interface
 

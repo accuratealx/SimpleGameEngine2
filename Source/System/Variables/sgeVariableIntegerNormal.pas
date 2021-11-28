@@ -11,7 +11,7 @@
 unit sgeVariableIntegerNormal;
 
 {$mode objfpc}{$H+}
-{$ModeSwitch duplicatelocals}
+{$ModeSwitch duplicatelocals+}
 
 interface
 
