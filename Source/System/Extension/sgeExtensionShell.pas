@@ -718,6 +718,7 @@ begin
     begin
     //Подготовить спрайт для вывода
     PushAttrib;                                                     //Сохранить параметры
+    Reset;                                                          //Сбросить геометрию
     RenderSprite := FCanvas;                                        //Установить спрайт для вывода
     RenderPlace := grpSprite;                                       //Переключить режим вывода
     ResetDrawOptions;                                               //Сбросить настройки вывода
