@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGraphicElementBase.pas
-Версия            1.0
+Версия            1.1
 Создан            09.06.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс базового элемента вывода
@@ -25,21 +25,22 @@ const
 type
   TsgeGraphicElementBase = class
   private
-    FVisible: Boolean;                                    //Флаг видимости
-    FNeedUpdate: Boolean;                                 //Флаг обновления данных
-    FNeedDelete: Boolean;                                 //Флаг удаления
+    FVisible: Boolean;                                              //Флаг видимости
+    FNeedUpdate: Boolean;                                           //Флаг обновления данных
+    FNeedDelete: Boolean;                                           //Флаг удаления
 
   protected
-    procedure AfterConstruction; override;
+    procedure UpdateData; virtual; abstract;                        //Обновление данных
 
   public
+    constructor Create;
+
     procedure ApplySettings;
     procedure Update;
     procedure Delete;
 
     //Пользовательские функции
-    procedure UpdateData; virtual; abstract;                  //Обновление данных
-    procedure Draw(Graphic: TsgeGraphic); virtual; abstract;  //Отрисовка элемента
+    procedure Draw(Graphic: TsgeGraphic); virtual; abstract;        //Отрисовка элемента
 
     property Visible: Boolean read FVisible write FVisible;
     property NeedUpdate: Boolean read FNeedUpdate;
@@ -50,7 +51,7 @@ type
 implementation
 
 
-procedure TsgeGraphicElementBase.AfterConstruction;
+constructor TsgeGraphicElementBase.Create;
 begin
   FVisible := True;
 end;

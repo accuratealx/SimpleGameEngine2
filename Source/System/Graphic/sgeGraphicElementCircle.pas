@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGraphicElementCircle.pas
-Версия            1.0
+Версия            1.1
 Создан            19.06.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс элемента отрисовки: Круг
@@ -37,11 +37,12 @@ type
 
     procedure SetAlpha(AAlpha: Single);
     function  GetAlpha: Single;
+  protected
+    procedure UpdateData; override;
   public
     constructor Create;
     constructor Create(X, Y, Radius: Single; Color: TsgeColor; Quality: Word = 16);
 
-    procedure UpdateData; override;
     procedure Draw(Graphic: TsgeGraphic); override;
 
     property Alpha: Single read GetAlpha write SetAlpha;
@@ -69,8 +70,16 @@ begin
 end;
 
 
+procedure TsgeGraphicElementCircle.UpdateData;
+begin
+  FData := FNewData;
+end;
+
+
 constructor TsgeGraphicElementCircle.Create;
 begin
+  inherited Create;
+
   FData.X := 0;
   FData.Y := 0;
   FData.Radius := 0;
@@ -83,6 +92,8 @@ end;
 
 constructor TsgeGraphicElementCircle.Create(X, Y, Radius: Single; Color: TsgeColor; Quality: Word);
 begin
+  inherited Create;
+
   FData.X := X;
   FData.Y := Y;
   FData.Radius := Radius;
@@ -90,12 +101,6 @@ begin
   FData.Color := Color;
 
   FNewData := FData;
-end;
-
-
-procedure TsgeGraphicElementCircle.UpdateData;
-begin
-  FData := FNewData;
 end;
 
 

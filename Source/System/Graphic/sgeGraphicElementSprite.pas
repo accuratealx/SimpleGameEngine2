@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
-Файл              *.pas
-Версия            1.0
+Файл              sgeGraphicElementSprite.pas
+Версия            1.1
 Создан            24.06.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс элемента отрисовки: Спрайт
@@ -30,11 +30,12 @@ type
 
     procedure SetAlpha(AAlpha: Single);
     function  GetAlpha: Single;
-  public
-    constructor Create(X, Y: Single; Sprite: TsgeGraphicSprite; CoordType: TsgeGraphicCoordinateType = gctNormal);
-    constructor Create(X, Y, W, H: Single; Sprite: TsgeGraphicSprite; CoordType: TsgeGraphicCoordinateType = gctNormal);
 
     procedure UpdateData; override;
+  public
+    constructor Create(X, Y: Single; Sprite: TsgeGraphicSprite; CoordType: TsgeGraphicCoordinateType = gctNormal); virtual;
+    constructor Create(X, Y, W, H: Single; Sprite: TsgeGraphicSprite; CoordType: TsgeGraphicCoordinateType = gctNormal); virtual;
+
     procedure Draw(Graphic: TsgeGraphic); override;
 
     property Alpha: Single read GetAlpha write SetAlpha;
@@ -68,8 +69,16 @@ begin
 end;
 
 
+procedure TsgeGraphicElementSprite.UpdateData;
+begin
+  FData := FNewData;
+end;
+
+
 constructor TsgeGraphicElementSprite.Create(X, Y: Single; Sprite: TsgeGraphicSprite; CoordType: TsgeGraphicCoordinateType);
 begin
+  inherited Create;
+
   FData := DefaultDrawOptions;
 
   FData.Sprite := Sprite;
@@ -85,6 +94,8 @@ end;
 
 constructor TsgeGraphicElementSprite.Create(X, Y, W, H: Single; Sprite: TsgeGraphicSprite; CoordType: TsgeGraphicCoordinateType);
 begin
+  inherited Create;
+
   FData := DefaultDrawOptions;
 
   FData.Sprite := Sprite;
@@ -95,12 +106,6 @@ begin
   FData.Rect.Y2 := H;
 
   FNewData := FData;
-end;
-
-
-procedure TsgeGraphicElementSprite.UpdateData;
-begin
-  FData := FNewData;
 end;
 
 

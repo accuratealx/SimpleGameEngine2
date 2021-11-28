@@ -36,10 +36,12 @@ type
 
     procedure SetAlpha(AAlpha: Single);
     function  GetAlpha: Single;
+  protected
+    procedure UpdateData; override;
+
   public
     constructor Create(X, Y: Single; Font: TsgeGraphicFont; Text: String; Color: TsgeColor);
 
-    procedure UpdateData; override;
     procedure Draw(Graphic: TsgeGraphic); override;
 
     property Alpha: Single read GetAlpha write SetAlpha;
@@ -67,8 +69,16 @@ begin
 end;
 
 
+procedure TsgeGraphicElementText.UpdateData;
+begin
+  FData := FNewData;
+end;
+
+
 constructor TsgeGraphicElementText.Create(X, Y: Single; Font: TsgeGraphicFont; Text: String; Color: TsgeColor);
 begin
+  inherited Create;
+
   FData.X := X;
   FData.Y := Y;
   FData.Font := Font;
@@ -76,12 +86,6 @@ begin
   FData.Text := Text;
 
   FNewData := FData;
-end;
-
-
-procedure TsgeGraphicElementText.UpdateData;
-begin
-  FData := FNewData;
 end;
 
 

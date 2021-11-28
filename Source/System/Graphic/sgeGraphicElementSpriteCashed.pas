@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGraphicElementSpriteCashed.pas
-Версия            1.0
+Версия            1.1
 Создан            07.08.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс элемента отрисовки: Кэшированный спрайт
@@ -11,6 +11,7 @@
 unit sgeGraphicElementSpriteCashed;
 
 {$mode objfpc}{$H+}
+{$ModeSwitch duplicatelocals+}
 
 interface
 
@@ -25,11 +26,15 @@ type
     FSprite: TsgeGraphicSprite;             //Спрайт для вывода
     FRedraw: Boolean;                       //Флаг обновления спрайтв перед перерисовкой
 
-    procedure AfterConstruction; override;
+    procedure PostCreate;
+  protected
+    procedure UpdateData; override;
   public
+    constructor Create(X, Y: Single; Sprite: TsgeGraphicSprite; CoordType: TsgeGraphicCoordinateType = gctNormal); override;
+    constructor Create(X, Y, W, H: Single; Sprite: TsgeGraphicSprite; CoordType: TsgeGraphicCoordinateType = gctNormal); override;
+
     destructor Destroy; override;
 
-    procedure UpdateData; override;
     procedure Draw(Graphic: TsgeGraphic); override;
   end;
 
@@ -38,23 +43,13 @@ implementation
 
 
 
-
-procedure TsgeGraphicElementSpriteCashed.AfterConstruction;
+procedure TsgeGraphicElementSpriteCashed.PostCreate;
 begin
-  inherited AfterConstruction;
-
   //Создать спрайт
-  FSprite := TsgeGraphicSprite.Create(200, 200);
+  FSprite := TsgeGraphicSprite.Create(16, 16);
 
   //Обновить данные
   UpdateData;
-end;
-
-
-destructor TsgeGraphicElementSpriteCashed.Destroy;
-begin
-  FSprite.Free;
-  inherited Destroy;
 end;
 
 
@@ -70,6 +65,28 @@ begin
   FRedraw := True;
 end;
 
+constructor TsgeGraphicElementSpriteCashed.Create(X, Y: Single; Sprite: TsgeGraphicSprite; CoordType: TsgeGraphicCoordinateType);
+begin
+  inherited Create(X, Y, Sprite, CoordType);
+
+  PostCreate;
+end;
+
+constructor TsgeGraphicElementSpriteCashed.Create(X, Y, W, H: Single; Sprite: TsgeGraphicSprite; CoordType: TsgeGraphicCoordinateType);
+begin
+  inherited Create(X, Y, W, H, Sprite, CoordType);
+
+  PostCreate;
+end;
+
+
+destructor TsgeGraphicElementSpriteCashed.Destroy;
+begin
+  FSprite.Free;
+
+  inherited Destroy;
+end;
+
 
 procedure TsgeGraphicElementSpriteCashed.Draw(Graphic: TsgeGraphic);
 begin
@@ -83,9 +100,10 @@ begin
     if (FSprite.Width <> FNewData.Sprite.Width) or (FSprite.Height <> FNewData.Sprite.Height) then
       FSprite.SetSize(FNewData.Sprite.Width, FNewData.Sprite.Height);
 
-    //Залить прозрачным цветом
+    //Скопировать спрайт на себя
     Graphic.PushAttrib;                                             //Сохранить параметры
-    Graphic.ColorBlend := False;                                    //Убрать смешивание цветов
+    Graphic.Reset;                                                  //Сбросить геометрию
+    Graphic.ColorBlend := False;
     Graphic.RenderSprite := FSprite;                                //Установить спрайт для вывода
     Graphic.RenderPlace := grpSprite;                               //Переключить режим вывода на спрайт
     Graphic.PoligonMode := gpmFill;                                 //Включить заливку у полигонов
@@ -93,7 +111,6 @@ begin
     Graphic.DrawSprite(0, 0, FSprite.Width, FSprite.Height, FNewData.Sprite); //Скопировать спрайт на себя
     Graphic.RenderPlace := grpScreen;                               //Переключить режим вывода на экран
     Graphic.RenderSprite := nil;                                    //Убрать спрайт из вывода
-    Graphic.ColorBlend := True;                                     //Восстановить смешивание цветов
     Graphic.PopAttrib;                                              //Восстановить параметры
     end;
 

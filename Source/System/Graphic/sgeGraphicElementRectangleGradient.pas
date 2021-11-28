@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGraphicElementGradientRectangle.pas
-Версия            1.0
+Версия            1.1
 Создан            24.06.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс элемента отрисовки: Градиентный прямоугольник
@@ -39,11 +39,12 @@ type
     FData: TsgeGraphicElementRectangleGradientData;
     FNewData: TsgeGraphicElementRectangleGradientData;
 
+  protected
+    procedure UpdateData; override;
   public
     constructor Create;
     constructor Create(X1, Y1, X2, Y2: Single; CoordType: TsgeGraphicCoordinateType; Color1, Color2, Color3, Color4: TsgeColor);
 
-    procedure UpdateData; override;
     procedure Draw(Graphic: TsgeGraphic); override;
 
     property X1: Single read FNewData.X1 write FNewData.X1;
@@ -57,11 +58,20 @@ type
     property Color4: TsgeColor read FNewData.Color4 write FNewData.Color4;
   end;
 
+
 implementation
+
+
+procedure TsgeGraphicElementRectangleGradient.UpdateData;
+begin
+  FData := FNewData;
+end;
 
 
 constructor TsgeGraphicElementRectangleGradient.Create;
 begin
+  inherited Create;
+
   FData.X1 := 0;
   FData.Y1 := 0;
   FData.X2 := 0;
@@ -78,6 +88,8 @@ end;
 
 constructor TsgeGraphicElementRectangleGradient.Create(X1, Y1, X2, Y2: Single; CoordType: TsgeGraphicCoordinateType; Color1, Color2, Color3, Color4: TsgeColor);
 begin
+  inherited Create;
+
   FData.X1 := X1;
   FData.Y1 := Y1;
   FData.X2 := X2;
@@ -89,12 +101,6 @@ begin
   FData.Color4 := Color4;
 
   FNewData := FData;
-end;
-
-
-procedure TsgeGraphicElementRectangleGradient.UpdateData;
-begin
-  FData := FNewData;
 end;
 
 

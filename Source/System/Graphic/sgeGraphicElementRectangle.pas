@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGraphicElementRectangle.pas
-Версия            1.0
+Версия            1.1
 Создан            24.06.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс элемента отрисовки: Прямоугольник
@@ -38,11 +38,12 @@ type
 
     procedure SetAlpha(AAlpha: Single);
     function  GetAlpha: Single;
+  protected
+    procedure UpdateData; override;
   public
     constructor Create;
     constructor Create(X1, Y1, X2, Y2: Single; CoordType: TsgeGraphicCoordinateType; Color: TsgeColor);
 
-    procedure UpdateData; override;
     procedure Draw(Graphic: TsgeGraphic); override;
 
     property Alpha: Single read GetAlpha write SetAlpha;
@@ -69,8 +70,16 @@ begin
 end;
 
 
+procedure TsgeGraphicElementRectangle.UpdateData;
+begin
+  FData := FNewData;
+end;
+
+
 constructor TsgeGraphicElementRectangle.Create;
 begin
+  inherited Create;
+
   FData.X1 := 0;
   FData.Y1 := 0;
   FData.X2 := 0;
@@ -84,6 +93,8 @@ end;
 
 constructor TsgeGraphicElementRectangle.Create(X1, Y1, X2, Y2: Single; CoordType: TsgeGraphicCoordinateType; Color: TsgeColor);
 begin
+  inherited Create;
+
   FData.X1 := X1;
   FData.Y1 := Y1;
   FData.X2 := X2;
@@ -92,12 +103,6 @@ begin
   FData.Color := Color;
 
   FNewData := FData;
-end;
-
-
-procedure TsgeGraphicElementRectangle.UpdateData;
-begin
-  FData := FNewData;
 end;
 
 

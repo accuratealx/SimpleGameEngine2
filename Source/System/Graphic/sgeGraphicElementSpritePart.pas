@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGraphicElementSpritePart.pas
-Версия            1.0
+Версия            1.1
 Создан            25.06.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс элемента отрисовки: Часть спрайта
@@ -11,11 +11,12 @@
 unit sgeGraphicElementSpritePart;
 
 {$mode objfpc}{$H+}
+{$ModeSwitch duplicatelocals+}
 
 interface
 
 uses
-  sgeTypes,
+  sgeTypes, sgeGraphic, sgeGraphicSprite,
   sgeGraphicElementSprite;
 
 
@@ -25,13 +26,16 @@ type
     //Координаты спрайта в пикселях
     FSpriteRect: TsgeFloatRect;
 
-    procedure AfterConstruction; override;
-
     procedure SetSpriteX1(AX: Single);
     procedure SetSpriteY1(AY: Single);
     procedure SetSpriteX2(AX: Single);
     procedure SetSpriteY2(AY: Single);
+
+    procedure PostCreate;
   public
+    constructor Create(X, Y: Single; Sprite: TsgeGraphicSprite; CoordType: TsgeGraphicCoordinateType = gctNormal); override;
+    constructor Create(X, Y, W, H: Single; Sprite: TsgeGraphicSprite; CoordType: TsgeGraphicCoordinateType = gctNormal); override;
+
     property SpriteX1: Single read FSpriteRect.X1 write SetSpriteX1;
     property SpriteY1: Single read FSpriteRect.Y1 write SetSpriteY1;
     property SpriteX2: Single read FSpriteRect.X2 write SetSpriteX2;
@@ -45,18 +49,6 @@ implementation
 uses
   sgeGraphicUtils;
 
-
-procedure TsgeGraphicElementSpritePart.AfterConstruction;
-begin
-  inherited AfterConstruction;
-
-  //Задать начальные размеры вывода в пикселях
-  FSpriteRect := sgeGetFloatRect(0, 0, FNewData.Sprite.Width, FNewData.Sprite.Height);
-
-  //Подготовить координаты спрайта для вывода
-  FNewData.SpriteRect := sgeGetTextureRect(FNewData.Sprite, FSpriteRect);
-  FData.SpriteRect := FNewData.SpriteRect;
-end;
 
 
 procedure TsgeGraphicElementSpritePart.SetSpriteX1(AX: Single);
@@ -84,6 +76,32 @@ procedure TsgeGraphicElementSpritePart.SetSpriteY2(AY: Single);
 begin
   FSpriteRect.Y2 := AY;
   FNewData.SpriteRect := sgeGetTextureRect(FNewData.Sprite, FSpriteRect);
+end;
+
+procedure TsgeGraphicElementSpritePart.PostCreate;
+begin
+  //Задать начальные размеры вывода в пикселях
+  FSpriteRect := sgeGetFloatRect(0, 0, FNewData.Sprite.Width, FNewData.Sprite.Height);
+
+  //Подготовить координаты спрайта для вывода
+  FNewData.SpriteRect := sgeGetTextureRect(FNewData.Sprite, FSpriteRect);
+  FData.SpriteRect := FNewData.SpriteRect;
+end;
+
+
+constructor TsgeGraphicElementSpritePart.Create(X, Y: Single; Sprite: TsgeGraphicSprite; CoordType: TsgeGraphicCoordinateType);
+begin
+  inherited Create(X, Y, Sprite, CoordType);
+
+  PostCreate;
+end;
+
+
+constructor TsgeGraphicElementSpritePart.Create(X, Y, W, H: Single; Sprite: TsgeGraphicSprite; CoordType: TsgeGraphicCoordinateType);
+begin
+  inherited Create(X, Y, W, H, Sprite, CoordType);
+
+  PostCreate;
 end;
 
 
