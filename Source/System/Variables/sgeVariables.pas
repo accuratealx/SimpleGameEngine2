@@ -265,6 +265,16 @@ end;
 {$EndRegion Music}
 
 
+{$Region Music.TrackList}
+function ExtensionMusic_TrackList_GetCurrent: String;
+begin
+  Result := '';
+  if SGE.ExtMusicPlayer.TrackList.CurrentTrack <> nil then
+    Result := SGE.ExtMusicPlayer.TrackList.CurrentTrack.Name;
+end;
+{$EndRegion Music.TrackList}
+
+
 
 //////////////////////////////////////////////////
 procedure sgeVariables_Init(SGEObject: TObject);
@@ -303,6 +313,9 @@ begin
       AddEnum('Music.ChangeMode', 'Random, Forward, Backward', ',', 0, @ExtensionMusic_GetChangeMode, @ExtensionMusic_SetChangeMode);
       AddEnum('Music.RepeatMode', 'None, Track, List', ',', 2, @ExtensionMusic_GetRepeatMode, @ExtensionMusic_SetRepeatMode);
       AddString('Music.Group', '', @ExtensionMusic_GetGroup, @ExtensionMusic_SetGroup);
+
+      //Track
+      AddString('TrackList.Current', '', @ExtensionMusic_TrackList_GetCurrent);
       end;
     end;
 end;
