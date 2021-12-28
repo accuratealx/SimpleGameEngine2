@@ -300,7 +300,7 @@ begin
     AddInteger('Controllers.ScanDelay', 50, @ExtensionControllers_GetScanDelay, @ExtensionControllers_SetScanDelay, 0, 1000);
     AddBoolean('Controllers.AutoScan', False, @ExtensionControllers_GetAutoScan, @ExtensionControllers_SetAutoScan, 'On', 'Off');
     AddInteger('Controllers.AutoScanDelay', 50, @ExtensionControllers_GetAutoScanDelay, @ExtensionControllers_SetAutoScanDelay, 1000, 10000);
-    AddInteger('Controllers.Count', 50, @ExtensionControllers_GetCount, nil);
+    AddInteger('Controllers.Count', 0, @ExtensionControllers_GetCount, nil);
 
     if SGE.ExtSound <> nil then
       begin
