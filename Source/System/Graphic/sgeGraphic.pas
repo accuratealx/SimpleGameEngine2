@@ -35,7 +35,7 @@ type
 
 
   //Режим смешивания для цветов
-  TsgeGraphicBlendFunction = (gbfCopy, gbfTransparent, gbfAlphaCopy);
+  TsgeGraphicBlendFunction = (gbfTransparent);
 
 
   //Режим затенения (Последний цвет, Градиент)
@@ -488,9 +488,7 @@ begin
 
   FBlendFunction := AFunction;
   case AFunction of
-    gbfCopy       : glBlendFunc(GL_ONE, GL_ZERO);
     gbfTransparent: glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    gbfAlphaCopy  : glBlendFunc(GL_SRC_ALPHA, GL_ONE);
   end;
 end;
 
