@@ -23,6 +23,8 @@ uses
 type
   TsgeGUIForm = class(TsgeGUIElement)
   private
+    FAlpha: Single;                                                 //Прозрачность элемента
+
     FGraphicElement: TsgeGraphicElementSpriteCashed;                //Элемент отрисовки
 
     FBackground: TsgeGUIBackgroundExt;                              //Фон
@@ -34,13 +36,15 @@ type
     procedure DrawBefore; override;                                 //Отрисовать перед выводом детей
 
     procedure SetVisible(AVisible: Boolean); override;
-    procedure SetAlpha(AAlpha: Single); override;
+    procedure SetAlpha(AAlpha: Single);
     procedure SetFocused(AFocused: Boolean); override;
   public
     constructor Create(AName: String; ALeft, ATop, AWidth, AHeight: Integer; AParent: TsgeGUIElement = nil); override;
     destructor  Destroy; override;
 
     procedure Draw; override;
+
+    property Alpha: Single read FAlpha write SetAlpha;
 
     property Background: TsgeGUIPropertyBackground read GetBackground;
   end;
@@ -68,9 +72,16 @@ end;
 
 
 procedure TsgeGUIForm.LoadData(Data: TsgeSimpleParameters);
+var
+  ParamName: String;
 begin
   inherited LoadData(Data);
 
+  //Alpha
+  ParamName := 'Alpha';
+  if Data.Exist[ParamName] then SetAlpha(Data.GetValue(ParamName, 1.0));
+
+  //Background
   FBackground.LoadParameters(Data, 'Background.');
 end;
 
@@ -91,11 +102,17 @@ end;
 
 procedure TsgeGUIForm.SetAlpha(AAlpha: Single);
 begin
-  inherited SetAlpha(AAlpha);
+  if AAlpha < 0 then AAlpha := 0;
+  if AAlpha > 1 then AAlpha := 1;
+  FAlpha := AAlpha;
 
+  Repaint;
+
+  //Обновить графический элемент
   FGraphicElement.Alpha := AAlpha;
   FGraphicElement.Update;
 end;
+
 
 procedure TsgeGUIForm.SetFocused(AFocused: Boolean);
 begin
@@ -112,6 +129,9 @@ end;
 constructor TsgeGUIForm.Create(AName: String; ALeft, ATop, AWidth, AHeight: Integer; AParent: TsgeGUIElement);
 begin
   inherited Create(AName, ALeft, ATop, AWidth, AHeight, AParent);
+
+  //Задать параметры
+  FAlpha := 1;
 
   //Создать графический элемент
   FGraphicElement := TsgeGraphicElementSpriteCashed.Create(Left, Top, Width, Height, FCanvas);
