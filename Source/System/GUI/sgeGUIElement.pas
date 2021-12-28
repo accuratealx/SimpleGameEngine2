@@ -60,7 +60,6 @@ type
     FVisible: Boolean;                                              //Видимость элемента
     FEnable: Boolean;                                               //Реагирование на действия пользователя
     FFocused: Boolean;                                              //Флаг активности
-    FAlpha: Single;                                                 //Прозрачность элемента
     FLeft: Integer;                                                 //X относительно родителя
     FTop: Integer;                                                  //Y относительно родителя
     FWidth: Integer;                                                //Ширина
@@ -137,7 +136,6 @@ type
     procedure SetParent(AParent: TsgeGUIElement);
     procedure SetEnable(AEnabled: Boolean); virtual;
     procedure SetVisible(AVisible: Boolean); virtual;
-    procedure SetAlpha(AAlpha: Single); virtual;
     procedure SetFocused(AFocused: Boolean); virtual;
     procedure SetAutoSize(AAutoSize: Boolean); virtual;
     procedure SetStyle(AStyle: ShortString); virtual;
@@ -157,6 +155,7 @@ type
     function  ButtonHandler(EventType: TsgeGUIElementButtonEventType; Keyboard: TsgeEventBase): Boolean; virtual;
 
     procedure Repaint;
+    procedure Resize;
     procedure Draw; virtual;
     procedure LoadParameters(Params: TsgeSimpleContainer);          //Загрузить параметры
 
@@ -171,7 +170,6 @@ type
     property Visible: Boolean read FVisible write SetVisible;
     property Focused: Boolean read FFocused write SetFocused;
     property AutoSize: Boolean read FAutoSize write SetAutoSize;
-    property Alpha: Single read FAlpha write SetAlpha;
     property Parent: TsgeGUIElement read FParent write SetParent;
     property Bounds: TsgeFloatRect read GetBounds write SetBounds;
     property Left: Integer read FLeft write SetLeft;
@@ -311,16 +309,6 @@ begin
   if FVisible then Handler_Show else Handler_Hide;
 
   Notify([esRepaintParent]);
-end;
-
-
-procedure TsgeGUIElement.SetAlpha(AAlpha: Single);
-begin
-  if AAlpha < 0 then AAlpha := 0;
-  if AAlpha > 1 then AAlpha := 1;
-
-  FAlpha := AAlpha;
-  Repaint;
 end;
 
 
@@ -527,10 +515,7 @@ begin
     with SGE.ExtGraphic.Graphic do
       begin
       ResetDrawOptions;
-      //BlendFunction := gbfAlphaCopy;
-      doTransparentColor := sgeGetColor(1, 1, 1, El.Alpha);
       DrawSprite(El.Left, El.Top, El.Width, El.Height, El.Canvas);
-      //BlendFunction := gbfTransparent;
       end;
     end;
 end;
@@ -584,10 +569,6 @@ begin
   //Visible
   ParamName := 'Visible';
   if Data.Exist[ParamName] then SetVisible(Data.GetValue(ParamName, True));
-
-  //Alpha
-  ParamName := 'Alpha';
-  if Data.Exist[ParamName] then SetAlpha(Data.GetValue(ParamName, 1));
 end;
 
 
@@ -613,7 +594,7 @@ begin
     ResetDrawOptions;
     RenderSprite := FCanvas;
     RenderPlace := grpSprite;
-    PoligonMode := gpmFill;
+    ColorBlend := True;
 
     //Стереть фон холста
     BGColor := cTransparentWhite;
@@ -750,7 +731,6 @@ begin
   FName := Name;
   FVisible := True;
   FEnable := True;
-  FAlpha := 1;
   FFocused := False;
   FAutoSize := False;
   FClickButton := mbLeft;
@@ -913,6 +893,12 @@ begin
 end;
 
 
+procedure TsgeGUIElement.Resize;
+begin
+  Notify([esCorrectSize]);
+end;
+
+
 procedure TsgeGUIElement.Draw;
 begin
   //Проверка на запрет обновления
@@ -934,10 +920,10 @@ begin
   {$IfDef SGE_GUI_Bounds}
   with SGE.ExtGraphic.Graphic do
     begin
+    ColorBlend := False;
     PoligonMode := gpmLine;
     Color := cRed;
     DrawRect(1, 0, FWidth - 1, FHeight - 1);
-    PoligonMode := gpmFill;
     end;
   {$EndIf}
 
