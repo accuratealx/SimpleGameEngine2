@@ -18,7 +18,8 @@ uses
   sgeErrorManager, sgeNamedObjectList, sgeExtensionList, sgeEventManager, sgeEventBase,
   sgeExtensionWindow, sgeExtensionGraphic, sgeExtensionPackList, sgeExtensionFileSystem, sgeExtensionShell,
   sgeExtensionResourceList, sgeExtensionStartParameters, sgeExtensionSound, sgeExtensionControllers,
-  sgeExtensionVariables, sgeExtensionKeyCommand, sgeExtensionTimeEvent, sgeExtensionGUI, sgeExtensionMusicPlayer;
+  sgeExtensionVariables, sgeExtensionKeyCommand, sgeExtensionTimeEvent, sgeExtensionGUI, sgeExtensionMusicPlayer,
+  sgeExtensionCursor;
 
 
 const
@@ -51,6 +52,7 @@ type
     FExtensionPackFiles: TsgeExtensionPackList;                     //Расширение: Файловые архивы
     FExtensionFileSystem: TsgeExtensionFileSystem;                  //Расширение: Файловая система
     FExtensionResourceList: TsgeExtensionResourceList;              //Расширение: Список ресурсов
+    FExtensionCursor: TsgeExtensionCursor;                          //Расширение: Курсоры
     FExtensionControllers: TsgeExtensionControllers;                //Расширение: Контроллеры
     FExtensionShell: TsgeExtensionShell;                            //Расширение: Оболочка
     FExtensionKeyCommand: TsgeExtensionKeyCommand;                  //Расширение: Команды на клавишах
@@ -58,6 +60,7 @@ type
     FExtensionGUI: TsgeExtensionGUI;                                //Расширение: GUI
     FExtensionSound: TsgeExtensionSound;                            //Расширение: Звуковая система
     FExtensionMusicPlayer: TsgeExtensionMusicPlayer;                //Расширение: Музыкальный проигрыватель
+
 
     //Свойства
     procedure SetDebug(ADebug: Boolean);
@@ -105,6 +108,7 @@ type
     property ExtGUI: TsgeExtensionGUI read FExtensionGUI;
     property ExtSound: TsgeExtensionSound read FExtensionSound;
     property ExtMusicPlayer: TsgeExtensionMusicPlayer read FExtensionMusicPlayer;
+    property ExtCursor: TsgeExtensionCursor read FExtensionCursor;
   end;
 
 
@@ -221,6 +225,7 @@ begin
     FExtensionPackFiles :=   TsgeExtensionPackList.Create(FObjectList);             //Файловые архивы
     FExtensionFileSystem := TsgeExtensionFileSystem.Create(FObjectList);            //Файловая система
     FExtensionResourceList := TsgeExtensionResourceList.Create(FObjectList);        //Список ресурсов
+    FExtensionCursor := TsgeExtensionCursor.Create(FObjectList);                    //Курсоры
     FExtensionControllers := TsgeExtensionControllers.Create(FObjectList);          //Контроллеры
     FExtensionShell := TsgeExtensionShell.Create(FObjectList);                      //Оболочка
     FExtensionKeyCommand := TsgeExtensionKeyCommand.Create(FObjectList);            //Команда на кнопках
