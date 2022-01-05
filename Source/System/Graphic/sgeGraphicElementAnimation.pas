@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              *.pas
-Версия            1.1
+Версия            1.2
 Создан            26.06.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс элемента отрисовки: Анимация
@@ -33,6 +33,8 @@ type
 
     procedure SetAlpha(AAlpha: Single);
     function  GetAlpha: Single;
+    procedure SetAnimationFrames(AFrames: TsgeGraphicAnimationFrames);
+    function  GetAnimationFrames: TsgeGraphicAnimationFrames;
   protected
     procedure UpdateData; override;
   public
@@ -43,6 +45,7 @@ type
 
     procedure Draw(Graphic: TsgeGraphic); override;
 
+    property Frames: TsgeGraphicAnimationFrames read GetAnimationFrames write SetAnimationFrames;
     property Alpha: Single read GetAlpha write SetAlpha;
     property X: Single read FNewData.Rect.X1 write FNewData.Rect.X1;
     property Y: Single read FNewData.Rect.Y1 write FNewData.Rect.Y1;
@@ -79,6 +82,18 @@ end;
 function TsgeGraphicElementAnimation.GetAlpha: Single;
 begin
   Result := FNewData.TransparentColor.Alpha;
+end;
+
+
+procedure TsgeGraphicElementAnimation.SetAnimationFrames(AFrames: TsgeGraphicAnimationFrames);
+begin
+  FAnimation.Frames := AFrames;
+end;
+
+
+function TsgeGraphicElementAnimation.GetAnimationFrames: TsgeGraphicAnimationFrames;
+begin
+  Result := FAnimation.Frames;
 end;
 
 
@@ -152,4 +167,5 @@ end;
 
 
 end.
+
 
