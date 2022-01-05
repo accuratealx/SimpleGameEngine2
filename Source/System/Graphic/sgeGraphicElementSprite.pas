@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGraphicElementSprite.pas
-Версия            1.1
+Версия            1.2
 Создан            24.06.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс элемента отрисовки: Спрайт
@@ -30,6 +30,8 @@ type
 
     procedure SetAlpha(AAlpha: Single);
     function  GetAlpha: Single;
+    procedure SetSprite(ASprite: TsgeGraphicSprite);
+    function  GetSprite: TsgeGraphicSprite;
 
     procedure UpdateData; override;
   public
@@ -38,6 +40,7 @@ type
 
     procedure Draw(Graphic: TsgeGraphic); override;
 
+    property Sprite: TsgeGraphicSprite read GetSprite write SetSprite;
     property Alpha: Single read GetAlpha write SetAlpha;
     property X: Single read FNewData.Rect.X1 write FNewData.Rect.X1;
     property Y: Single read FNewData.Rect.Y1 write FNewData.Rect.Y1;
@@ -49,12 +52,19 @@ type
     property CoordType: TsgeGraphicCoordinateType read FNewData.CoordinateType write FNewData.CoordinateType;
     property TransparentColor: TsgeColor read FNewData.TransparentColor write FNewData.TransparentColor;
   	property Reflect: TsgeGraphicReflectTypes read FNewData.Reflect write FNewData.Reflect;
-    property Sprite: TsgeGraphicSprite read FNewData.Sprite write FNewData.Sprite;
   end;
 
 
 
 implementation
+
+uses
+  sgeErrors;
+
+const
+  _UNITNAME = 'GraphicElementSprite';
+
+  Err_EmptySprite = 'EmptySprite';
 
 
 procedure TsgeGraphicElementSprite.SetAlpha(AAlpha: Single);
@@ -66,6 +76,23 @@ end;
 function TsgeGraphicElementSprite.GetAlpha: Single;
 begin
   Result := FNewData.TransparentColor.Alpha;
+end;
+
+
+procedure TsgeGraphicElementSprite.SetSprite(ASprite: TsgeGraphicSprite);
+begin
+  if ASprite = nil then
+    raise EsgeException.Create(_UNITNAME, Err_EmptySprite);
+
+  if FNewData.Sprite = ASprite then Exit;
+
+  FNewData.Sprite := ASprite;
+end;
+
+
+function TsgeGraphicElementSprite.GetSprite: TsgeGraphicSprite;
+begin
+  Result := FNewData.Sprite;
 end;
 
 
