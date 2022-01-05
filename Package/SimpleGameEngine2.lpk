@@ -15,7 +15,7 @@
     </CompilerOptions>
     <Description Value="Simple Game Engine 2"/>
     <Version Major="1"/>
-    <Files Count="227">
+    <Files Count="231">
       <Item1>
         <Filename Value="..\Source\ThirdParty\GDIPlus\GDIPAPI.pas"/>
         <UnitName Value="GDIPAPI"/>
@@ -929,6 +929,22 @@
         <Filename Value="..\Source\System\GUI\Properties\sgeGUIPropertyLabel.pas"/>
         <UnitName Value="sgeGUIPropertyLabel"/>
       </Item227>
+      <Item228>
+        <Filename Value="..\Source\System\GUI\Components\sgeGUIScrollBar.pas"/>
+        <UnitName Value="sgeGUIScrollBar"/>
+      </Item228>
+      <Item229>
+        <Filename Value="..\Source\System\GUI\sgeGUITypes.pas"/>
+        <UnitName Value="sgeGUITypes"/>
+      </Item229>
+      <Item230>
+        <Filename Value="..\Source\System\Extension\sgeExtensionCursors.pas"/>
+        <UnitName Value="sgeExtensionCursors"/>
+      </Item230>
+      <Item231>
+        <Filename Value="..\Source\System\sgeCursor.pas"/>
+        <UnitName Value="sgeCursor"/>
+      </Item231>
     </Files>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)"/>

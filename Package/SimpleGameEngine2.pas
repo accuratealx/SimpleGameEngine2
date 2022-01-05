@@ -79,7 +79,8 @@ uses
   sgeShellCommand_Music_Next, sgeShellCommand_Music_Play, 
   sgeShellCommand_Music_Prev, sgeShellCommand_Music_Stop, 
   sgeShellCommand_System_Stop, sgeGUIPropertyFont, sgeGUILabel, 
-  sgeGUIPropertyLabel;
+  sgeGUIPropertyLabel, sgeGUIScrollBar, sgeGUITypes, sgeExtensionCursors, 
+  sgeCursor;
 
 implementation
 
