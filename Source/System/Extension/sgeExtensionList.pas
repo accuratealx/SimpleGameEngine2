@@ -136,8 +136,6 @@ begin
     for i := c downto 0 do
       FList[i].Free;
 
-    SetLength(FList, 0);
-
   finally
     FCS.Leave;
   end;
