@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeExtensionResourceList.pas
-Версия            1.6
+Версия            1.7
 Создан            14.05.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс расширения: Список ресурсов
@@ -20,7 +20,7 @@ uses
   sgeExtensionBase,
   sgeResourceList, sgeMetaInfoList, sgeExtensionFileSystem, sgeExtensionSound,
   sgeSystemFont, sgeGraphicFont, sgeGraphicSprite, sgeGraphicAnimationFrames,
-  sgeGraphicAnimation, sgeSimpleContainer, sgeSoundBuffer;
+  sgeGraphicAnimation, sgeSimpleContainer, sgeSoundBuffer, sgeCursor;
 
 
 const
@@ -42,6 +42,7 @@ type
     StringList: TsgeStringList;
     Parameters: TsgeSimpleParameters;
     Container: TsgeSimpleContainer;
+    Cursor: TsgeCursor;
   end;
 
 
@@ -67,6 +68,7 @@ type
     function  LoadResource_StringList(Stream: TsgeMemoryStream): TObject;
     function  LoadResource_Parameters(Stream: TsgeMemoryStream): TObject;
     function  LoadResource_Container(Stream: TsgeMemoryStream): TObject;
+    function  LoadResource_Cursor(Cmd: TsgeSimpleCommand; Meta: TsgeMetaInfoList): TObject;
 
     //Команды таблицы
     procedure Command_SetParam(Prm: TsgeSimpleParameters; Cmd: TsgeSimpleCommand);
@@ -90,6 +92,7 @@ type
     function  GetStringList(Name: String): TsgeStringList;
     function  GetParameters(Name: String): TsgeSimpleParameters;
     function  GetContainer(Name: String): TsgeSimpleContainer;
+    function  GetCursor(Name: String): TsgeCursor;
 
     procedure FromString(Str: String; BaseDirectory: String = '');
     procedure FromMemoryStream(Stream: TsgeMemoryStream; BaseDirectory: String = '');
@@ -235,6 +238,29 @@ begin
 end;
 
 
+function TsgeExtensionResourceList.LoadResource_Cursor(Cmd: TsgeSimpleCommand; Meta: TsgeMetaInfoList): TObject;
+var
+  Width, Height, HotX, HotY: Integer;
+  FrameName: String;
+  Frames: TsgeGraphicAnimationFrames;
+begin
+  //Frame name
+  if Cmd.Count >= 4 then FrameName := Cmd.Part[3] else FrameName := '';
+
+  //Найти указатель на кадры
+  Frames := TsgeGraphicAnimationFrames(FResourceList.TypedObj[FrameName, rtAnimationFrames]);
+
+  //Найти параметры
+  Width := Meta.GetValue('Width', 16, True);
+  Height := Meta.GetValue('Height', 16, True);
+  HotX := Meta.GetValue('HotPointX', 0, True);
+  HotY := Meta.GetValue('HotPointY', 0, True);
+
+  //Вернуть объект
+  Result := TsgeCursor.Create(Frames, Width, Height, HotX, HotY);
+end;
+
+
 procedure TsgeExtensionResourceList.Command_SetParam(Prm: TsgeSimpleParameters; Cmd: TsgeSimpleCommand);
 begin
   if Cmd.Count < 3 then
@@ -311,8 +337,9 @@ begin
       s := LowerCase(Cmd.Part[1]);
       ResType := sgeStrToResType(s);
 
-      //Прочитаем файл, если это не Font
-      if ResType <> rtFont then FExtFileSystem.ReadFile(fn, Stream);
+      //Прочитаем файл, если это не Font и не Cursor
+      if (ResType <> rtFont) and (ResType <> rtCursor) then
+        FExtFileSystem.ReadFile(fn, Stream);
 
       //Создать ресурс
       case ResType of
@@ -327,6 +354,12 @@ begin
           begin
           ResObj := LoadResource_Font(Cmd, MetaObj);
           rt := rtFont;
+          end;
+
+        rtCursor:
+          begin
+          ResObj := LoadResource_Cursor(Cmd, MetaObj);
+          rt := rtCursor;
           end;
 
         rtSprite:
@@ -386,7 +419,8 @@ begin
       end;
 
       //Добавить в хранилище
-      if ResObj <> nil then FResourceList.AddItem(nm, rt, ResObj, MetaObj, Group);
+      if ResObj <> nil then
+        FResourceList.AddItem(nm, rt, ResObj, MetaObj, Group);
 
 
     except
@@ -444,6 +478,7 @@ begin
     FDefault.StringList := TsgeStringList.Create;
     FDefault.Parameters := TsgeSimpleParameters.Create;
     FDefault.Container := TsgeSimpleContainer.Create;
+    FDefault.Cursor := TsgeCursor.Create(FDefault.Frames, 16, 16, 0, 0);
     if ExtensionExist(Extension_Sound) then
       FDefault.SoundBufer := TsgeSoundBuffer.CreateBlank;
 
@@ -465,6 +500,7 @@ begin
   FDefault.StringList.Free;
   FDefault.Parameters.Free;
   FDefault.Container.Free;
+  FDefault.Cursor.Free;
 
   //Классы
   FResourceList.Free;
@@ -556,6 +592,17 @@ begin
   if Result = nil then
     begin
     Result := FDefault.Container;
+    ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_ResourceNotFound, Name));
+    end;
+end;
+
+
+function TsgeExtensionResourceList.GetCursor(Name: String): TsgeCursor;
+begin
+  Result := TsgeCursor(FResourceList.TypedObj[Name, rtCursor]);
+  if Result = nil then
+    begin
+    Result := FDefault.Cursor;
     ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_ResourceNotFound, Name));
     end;
 end;

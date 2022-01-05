@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeResourceList.pas
-Версия            1.3
+Версия            1.4
 Создан            15.05.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Хранилище загруженных ресурсов
@@ -31,7 +31,8 @@ type
     rtSoundBuffer,
     rtStringList,
     rtParameters,
-    rtContainer
+    rtContainer,
+    rtCursor
     );
 
 const
@@ -46,7 +47,8 @@ const
     'SoundBuffer',
     'StringList',
     'Parameters',
-    'Container'
+    'Container',
+    'Cursor'
     );
 
 
