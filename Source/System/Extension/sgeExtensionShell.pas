@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeExtensionShell.pas
-Версия            1.4
+Версия            1.5
 Создан            14.07.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс расширения: Оболочка
@@ -81,9 +81,6 @@ type
     FCommandIsRunning: Boolean;                                     //Флаг выполнения команды
 
     //Обработчики событий
-    procedure RegisterEventHandlers;
-    procedure UnRegisterEventHandlers;
-
     function  Event_WindowResize(Obj: TsgeEventWindowSize): Boolean;
 
     function  Handler_KeyDown(EventObj: TsgeEventKeyboard): Boolean;
@@ -131,6 +128,8 @@ type
     procedure RepaintThread;                                        //Перерисовать из потока оболочки
 
     class function GetName: String; override;
+
+    procedure RegisterEventHandlers; override;
   public
     constructor Create(ObjectList: TObject); override;
     destructor  Destroy; override;
@@ -192,32 +191,6 @@ const
 type
   TsgeExtensionGraphicHack = class(TsgeExtensionGraphic);
 
-
-
-procedure TsgeExtensionShell.RegisterEventHandlers;
-begin
-  //Клавиатура
-  FEventSubscriber[0] := EventManager.SubscriberGroupList.Subscribe(Event_KeyboardDown, TsgeEventHandler(@Handler_KeyDown), EventPriorityMax, False);
-  FEventSubscriber[1] := EventManager.SubscriberGroupList.Subscribe(Event_KeyboardUp, TsgeEventHandler(@Handler_KeyUp), EventPriorityMax, False);
-  FEventSubscriber[2] := EventManager.SubscriberGroupList.Subscribe(Event_KeyboardChar, TsgeEventHandler(@Handler_KeyChar),  EventPriorityMaxMinusOne, False);
-
-  //Мышь
-  FEventSubscriber[3] := EventManager.SubscriberGroupList.Subscribe(Event_MouseMove, TsgeEventHandler(@Handler_MouseMove), EventPriorityMax, False);
-  FEventSubscriber[4] := EventManager.SubscriberGroupList.Subscribe(Event_MouseDown, TsgeEventHandler(@Handler_MouseDown), EventPriorityMax, False);
-  FEventSubscriber[5] := EventManager.SubscriberGroupList.Subscribe(Event_MouseUp, TsgeEventHandler(@Handler_MouseUp), EventPriorityMax, False);
-  FEventSubscriber[6] := EventManager.SubscriberGroupList.Subscribe(Event_MouseScroll, TsgeEventHandler(@Handler_MouseWheel), EventPriorityMax, False);
-  FEventSubscriber[7] := EventManager.SubscriberGroupList.Subscribe(Event_MouseDoubleClick, TsgeEventHandler(@Handler_MouseDblClick), EventPriorityMax, False);
-
-  //Измение размеров окна
-  EventManager.SubscriberGroupList.Subscribe(Event_WindowSize, TsgeEventHandler(@Event_WindowResize), EventPriorityMaxMinusOne, True);
-end;
-
-
-procedure TsgeExtensionShell.UnRegisterEventHandlers;
-begin
-  //Отписаться от всех событий
-  EventManager.SubscriberGroupList.UnSubscribe(Self);
-end;
 
 
 function TsgeExtensionShell.Event_WindowResize(Obj: TsgeEventWindowSize): Boolean;
@@ -993,6 +966,25 @@ begin
 end;
 
 
+procedure TsgeExtensionShell.RegisterEventHandlers;
+begin
+  //Клавиатура
+  FEventSubscriber[0] := EventManager.SubscriberGroupList.Subscribe(Event_KeyboardDown, TsgeEventHandler(@Handler_KeyDown), Event_Priority_Shell, False);
+  FEventSubscriber[1] := EventManager.SubscriberGroupList.Subscribe(Event_KeyboardUp, TsgeEventHandler(@Handler_KeyUp), Event_Priority_Shell, False);
+  FEventSubscriber[2] := EventManager.SubscriberGroupList.Subscribe(Event_KeyboardChar, TsgeEventHandler(@Handler_KeyChar), Event_Priority_KeyCommand, False);
+
+  //Мышь
+  FEventSubscriber[3] := EventManager.SubscriberGroupList.Subscribe(Event_MouseMove, TsgeEventHandler(@Handler_MouseMove), Event_Priority_Shell, False);
+  FEventSubscriber[4] := EventManager.SubscriberGroupList.Subscribe(Event_MouseDown, TsgeEventHandler(@Handler_MouseDown), Event_Priority_Shell, False);
+  FEventSubscriber[5] := EventManager.SubscriberGroupList.Subscribe(Event_MouseUp, TsgeEventHandler(@Handler_MouseUp), Event_Priority_Shell, False);
+  FEventSubscriber[6] := EventManager.SubscriberGroupList.Subscribe(Event_MouseScroll, TsgeEventHandler(@Handler_MouseWheel), Event_Priority_Shell, False);
+  FEventSubscriber[7] := EventManager.SubscriberGroupList.Subscribe(Event_MouseDoubleClick, TsgeEventHandler(@Handler_MouseDblClick), Event_Priority_Shell, False);
+
+  //Измение размеров окна
+  EventManager.SubscriberGroupList.Subscribe(Event_WindowSize, TsgeEventHandler(@Event_WindowResize), Event_Priority_Shell, True);
+end;
+
+
 constructor TsgeExtensionShell.Create(ObjectList: TObject);
 begin
   try
@@ -1040,9 +1032,6 @@ begin
     //Установить обработчик ошибок
     ErrorManager.ShellHandler := @ErrorHandler;
 
-    //Подписать обработчики
-    RegisterEventHandlers;
-
     //Добавить стандартные алиасы
     RegisterDefaultAliases;
 
@@ -1050,7 +1039,7 @@ begin
     FCanvas := TsgeGraphicSprite.Create(500, 300);
 
     //Создать слой отрисовки
-    FExtGraphic.LayerList.Add(Extension_Shell, $FF);
+    FExtGraphic.LayerList.Add(Extension_Shell, Graphic_LayerIndex_Shell, True);
 
     //Создать элемент отрисовки
     FElementSprite := TsgeGraphicElementSpriteCashed.Create(0, 0, FCanvas.Width, FCanvas.Height, FCanvas);
@@ -1087,9 +1076,6 @@ begin
 
   //Освободить графику
   FThread.RunProcAndWait(@DoneGraphic);
-
-  //Отписать подписчиков
-  UnRegisterEventHandlers;
 
   //Удалить объекты
   FThread.Free;

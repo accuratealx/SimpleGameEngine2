@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeExtensionGraphic.pas
-Версия            1.8
+Версия            1.9
 Создан            14.04.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс расширения: Графика
@@ -94,6 +94,7 @@ type
     FGraphicShell: TsgeGraphic;                                     //Класс графики для потока оболочки
 
     class function GetName: String; override;
+    procedure RegisterEventHandlers; override;
 
   public
     constructor Create(ObjectList: TObject); override;
@@ -383,6 +384,13 @@ begin
 end;
 
 
+procedure TsgeExtensionGraphic.RegisterEventHandlers;
+begin
+  //Установить обработчик изменения размеров окна
+  EventManager.SubscriberGroupList.Subscribe(Event_WindowSize, TsgeEventHandler(@Event_WindowResize), Event_Priority_Max, True);
+end;
+
+
 constructor TsgeExtensionGraphic.Create(ObjectList: TObject);
 begin
   try
@@ -428,9 +436,6 @@ begin
     FFPSCounter := TsgeCounter.Create(1000);
     FFade := TsgeScreenFade.Create;
 
-    //Установить обработчик изменения размеров окна
-    EventManager.SubscriberGroupList.Subscribe(Event_WindowSize, TsgeEventHandler(@Event_WindowResize), $FFFF, True);
-
     //Установить метод отрисовки
     FThread.LoopProc := @SystemDraw;
   except
@@ -442,9 +447,6 @@ end;
 
 destructor TsgeExtensionGraphic.Destroy;
 begin
-  //Отписаться от событий
-  EventManager.SubscriberGroupList.UnSubscribe(Self);
-
   //Прибить поток
   if FThread <> nil then
     begin

@@ -15,6 +15,13 @@ unit sgeTypes;
 interface
 
 
+const
+  //Приоритет слоев GUI
+  Graphic_LayerIndex_Cursor = $FFFF;
+  Graphic_LayerIndex_Shell = $FFFE;
+  Graphic_LayerIndex_GUI = $FFFD;
+
+
 type
   //Кнопки мыши
   TsgeMouseButton = (mbLeft, mbMiddle, mbRight, mbExtra1, mbExtra2);

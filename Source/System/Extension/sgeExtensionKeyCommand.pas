@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeExtensionKeyCommand.pas
-Версия            1.6
+Версия            1.7
 Создан            01.08.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс расширения: Команда на кнопках
@@ -42,9 +42,6 @@ type
     function CommandHandler(const Command: String): Boolean;        //Проверить команду и выполнить
 
     //Обработчики событий
-    procedure RegisterEventHandlers;
-    procedure UnRegisterEventHandlers;
-
     function  Handler_KeyDown(EventObj: TsgeEventKeyboard): Boolean;
     function  Handler_KeyUp(EventObj: TsgeEventKeyboard): Boolean;
     function  Handler_KeyChar(EventObj: TsgeEventKeyboardChar): Boolean;
@@ -63,6 +60,8 @@ type
 
   protected
     class function GetName: String; override;
+
+    procedure RegisterEventHandlers; override;
 
   public
     constructor Create(ObjectList: TObject); override;
@@ -109,36 +108,6 @@ begin
     //Выполнить команду
     FExtShell.DoCommand(Command);
     end;
-end;
-
-
-procedure TsgeExtensionKeyCommand.RegisterEventHandlers;
-begin
-  //Клавиатура
-  EventManager.SubscriberGroupList.Subscribe(Event_KeyboardDown, TsgeEventHandler(@Handler_KeyDown), EventPriorityMaxMinusOne, True);
-  EventManager.SubscriberGroupList.Subscribe(Event_KeyboardUp, TsgeEventHandler(@Handler_KeyUp), EventPriorityMaxMinusOne, True);
-  EventManager.SubscriberGroupList.Subscribe(Event_KeyboardChar, TsgeEventHandler(@Handler_KeyChar), EventPriorityMax, True);
-
-  //Мышь
-  EventManager.SubscriberGroupList.Subscribe(Event_MouseDown, TsgeEventHandler(@Handler_MouseDown), EventPriorityMaxMinusOne, True);
-  EventManager.SubscriberGroupList.Subscribe(Event_MouseUp, TsgeEventHandler(@Handler_MouseUp), EventPriorityMaxMinusOne, True);
-  EventManager.SubscriberGroupList.Subscribe(Event_MouseScroll, TsgeEventHandler(@Handler_MouseWheel), EventPriorityMaxMinusOne, True);
-  EventManager.SubscriberGroupList.Subscribe(Event_MouseDoubleClick, TsgeEventHandler(@Handler_MouseDblClick), EventPriorityMaxMinusOne, True);
-
-  //Контроллеры
-  EventManager.SubscriberGroupList.Subscribe(Event_ControllerButtonDown, TsgeEventHandler(@Handler_JoystickButtonDown), EventPriorityMaxMinusOne, True);
-  EventManager.SubscriberGroupList.Subscribe(Event_ControllerButtonUp, TsgeEventHandler(@Handler_JoystickButtonUp), EventPriorityMaxMinusOne, True);
-  EventManager.SubscriberGroupList.Subscribe(Event_ControllerPovDown, TsgeEventHandler(@Handler_JoystickPadDown), EventPriorityMaxMinusOne, True);
-  EventManager.SubscriberGroupList.Subscribe(Event_ControllerPovUp, TsgeEventHandler(@Handler_JoystickPadUp), EventPriorityMaxMinusOne, True);
-  EventManager.SubscriberGroupList.Subscribe(Event_ControllerAxisDown, TsgeEventHandler(@Handler_JoystickAxisDown), EventPriorityMaxMinusOne, True);
-  EventManager.SubscriberGroupList.Subscribe(Event_ControllerAxisUp, TsgeEventHandler(@Handler_JoystickAxisUp), EventPriorityMaxMinusOne, True);
-end;
-
-
-procedure TsgeExtensionKeyCommand.UnRegisterEventHandlers;
-begin
-  //Отписаться от всех событий
-  EventManager.SubscriberGroupList.UnSubscribe(Self);
 end;
 
 
@@ -261,6 +230,29 @@ begin
 end;
 
 
+procedure TsgeExtensionKeyCommand.RegisterEventHandlers;
+begin
+  //Клавиатура
+  EventManager.SubscriberGroupList.Subscribe(Event_KeyboardDown, TsgeEventHandler(@Handler_KeyDown), Event_Priority_KeyCommand, True);
+  EventManager.SubscriberGroupList.Subscribe(Event_KeyboardUp, TsgeEventHandler(@Handler_KeyUp), Event_Priority_KeyCommand, True);
+  EventManager.SubscriberGroupList.Subscribe(Event_KeyboardChar, TsgeEventHandler(@Handler_KeyChar), Event_Priority_Shell, True);
+
+  //Мышь
+  EventManager.SubscriberGroupList.Subscribe(Event_MouseDown, TsgeEventHandler(@Handler_MouseDown), Event_Priority_KeyCommand, True);
+  EventManager.SubscriberGroupList.Subscribe(Event_MouseUp, TsgeEventHandler(@Handler_MouseUp), Event_Priority_KeyCommand, True);
+  EventManager.SubscriberGroupList.Subscribe(Event_MouseScroll, TsgeEventHandler(@Handler_MouseWheel), Event_Priority_KeyCommand, True);
+  EventManager.SubscriberGroupList.Subscribe(Event_MouseDoubleClick, TsgeEventHandler(@Handler_MouseDblClick), Event_Priority_KeyCommand, True);
+
+  //Контроллеры
+  EventManager.SubscriberGroupList.Subscribe(Event_ControllerButtonDown, TsgeEventHandler(@Handler_JoystickButtonDown), Event_Priority_KeyCommand, True);
+  EventManager.SubscriberGroupList.Subscribe(Event_ControllerButtonUp, TsgeEventHandler(@Handler_JoystickButtonUp), Event_Priority_KeyCommand, True);
+  EventManager.SubscriberGroupList.Subscribe(Event_ControllerPovDown, TsgeEventHandler(@Handler_JoystickPadDown), Event_Priority_KeyCommand, True);
+  EventManager.SubscriberGroupList.Subscribe(Event_ControllerPovUp, TsgeEventHandler(@Handler_JoystickPadUp), Event_Priority_KeyCommand, True);
+  EventManager.SubscriberGroupList.Subscribe(Event_ControllerAxisDown, TsgeEventHandler(@Handler_JoystickAxisDown), Event_Priority_KeyCommand, True);
+  EventManager.SubscriberGroupList.Subscribe(Event_ControllerAxisUp, TsgeEventHandler(@Handler_JoystickAxisUp), Event_Priority_KeyCommand, True);
+end;
+
+
 constructor TsgeExtensionKeyCommand.Create(ObjectList: TObject);
 begin
   try
@@ -274,9 +266,6 @@ begin
     FMouse := TsgeKeyCommandMouse.Create;
     FJoystick := TsgeKeyCommandJoystick.Create;
 
-    //Подписать обработчики
-    RegisterEventHandlers;
-
   except
     on E: EsgeException do
       raise EsgeException.Create(_UNITNAME, Err_CantCreateExtension, '', E.Message);
@@ -286,9 +275,6 @@ end;
 
 destructor TsgeExtensionKeyCommand.Destroy;
 begin
-  //Отписать подписчиков
-  UnRegisterEventHandlers;
-
   //Удалить объекты
   FJoystick.Free;
   FMouse.Free;

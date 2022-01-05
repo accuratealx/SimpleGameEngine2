@@ -45,6 +45,10 @@ type
     function  GetExtension(Name: String): TsgeExtensionBase;
     procedure AddExtension(Ext: TsgeExtensionBase);
     procedure DeleteExtension(Name: String);
+
+    //События
+    procedure RegisterEventHandlers; virtual;
+    procedure UnregiterEventHandlers; virtual;
   public
     constructor Create(ObjectList: TObject); virtual;
     destructor  Destroy; override;
@@ -119,6 +123,19 @@ begin
 end;
 
 
+procedure TsgeExtensionBase.RegisterEventHandlers;
+begin
+  //Подписка на события
+end;
+
+
+procedure TsgeExtensionBase.UnregiterEventHandlers;
+begin
+  //Отписка от событий
+  FEventManager.SubscriberGroupList.UnSubscribe(Self);
+end;
+
+
 constructor TsgeExtensionBase.Create(ObjectList: TObject);
 begin
   //Запомнить список объектов
@@ -129,6 +146,9 @@ begin
   FEventManager := TsgeEventManager(GetObject(Object_EventManager));
   FErrorManager := TsgeErrorManager(GetObject(Object_ErrorManager));
 
+  //Подписаться на события
+  RegisterEventHandlers;
+
   //Записать себя в список расширений
   AddExtension(Self);
 end;
@@ -136,6 +156,9 @@ end;
 
 destructor TsgeExtensionBase.Destroy;
 begin
+  //Отписаться от событий
+  UnregiterEventHandlers;
+
   //Удалить себя из списка расширений
   DeleteExtension(GetName);
 end;
