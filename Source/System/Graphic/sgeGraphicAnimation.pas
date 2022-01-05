@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGraphicAnimation.pas
-Версия            1.1
+Версия            1.2
 Создан            14.05.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс анимации
@@ -73,7 +73,7 @@ const
   _UNITNAME = 'GraphicAnimation';
 
   Err_IndexOutOfBounds    = 'IndexOutOfBounds';
-  Err_ObjectIsEmpty       = 'ObjectIsEmpty';
+  Err_EmptyFrames         = 'EmptyFrames';
   Err_CantLoadFromStream  = 'CantLoadFromStream';
   Err_CantReadFile        = 'CantReadFile';
 
@@ -143,7 +143,7 @@ end;
 constructor TsgeGraphicAnimation.Create(AFrames: TsgeGraphicAnimationFrames; Width, Height: Integer);
 begin
   if AFrames = nil then
-    raise EsgeException.Create(_UNITNAME, Err_ObjectIsEmpty);
+    raise EsgeException.Create(_UNITNAME, Err_EmptyFrames);
 
   PreCreate;
   FWidth := Width;
