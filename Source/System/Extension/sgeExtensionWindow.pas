@@ -33,6 +33,7 @@ type
 
     //Параметры
     FFullScreen: Boolean;                                                               //Флаг работы в полный экран
+    FShowCursor: Boolean;                                                               //Флаг отображения курсора
 
     //Вспомогательные параметры
     FMouseOut: Boolean;                                                                 //Мышь за границей окна
@@ -40,11 +41,13 @@ type
 
     //Свойства
     procedure SetFullScreen(AFullScreen: Boolean);
+    procedure SetShowCursor(AShow: Boolean);
 
     //Методы потока
     procedure CreateWindow;                                                             //Создать окно
     procedure DestroyWindow;                                                            //Удалить окно
     procedure MessageProc;                                                              //Опрос событий
+    procedure ChangeCursor;                                                             //Изменить видимость курсора
 
     //Вспомогательные функции
     procedure SetMouseTrackEvent;                                                       //Запустить слежение за нестандартными сообщениями мыши
@@ -63,6 +66,7 @@ type
     property Window: TsgeWindow read FWindow;
 
     property FullScreen: Boolean read FFullScreen write SetFullScreen;
+    property ShowCursor: Boolean read FShowCursor write SetShowCursor;
   end;
 
 
@@ -107,11 +111,23 @@ begin
 end;
 
 
+procedure TsgeExtensionWindow.SetShowCursor(AShow: Boolean);
+begin
+  FShowCursor := AShow;
+
+  //Поправить курсор в потоке окна
+  FThread.RunProc(@ChangeCursor);
+end;
+
+
 procedure TsgeExtensionWindow.CreateWindow;
 begin
   try
     //Создать окно
     FWindow := TsgeWindow.Create('SGEMainWindowClass', 'Simple Game Engine 2', 100, 100, 800, 600);
+
+    //Задать параметры
+    FShowCursor := True;
 
     //Изменить оконную функцию
     FWindow.SetWindowProc(@sgeWndProc);
@@ -207,6 +223,12 @@ begin
       else DispatchMessage(Message);
     end;
     end;
+end;
+
+
+procedure TsgeExtensionWindow.ChangeCursor;
+begin
+  FWindow.ShowCursor := FShowCursor;
 end;
 
 
