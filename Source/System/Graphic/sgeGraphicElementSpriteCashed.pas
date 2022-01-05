@@ -17,14 +17,14 @@ interface
 
 uses
   sgeGraphicElementSprite,
-  sgeGraphic, sgeGraphicSprite;
+  sgeGraphic, sgeGraphicColor, sgeGraphicSprite;
 
 
 type
   TsgeGraphicElementSpriteCashed = class(TsgeGraphicElementSprite)
   private
     FSprite: TsgeGraphicSprite;             //Спрайт для вывода
-    FRedraw: Boolean;                       //Флаг обновления спрайтв перед перерисовкой
+    FRedraw: Boolean;                       //Флаг обновления спрайта перед перерисовкой
 
     procedure PostCreate;
   protected
@@ -100,15 +100,23 @@ begin
     if (FSprite.Width <> FNewData.Sprite.Width) or (FSprite.Height <> FNewData.Sprite.Height) then
       FSprite.SetSize(FNewData.Sprite.Width, FNewData.Sprite.Height);
 
-    //Скопировать спрайт на себя
+    //Подготовить графику
     Graphic.PushAttrib;                                             //Сохранить параметры
     Graphic.Reset;                                                  //Сбросить геометрию
-    Graphic.ColorBlend := False;
     Graphic.RenderSprite := FSprite;                                //Установить спрайт для вывода
     Graphic.RenderPlace := grpSprite;                               //Переключить режим вывода на спрайт
-    Graphic.PoligonMode := gpmFill;                                 //Включить заливку у полигонов
     Graphic.ResetDrawOptions;                                       //Сбросить настройки вывода
-    Graphic.DrawSprite(0, 0, FSprite.Width, FSprite.Height, FNewData.Sprite); //Скопировать спрайт на себя
+
+    //Стереть фон
+    Graphic.BGColor := cBlack;
+    Graphic.EraseBG;
+
+    //Скопировать спрайт на себя
+    Graphic.ColorBlend := False;
+    Graphic.DrawSprite(0, 0, FSprite.Width, FSprite.Height, FNewData.Sprite);
+    Graphic.ColorBlend := True;
+
+    //Восстановить графику
     Graphic.RenderPlace := grpScreen;                               //Переключить режим вывода на экран
     Graphic.RenderSprite := nil;                                    //Убрать спрайт из вывода
     Graphic.PopAttrib;                                              //Восстановить параметры
