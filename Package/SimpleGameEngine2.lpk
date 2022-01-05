@@ -938,12 +938,12 @@
         <UnitName Value="sgeGUITypes"/>
       </Item229>
       <Item230>
-        <Filename Value="..\Source\System\Extension\sgeExtensionCursors.pas"/>
-        <UnitName Value="sgeExtensionCursors"/>
-      </Item230>
-      <Item231>
         <Filename Value="..\Source\System\sgeCursor.pas"/>
         <UnitName Value="sgeCursor"/>
+      </Item230>
+      <Item231>
+        <Filename Value="..\Source\System\Extension\sgeExtensionCursor.pas"/>
+        <UnitName Value="sgeExtensionCursor"/>
       </Item231>
     </Files>
     <UsageOptions>
