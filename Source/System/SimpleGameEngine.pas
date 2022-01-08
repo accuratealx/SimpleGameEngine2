@@ -28,7 +28,14 @@ const
 
 type
   //Параметры инициализации ядра (Звук)
-  TsgeInitOptions = set of (ioSound);
+  TsgeInitOptions = set of (
+    ioSound,                //Поддержка звуков
+    ioAutoStartScript,      //Автозапуск скрипта старта Autostart.s
+    ioAutoStopScript,       //Автозапуск скрипта остановки AutoStop.s
+    ioAttachDefaultKeys,    //Установить привязку клавишь по умолчанию
+    ioSupportStartExecute,  //Поддержка выполнения команды в строке параметров Execute='Список команд'
+    ioFindPacks             //Рекурсивный поиск архивов в каталоге программы
+    );
 
 
   //Основной класс движка
@@ -37,6 +44,7 @@ type
     //Параметры
     FWorking: Boolean;                                              //Флаг работы
     FDebug: Boolean;                                                //Режим отладки
+    FInitOptions: TsgeInitOptions;                                  //Режим инициализации
 
     //Классы
     FObjectList: TsgeNamedObjectList;                               //Список объектов
@@ -66,7 +74,9 @@ type
     procedure SetDebug(ADebug: Boolean);
 
     //Вспомогательные методы
-    procedure ProcessSystemStartParameters;                         //Обработать стартовые параметры
+    procedure CheckStartParameter_Execute;
+    procedure CheckStartParameter_Debug;                            //Обработать стартовые параметры
+    procedure RunScript(ScriptName: String);                        //Запустить скрипт
 
     //Обработчики событий
     procedure RegisterEventHandlers;                                //Подписать системные обработчики событий
@@ -74,15 +84,17 @@ type
     function  EventWindowClose(Obj: TsgeEventBase): Boolean;        //Закрытие окна
     function  EventTime(Obj: TsgeEventBase): Boolean;               //Таймерное событие
   public
-    constructor Create(Options: TsgeInitOptions = []); virtual;
+    constructor Create(Options: TsgeInitOptions = [ioAttachDefaultKeys]); virtual;
     destructor  Destroy; override;
 
-    procedure AttachDefaultCommand;                                 //Привязать на кнопки стандартные действия
+    procedure AttachDefaultKeys;                                    //Привязать на кнопки стандартные действия
     procedure ScreenShot(FileName: String = '');                    //Сохранить снимок окна в BMP
+
+    procedure Init; virtual;                                        //Пользовательская инициализация
+    function  CloseWindow: Boolean; virtual;                        //Возможность закрытия окна
 
     procedure Run;                                                  //Запустить приложение
     procedure Stop;                                                 //Остановить приложение
-    function  CloseWindow: Boolean; virtual;                        //Возможность закрытия окна
 
     //Свойства
     property Debug: Boolean read FDebug write SetDebug;
@@ -127,9 +139,17 @@ const
   Err_CantCreateScreenShot        = 'CantCreateScreenShot';
   Err_EmptyMethodPointer          = 'EmptyMethodPointer';
 
-  Ext_Journal = 'Journal';
+  //Имена файлов
+  Script_AutoStartName = 'AutoStart';
+  Script_AutoStopName = 'AutoStop';
 
+  //Расширения
+  Ext_Journal = 'Journal';
+  Ext_Script  = 's';
+
+  //Имена стартовых параметров
   spDebug = 'Debug';
+  spExecute = 'Execute';
 
 
 procedure TSimpleGameEngine.SetDebug(ADebug: Boolean);
@@ -141,9 +161,27 @@ begin
 end;
 
 
-procedure TSimpleGameEngine.ProcessSystemStartParameters;
+procedure TSimpleGameEngine.CheckStartParameter_Execute;
 begin
-  if FExtensionStartParameters.Parameters.Exist[spDebug] then SetDebug(True);
+  if FExtensionStartParameters.Parameters.Exist[spExecute] then
+    FExtensionShell.DoCommand(FExtensionStartParameters.Parameters.Value[spExecute]);
+end;
+
+
+procedure TSimpleGameEngine.CheckStartParameter_Debug;
+begin
+  if FExtensionStartParameters.Parameters.Exist[spDebug] then
+    SetDebug(True);
+end;
+
+
+procedure TSimpleGameEngine.RunScript(ScriptName: String);
+var
+  s: String;
+begin
+  s := ScriptName + '.' + Ext_Script;
+  if FExtensionFileSystem.FileExists(s) then
+    FExtensionShell.DoCommand('Script.Load ' + s + '; System.Run ' + ScriptName);
 end;
 
 
@@ -187,10 +225,26 @@ begin
 end;
 
 
+procedure TSimpleGameEngine.Init;
+begin
+  //Код инициализации пользователя.
+  //Метод вызывается в конструкторе
+end;
+
+
+function TSimpleGameEngine.CloseWindow: Boolean;
+begin
+  Result := True;
+end;
+
+
 constructor TSimpleGameEngine.Create(Options: TsgeInitOptions);
 var
   JFile: String;
 begin
+  //Сохранить режим инициализации
+  FInitOptions := Options;
+
   //Записать себя в глобальную переменную
   sgeVars.SGE := Self;
 
@@ -217,7 +271,7 @@ begin
   try
     //Создать расширения
     FExtensionStartParameters := TsgeExtensionStartParameters.Create(FObjectList);  //Стартовые параметры
-    ProcessSystemStartParameters;                                                   //Обработать системные стартовые параметры
+    CheckStartParameter_Debug;                                                      //Проверить режим отладки
 
     FExtensionVariables := TsgeExtensionVariables.Create(FObjectList);              //Переменные
     FExtensionWindow := TsgeExtensionWindow.Create(FObjectList);                    //Окно
@@ -231,12 +285,39 @@ begin
     FExtensionKeyCommand := TsgeExtensionKeyCommand.Create(FObjectList);            //Команда на кнопках
     FExtensionTimeEvent := TsgeExtensionTimeEvent.Create(FObjectList);              //Таймерные события
     FExtensionGUI := TsgeExtensionGUI.Create(FObjectList);                          //GUI
-    if ioSound in Options then
+    if ioSound in FInitOptions then
       begin
       FExtensionSound := TsgeExtensionSound.Create(FObjectList);                    //Звуковая система
       FExtensionMusicPlayer := TsgeExtensionMusicPlayer.Create(FObjectList);        //Музыкальный проигрыватель
       end;
 
+    //Зарегестрировать функции оболочки
+    sgeShellCommands_Init(Self);
+
+    //Зарегестрировать системные переменные
+    sgeVariables_Init(Self);
+
+    //Зарегестрировать системные обработчики событий
+    RegisterEventHandlers;
+
+    //Проверить автозагрузку архивов
+    if ioFindPacks in FInitOptions then
+      FExtensionPackFiles.LoadPackFromDirectory;
+
+    //Пользовательская инициализация
+    Init;
+
+    //Проверить привязку кнопок по умолчанию
+    if ioAttachDefaultKeys in FInitOptions then
+      AttachDefaultKeys;
+
+    //Проверить скрипт автозапуска
+    if ioAutoStartScript in FInitOptions then
+      RunScript(Script_AutoStartName);
+
+    //Проверить команды оболочки в стартовых параметрах
+    if ioSupportStartExecute in FInitOptions then
+      CheckStartParameter_Execute;
 
   except
     //Ошибка инициализации движка
@@ -247,20 +328,15 @@ begin
       Halt;
       end;
   end;
-
-  //Зарегестрировать функции оболочки
-  sgeShellCommands_Init(Self);
-
-  //Зарегестрировать системные переменные
-  sgeVariables_Init(Self);
-
-  //Зарегестрировать системные обработчики событий
-  RegisterEventHandlers;
 end;
 
 
 destructor TSimpleGameEngine.Destroy;
 begin
+  //Проверить скрипт автоостанова
+  if ioAutoStopScript in FInitOptions then
+    RunScript(Script_AutoStopName);
+
   //Отписать системные обработчики событий
   UnregisterEventHandlers;
 
@@ -272,10 +348,9 @@ begin
 end;
 
 
-procedure TSimpleGameEngine.AttachDefaultCommand;
+procedure TSimpleGameEngine.AttachDefaultKeys;
 begin
   //Открыть оболочку на тильду
-  FExtensionKeyCommand.Keyboard.Key[keyEscape].Down := 'System.Stop';
   FExtensionKeyCommand.Keyboard.Key[keyTilde].Down := 'Variable.Set Shell.Enable On';
 end;
 
@@ -332,11 +407,6 @@ begin
   FEventManager.Publish(TsgeEventBase.Create(''));
 end;
 
-
-function TSimpleGameEngine.CloseWindow: Boolean;
-begin
-  Result := True;
-end;
 
 
 end.
