@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeShellCommand_Script_Load.pas
-Версия            1.0
+Версия            1.1
 Создан            26.08.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Команда одолочки
@@ -69,8 +69,6 @@ var
 begin
   Result := inherited Execute(Command);
   SGE := TSimpleGameEngine(FSGE);
-
-  { TODO : Добавить проверку на существование скрипта или сделать обновление }
 
   //Имя файла
   fn := Command.Part[1];
