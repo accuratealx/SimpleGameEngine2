@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeShellScript.pas
-Версия            1.1
+Версия            1.2
 Создан            24.08.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Сценарий оболочки
@@ -71,18 +71,25 @@ begin
   Line := TsgeStringList.Create;
   Line.Separator := ';';
 
-  for i := 0 to List.Count - 1 do
-    begin
-    if List.Part[i] = '' then Add(List.Part[i])
-      else begin
-      Line.FromString(List.Part[i]);
-      for j := 0 to Line.Count - 1 do
-        Add(Line.Part[j]);
-      end;
-    end;
+  try
+    //Очистить строки
+    Clear;
 
-  Line.Free;
-  List.Free;
+    //Добавить строки
+    for i := 0 to List.Count - 1 do
+      begin
+      if List.Part[i] = '' then Add(List.Part[i])
+        else begin
+        Line.FromString(List.Part[i]);
+        for j := 0 to Line.Count - 1 do
+          Add(Line.Part[j]);
+        end;
+      end;
+
+  finally
+    Line.Free;
+    List.Free;
+  end;
 end;
 
 
