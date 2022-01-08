@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeFileUtils.pas
-Версия            1.5
+Версия            1.6
 Создан            08.05.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Вспомогательные функции файловой системы
@@ -192,9 +192,8 @@ begin
   Ext := LowerCase(Ext);
   if (Ext <> '') and (Ext[1] = '.') then Delete(Ext, 1, 1);
 
-  //Подготовить путь
-  if Path <> '' then Path := sgeCheckPathDelimiter(Path);
-  Len := Length(Path);
+  //Длина базового пути
+  len := Length(Utf8ToAnsi(Path));
 
   try
     //Создать временный список
@@ -208,10 +207,9 @@ begin
     for i := 0 to c do
       begin
       FnExt := Lst.Part[i];
-      Delete(FnExt, 1, Len);
+      Delete(FnExt, 1, len);
       Lst.Part[i] := FnExt;
       end;
-
 
     //Очистить выходной массив
     List.Clear;
