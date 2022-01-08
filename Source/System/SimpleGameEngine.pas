@@ -27,18 +27,22 @@ const
 
 
 type
-  //Параметры инициализации ядра (Звук)
+  //Параметры инициализации ядра
   TsgeInitOptions = set of (
     ioSound,                //Поддержка звуков
     ioAutoStartScript,      //Автозапуск скрипта старта Autostart.s
     ioAutoStopScript,       //Автозапуск скрипта остановки AutoStop.s
     ioAttachDefaultKeys,    //Установить привязку клавишь по умолчанию
     ioSupportStartExecute,  //Поддержка выполнения команды в строке параметров Execute='Список команд'
-    ioFindPacks             //Рекурсивный поиск архивов в каталоге программы
+    ioFindAndLoadPacks      //Рекурсивный поиск архивов в каталоге программы
     );
 
 
-  //Основной класс движка
+const
+  InitOptionsAll = [ioSound, ioAutoStartScript, ioAutoStopScript, ioAttachDefaultKeys,
+                    ioSupportStartExecute, ioFindAndLoadPacks];
+
+type
   TSimpleGameEngine = class
   private
     //Параметры
@@ -84,7 +88,7 @@ type
     function  EventWindowClose(Obj: TsgeEventBase): Boolean;        //Закрытие окна
     function  EventTime(Obj: TsgeEventBase): Boolean;               //Таймерное событие
   public
-    constructor Create(Options: TsgeInitOptions = [ioAttachDefaultKeys]); virtual;
+    constructor Create(Options: TsgeInitOptions = InitOptionsAll); virtual;
     destructor  Destroy; override;
 
     procedure AttachDefaultKeys;                                    //Привязать на кнопки стандартные действия
@@ -122,6 +126,7 @@ type
     property ExtMusicPlayer: TsgeExtensionMusicPlayer read FExtensionMusicPlayer;
     property ExtCursor: TsgeExtensionCursor read FExtensionCursor;
   end;
+
 
 
 implementation
@@ -301,7 +306,7 @@ begin
     RegisterEventHandlers;
 
     //Проверить автозагрузку архивов
-    if ioFindPacks in FInitOptions then
+    if ioFindAndLoadPacks in FInitOptions then
       FExtensionPackFiles.LoadPackFromDirectory;
 
     //Пользовательская инициализация
