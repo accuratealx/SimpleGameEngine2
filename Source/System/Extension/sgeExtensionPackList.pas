@@ -99,7 +99,7 @@ begin
     Directory := sgeCheckPathDelimiter(Directory);
 
     //Получить список файлов
-    sgeFindFilesInFolderByExt(Directory, List, ExtPack);
+    sgeFindFilesInFolderByExt(Directory, List, Ext);
 
     //Добавить архивы в массив
     try
