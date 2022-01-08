@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeShellScriptList.pas
-Версия            1.2
+Версия            1.3
 Создан            24.08.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Список сценариев оболочки
@@ -40,7 +40,6 @@ const
   _UNITNAME = 'ShellScriptList';
 
   Err_ScriptNotFound      = 'ScriptNotFound';
-  Err_ScriptAlreadyExist  = 'ScriptAlreadyExist';
 
 
 function TsgeShellScriptList.IndexOf(Name: ShortString): Integer;
@@ -81,10 +80,8 @@ var
 begin
   //Проверить на дубликат
   Idx := IndexOf(Name);
-  if Idx <> -1 then
-    raise EsgeException.Create(_UNITNAME, Err_ScriptAlreadyExist, Name);
-
-  inherited Add(TsgeShellScript.Create(Name, Lines));
+  if Idx <> -1 then FList[Idx].FromString(Lines)
+    else inherited Add(TsgeShellScript.Create(Name, Lines));
 end;
 
 
