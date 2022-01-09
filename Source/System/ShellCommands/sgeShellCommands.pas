@@ -38,6 +38,7 @@ uses
   sgeShellCommand_System_Goto,
   sgeShellCommand_System_Run,
   sgeShellCommand_System_Call,
+  sgeShellCommand_System_Execute,
 
   //Variable
   sgeShellCommand_Variable_Set,
@@ -78,6 +79,7 @@ begin
   TsgeShellCommand_System_Goto.Create(SGEObject);
   TsgeShellCommand_System_Run.Create(SGEObject);
   TsgeShellCommand_System_Call.Create(SGEObject);
+  TsgeShellCommand_System_Execute.Create(SGEObject);
 
   //Variables
   TsgeShellCommand_Variable_Set.Create(SGEObject);
