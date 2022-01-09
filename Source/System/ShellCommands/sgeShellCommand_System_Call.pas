@@ -98,10 +98,7 @@ begin
 
   //Не найдена процедура
   if Pos = -1 then
-    begin
-    Result := sgeCreateErrorString(_UNITNAME, Err_ProcedureNotFound, Command.Part[1]);
-    Exit;
-    end;
+    Exit(sgeCreateErrorString(_UNITNAME, Err_ProcedureNotFound, Command.Part[1]));
 
   //Добавить новый элемент стека вызовов
   SGE.ExtShell.CallStack.Add(Script.Name, Pos + 1);

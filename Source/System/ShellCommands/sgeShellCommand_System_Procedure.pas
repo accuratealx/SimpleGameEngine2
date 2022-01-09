@@ -78,20 +78,14 @@ begin
 
   //Если не найден скрипт, то выход
   if Script = nil then
-    begin
-    Result := sgeCreateErrorString(_UNITNAME, Err_ScriptNotFound, Call.Name);
-    Exit;
-    end;
+    Exit(sgeCreateErrorString(_UNITNAME, Err_ScriptNotFound, Call.Name));
 
   //Найти конец процедуры
   Pos := sgeGetProcedureEndInScript(Script, Command.Part[1], Call.Pos);
 
   //Конец процедуры не найден
   if Pos = -1 then
-    begin
-    Result := sgeCreateErrorString(_UNITNAME, Err_CantFindProcedureEnd, Command.Part[1]);
-    Exit;
-    end;
+    Exit(sgeCreateErrorString(_UNITNAME, Err_CantFindProcedureEnd, Command.Part[1]));
 
   //Изменить текущее положение
   Call.Pos := Pos + 1;

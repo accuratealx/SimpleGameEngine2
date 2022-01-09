@@ -73,10 +73,7 @@ begin
 
   //Проверить на пустой указатель
   if Script = nil then
-    begin
-    Result := sgeCreateErrorString(_UNITNAME, Err_ScriptNotFound, ScriptName);
-    Exit;
-    end;
+    Exit(sgeCreateErrorString(_UNITNAME, Err_ScriptNotFound, ScriptName));
 
   //Добавить новый элемент стека вызовов
   SGE.ExtShell.CallStack.Add(ScriptName, 0);

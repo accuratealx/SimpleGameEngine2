@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeExtensionShell.pas
-Версия            1.5
+Версия            1.6
 Создан            14.07.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс расширения: Оболочка
@@ -95,7 +95,6 @@ type
 
 
     //Вспомогательные методы
-    procedure RegisterDefaultAliases;                               //Добавить алиасы по умолчанию
     function  FitSprite(ShellW, ShellH: Single; ImageW, ImageH: Single): TsgeFloatRect; //Взять координаты вывода фонового спрайта
     function  SubstituteVariables(Str: String): String;             //Подставить здначеня переменных в строку
     procedure RunCommand(Cmd: TsgeSimpleCommand);                   //Выполнение разобранной команды
@@ -364,16 +363,6 @@ begin
 end;
 
 
-procedure TsgeExtensionShell.RegisterDefaultAliases;
-begin
-  FAliases.SetValue('Close', 'System.Stop');
-  FAliases.SetValue('Quit', 'System.Stop');
-  FAliases.SetValue('Echo', 'System.Write');
-  FAliases.SetValue('Print', 'System.Write');
-  FAliases.SetValue('Exec', 'System.Run');
-end;
-
-
 function TsgeExtensionShell.FitSprite(ShellW, ShellH: Single; ImageW, ImageH: Single): TsgeFloatRect;
 var
   scrR, imgR: Double;
@@ -510,7 +499,8 @@ begin
       try
         CmdResult := Command.Execute(Cmd);
       except
-        ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_UnexpectedError, Cmd.Command));
+        on E: EsgeException do
+          ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_UnexpectedError, Cmd.Command, E.Message));
       end;
 
       //Проверить результат выполнения
@@ -1031,9 +1021,6 @@ begin
 
     //Установить обработчик ошибок
     ErrorManager.ShellHandler := @ErrorHandler;
-
-    //Добавить стандартные алиасы
-    RegisterDefaultAliases;
 
     //Создать холст
     FCanvas := TsgeGraphicSprite.Create(500, 300);

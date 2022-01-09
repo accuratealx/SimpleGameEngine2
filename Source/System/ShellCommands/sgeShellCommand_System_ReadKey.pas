@@ -89,9 +89,7 @@ begin
 
     //Не дождался нажатия
     sewrTimeOut:
-      begin
       TsgeExtensionShellExt(SGE.ExtShell).FReadKeyMode := False;     //Опустить флаг чтения символа
-      end;
   end;
 
   //Перерисовать оболочку

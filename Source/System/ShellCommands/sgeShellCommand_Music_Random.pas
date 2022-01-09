@@ -56,9 +56,7 @@ begin
   SGE := TSimpleGameEngine(FSGE);
 
   try
-
     SGE.ExtMusicPlayer.Random;
-
   except
     on E: EsgeException do
       Result := sgeCreateErrorString(_UNITNAME, Err_CantPlayMusic, '', E.Message);

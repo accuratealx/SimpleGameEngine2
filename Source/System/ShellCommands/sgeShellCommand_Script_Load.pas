@@ -48,7 +48,6 @@ const
 
   Err_FileNotFound  = 'FileNotFound';
   Err_CantReadFile  = 'CantReadFile';
-  Err_CantLoadFile  = 'CantLoadFile';
 
 
 constructor TsgeShellCommand_Script_Load.Create(SGEObject: TObject);
@@ -64,7 +63,7 @@ end;
 function TsgeShellCommand_Script_Load.Execute(Command: TsgeSimpleCommand): String;
 var
   SGE: TSimpleGameEngine;
-  Fn, S: String;
+  Fn, SName: String;
   MS: TsgeMemoryStream;
 begin
   Result := inherited Execute(Command);
@@ -74,56 +73,45 @@ begin
   fn := Command.Part[1];
 
   //Определить имя скрипта
-  if Command.Count > 2 then S := Command.Part[2] else S := sgeChangeFileExt(sgeExtractFileName(Fn), '');
+  if Command.Count > 2 then SName := Command.Part[2] else
+    SName := sgeChangeFileExt(sgeExtractFileName(Fn), '');
 
   //Загрузить
   MS := TsgeMemoryStream.Create;
   try
-  //Определить тип пути
-  case sgeIsFullPath(Fn) of
-    //Полный путь
-    True:
-      begin
-      if not sgeFileExists(Fn) then
+
+    //Определить тип пути
+    case sgeIsFullPath(Fn) of
+      //Полный путь
+      True:
         begin
-        Result := sgeCreateErrorString(_UNITNAME, Err_FileNotFound, Fn);
-        Exit;
+        if not sgeFileExists(Fn) then
+          Exit(sgeCreateErrorString(_UNITNAME, Err_FileNotFound, Fn));
+
+        try
+          MS.LoadFromFile(Fn);
+        except
+          Exit(sgeCreateErrorString(_UNITNAME, Err_CantReadFile, Fn));
+        end;
         end;
 
-      try
-        MS.LoadFromFile(Fn);
-      except
-        Result := sgeCreateErrorString(_UNITNAME, Err_CantReadFile, Fn);
-        Exit;
-      end;
-      end;
-
-    //Короткий путь
-    False:
-      begin
-      if not SGE.ExtFileSystem.FileExists(Fn) then
+      //Короткий путь
+      False:
         begin
-        Result := sgeCreateErrorString(_UNITNAME, Err_FileNotFound, Fn);
-        Exit;
+        if not SGE.ExtFileSystem.FileExists(Fn) then
+          Exit(sgeCreateErrorString(_UNITNAME, Err_FileNotFound, Fn));
+
+        try
+          SGE.ExtFileSystem.ReadFile(Fn, MS);
+        except
+          Exit(sgeCreateErrorString(_UNITNAME, Err_CantReadFile, Fn));
         end;
-
-      try
-        SGE.ExtFileSystem.ReadFile(Fn, MS);
-      except
-        Result := sgeCreateErrorString(_UNITNAME, Err_CantReadFile, Fn);
-        Exit;
-      end;
-      end;
-  end;
+        end;
+    end;
 
 
-  //Добавить скрипт в список
-  try
-    SGE.ExtShell.ScriptList.Add(S, MS.ToString);
-  except
-    on E: EsgeException do
-      Result := sgeCreateErrorString(_UNITNAME, Err_CantLoadFile, Fn, E.Message);
-  end;
+    //Добавить скрипт в список
+    SGE.ExtShell.ScriptList.Add(SName, MS.ToString);
 
 
   finally

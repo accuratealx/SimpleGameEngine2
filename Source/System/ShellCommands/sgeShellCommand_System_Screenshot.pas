@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeShellCommand_System_Screenshot.pas
-Версия            1.0
+Версия            1.1
 Создан            14.08.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Команда одолочки
@@ -38,8 +38,12 @@ type
 implementation
 
 uses
-  SimpleGameEngine;
+  SimpleGameEngine, sgeErrors;
 
+const
+  _UNITNAME = 'ShellCommand_System_Screenshot';
+
+  Err_CantCreateScreenshot  = 'CantCreateScreenshot';
 
 
 constructor TsgeShellCommand_System_Screenshot.Create(SGEObject: TObject);
@@ -57,7 +61,12 @@ begin
   Result := inherited Execute(Command);
   SGE := TSimpleGameEngine(FSGE);
 
-  SGE.ScreenShot(Command.GetPartSafe(1, ''));
+  try
+    SGE.ScreenShot(Command.GetPartSafe(1, ''));
+  except
+    on E: EsgeException do
+      Result := sgeCreateErrorString(_UNITNAME, Err_CantCreateScreenshot, '', E.Message);
+  end;
 end;
 
 

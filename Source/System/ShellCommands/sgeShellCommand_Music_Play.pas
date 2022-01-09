@@ -61,10 +61,8 @@ begin
   SGE := TSimpleGameEngine(FSGE);
 
   try
-
     if Command.Count > 1 then SGE.ExtMusicPlayer.Play(Command.Part[1])
       else SGE.ExtMusicPlayer.Play;
-
   except
     on E: EsgeException do
       Result := sgeCreateErrorString(_UNITNAME, Err_CantPlayMusic, '', E.Message);
