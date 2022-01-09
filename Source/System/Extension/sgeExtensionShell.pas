@@ -137,7 +137,7 @@ type
     procedure LogMessage(Text: String; MsgType: TsgeShellMessageType = smtText);
 
     //Выполнить команду
-    procedure DoCommand(Cmd: String);
+    procedure DoCommand(Cmd: String; Wait: Boolean = False);
     procedure StopCommand;
 
     //Классы
@@ -1013,7 +1013,7 @@ begin
     FEditorSelectColor  := sgeChangeColorAlpha(FEditorCursorColor, 0.5);
     FErrorColor         := sgeRGBAToColor(255, 0, 0, 255);
     FTextColor          := sgeRGBAToColor(255, 255, 255, 255);
-    FNoteColor          := sgeRGBAToColor(255, 255, 255, 128);
+    FNoteColor          := sgeRGBAToColor(128, 128, 128, 255);
 
 
     //Активировать графику
@@ -1100,13 +1100,14 @@ begin
 end;
 
 
-procedure TsgeExtensionShell.DoCommand(Cmd: String);
+procedure TsgeExtensionShell.DoCommand(Cmd: String; Wait: Boolean);
 begin
   //Добавить команду в список
   FCommandQueue.Add(Cmd);
 
   //Установить обработчик для потока
-  FThread.RunProc(@ProcessCommand, tpemSuspend);
+  if Wait then FThread.RunProcAndWait(@ProcessCommand, tpemSuspend)
+    else FThread.RunProc(@ProcessCommand, tpemSuspend);
 end;
 
 

@@ -80,7 +80,7 @@ type
     //Вспомогательные методы
     procedure CheckStartParameter_Execute;
     procedure CheckStartParameter_Debug;                            //Обработать стартовые параметры
-    procedure RunScript(ScriptName: String);                        //Запустить скрипт
+    procedure RunScript(ScriptName: String; Wait: Boolean = False); //Запустить скрипт
 
     //Обработчики событий
     procedure RegisterEventHandlers;                                //Подписать системные обработчики событий
@@ -181,13 +181,13 @@ begin
 end;
 
 
-procedure TSimpleGameEngine.RunScript(ScriptName: String);
+procedure TSimpleGameEngine.RunScript(ScriptName: String; Wait: Boolean);
 var
   s: String;
 begin
   s := ScriptName + '.' + Ext_Script;
   if FExtensionFileSystem.FileExists(s) then
-    FExtensionShell.DoCommand('Script.Load ' + s + '; System.Run ' + ScriptName);
+    FExtensionShell.DoCommand('Script.Load ' + s + '; System.Run ' + ScriptName, Wait);
 end;
 
 
@@ -342,7 +342,7 @@ destructor TSimpleGameEngine.Destroy;
 begin
   //Проверить скрипт автоостанова
   if ioAutoStopScript in FInitOptions then
-    RunScript(Script_AutoStopName);
+    RunScript(Script_AutoStopName, True);
 
   //Отписать системные обработчики событий
   UnregisterEventHandlers;
