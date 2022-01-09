@@ -155,6 +155,7 @@ const
   //Имена стартовых параметров
   spDebug = 'Debug';
   spExecute = 'Execute';
+  spNoSound = 'NoSound';
 
 
 procedure TSimpleGameEngine.SetDebug(ADebug: Boolean);
@@ -290,7 +291,8 @@ begin
     FExtensionKeyCommand := TsgeExtensionKeyCommand.Create(FObjectList);            //Команда на кнопках
     FExtensionTimeEvent := TsgeExtensionTimeEvent.Create(FObjectList);              //Таймерные события
     FExtensionGUI := TsgeExtensionGUI.Create(FObjectList);                          //GUI
-    if ioSound in FInitOptions then
+
+    if (ioSound in FInitOptions) and (not FExtensionStartParameters.Parameters.Exist[spNoSound]) then
       begin
       FExtensionSound := TsgeExtensionSound.Create(FObjectList);                    //Звуковая система
       FExtensionMusicPlayer := TsgeExtensionMusicPlayer.Create(FObjectList);        //Музыкальный проигрыватель
