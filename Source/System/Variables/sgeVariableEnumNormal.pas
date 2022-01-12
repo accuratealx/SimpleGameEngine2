@@ -42,7 +42,6 @@ uses
 const
   _UNITNAME = 'VariableEnumNormal';
 
-  Err_UnknownValue = 'UnknownValue';
 
 
 function TsgeVariableEnumNormal.GetValue: String;

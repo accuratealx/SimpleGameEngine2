@@ -16,8 +16,12 @@ interface
 
 
 const
-  Err_VariableIsReadOnly    = 'VariableIsReadOnly';
-  Err_VariableGetterIsEmpty = 'VariableGetterIsEmpty';
+  //Ошибки
+  Err_DefaultIndexOutOfBounds = 'DefaultIndexOutOfBounds';
+  Err_UnknownValue            = 'UnknownValue';
+  Err_VariableGetterIsEmpty   = 'VariableGetterIsEmpty';
+  Err_VariableIsReadOnly      = 'VariableIsReadOnly';
+  Err_ZeroEnum                = 'ZeroEnum';
 
 
 type

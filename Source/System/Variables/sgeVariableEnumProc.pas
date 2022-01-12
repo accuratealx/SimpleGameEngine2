@@ -48,7 +48,6 @@ uses
 const
   _UNITNAME = 'VariableEnumProc';
 
-  Err_UnknownValue = 'UnknownValue';
 
 
 function TsgeVariableEnumProc.GetValue: String;

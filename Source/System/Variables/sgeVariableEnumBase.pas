@@ -51,9 +51,6 @@ uses
 const
   _UNITNAME = 'VariableEnumBase';
 
-  Err_ZeroEnum                = 'ZeroEnum';
-  Err_DefaultIndexOutOfBounds = 'DefaultIndexOutOfBounds';
-
 
 
 procedure TsgeVariableEnumBase.SetStrValue(Str: String);
