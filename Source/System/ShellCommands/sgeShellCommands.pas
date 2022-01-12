@@ -57,6 +57,11 @@ uses
   sgeShellCommand_Music_Prev,
   sgeShellCommand_Music_Random,
 
+  //CommandHistory
+  sgeShellCommand_CommandHistory_Clear,
+  sgeShellCommand_CommandHistory_Save,
+  sgeShellCommand_CommandHistory_Load,
+
   //WinDialogs
   sgeShellCommand_Dialog_Message;
 
@@ -100,6 +105,11 @@ begin
     TsgeShellCommand_Music_Prev.Create(SGEObject);
     TsgeShellCommand_Music_Random.Create(SGEObject);
     end;
+
+  //CommandHistory
+  TsgeShellCommand_CommandHistory_Clear.Create(SGEObject);
+  TsgeShellCommand_CommandHistory_Save.Create(SGEObject);
+  TsgeShellCommand_CommandHistory_Load.Create(SGEObject);
 
   //WinDialogs
   TsgeShellCommand_Dialog_Message.Create(SGEObject);
