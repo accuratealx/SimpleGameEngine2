@@ -48,7 +48,6 @@ constructor TsgeShellCommand_Music_Play.Create(SGEObject: TObject);
 begin
   inherited Create(SGEObject, 'Play', Group_Music);
 
-  //Добавить параметры
   FParameters.AddString('TrackName', False);
 end;
 

@@ -44,6 +44,7 @@ type
   TsgeExtensionShellExt = class(TsgeExtensionShell);
 
 
+
 constructor TsgeShellCommand_System_Read.Create(SGEObject: TObject);
 begin
   inherited Create(SGEObject, 'Read', Group_System);

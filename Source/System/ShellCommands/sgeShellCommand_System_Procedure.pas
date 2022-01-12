@@ -46,16 +46,12 @@ uses
 const
   _UNITNAME = 'ShellCommand_System_Procedure';
 
-  Err_ScriptNotFound        = 'ScriptNotFound';
-  Err_CantFindProcedureEnd  = 'CantFindProcedureEnd';
-
 
 
 constructor TsgeShellCommand_System_Procedure.Create(SGEObject: TObject);
 begin
   inherited Create(SGEObject, 'Procedure', Group_System);
 
-  //Добавить параметры
   FParameters.AddString('Name', True);
 end;
 

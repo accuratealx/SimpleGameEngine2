@@ -43,7 +43,6 @@ uses
 const
   _UNITNAME = 'ShellCommand_System_Screenshot';
 
-  Err_CantCreateScreenshot  = 'CantCreateScreenshot';
 
 
 constructor TsgeShellCommand_System_Screenshot.Create(SGEObject: TObject);

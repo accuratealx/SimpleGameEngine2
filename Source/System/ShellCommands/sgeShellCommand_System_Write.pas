@@ -45,7 +45,6 @@ constructor TsgeShellCommand_System_Write.Create(SGEObject: TObject);
 begin
   inherited Create(SGEObject, 'Write', Group_System);
 
-  //Добавить параметры
   FParameters.AddString('Message', False);
 end;
 

@@ -43,8 +43,6 @@ uses
 constructor TsgeShellCommand_System_Stop.Create(SGEObject: TObject);
 begin
   inherited Create(SGEObject, 'Stop', Group_System);
-
-  //Добавить параметры
 end;
 
 

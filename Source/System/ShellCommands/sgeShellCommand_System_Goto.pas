@@ -45,15 +45,12 @@ uses
 const
   _UNITNAME = 'ShellCommand_System_Goto';
 
-  Err_ScriptNotFound  = 'ScriptNotFound';
-  Err_LabelNotFound   = 'LabelNotFound';
 
 
 constructor TsgeShellCommand_System_Goto.Create(SGEObject: TObject);
 begin
   inherited Create(SGEObject, 'Goto', Group_System);
 
-  //Добавить параметры
   FParameters.AddString('Label', True);
 end;
 

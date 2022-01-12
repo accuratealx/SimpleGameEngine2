@@ -46,7 +46,6 @@ constructor TsgeShellCommand_System_Sleep.Create(SGEObject: TObject);
 begin
   inherited Create(SGEObject, 'Sleep', Group_System);
 
-  //Добавить параметры
   FParameters.AddInteger('Time', True);
 end;
 

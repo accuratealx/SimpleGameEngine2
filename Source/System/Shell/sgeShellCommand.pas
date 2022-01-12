@@ -27,10 +27,15 @@ const
   Group_Dialog    = 'Dialog';
 
   //Ошибки
-  _UNITNAME = 'ShellCommand';
-
-  Err_VariableIsReadOnly = 'VariableIsReadOnly';
-  Err_CantPlayMusic = 'CantPlayMusic';
+  Err_CantChangeValue       = 'CantChangeValue';
+  Err_CantCreateScreenshot  = 'CantCreateScreenshot';
+  Err_CantFindProcedureEnd  = 'CantFindProcedureEnd';
+  Err_CantPlayMusic         = 'CantPlayMusic';
+  Err_LabelNotFound         = 'LabelNotFound';
+  Err_LoadError             = 'LoadError';
+  Err_ProcedureNotFound     = 'ProcedureNotFound';
+  Err_ScriptNotFound        = 'ScriptNotFound';
+  Err_VariableIsReadOnly    = 'VariableIsReadOnly';
 
 
 type

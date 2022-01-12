@@ -43,15 +43,12 @@ uses
 const
   _UNITNAME = 'sgeShellCommand_Script_Delete';
 
-  Err_ScriptNotFound = 'ScriptNotFound';
-
 
 
 constructor TsgeShellCommand_Script_Delete.Create(SGEObject: TObject);
 begin
   inherited Create(SGEObject, 'Delete', Group_Script);
 
-  //Добавить параметры
   FParameters.AddString('Name', True);
 end;
 

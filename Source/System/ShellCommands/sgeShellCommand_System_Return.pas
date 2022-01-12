@@ -46,7 +46,6 @@ constructor TsgeShellCommand_System_Return.Create(SGEObject: TObject);
 begin
   inherited Create(SGEObject, 'Return', Group_System);
 
-  //Добавить параметры
   FParameters.AddString('Name', False);
 end;
 

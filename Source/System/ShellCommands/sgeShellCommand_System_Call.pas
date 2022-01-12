@@ -45,16 +45,11 @@ uses
 const
   _UNITNAME = 'ShellCommand_System_Call';
 
-  Err_ScriptNotFound  = 'ScriptNotFound';
-  Err_ProcedureNotFound   = 'ProcedureNotFound';
-
-
 
 constructor TsgeShellCommand_System_Call.Create(SGEObject: TObject);
 begin
   inherited Create(SGEObject, 'Call', Group_System);
 
-  //Добавить параметры
   FParameters.AddString('ProcName', True);
 end;
 

@@ -46,7 +46,6 @@ uses
 const
   _UNITNAME = 'ShellCommand_Variable_Set';
 
-  Err_CantChangeValue = 'CantChangeValue';
 
 
 constructor TsgeShellCommand_Variable_Set.Create(SGEObject: TObject);

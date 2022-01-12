@@ -43,15 +43,12 @@ uses
 const
   _UNITNAME = 'ShellCommand_System_Run';
 
-  Err_ScriptNotFound = 'ScriptNotFound';
-
 
 
 constructor TsgeShellCommand_System_Run.Create(SGEObject: TObject);
 begin
   inherited Create(SGEObject, 'Run', Group_System);
 
-  //Добавить параметры
   FParameters.AddString('Script', True);
 end;
 
