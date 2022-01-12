@@ -15,7 +15,7 @@
     </CompilerOptions>
     <Description Value="Simple Game Engine 2"/>
     <Version Major="1"/>
-    <Files Count="231">
+    <Files Count="235">
       <Item1>
         <Filename Value="..\Source\ThirdParty\GDIPlus\GDIPAPI.pas"/>
         <UnitName Value="GDIPAPI"/>
@@ -910,8 +910,8 @@
         <UnitName Value="sgeShellCommand_Music_Prev"/>
       </Item222>
       <Item223>
-        <Filename Value="..\Source\System\ShellCommands\sgeShellCommand_Music_Stop.pas"/>
-        <UnitName Value="sgeShellCommand_Music_Stop"/>
+        <Filename Value="..\Source\System\ShellCommands\sgeShellCommand_CommandHistory_Load.pas"/>
+        <UnitName Value="sgeShellCommand_CommandHistory_Load"/>
       </Item223>
       <Item224>
         <Filename Value="..\Source\System\ShellCommands\sgeShellCommand_System_Stop.pas"/>
@@ -945,6 +945,22 @@
         <Filename Value="..\Source\System\Extension\sgeExtensionCursor.pas"/>
         <UnitName Value="sgeExtensionCursor"/>
       </Item231>
+      <Item232>
+        <Filename Value="..\Source\System\ShellCommands\sgeShellCommand_CommandHistory_Clear.pas"/>
+        <UnitName Value="sgeShellCommand_CommandHistory_Clear"/>
+      </Item232>
+      <Item233>
+        <Filename Value="..\Source\System\ShellCommands\sgeShellCommand_CommandHistory_Save.pas"/>
+        <UnitName Value="sgeShellCommand_CommandHistory_Save"/>
+      </Item233>
+      <Item234>
+        <Filename Value="..\Source\System\ShellCommands\sgeShellCommand_Music_Stop.pas"/>
+        <UnitName Value="sgeShellCommand_Music_Stop"/>
+      </Item234>
+      <Item235>
+        <Filename Value="..\Source\System\ShellCommands\sgeShellCommand_Script_Load.pas"/>
+        <UnitName Value="sgeShellCommand_Script_Load"/>
+      </Item235>
     </Files>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)"/>

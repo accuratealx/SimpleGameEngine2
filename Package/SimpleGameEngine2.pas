@@ -77,10 +77,12 @@ uses
   sgeVariableStringBase, sgeVariableStringClass, sgeVariableStringNormal, 
   sgeVariableEnumClass, sgeEventGraphic, sgeGUIToggleSpriteButton, 
   sgeShellCommand_Music_Next, sgeShellCommand_Music_Play, 
-  sgeShellCommand_Music_Prev, sgeShellCommand_Music_Stop, 
+  sgeShellCommand_Music_Prev, sgeShellCommand_CommandHistory_Load, 
   sgeShellCommand_System_Stop, sgeGUIPropertyFont, sgeGUILabel, 
   sgeGUIPropertyLabel, sgeGUIScrollBar, sgeGUITypes, sgeCursor, 
-  sgeExtensionCursor;
+  sgeExtensionCursor, sgeShellCommand_CommandHistory_Clear, 
+  sgeShellCommand_CommandHistory_Save, sgeShellCommand_Music_Stop, 
+  sgeShellCommand_Script_Load;
 
 implementation
 
