@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeFileStream.pas
-Версия            1.3
+Версия            1.4
 Создан            27.04.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс доступа к набору байт в памяти
@@ -144,19 +144,14 @@ var
   F: TsgeFile;
 begin
   try
-
-    try
-      F := TsgeFile.Create(FileName, fmWrite, True);
-      F.Size := 0;
-      F.Write(Data^, FSize);
-      F.Flush;
-    except
-      on E: EsgeException do
-        raise EsgeException.Create(_UNITNAME, Err_CantWriteFile, FileName, E.Message);
-    end;
-
-  finally
+    F := TsgeFile.Create(FileName, fmWrite, True);
+    F.Size := 0;
+    F.Write(Data^, FSize);
+    F.Flush;
     F.Free;
+  except
+    on E: EsgeException do
+      raise EsgeException.Create(_UNITNAME, Err_CantWriteFile, FileName, E.Message);
   end;
 end;
 
