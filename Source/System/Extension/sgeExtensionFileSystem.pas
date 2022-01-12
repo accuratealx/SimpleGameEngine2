@@ -251,10 +251,15 @@ end;
 
 procedure TsgeExtensionFileSystem.WriteFile(FileName: String; Stream: TsgeMemoryStream);
 var
-  Fn: String;
+  Fn, Dir: String;
 begin
   //Определить имя файла
   Fn := GetNormalFileName(FileName);
+  Dir := sgeExtractFilePath(Fn);
+
+  //Cоздать недостающие каталоги
+  if not sgeForceDirectories(Dir) then
+    raise EsgeException.Create(_UNITNAME, Err_CantCreateDirectory, Dir);
 
   //Сохранить файл
   try
