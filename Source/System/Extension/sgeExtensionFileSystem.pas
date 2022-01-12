@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeExtensionFileSystem.pas
-Версия            1.3
+Версия            1.4
 Создан            12.05.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс расширения: Файловая система
@@ -37,6 +37,7 @@ type
     //Поиск файла в списке архивов
     procedure GetFilePackIndex(FileName: String; var PackIndex, FileIndex: Integer);
 
+    function GetNormalFileName(FileName: String): String;
   protected
     class function GetName: String; override;
 
@@ -50,7 +51,9 @@ type
     //Операции с файлами
     function  FileExists(FileName: String): Boolean;
     procedure ReadFile(FileName: String; Stream: TsgeMemoryStream);
+    function  ReadFile(FileName: String): String;
     procedure WriteFile(FileName: String; Stream: TsgeMemoryStream);
+    procedure WriteFile(FileName: String; Data: String);
     procedure DeleteFile(FileName: String);
     procedure RenameFile(OldName, NewName: String);
     function  GetFileSize(FileName: String): Int64;
@@ -110,6 +113,13 @@ begin
 end;
 
 
+function TsgeExtensionFileSystem.GetNormalFileName(FileName: String): String;
+begin
+  if sgeIsFullPath(FileName) then Result := FileName
+    else Result := FMainDir + FileName;
+end;
+
+
 class function TsgeExtensionFileSystem.GetName: String;
 begin
   Result := Extension_FileSystem;
@@ -155,12 +165,11 @@ var
   PackIdx, FileIdx: Integer;
 begin
   //Проверить в файловой системе
-  if sgeFileExists(FMainDir + FileName) then
+  if sgeFileExists(GetNormalFileName(FileName)) then
     begin
     Result := True;
     Exit;
     end;
-
 
   //Проверить файл в архивах
   GetFilePackIndex(FileName, PackIdx, FileIdx);
@@ -172,24 +181,24 @@ procedure TsgeExtensionFileSystem.ReadFile(FileName: String; Stream: TsgeMemoryS
 const
   ModeFile = 0;
   ModePack = 1;
-
 var
-  fn: String;
+  Fn: String;
   F: TsgeFile;
   PackIdx, FileIdx: Integer;
   Mode: Byte;
 begin
   //Определить имя файла
-  fn := FMainDir + FileName;
+  Fn := GetNormalFileName(FileName);
 
   //Определить режим загрузки
-  if sgeFileExists(fn) then Mode := ModeFile else Mode := ModePack;
+  if sgeFileExists(Fn) then Mode := ModeFile
+    else Mode := ModePack;
 
-
+  //Загрузить файл
   case Mode of
     ModeFile:
       try
-        F := TsgeFile.Create(fn, fmRead, False);
+        F := TsgeFile.Create(Fn, fmRead, False);
         Stream.Size := F.Size;
         F.Read(Stream.Data^, F.Size);
         F.Free;
@@ -223,26 +232,76 @@ begin
 end;
 
 
-procedure TsgeExtensionFileSystem.WriteFile(FileName: String; Stream: TsgeMemoryStream);
+function TsgeExtensionFileSystem.ReadFile(FileName: String): String;
+var
+  MS: TsgeMemoryStream;
 begin
+  Result := '';
+
+  //Прочитать файл
+  MS := TsgeMemoryStream.Create;
   try
-    Stream.SaveToFile(FMainDir + FileName);
+    ReadFile(FileName, MS);
+    Result := MS.ToString;
+  finally
+    MS.Free;
+  end;
+end;
+
+
+procedure TsgeExtensionFileSystem.WriteFile(FileName: String; Stream: TsgeMemoryStream);
+var
+  Fn: String;
+begin
+  //Определить имя файла
+  Fn := GetNormalFileName(FileName);
+
+  //Сохранить файл
+  try
+    Stream.SaveToFile(Fn);
   except
-    raise EsgeException.Create(_UNITNAME, Err_CantWriteFile, FileName);
+    raise EsgeException.Create(_UNITNAME, Err_CantWriteFile, Fn);
+  end;
+end;
+
+
+procedure TsgeExtensionFileSystem.WriteFile(FileName: String; Data: String);
+var
+  MS: TsgeMemoryStream;
+begin
+  //Записать файл
+  MS := TsgeMemoryStream.Create;
+  try
+    MS.FromString(Data);
+    WriteFile(FileName, MS);
+  finally
+    MS.Free;
   end;
 end;
 
 
 procedure TsgeExtensionFileSystem.DeleteFile(FileName: String);
+var
+  Fn: String;
 begin
-  if not sgeDeleteFile(FileName) then
-    raise EsgeException.Create(_UNITNAME, Err_CantDeleteFile, FileName);
+  //Определить имя файла
+  Fn := GetNormalFileName(FileName);
+
+  //Удалить
+  if not sgeDeleteFile(Fn) then
+    raise EsgeException.Create(_UNITNAME, Err_CantDeleteFile, Fn);
 end;
 
 
 procedure TsgeExtensionFileSystem.RenameFile(OldName, NewName: String);
+var
+  OldFn, NewFn: String;
 begin
-  if not sgeRenameFile(FMainDir + OldName, FMainDir + NewName) then
+  //Определить имена файлов
+  OldFn := GetNormalFileName(OldName);
+  NewFn := GetNormalFileName(NewName);
+
+  if not sgeRenameFile(OldFn, NewFn) then
     raise EsgeException.Create(_UNITNAME, Err_CantRenameFile);
 end;
 
@@ -255,12 +314,9 @@ begin
   Result := -1;
 
   //Проверить файл на диске
-  Fn := FMainDir + FileName;
+  Fn := GetNormalFileName(FileName);
   if sgeFileExists(Fn) then
-    begin
-    Result := sgeGetFileSize(Fn);
-    Exit;
-    end;
+    Exit(sgeGetFileSize(Fn));
 
   //Поиск в архивах
   GetFilePackIndex(FileName, PackIdx, FileIdx);
