@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeVariables.pas
-Версия            1.1
+Версия            1.2
 Создан            24.08.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Методы виртуальных переменных
@@ -115,6 +115,17 @@ end;
 function ExtensionShell_GetNoteColor: TsgeRGBA;
 begin
   Result := sgeColorToRGBA(SGE.ExtShell.NoteColor);
+end;
+
+
+procedure ExtensionShell_CommandHistory_SetMaxLines(AMaxLines: Integer);
+begin
+  SGE.ExtShell.CommandHistory.MaxLines := AMaxLines;
+end;
+
+function ExtensionShell_CommandHistory_GetMaxLines: Integer;
+begin
+  Result := SGE.ExtShell.CommandHistory.MaxLines;
 end;
 {$EndRegion Shell}
 
@@ -294,6 +305,9 @@ begin
     AddColor('Shell.ErrorColor', sgeGetRGBA(255, 0, 0, 255), @ExtensionShell_GetErrorColor, @ExtensionShell_SetErrorColor);
     AddColor('Shell.TextColor', sgeGetRGBA(255, 255, 255, 255), @ExtensionShell_GetTextColor, @ExtensionShell_SetTextColor);
     AddColor('Shell.NoteColor', sgeGetRGBA(255, 255, 255, 128), @ExtensionShell_GetNoteColor, @ExtensionShell_SetNoteColor);
+
+    AddInteger('CommandHistory.MaxLines', 1024, @ExtensionShell_CommandHistory_GetMaxLines, @ExtensionShell_CommandHistory_SetMaxLines, 0, $FFFF);
+
 
     //Controllers
     AddBoolean('Controllers.Enable', False, @ExtensionControllers_GetEnable, @ExtensionControllers_SetEnable, 'On', 'Off');
