@@ -41,20 +41,17 @@ type
 implementation
 
 uses
-  SimpleGameEngine, sgeErrors, sgeMemoryStream, sgeFileUtils, sgeOSPlatform;
+  SimpleGameEngine, sgeErrors, sgeFileUtils, sgeOSPlatform;
 
 const
   _UNITNAME = 'ShellCommand_Script_Load';
 
-  Err_FileNotFound  = 'FileNotFound';
-  Err_CantReadFile  = 'CantReadFile';
 
 
 constructor TsgeShellCommand_Script_Load.Create(SGEObject: TObject);
 begin
   inherited Create(SGEObject, 'Load', Group_Script);
 
-  //Добавить параметры
   FParameters.AddString('FileName', True);
   FParameters.AddString('Name', False);
 end;
@@ -63,8 +60,7 @@ end;
 function TsgeShellCommand_Script_Load.Execute(Command: TsgeSimpleCommand): String;
 var
   SGE: TSimpleGameEngine;
-  Fn, SName: String;
-  MS: TsgeMemoryStream;
+  FnLines, Fn, SName: String;
 begin
   Result := inherited Execute(Command);
   SGE := TSimpleGameEngine(FSGE);
@@ -76,47 +72,16 @@ begin
   if Command.Count > 2 then SName := Command.Part[2] else
     SName := sgeChangeFileExt(sgeExtractFileName(Fn), '');
 
-  //Загрузить
-  MS := TsgeMemoryStream.Create;
+  //Прочитать файл
   try
-
-    //Определить тип пути
-    case sgeIsFullPath(Fn) of
-      //Полный путь
-      True:
-        begin
-        if not sgeFileExists(Fn) then
-          Exit(sgeCreateErrorString(_UNITNAME, Err_FileNotFound, Fn));
-
-        try
-          MS.LoadFromFile(Fn);
-        except
-          Exit(sgeCreateErrorString(_UNITNAME, Err_CantReadFile, Fn));
-        end;
-        end;
-
-      //Короткий путь
-      False:
-        begin
-        if not SGE.ExtFileSystem.FileExists(Fn) then
-          Exit(sgeCreateErrorString(_UNITNAME, Err_FileNotFound, Fn));
-
-        try
-          SGE.ExtFileSystem.ReadFile(Fn, MS);
-        except
-          Exit(sgeCreateErrorString(_UNITNAME, Err_CantReadFile, Fn));
-        end;
-        end;
-    end;
-
-
-    //Добавить скрипт в список
-    SGE.ExtShell.ScriptList.Add(SName, MS.ToString);
-
-
-  finally
-    MS.Free;
+    FnLines := SGE.ExtFileSystem.ReadFile(Fn);
+  except
+    on E: EsgeException do
+      Exit(sgeCreateErrorString(_UNITNAME, Err_LoadError, Fn, E.Message));
   end;
+
+  //Добавить скрипт в список
+  SGE.ExtShell.ScriptList.Add(SName, FnLines);
 end;
 
 
