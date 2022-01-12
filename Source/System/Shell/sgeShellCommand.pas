@@ -19,12 +19,13 @@ uses
 
 const
   //Группы
-  Group_System    = 'System';
-  Group_Music     = 'Music';
-  Group_Shell     = 'Shell';
-  Group_Variables = 'Variable';
-  Group_Script    = 'Script';
-  Group_Dialog    = 'Dialog';
+  Group_System          = 'System';
+  Group_Music           = 'Music';
+  Group_Shell           = 'Shell';
+  Group_Variables       = 'Variable';
+  Group_Script          = 'Script';
+  Group_CommandHistory  = 'CommandHistory';
+  Group_Dialog          = 'Dialog';
 
   //Ошибки
   Err_CantChangeValue       = 'CantChangeValue';
@@ -34,6 +35,7 @@ const
   Err_LabelNotFound         = 'LabelNotFound';
   Err_LoadError             = 'LoadError';
   Err_ProcedureNotFound     = 'ProcedureNotFound';
+  Err_SaveError             = 'SaveError';
   Err_ScriptNotFound        = 'ScriptNotFound';
   Err_VariableIsReadOnly    = 'VariableIsReadOnly';
 

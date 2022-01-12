@@ -77,7 +77,7 @@ begin
     FnLines := SGE.ExtFileSystem.ReadFile(Fn);
   except
     on E: EsgeException do
-      Exit(sgeCreateErrorString(_UNITNAME, Err_LoadError, Fn, E.Message));
+      Exit(sgeCreateErrorString(_UNITNAME, Err_LoadError, '', E.Message));
   end;
 
   //Добавить скрипт в список
