@@ -33,14 +33,14 @@ type
     ioAutoStartScript,      //Автозапуск скрипта старта Autostart.s
     ioAutoStopScript,       //Автозапуск скрипта остановки AutoStop.s
     ioAttachDefaultKeys,    //Установить привязку клавишь по умолчанию
-    ioSupportStartExecute,  //Поддержка выполнения команды в строке параметров Execute='Список команд'
+    ioSupportRunCommand,    //Поддержка выполнения команды в строке параметров Run='Список команд'
     ioFindAndLoadPacks      //Рекурсивный поиск архивов в каталоге программы
     );
 
 
 const
   InitOptionsAll = [ioSound, ioAutoStartScript, ioAutoStopScript, ioAttachDefaultKeys,
-                    ioSupportStartExecute, ioFindAndLoadPacks];
+                    ioSupportRunCommand, ioFindAndLoadPacks];
 
 type
   TSimpleGameEngine = class
@@ -78,7 +78,7 @@ type
     procedure SetDebug(ADebug: Boolean);
 
     //Вспомогательные методы
-    procedure CheckStartParameter_Execute;
+    procedure CheckStartParameter_Run;
     procedure CheckStartParameter_Debug;                            //Обработать стартовые параметры
     procedure RunScript(ScriptName: String; Wait: Boolean = False); //Запустить скрипт
 
@@ -154,7 +154,7 @@ const
 
   //Имена стартовых параметров
   spDebug = 'Debug';
-  spExecute = 'Execute';
+  spRunCommand = 'Run';
   spNoSound = 'NoSound';
 
 
@@ -167,10 +167,10 @@ begin
 end;
 
 
-procedure TSimpleGameEngine.CheckStartParameter_Execute;
+procedure TSimpleGameEngine.CheckStartParameter_Run;
 begin
-  if FExtensionStartParameters.Parameters.Exist[spExecute] then
-    FExtensionShell.DoCommand(FExtensionStartParameters.Parameters.Value[spExecute]);
+  if FExtensionStartParameters.Parameters.Exist[spRunCommand] then
+    FExtensionShell.DoCommand(FExtensionStartParameters.Parameters.Value[spRunCommand]);
 end;
 
 
@@ -323,8 +323,8 @@ begin
       RunScript(Script_AutoStartName);
 
     //Проверить команды оболочки в стартовых параметрах
-    if ioSupportStartExecute in FInitOptions then
-      CheckStartParameter_Execute;
+    if ioSupportRunCommand in FInitOptions then
+      CheckStartParameter_Run;
 
   except
     //Ошибка инициализации движка
