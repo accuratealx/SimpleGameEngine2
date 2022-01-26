@@ -95,6 +95,7 @@ type
     procedure ScreenShot(FileName: String = '');                    //Сохранить снимок окна в BMP
 
     procedure Init; virtual;                                        //Пользовательская инициализация
+    procedure DeInit; virtual;                                      //Пользовательская финализация
     function  CloseWindow: Boolean; virtual;                        //Возможность закрытия окна
 
     procedure Run;                                                  //Запустить приложение
@@ -238,6 +239,13 @@ begin
 end;
 
 
+procedure TSimpleGameEngine.DeInit;
+begin
+  //Код финализации пользователя.
+  //Метод вызывается в деструкторе
+end;
+
+
 function TSimpleGameEngine.CloseWindow: Boolean;
 begin
   Result := True;
@@ -343,6 +351,9 @@ begin
   //Проверить скрипт автоостанова
   if ioAutoStopScript in FInitOptions then
     RunScript(Script_AutoStopName, True);
+
+  //Пользосательская финализация
+  DeInit;
 
   //Отписать системные обработчики событий
   UnregisterEventHandlers;
