@@ -1,25 +1,25 @@
 {
 Пакет             Simple Game Engine 2
-Файл              .pas
-Версия            1.0
+Файл              sgeKeyCommandJoystickAxisInfoTilt.pas
+Версия            1.1
 Создан            05.08.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Команды на кнопках: Информация о наклоне оси джойстика
 }
 {$Include Defines.inc}
 
-unit sgeKeyCommandJoystickAxisTiltInfo;
+unit sgeKeyCommandJoystickAxisInfoTilt;
 
 {$mode objfpc}{$H+}
 
 interface
 
 uses
-  sgeEventControllers, sgeKeyCommandTypes;
+  sgeKeyCommandTypes, sgeEventControllers;
 
 
 type
-  TsgeKeyCommandJoystickAxisTiltInfo = class
+  TsgeKeyCommandJoystickAxisInfoTilt = class
   private
     FList: array[TsgeControllerAxisTilt] of TsgeKeyCommandAction;
 
@@ -39,13 +39,13 @@ implementation
 
 
 
-function TsgeKeyCommandJoystickAxisTiltInfo.GetTilt(Index: TsgeControllerAxisTilt): TsgeKeyCommandAction;
+function TsgeKeyCommandJoystickAxisInfoTilt.GetTilt(Index: TsgeControllerAxisTilt): TsgeKeyCommandAction;
 begin
   Result := FList[Index];
 end;
 
 
-constructor TsgeKeyCommandJoystickAxisTiltInfo.Create;
+constructor TsgeKeyCommandJoystickAxisInfoTilt.Create;
 var
   i: TsgeControllerAxisTilt;
 begin
@@ -54,7 +54,7 @@ begin
 end;
 
 
-destructor TsgeKeyCommandJoystickAxisTiltInfo.Destroy;
+destructor TsgeKeyCommandJoystickAxisInfoTilt.Destroy;
 var
   i: TsgeControllerAxisTilt;
 begin
@@ -63,7 +63,7 @@ begin
 end;
 
 
-procedure TsgeKeyCommandJoystickAxisTiltInfo.Clear;
+procedure TsgeKeyCommandJoystickAxisInfoTilt.Clear;
 var
   i: TsgeControllerAxisTilt;
 begin
@@ -72,7 +72,7 @@ begin
 end;
 
 
-procedure TsgeKeyCommandJoystickAxisTiltInfo.Delete(Index: TsgeControllerAxisTilt);
+procedure TsgeKeyCommandJoystickAxisInfoTilt.Delete(Index: TsgeControllerAxisTilt);
 begin
   FList[Index].Up := '';
   FList[Index].Down := '';
