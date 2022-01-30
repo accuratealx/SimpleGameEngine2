@@ -15,7 +15,7 @@
     </CompilerOptions>
     <Description Value="Simple Game Engine 2"/>
     <Version Major="1"/>
-    <Files Count="235">
+    <Files Count="239">
       <Item1>
         <Filename Value="..\Source\ThirdParty\GDIPlus\GDIPAPI.pas"/>
         <UnitName Value="GDIPAPI"/>
@@ -513,8 +513,8 @@
         <UnitName Value="sgeKeyCommandJoystickPadInfo"/>
       </Item124>
       <Item125>
-        <Filename Value="..\Source\System\KeyCommand\sgeKeyCommandJoystickAxisTiltInfo.pas"/>
-        <UnitName Value="sgeKeyCommandJoystickAxisTiltInfo"/>
+        <Filename Value="..\Source\System\KeyCommand\sgeKeyCommandJoystickAxisInfoTilt.pas"/>
+        <UnitName Value="sgeKeyCommandJoystickAxisInfoTilt"/>
       </Item125>
       <Item126>
         <Filename Value="..\Source\System\Graphic\sgeGraphicElementSpriteCashed.pas"/>
@@ -961,6 +961,22 @@
         <Filename Value="..\Source\System\ShellCommands\sgeShellCommand_Script_Load.pas"/>
         <UnitName Value="sgeShellCommand_Script_Load"/>
       </Item235>
+      <Item236>
+        <Filename Value="..\Source\System\KeyCommand\sgeKeyCommandMouseAction.pas"/>
+        <UnitName Value="sgeKeyCommandMouseAction"/>
+      </Item236>
+      <Item237>
+        <Filename Value="..\Source\System\KeyCommand\sgeKeyCommandMouseActionList.pas"/>
+        <UnitName Value="sgeKeyCommandMouseActionList"/>
+      </Item237>
+      <Item238>
+        <Filename Value="..\Source\System\KeyCommand\sgeKeyCommandKeyboardAction.pas"/>
+        <UnitName Value="sgeKeyCommandKeyboardAction"/>
+      </Item238>
+      <Item239>
+        <Filename Value="..\Source\System\KeyCommand\sgeKeyCommandKeyboardActionList.pas"/>
+        <UnitName Value="sgeKeyCommandKeyboardActionList"/>
+      </Item239>
     </Files>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)"/>

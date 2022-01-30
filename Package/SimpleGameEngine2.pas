@@ -43,7 +43,7 @@ uses
   sgeKeyCommandMouse, sgeKeyCommandJoystick, sgeKeyCommandJoystickButtonInfo, 
   sgeKeyCommandJoystickInfo, sgeKeyCommandJoystickAxisInfo, 
   sgeKeyCommandTypes, sgeKeyCommandJoystickPadInfo, 
-  sgeKeyCommandJoystickAxisTiltInfo, sgeGraphicElementSpriteCashed, 
+  sgeKeyCommandJoystickAxisInfoTilt, sgeGraphicElementSpriteCashed, 
   sgeShellCommandParameterBase, sgeShellCommandParameterString, 
   sgeShellCommandParameterList, sgeShellCommandParameterEnum, 
   sgeShellCommandParameterFloat, sgeShellCommand_System_ReadLn, 
@@ -82,7 +82,9 @@ uses
   sgeGUIPropertyLabel, sgeGUIScrollBar, sgeGUITypes, sgeCursor, 
   sgeExtensionCursor, sgeShellCommand_CommandHistory_Clear, 
   sgeShellCommand_CommandHistory_Save, sgeShellCommand_Music_Stop, 
-  sgeShellCommand_Script_Load;
+  sgeShellCommand_Script_Load, sgeKeyCommandMouseAction, 
+  sgeKeyCommandMouseActionList, sgeKeyCommandKeyboardAction, 
+  sgeKeyCommandKeyboardActionList;
 
 implementation
 
