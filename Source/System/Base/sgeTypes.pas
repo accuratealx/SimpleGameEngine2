@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeTypes.pas
-Версия            1.2
+Версия            1.3
 Создан            22.04.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Общие типы
@@ -32,6 +32,10 @@ type
   TsgeKeyboardButton = (kbLeftAlt, kbRightAlt, kbLeftCtrl, kbRightCtrl, kbLeftShift, kbRightShift,
                         kbAlt, kbCtrl, kbShift, kbCapsLock, kbNumLock, kbScrollLock, kbInsert);
   TsgeKeyboardButtons = set of TsgeKeyboardButton;
+
+
+  //Модификаторы клавиш
+  TsgeKeyboardShifts = set of (ksLeftAlt, ksRightAlt, ksLeftCtrl, ksRightCtrl, ksLeftShift, ksRightShift);
 
 
   //Горизонтальное выравнивание
@@ -110,6 +114,7 @@ function  sgeGetFloatRect(X1, Y1, X2, Y2: Single): TsgeFloatRect;
 function  sgeFitRectIn(BaseW, BaseH, RectW, RectH: Integer): TsgeIntPoint;
 function  sgeFitRectOut(BaseW, BaseH, RectW, RectH: Integer): TsgeIntPoint;
 
+function  sgeGetKeyboardShiftsFromKeboardButtons(KeyboardButtons: TsgeKeyboardButtons): TsgeKeyboardShifts;
 
 implementation
 
@@ -170,6 +175,18 @@ begin
   if (BaseW * RectH > RectW * BaseH) then k := BaseW / RectW else k := BaseH / RectH;
   Result.X := Round(k * RectW);
   Result.Y := Round(k * RectH);
+end;
+
+
+function sgeGetKeyboardShiftsFromKeboardButtons(KeyboardButtons: TsgeKeyboardButtons): TsgeKeyboardShifts;
+begin
+  Result := [];
+  if (kbLeftAlt in KeyboardButtons) then Include(Result, ksLeftAlt);
+  if (kbRightAlt in KeyboardButtons) then Include(Result, ksRightAlt);
+  if (kbLeftCtrl in KeyboardButtons) then Include(Result, ksLeftCtrl);
+  if (kbRightCtrl in KeyboardButtons) then Include(Result, ksRightCtrl);
+  if (kbLeftShift in KeyboardButtons) then Include(Result, ksLeftShift);
+  if (kbRightShift in KeyboardButtons) then Include(Result, ksRightShift);
 end;
 
 
