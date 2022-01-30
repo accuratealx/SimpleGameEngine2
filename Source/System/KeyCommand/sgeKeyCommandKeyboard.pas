@@ -15,7 +15,7 @@ unit sgeKeyCommandKeyboard;
 interface
 
 uses
-  sgeKeyCommandTypes;
+  sgeKeyCommandKeyboardActionList;
 
 
 type
@@ -24,11 +24,11 @@ type
     MAX_BUTTONS = $FF;
 
   private
-    FList: array[0..MAX_BUTTONS] of TsgeKeyCommandAction;
+    FList: array[0..MAX_BUTTONS] of TsgeKeyCommandKeyboardActionList;
 
     function GetCount: Byte;
-    function GetKey(Index: Byte): TsgeKeyCommandAction;
-    function GetNamedKey(Name: ShortString): TsgeKeyCommandAction;
+    function GetKey(Index: Byte): TsgeKeyCommandKeyboardActionList;
+    function GetNamedKey(Name: ShortString): TsgeKeyCommandKeyboardActionList;
   public
     constructor Create;
     destructor  Destroy; override;
@@ -41,8 +41,8 @@ type
     procedure Delete(Name: ShortString);
 
     property Count: Byte read GetCount;
-    property Key[Index: Byte]: TsgeKeyCommandAction read GetKey;
-    property NamedKey[Name: ShortString]: TsgeKeyCommandAction read GetNamedKey;
+    property Key[Index: Byte]: TsgeKeyCommandKeyboardActionList read GetKey;
+    property NamedKey[Name: ShortString]: TsgeKeyCommandKeyboardActionList read GetNamedKey;
   end;
 
 
@@ -50,7 +50,7 @@ type
 implementation
 
 uses
-  sgeErrors;
+  sgeErrors, sgeKeyCommandTypes;
 
 const
   //Имена кнопок клавиатуры
@@ -316,20 +316,19 @@ const
   _UNITNAME = 'KeyCommandKeyboard';
 
 
-
 function TsgeKeyCommandKeyboard.GetCount: Byte;
 begin
   Result := MAX_BUTTONS;
 end;
 
 
-function TsgeKeyCommandKeyboard.GetKey(Index: Byte): TsgeKeyCommandAction;
+function TsgeKeyCommandKeyboard.GetKey(Index: Byte): TsgeKeyCommandKeyboardActionList;
 begin
   Result := FList[Index];
 end;
 
 
-function TsgeKeyCommandKeyboard.GetNamedKey(Name: ShortString): TsgeKeyCommandAction;
+function TsgeKeyCommandKeyboard.GetNamedKey(Name: ShortString): TsgeKeyCommandKeyboardActionList;
 var
   Idx: Integer;
 begin
@@ -346,7 +345,7 @@ var
   i: Integer;
 begin
   for i := 0 to MAX_BUTTONS do
-    FList[i] := TsgeKeyCommandAction.Create;
+    FList[i] := TsgeKeyCommandKeyboardActionList.Create;
 end;
 
 
@@ -392,8 +391,7 @@ end;
 
 procedure TsgeKeyCommandKeyboard.Delete(Index: Byte);
 begin
-  FList[Index].Up := '';
-  FList[Index].Down := '';
+  FList[Index].Clear;
 end;
 
 

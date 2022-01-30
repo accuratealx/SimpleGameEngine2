@@ -113,13 +113,15 @@ end;
 
 function TsgeExtensionKeyCommand.Handler_KeyDown(EventObj: TsgeEventKeyboard): Boolean;
 var
+  KeyboardShifts: TsgeKeyboardShifts;
   Command: String;
 begin
   //По умолчанию
   Result := False;
 
   //Проверить команду на кнопке
-  Command := FKeyboard.Key[EventObj.Key].Down;
+  KeyboardShifts := sgeGetKeyboardShiftsFromKeboardButtons(EventObj.KeyboardButtons);
+  Command := FKeyboard.Key[EventObj.Key].GetActionDown(KeyboardShifts);
   if Command <> '' then
     begin
     Result := True;                                           //Дальше не передавать этот объект
@@ -130,8 +132,11 @@ end;
 
 
 function TsgeExtensionKeyCommand.Handler_KeyUp(EventObj: TsgeEventKeyboard): Boolean;
+var
+  KeyboardShifts: TsgeKeyboardShifts;
 begin
-  Result := CommandHandler(FKeyboard.Key[EventObj.Key].Up);
+  KeyboardShifts := sgeGetKeyboardShiftsFromKeboardButtons(EventObj.KeyboardButtons);
+  Result := CommandHandler(FKeyboard.Key[EventObj.Key].GetActionUp(KeyboardShifts));
 end;
 
 
@@ -149,14 +154,24 @@ end;
 
 
 function TsgeExtensionKeyCommand.Handler_MouseDown(EventObj: TsgeEventMouse): Boolean;
+var
+  MouseButtonIndex: TsgeMouseButton;
+  KeyboardShifts: TsgeKeyboardShifts;
 begin
-  Result := CommandHandler(FMouse.Button[TsgeMouseButton(GetMouseButtonIndex(EventObj.MouseButtons))].Down);
+  MouseButtonIndex := TsgeMouseButton(GetMouseButtonIndex(EventObj.MouseButtons));
+  KeyboardShifts := sgeGetKeyboardShiftsFromKeboardButtons(EventObj.KeyboardButtons);
+  Result := CommandHandler(FMouse.Button[MouseButtonIndex].GetActionDown(KeyboardShifts));
 end;
 
 
 function TsgeExtensionKeyCommand.Handler_MouseUp(EventObj: TsgeEventMouse): Boolean;
+var
+  MouseButtonIndex: TsgeMouseButton;
+  KeyboardShifts: TsgeKeyboardShifts;
 begin
-  Result := CommandHandler(FMouse.Button[TsgeMouseButton(GetMouseButtonIndex(EventObj.MouseButtons))].Up);
+  MouseButtonIndex := TsgeMouseButton(GetMouseButtonIndex(EventObj.MouseButtons));
+  KeyboardShifts := sgeGetKeyboardShiftsFromKeboardButtons(EventObj.KeyboardButtons);
+  Result := CommandHandler(FMouse.Button[MouseButtonIndex].GetActionUp(KeyboardShifts));
 end;
 
 
@@ -165,16 +180,20 @@ const
   ckmUp = 0;
   ckmDown = 1;
 var
+  KeyboardShifts: TsgeKeyboardShifts;
   Command: String;
   KeyMethod: Byte;
 begin
   //Определить направление
   if EventObj.Delta > 0 then KeyMethod := ckmUp else KeyMethod := ckmDown;
 
+  //Модификатор
+  KeyboardShifts := sgeGetKeyboardShiftsFromKeboardButtons(EventObj.KeyboardButtons);
+
   //Проверить команду
   case KeyMethod of
-    ckmUp   : Command := FMouse.Wheel.Up;
-    ckmDown : Command := FMouse.Wheel.Down;
+    ckmUp   : Command := FMouse.Wheel.GetActionUp(KeyboardShifts);
+    ckmDown : Command := FMouse.Wheel.GetActionDown(KeyboardShifts);
   end;
 
   //Обработать команду
@@ -183,8 +202,13 @@ end;
 
 
 function TsgeExtensionKeyCommand.Handler_MouseDblClick(EventObj: TsgeEventMouse): Boolean;
+var
+  MouseButtonIndex: TsgeMouseButton;
+  KeyboardShifts: TsgeKeyboardShifts;
 begin
-  Result := CommandHandler(FMouse.Button[TsgeMouseButton(GetMouseButtonIndex(EventObj.MouseButtons))].DblClick);
+  MouseButtonIndex := TsgeMouseButton(GetMouseButtonIndex(EventObj.MouseButtons));
+  KeyboardShifts := sgeGetKeyboardShiftsFromKeboardButtons(EventObj.KeyboardButtons);
+  Result := CommandHandler(FMouse.Button[MouseButtonIndex].GetActionDblClick(KeyboardShifts));
 end;
 
 

@@ -369,7 +369,7 @@ end;
 procedure TSimpleGameEngine.AttachDefaultKeys;
 begin
   //Открыть оболочку на тильду
-  FExtensionKeyCommand.Keyboard.Key[keyTilde].Down := 'Variable.Set Shell.Enable On';
+  FExtensionKeyCommand.Keyboard.Key[keyTilde].SetActionDown([], 'Variable.Set Shell.Enable On');
 end;
 
 

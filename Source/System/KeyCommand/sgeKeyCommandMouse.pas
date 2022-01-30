@@ -16,16 +16,16 @@ interface
 
 uses
   sgeTypes,
-  sgeKeyCommandTypes;
+  sgeKeyCommandMouseActionList, sgeKeyCommandKeyboardActionList;
 
 
 type
   TsgeKeyCommandMouse = class
   private
-    FButtonList: array[TsgeMouseButton] of TsgeKeyCommandMouseAction;
-    FWheel: TsgeKeyCommandAction;
+    FButtonList: array[TsgeMouseButton] of TsgeKeyCommandMouseActionList;
+    FWheel: TsgeKeyCommandKeyboardActionList;
 
-    function GetButton(Index: TsgeMouseButton): TsgeKeyCommandMouseAction;
+    function GetButton(Index: TsgeMouseButton): TsgeKeyCommandMouseActionList;
   public
     constructor Create;
     destructor  Destroy; override;
@@ -34,8 +34,8 @@ type
     procedure DeleteButton(Index: TsgeMouseButton);
     procedure DeleteWheel;
 
-    property Button[Index: TsgeMouseButton]: TsgeKeyCommandMouseAction read GetButton;
-    property Wheel: TsgeKeyCommandAction read FWheel;
+    property Button[Index: TsgeMouseButton]: TsgeKeyCommandMouseActionList read GetButton;
+    property Wheel: TsgeKeyCommandKeyboardActionList read FWheel;
   end;
 
 
@@ -43,7 +43,7 @@ type
 implementation
 
 
-function TsgeKeyCommandMouse.GetButton(Index: TsgeMouseButton): TsgeKeyCommandMouseAction;
+function TsgeKeyCommandMouse.GetButton(Index: TsgeMouseButton): TsgeKeyCommandMouseActionList;
 begin
   Result := FButtonList[Index];
 end;
@@ -55,10 +55,10 @@ var
 begin
   //Создать кнопки
   for i := mbLeft to mbExtra2 do
-    FButtonList[i] := TsgeKeyCommandMouseAction.Create;
+    FButtonList[i] := TsgeKeyCommandMouseActionList.Create;
 
   //Создать колесо
-  FWheel := TsgeKeyCommandAction.Create;
+  FWheel := TsgeKeyCommandKeyboardActionList.Create;
 end;
 
 
@@ -90,19 +90,14 @@ end;
 
 procedure TsgeKeyCommandMouse.DeleteButton(Index: TsgeMouseButton);
 begin
-  FButtonList[Index].Up := '';
-  FButtonList[Index].Down := '';
-  FButtonList[Index].DblClick := '';
+  FButtonList[Index].Clear;
 end;
 
 
 procedure TsgeKeyCommandMouse.DeleteWheel;
 begin
-  FWheel.Up := '';
-  FWheel.Down := '';
+  FWheel.Clear;
 end;
-
-
 
 
 

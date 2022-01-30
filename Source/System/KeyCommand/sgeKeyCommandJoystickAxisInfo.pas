@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeKeyCommandJoystickAxisInfo.pas
-Версия            1.0
+Версия            1.1
 Создан            05.08.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Команды на кнопках: Информация о крестовине джойстика
@@ -16,15 +16,15 @@ interface
 
 uses
   sgeEventControllers,
-  sgeKeyCommandJoystickAxisTiltInfo;
+  sgeKeyCommandJoystickAxisInfoTilt;
 
 
 type
   TsgeKeyCommandJoystickAxisInfo = class
   private
-    FList: array[TsgeControllerAxisType] of TsgeKeyCommandJoystickAxisTiltInfo;
+    FList: array[TsgeControllerAxisType] of TsgeKeyCommandJoystickAxisInfoTilt;
 
-    function GetItem(Index: TsgeControllerAxisType): TsgeKeyCommandJoystickAxisTiltInfo;
+    function GetItem(Index: TsgeControllerAxisType): TsgeKeyCommandJoystickAxisInfoTilt;
   public
     constructor Create;
     destructor  Destroy; override;
@@ -32,7 +32,7 @@ type
     procedure Clear;
     procedure Delete(Index: TsgeControllerAxisType);
 
-    property Item[Index: TsgeControllerAxisType]: TsgeKeyCommandJoystickAxisTiltInfo read GetItem;
+    property Item[Index: TsgeControllerAxisType]: TsgeKeyCommandJoystickAxisInfoTilt read GetItem;
   end;
 
 
@@ -40,7 +40,7 @@ implementation
 
 
 
-function TsgeKeyCommandJoystickAxisInfo.GetItem(Index: TsgeControllerAxisType): TsgeKeyCommandJoystickAxisTiltInfo;
+function TsgeKeyCommandJoystickAxisInfo.GetItem(Index: TsgeControllerAxisType): TsgeKeyCommandJoystickAxisInfoTilt;
 begin
   Result := FList[Index];
 end;
@@ -51,7 +51,7 @@ var
   i: TsgeControllerAxisType;
 begin
   for i := catX to catZ do
-    FList[i] := TsgeKeyCommandJoystickAxisTiltInfo.Create;
+    FList[i] := TsgeKeyCommandJoystickAxisInfoTilt.Create;
 end;
 
 

@@ -14,7 +14,6 @@ unit sgeKeyCommandTypes;
 
 interface
 
-
 const
   Err_KeyNotFound = 'KeyNotFound';
   Err_IndexOutOfBounds  = 'IndexOutOfBounds';
@@ -28,15 +27,15 @@ type
   end;
 
   //Класс хранения действий на отпускание и нажатие клавиши мыши
-  TsgeKeyCommandMouseAction = class
+  TsgeKeyCommandActionMouse = class
     Up: String;
     Down: String;
     DblClick: String;
   end;
 
 
-
 implementation
+
 
 end.
 
