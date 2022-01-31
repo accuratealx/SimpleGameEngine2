@@ -74,7 +74,7 @@ type
 implementation
 
 uses
-  sgeErrors,
+  sgeErrors, sgeOSPlatform,
   sgeEventBase, sgeEventWindow, sgeEventKeyboard, sgeEventMouse;
 
 
@@ -84,6 +84,7 @@ var
 
 const
   _UNITNAME = 'ExtensionWindow';
+
 
 
 //Оконная функция
@@ -123,6 +124,9 @@ end;
 procedure TsgeExtensionWindow.CreateWindow;
 begin
   try
+    //Запретить процессу открывать метод ввода чтобы не залипало при переключении раскладки клавиатуры
+    sgeDisableIME(MAXDWORD);
+
     //Создать окно
     FWindow := TsgeWindow.Create('SGEMainWindowClass', 'Simple Game Engine 2', 100, 100, 800, 600);
 
@@ -382,9 +386,7 @@ begin
       FEventManager.Publish(Event_WindowSize, TsgeEventWindowSize.Create(Rct^.Right - Rct^.Left, Rct^.Bottom - Rct^.Top));
       end;}
 
-
     WM_ERASEBKGND: ;
-
 
     WM_SYSCOMMAND:
       if wParam <> SC_KEYMENU then Result := DefWindowProc(hWnd, Msg, wParam, lParam);  //Убирает пиканье при нажатии Alt
