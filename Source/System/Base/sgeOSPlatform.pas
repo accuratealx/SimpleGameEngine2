@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeOSPlatform.pas
-Версия            1.9
+Версия            1.10
 Создан            27.04.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Функции взаимодействия с операционной системой
@@ -164,6 +164,8 @@ procedure sgeGlobalDeleteAtom(Atom: TAtom);
 function  sgeGlobalFindAtom(Name: ShortString): TAtom;
 function  sgeGlobalGetAtomName(Atom: TAtom): ShortString;
 
+//Раскладки
+function sgeDisableIME(IdThread: Cardinal): Boolean;
 
 
 var
@@ -192,6 +194,8 @@ function GetThreadIdealProcessorEx(Thread: HANDLE; ProcessorNumber: PProcessorNu
 function SetThreadIdealProcessor(Thread: HANDLE; ProcessorNumber: DWORD): DWORD; stdcall; external kernel32 name 'SetThreadIdealProcessor';
 function Wow64SuspendThread(ThreadHandle: HANDLE): DWORD; stdcall; external kernel32 name 'Wow64SuspendThread';
 function GetCommandLine: PWideChar; stdcall; external 'kernel32.dll' name 'GetCommandLineW';
+
+function ImmDisableIME(IdThread: DWORD): BOOL; stdcall; external 'Imm32.dll';
 
 function joyConfigChanged(dwFlags: DWORD): MMRESULT; external 'winmm.dll';
 
@@ -756,6 +760,12 @@ var
 begin
   Len := Windows.GlobalGetAtomName(Atom, @Buf, 255);
   Result := Copy(Buf, 0, Len);
+end;
+
+
+function sgeDisableIME(IdThread: Cardinal): Boolean;
+begin
+  Result := ImmDisableIME(IdThread);
 end;
 
 
