@@ -30,7 +30,7 @@ type
   //Параметры инициализации ядра
   TsgeInitOptions = set of (
     ioSound,                //Поддержка звуков
-    ioAutoStartScript,      //Автозапуск скрипта старта Autostart.s
+    ioAutoStartScript,      //Автозапуск скрипта старта AutoStart.s
     ioAutoStopScript,       //Автозапуск скрипта остановки AutoStop.s
     ioAttachDefaultKeys,    //Установить привязку клавишь по умолчанию
     ioSupportRunCommand,    //Поддержка выполнения команды в строке параметров Run='Список команд'
@@ -209,7 +209,8 @@ function TSimpleGameEngine.EventWindowClose(Obj: TsgeEventBase): Boolean;
 begin
   Result := CloseWindow;
 
-  if Result then Stop;
+  if Result then
+    Stop;
 end;
 
 
@@ -301,10 +302,10 @@ begin
     FExtensionGUI := TsgeExtensionGUI.Create(FObjectList);                          //GUI
 
     if (ioSound in FInitOptions) and (not FExtensionStartParameters.Parameters.Exist[spNoSound]) then
-      begin
+    begin
       FExtensionSound := TsgeExtensionSound.Create(FObjectList);                    //Звуковая система
       FExtensionMusicPlayer := TsgeExtensionMusicPlayer.Create(FObjectList);        //Музыкальный проигрыватель
-      end;
+    end;
 
     //Зарегестрировать функции оболочки
     sgeShellCommands_Init(Self);
@@ -381,7 +382,10 @@ var
   MS: TsgeMemoryStream;
 begin
   //Подготовить имя файла
-  if FileName = '' then s := sgeGetUniqueFileName else s := FileName;
+  if FileName = '' then
+    s := sgeGetUniqueFileName
+  else
+    s := FileName;
   s := s + ShotExt;
 
   //Подготовить каталог

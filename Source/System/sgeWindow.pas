@@ -135,7 +135,10 @@ const
 
 function TsgeWindow.GetHWNDPos: HWND;
 begin
-  if wsTopMost in FStyle then Result := HWND_TOPMOST else Result := HWND_NOTOPMOST;
+  if wsTopMost in FStyle then
+    Result := HWND_TOPMOST
+  else
+    Result := HWND_NOTOPMOST;
 end;
 
 
@@ -166,7 +169,8 @@ end;
 
 procedure TsgeWindow.SetStyle(AStyle: TsgeWindowStyle);
 begin
-  if FStyle = AStyle then Exit;
+  if FStyle = AStyle then
+    Exit;
   FStyle := AStyle;
   ChangeWindowStyle;
 end;
@@ -185,14 +189,17 @@ end;
 function TsgeWindow.GetViewMode: TsgeWindowViewMode;
 begin
   Result := wvmNormal;
-  if IsIconic(FHandle) = LongBool(1) then Result := wvmMinimize;
-  if IsZoomed(FHandle) = LongBool(1) then Result := wvmMaximize;
+  if IsIconic(FHandle) = LongBool(1) then
+    Result := wvmMinimize;
+  if IsZoomed(FHandle) = LongBool(1) then
+    Result := wvmMaximize;
 end;
 
 
 procedure TsgeWindow.SetButtons(AButtons: TsgeWindowButtons);
 begin
-  if FButtons = AButtons then Exit;
+  if FButtons = AButtons then
+    Exit;
   FButtons := AButtons;
   ChangeWindowStyle;
 end;
@@ -212,7 +219,10 @@ end;
 
 procedure TsgeWindow.SetVisible(AVisible: Boolean);
 begin
-  if AVisible then Show else Hide;
+  if AVisible then
+    Show
+  else
+    Hide;
 end;
 
 
@@ -238,7 +248,10 @@ procedure TsgeWindow.SetStatusBarVisible(AEnable: Boolean);
 var
   i: HWND;
 begin
-  if AEnable then i := 0 else i := GetDesktopWindow;
+  if AEnable then
+    i := 0
+  else
+    i := GetDesktopWindow;
   Windows.SetWindowLongPtr(FHandle, GWLP_HWNDPARENT, i);
 end;
 
@@ -278,16 +291,13 @@ var
   Cnt: Integer;
 begin
   if AShow then
-    begin
-      repeat
+    repeat
       Cnt := Windows.ShowCursor(True);
-      until Cnt >= 0;
-    end
-    else begin
-      repeat
+    until Cnt >= 0
+  else
+    repeat
       Cnt := Windows.ShowCursor(False);
-      until Cnt < 0;
-    end;
+    until Cnt < 0;
 end;
 
 
@@ -306,10 +316,11 @@ var
   Pt: TsgeIntPoint;
   Rct: TsgeIntRect;
 begin
-  if AClip = FClipCursor then Exit;
+  if AClip = FClipCursor then
+    Exit;
   FClipCursor := AClip;
   if FClipCursor then
-    begin
+  begin
     Pt.x := 0;
     Pt.y := 0;
     ClientToScreen(FHandle, @Pt);             //Преобразовать координаты нулевой точки окна в координаты на экране
@@ -319,7 +330,9 @@ begin
     Inc(Rct.X2, Rct.X1);
     Inc(Rct.Y2, Rct.Y1);
     Windows.ClipCursor(@Rct);                 //Заблокировать курсор в прямоугольнике
-    end else Windows.ClipCursor(nil);
+  end
+  else
+    Windows.ClipCursor(nil);
 end;
 
 
@@ -449,19 +462,28 @@ var
 begin
   //Изменить стандартный стиль окна
   NewStyle := 0;                                                      //Обнулить, при в ходе имеет уже значение
-  if GetVisible then NewStyle := WS_VISIBLE;                          //Если окно видимо, то учесть флаг
+  if GetVisible then
+    NewStyle := WS_VISIBLE;                                           //Если окно видимо, то учесть флаг
   NewStyle := NewStyle or WS_CLIPCHILDREN or WS_CLIPSIBLINGS;         //Для OpenGL
-  if wsCaption in FStyle then NewStyle := NewStyle or WS_CAPTION;     //Заголовок окна
-  if wsSystemMenu in FStyle then NewStyle := NewStyle or WS_SYSMENU;  //Системное меню с кнопками
-  if wsSizeable in FStyle then NewStyle := NewStyle + WS_SIZEBOX;     //Изменение размеров
+  if wsCaption in FStyle then
+    NewStyle := NewStyle or WS_CAPTION;                               //Заголовок окна
+  if wsSystemMenu in FStyle then
+    NewStyle := NewStyle or WS_SYSMENU;                               //Системное меню с кнопками
+  if wsSizeable in FStyle then
+    NewStyle := NewStyle + WS_SIZEBOX;                                //Изменение размеров
 
   //Кнопки
-  if wbMaximize in FButtons then NewStyle := NewStyle or WS_MAXIMIZEBOX;
-  if wbMinimize in FButtons then NewStyle := NewStyle or WS_MINIMIZEBOX;
+  if wbMaximize in FButtons then
+    NewStyle := NewStyle or WS_MAXIMIZEBOX;
+
+  if wbMinimize in FButtons then
+    NewStyle := NewStyle or WS_MINIMIZEBOX;
 
   //Затенить/показать "закрыть" через MenuItem
-  if wbClose in FButtons then EnableMenuItem(FSystemMenu, SC_CLOSE, MF_ENABLED)
-      else EnableMenuItem(FSystemMenu, SC_CLOSE, MF_GRAYED or MF_DISABLED);
+  if wbClose in FButtons then
+    EnableMenuItem(FSystemMenu, SC_CLOSE, MF_ENABLED)
+  else
+    EnableMenuItem(FSystemMenu, SC_CLOSE, MF_GRAYED or MF_DISABLED);
 
   //Применить изменения
   SetWindowLongPtr(FHandle, GWL_STYLE, NewStyle);
@@ -491,7 +513,7 @@ begin
 
   //Заполняем класс окна
   with FWindowClass do
-    begin
+  begin
     cbSize := SizeOf(TWNDClassEx);                                  //Размер структуры
     style := CS_HREDRAW or CS_VREDRAW;                              //Стиль окна
     lpfnWndProc := @DefWindowProc;                                  //Обработчик событий окна
@@ -504,7 +526,7 @@ begin
     lpszMenuName := nil;                                            //Имя строки-ресурса системного меню
     lpszClassName := PChar(WndClassName);                           //Уникальное имя класса
     hIconSm := 0;                                                   //Ссылка на маленькую иконку
-    end;
+  end;
 
   //Регистрация окна
   if RegisterClassEx(FWindowClass) = 0 then
@@ -558,8 +580,10 @@ end;
 
 procedure TsgeWindow.Activate;
 begin
-  if Windows.IsIconic(FHandle) = LongBool(1) then Restore
-    else Windows.SetForegroundWindow(FHandle);
+  if Windows.IsIconic(FHandle) = LongBool(1) then
+    Restore
+  else
+    Windows.SetForegroundWindow(FHandle);
 end;
 
 
@@ -589,7 +613,8 @@ end;
 
 procedure TsgeWindow.SetWindowProc(Proc: Pointer);
 begin
-  if Proc = nil then Exit;
+  if Proc = nil then
+    Exit;
   Windows.SetWindowLongPtr(FHandle, GWLP_WNDPROC,  LONG_PTR(Proc));
 end;
 
@@ -603,24 +628,24 @@ begin
   case APos of
     //Размер первого экрана
     wcpScreen:
-      begin
+    begin
       W := Windows.GetSystemMetrics(SM_CXSCREEN);
       H := Windows.GetSystemMetrics(SM_CYSCREEN);
-      end;
+    end;
 
     //Клиенстская область рабочего стола
     wcpClientArea:
-      begin
+    begin
       W := Windows.GetSystemMetrics(SM_CXFULLSCREEN);
       H := Windows.GetSystemMetrics(SM_CYFULLSCREEN);
-      end;
+    end;
 
     //Размер всех мониторов
     wcpVirtualScreen:
-      begin
+    begin
       W := Windows.GetSystemMetrics(SM_CXVIRTUALSCREEN);
       H := Windows.GetSystemMetrics(SM_CYVIRTUALSCREEN);
-      end;
+    end;
   end;
 
   //Получить размеры окна

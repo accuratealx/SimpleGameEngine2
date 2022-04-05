@@ -124,10 +124,7 @@ begin
     c := Length(FList) - 1;
     for i := 0 to c do
       if LowerCase(FList[i].Name) = Name then
-        begin
-        Result := i;
-        Break;
-        end;
+        Exit(i);
 
   finally
     FCS.Leave;
@@ -216,7 +213,8 @@ begin
 
     Result := nil;
     Idx := IndexOf(Name);
-    if Idx <> -1 then Result := FList[Idx].Obj;
+    if Idx <> -1 then
+      Result := FList[Idx].Obj;
 
   finally
     FCS.Leave;

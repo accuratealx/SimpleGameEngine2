@@ -81,27 +81,42 @@ begin
 
   //Просмотреть строки
   for i := 0 to Lines.Count - 1 do
-    begin
+  begin
     //Разобрать на части ошибку
     Line.Command := Lines.Part[i];
 
     //Получить части
-    if Line.Count >= 1 then aUnitName := Line.Part[0] else aUnitName := '';
-    if Line.Count >= 2 then ErrorText := Line.Part[1] else ErrorText := '';
-    if Line.Count >= 3 then Info := Line.Part[2] else Info := '';
+    if Line.Count >= 1 then
+      aUnitName := Line.Part[0]
+    else
+      aUnitName := '';
+
+    if Line.Count >= 2 then
+      ErrorText := Line.Part[1]
+    else
+      ErrorText := '';
+
+    if Line.Count >= 3 then
+      Info := Line.Part[2]
+    else
+      Info := '';
 
     //Перевод модуля
-    if aUnitName <> '' then aUnitName := FLanguage.GetValue('Unit:' + aUnitName, aUnitName);
+    if aUnitName <> '' then
+      aUnitName := FLanguage.GetValue('Unit:' + aUnitName, aUnitName);
 
     //Перевод ошибки
-    if ErrorText <> '' then ErrorText := FLanguage.GetValue('Error:' + ErrorText, ErrorText);
+    if ErrorText <> '' then
+      ErrorText := FLanguage.GetValue('Error:' + ErrorText, ErrorText);
 
     //Изменить строку по формату Имя модуля   Имя модуля: Строка ошибки (Пояснение)
     S := aUnitName;
-    if ErrorText <> '' then S := S + ': ' + ErrorText;
-    if Info <> '' then S := S + ' (' + Info + ')';
+    if ErrorText <> '' then
+      S := S + ': ' + ErrorText;
+    if Info <> '' then
+      S := S + ' (' + Info + ')';
     Lines.Part[i] := S;
-    end;
+  end;
 
   //Вернуть результат
   Result := Lines.ToString;
@@ -172,7 +187,8 @@ begin
   FCS.Enter;
   try
 
-    if Assigned(FShellHandler) then FShellHandler(Message);
+    if Assigned(FShellHandler) then
+      FShellHandler(Message);
 
   finally
     FCS.Leave;
@@ -186,9 +202,12 @@ begin
   Error := GetLocalizedString(Error);
 
   //Обработать ошибку
-  if FWriteToJournal then LogJournal(Error);
-  if FWriteToShell then LogShell(Error);
-  if FShowMessage then LogMessage(Error);
+  if FWriteToJournal then
+    LogJournal(Error);
+  if FWriteToShell then
+    LogShell(Error);
+  if FShowMessage then
+    LogMessage(Error);
 end;
 
 

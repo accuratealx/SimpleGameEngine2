@@ -123,10 +123,10 @@ begin
 
   for i := Low(TsgeResourceType) to High(TsgeResourceType) do
     if Str = LowerCase(sgeResourceNames[i]) then
-      begin
+    begin
       Result := i;
       Break;
-      end;
+    end;
 end;
 
 
@@ -166,7 +166,8 @@ var
 begin
   Result := nil;
   Idx := IndexOf(Name);
-  if Idx = -1 then Exit;
+  if Idx = -1 then
+    Exit;
   Result := FResources[Idx].Obj;
 end;
 
@@ -177,7 +178,8 @@ var
 begin
   Result := nil;
   Idx := IndexOf(Name, ResType);
-  if Idx = -1 then Exit;
+  if Idx = -1 then
+    Exit;
   Result := FResources[Idx].Obj;
 end;
 
@@ -194,10 +196,10 @@ var
 begin
   c := GetCount - 1;
   for i := 0 to c do
-    begin
+  begin
     FResources[i].Meta.Free;
     FResources[i].Obj.Free;
-    end;
+  end;
 
   SetLength(FResources, 0);
 end;
@@ -285,15 +287,15 @@ begin
 
   i := -1;
   while i < GetCount - 1 do
-    begin
+  begin
     Inc(i);
 
     if LowerCase(FResources[i].Group) = Group then
-      begin
+    begin
       Delete(i);
       Dec(i)
-      end;
     end;
+  end;
 end;
 
 
@@ -306,10 +308,10 @@ begin
   Name := LowerCase(Name);
   for i := 0 to c do
     if Name = LowerCase(FResources[i].Name) then
-      begin
+    begin
       Result := i;
       Break;
-      end;
+    end;
 end;
 
 
@@ -322,10 +324,10 @@ begin
   Name := LowerCase(Name);
   for i := 0 to c do
     if (Name = LowerCase(FResources[i].Name)) and (ResType = FResources[i].ResType) then
-      begin
+    begin
       Result := i;
       Break;
-      end;
+    end;
 end;
 
 
@@ -337,11 +339,10 @@ begin
   c := GetCount - 1;
   for i := 0 to c do
     if FResources[i].Obj = Obj then
-      begin
+    begin
       Result := i;
       Break;
-      end;
-
+    end;
 end;
 
 
