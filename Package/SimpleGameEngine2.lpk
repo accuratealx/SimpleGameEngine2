@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
-  <Package Version="4">
+  <Package Version="5">
     <PathDelim Value="\"/>
     <Name Value="SimpleGameEngine2"/>
     <Author Value="accuratealx@gmail.com"/>
@@ -15,7 +15,7 @@
     </CompilerOptions>
     <Description Value="Simple Game Engine 2"/>
     <Version Major="1"/>
-    <Files Count="239">
+    <Files Count="240">
       <Item1>
         <Filename Value="..\Source\ThirdParty\GDIPlus\GDIPAPI.pas"/>
         <UnitName Value="GDIPAPI"/>
@@ -977,7 +977,12 @@
         <Filename Value="..\Source\System\KeyCommand\sgeKeyCommandKeyboardActionList.pas"/>
         <UnitName Value="sgeKeyCommandKeyboardActionList"/>
       </Item239>
+      <Item240>
+        <Filename Value="..\Source\System\Utils\sgeWindowsVersion.pas"/>
+        <UnitName Value="sgeWindowsVersion"/>
+      </Item240>
     </Files>
+    <CompatibilityMode Value="True"/>
     <UsageOptions>
       <UnitPath Value="$(PkgOutDir)"/>
     </UsageOptions>

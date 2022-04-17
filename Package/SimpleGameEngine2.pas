@@ -84,7 +84,7 @@ uses
   sgeShellCommand_CommandHistory_Save, sgeShellCommand_Music_Stop, 
   sgeShellCommand_Script_Load, sgeKeyCommandMouseAction, 
   sgeKeyCommandMouseActionList, sgeKeyCommandKeyboardAction, 
-  sgeKeyCommandKeyboardActionList;
+  sgeKeyCommandKeyboardActionList, sgeWindowsVersion;
 
 implementation
 
