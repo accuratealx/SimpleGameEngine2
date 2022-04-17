@@ -22,11 +22,11 @@ type
 
   //Описание одного блока при записи
   TsgePackFileWriterBlock = record
-    PackName: String;           //Имя файла внутри архива
-    FileName: String;           //Полный путь к файлу на диске
-    FileSize: Cardinal;         //Размер данных в байтах
-    FileType: TPackFileType;    //Тип файла
-    Index: Word;                //Номер блока в архиве
+    PackName: String;                                               //Имя файла внутри архива
+    FileName: String;                                               //Полный путь к файлу на диске
+    FileSize: Cardinal;                                             //Размер данных в байтах
+    FileType: TPackFileType;                                        //Тип файла
+    Index: Word;                                                    //Номер блока в архиве
   end;
 
 
@@ -116,10 +116,7 @@ begin
 
   for i := 0 to c do
     if LowerCase(FFileList[i].PackName) = s then
-      begin
-      Result := i;
-      Break;
-      end;
+      Exit(i);
 end;
 
 
@@ -189,7 +186,7 @@ begin
       Ms := TsgeMemoryStream.Create;
       c := GetCount - 1;
       for i := 0 to c do
-        begin
+      begin
         Ms.Size := 0;
 
         //Прочитать данные в память
@@ -198,11 +195,11 @@ begin
             Ms.LoadFromFile(FFileList[i].FileName);
 
           pftPack:
-            begin
+          begin
             FPack := TsgePackFileReader.Create(FFileList[i].FileName);
             FPack.GetItemData(FFileList[i].Index, Ms);
             sgeFreeAndNil(FPack);
-            end;
+          end;
         end;
 
 
@@ -216,13 +213,12 @@ begin
 
         //Записать имя файла
         F.Write(FFileList[i].PackName[1], BlockHead.NameSize);
-        end;  //For
+      end;  //For
 
       except
         on E: EsgeException do
           raise EsgeException.Create(_UNITNAME, Err_CantWriteFile, FileName, E.Message);
       end;
-
 
     finally
       F.Free;

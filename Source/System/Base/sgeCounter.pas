@@ -18,11 +18,11 @@ interface
 type
   TsgeCounter = class
   private
-    FCurrentTime: QWord;                //Текущее время вызова
-    FLastTime: QWord;                   //Последнее время вызова
-    FCounter: Cardinal;                 //Счётчик до наступления интервала
-    FCount: Cardinal;                   //Сколько срабатываний в интервал
-    FInterval: Cardinal;                //Время замера в милисекундах
+    FCurrentTime: QWord;                                            //Текущее время вызова
+    FLastTime: QWord;                                               //Последнее время вызова
+    FCounter: Cardinal;                                             //Счётчик до наступления интервала
+    FCount: Cardinal;                                               //Сколько срабатываний в интервал
+    FInterval: Cardinal;                                            //Время замера в милисекундах
 
     function GetStrCount: String;
   public
@@ -68,11 +68,13 @@ procedure TsgeCounter.Inc;
 begin
   FCurrentTime := sgeGetTickCount;
   if FCurrentTime - FLastTime > FInterval then
-    begin
+  begin
     FCount := FCounter;
     FCounter := 0;
     FLastTime := FCurrentTime;
-    end else System.Inc(FCounter);
+  end
+  else
+    System.Inc(FCounter);
 end;
 
 

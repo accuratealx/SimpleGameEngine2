@@ -32,10 +32,10 @@ type
 
   TsgeSimpleContainer = class
   private
-    FSectionList: array of TsgeSimpleContainerSection;        //Массив секций
-    FSearchOptions: TsgeSearchOptions;                        //Модификаторы поиска
-    FFileName: String;                                        //Имя файла по умолчанию
-    FWrap: TsgeSimpleContainerWrap;                           //Тип переноса скобок
+    FSectionList: array of TsgeSimpleContainerSection;              //Массив секций
+    FSearchOptions: TsgeSearchOptions;                              //Модификаторы поиска
+    FFileName: String;                                              //Имя файла по умолчанию
+    FWrap: TsgeSimpleContainerWrap;                                 //Тип переноса скобок
 
     function  GetSecuredValue(AValue: String): String;
     function  GetParameterName(Str: String): String;
@@ -109,12 +109,12 @@ uses
 const
   _UNITNAME = 'SimpleContainers';
 
-  LineSeparator   = #13#10;   //Разделитель строк
-  NamePrefix      = '#';      //Префикс имени
-  StapleOpen      = '{';      //Открывающая скобка
-  StapleClose     = '}';      //Закрывающая скобка
-  Shield          = '`';      //Символ экранирования
-  ParamSeparator  = '=';      //Разделитель имени и мпараметра секции
+  LineSeparator   = #13#10;                                         //Разделитель строк
+  NamePrefix      = '#';                                            //Префикс имени
+  StapleOpen      = '{';                                            //Открывающая скобка
+  StapleClose     = '}';                                            //Закрывающая скобка
+  Shield          = '`';                                            //Символ экранирования
+  ParamSeparator  = '=';                                            //Разделитель имени и мпараметра секции
 
   Err_IndexOutOfBounds    = 'IndexOutOfBounds';
   Err_NameNotFound        = 'NameNotFound';
@@ -133,17 +133,18 @@ begin
   Result := '';
 
   for i := 1 to Length(AValue) do
-    begin
+  begin
     if (AValue[i] = Shield) or (AValue[i] = StapleClose) then
-      begin
+    begin
       Result := Result + Shield + AValue[i];
       Continue;
-      end;
+    end;
 
-    if AValue[i] = StapleClose then Break;
+    if AValue[i] = StapleClose then
+      Break;
 
     Result := Result + AValue[i];
-    end;
+  end;
 end;
 
 
@@ -156,23 +157,33 @@ begin
 
   c := Length(Str);
   for i := 1 to c do
-    begin
-    Symbol := Str[i];                         //Выделить символ
-    if (Symbol = ParamSeparator) then Break;  //Проверить на разделитель
-    Result := Result + Symbol;                //Добавить символ
-    end;
+  begin
+    Symbol := Str[i];                                               //Выделить символ
+    if (Symbol = ParamSeparator) then                               //Проверить на разделитель
+      Break;
+    Result := Result + Symbol;                                      //Добавить символ
+  end;
 end;
 
 
 function TsgeSimpleContainer.GetSectionAsString(Section: TsgeSimpleContainerSection): String;
 begin
-  Result := NamePrefix + Section.Name;                                      //Записать имя
-  if (scwAfterName in FWrap) then Result := Result + LineSeparator;         //Перенос значения
-  Result := Result + StapleOpen;                                            //Окрывающая кавычка
-  if (scwAfterOpenStaple in FWrap) then Result := Result + LineSeparator;   //Перенос открывающей кавычки
-  Result := Result + GetSecuredValue(Section.Value);                        //Значение
-  if (scwBeforeCloseStaple in FWrap) then Result := Result + LineSeparator; //Перенос закрывающей кавычки
-  Result := Result + StapleClose;                                           //Закрывающая кавычка
+  Result := NamePrefix + Section.Name;                              //Записать имя
+
+  if (scwAfterName in FWrap) then                                   //Перенос значения
+    Result := Result + LineSeparator;
+
+  Result := Result + StapleOpen;                                    //Окрывающая кавычка
+
+  if (scwAfterOpenStaple in FWrap) then                             //Перенос открывающей кавычки
+    Result := Result + LineSeparator;
+
+  Result := Result + GetSecuredValue(Section.Value);                //Значение
+
+  if (scwBeforeCloseStaple in FWrap) then                           //Перенос закрывающей кавычки
+    Result := Result + LineSeparator;
+
+  Result := Result + StapleClose;                                   //Закрывающая кавычка
 end;
 
 
@@ -187,18 +198,19 @@ var
   Idx, c: Integer;
 begin
   //Проверить на пустое имя
-  if Section.Name = '' then Exit;
+  if Section.Name = '' then
+    Exit;
 
   //Проверить модификаторы поиска
   if (soUnique in FSearchOptions) then
-    begin
+  begin
     Idx := IndexOf(Section.Name);
     if Idx <> -1 then
-      begin
+    begin
       FSectionList[Idx].Value := Section.Value;
       Exit;
-      end;
     end;
+  end;
 
   //Добавить секцию
   c := GetCount;
@@ -261,7 +273,8 @@ constructor TsgeSimpleContainer.Create(FileName: String);
 begin
   PreCreate;
   FFileName := FileName;
-  if FFileName <> '' then LoadFromFile(FFileName)
+  if FFileName <> '' then
+    LoadFromFile(FFileName)
 end;
 
 
@@ -292,22 +305,23 @@ begin
   Result := -1;
 
   //Проверить модификатор поиска
-  if not (soCaseSensivity in FSearchOptions) then Name := LowerCase(Name);
+  if not (soCaseSensivity in FSearchOptions) then
+    Name := LowerCase(Name);
 
 
   c := Length(FSectionList) - 1;
   for i := 0 to c do
-    begin
+  begin
     //Проверить модификатор поиска
-    if not (soCaseSensivity in FSearchOptions) then s := LowerCase(FSectionList[i].Name) else s := FSectionList[i].Name;
+    if not (soCaseSensivity in FSearchOptions) then
+      s := LowerCase(FSectionList[i].Name)
+    else
+      s := FSectionList[i].Name;
 
     //Сравнить
     if s = Name then
-      begin
-      Result := i;
-      Break;
-      end;
-    end;
+      Exit(i);
+  end;
 end;
 
 
@@ -372,7 +386,8 @@ begin
   Result := '';
 
   Idx := IndexOf(Name);
-  if Idx = -1 then Exit;
+  if Idx = -1 then
+    Exit;
 
   Result := FSectionList[Idx].Value;
 end;
@@ -385,7 +400,8 @@ var
 begin
   List.Clear;
   Idx := IndexOf(Name);
-  if Idx = -1 then Exit;
+  if Idx = -1 then
+    Exit;
 
   so := List.SearchOptions;
   List.SearchOptions := [];
@@ -406,7 +422,8 @@ var
 begin
   Parameters.Clear;
   Idx := IndexOf(Name);
-  if Idx = -1 then Exit;
+  if Idx = -1 then
+    Exit;
 
   Parameters.FromString(FSectionList[Idx].Value);
 end;
@@ -429,10 +446,10 @@ begin
   //Нет секции, добавить новую
   Idx := IndexOf(Name);
   if Idx = -1 then
-    begin
+  begin
     Add(Name, Parameter + ' ' + ParamSeparator + ' ' + Value);
     Exit;
-    end;
+  end;
 
 
   //Подготовить список строк секции
@@ -444,14 +461,14 @@ begin
   Found := False;
   c := List.Count - 1;
   for i := 0 to c do
-    begin
+  begin
     //Поиск имени параметра и положения разделителя
     S := List.Part[i];
     pName := GetParameterName(S);
 
     //Проверить совпадает ли имя параметра с указанным
     if ParamName = LowerCase(sgeTrim(pName)) then
-      begin
+    begin
       //Удалить значение параметра из строки
       LenName := Length(pName);
       LenDel := Length(S) - LenName + 1;
@@ -462,11 +479,12 @@ begin
       List.Part[i] := S;
       Found := True;
       Break;
-      end;
     end;
+  end;
 
   //Проверить на изменение
-  if not Found then List.Add(Parameter + ' ' + ParamSeparator + ' ' + Value);
+  if not Found then
+    List.Add(Parameter + ' ' + ParamSeparator + ' ' + Value);
 
   //Изменить секцию
   FSectionList[Idx].Value := List.ToString;
@@ -492,7 +510,11 @@ procedure TsgeSimpleContainer.SetSectionParameter(Name: String; Parameter: Strin
 var
   s: String;
 begin
-  if Value then s := '1' else s := '0';
+  if Value then
+    s := '1'
+  else
+    s := '0';
+
   SetSectionParameter(Name, Parameter, s);
 end;
 
@@ -506,7 +528,8 @@ begin
 
   //Поиск секции
   Idx := IndexOf(Name);
-  if Idx = -1 then Exit;
+  if Idx = -1 then
+    Exit;
 
   //Поиск параметра
   Params := TsgeSimpleParameters.Create;
@@ -525,7 +548,8 @@ begin
 
   //Поиск секции
   Idx := IndexOf(Name);
-  if Idx = -1 then Exit;
+  if Idx = -1 then
+    Exit;
 
   //Поиск параметра
   Params := TsgeSimpleParameters.Create;
@@ -544,7 +568,8 @@ begin
 
   //Поиск секции
   Idx := IndexOf(Name);
-  if Idx = -1 then Exit;
+  if Idx = -1 then
+    Exit;
 
   //Поиск параметра
   Params := TsgeSimpleParameters.Create;
@@ -563,7 +588,8 @@ begin
 
   //Поиск секции
   Idx := IndexOf(Name);
-  if Idx = -1 then Exit;
+  if Idx = -1 then
+    Exit;
 
   //Поиск параметра
   Params := TsgeSimpleParameters.Create;
@@ -582,7 +608,8 @@ begin
 
   //Поиск секции
   Idx := IndexOf(Name);
-  if Idx = -1 then Exit;
+  if Idx = -1 then
+    Exit;
 
   //Поиск параметра
   Params := TsgeSimpleParameters.Create;
@@ -609,7 +636,7 @@ begin
   //Цикл по списку параметров
   c := GetCount - 1;
   for i := 0 to c do
-    begin
+  begin
 
     //Подготовить параметр
     State := sNormal;
@@ -621,86 +648,89 @@ begin
     //Цикл по строке
     k := Length(Str);
     for j := 1 to k do
-      begin
+    begin
       S := Str[j];
 
       case State of
         sNormal:
-          begin
+        begin
           if S = NamePrefix then
-            begin
+          begin
             State := sName;
             Continue;
-            end;
           end;
+        end;
 
 
         sName:
-          begin
+        begin
           if S = StapleOpen then
-            begin
+          begin
             State := sValue;
             IdxOpen := j;
             Continue;
-            end;
+          end;
 
           cName := cName + S;
-          end;
+        end;
 
 
         sValue:
-          begin
+        begin
           if S = Shield then
-            begin
+          begin
             State := sShield;
             Continue;
-            end;
+          end;
 
           if S = StapleClose then
-            begin
+          begin
             IdxClose := j;
 
             //Найдено совпадение по имени секции
             if LowerCase(sgeTrim(cName)) = SectionName then
-              begin
-              System.Delete(Str, IdxOpen + 1, IdxClose - IdxOpen - 1);                  //Удалить значние
-              cValue := FSectionList[i].Value;                                          //Взять значение секции
-              if (scwAfterOpenStaple in FWrap) then cValue := LineSeparator + cValue;   //Перенос после открывающей скобки
-              if (scwBeforeCloseStaple in FWrap) then cValue := cValue + LineSeparator; //Перенос перед закрывающей скобкой
-              System.Insert(cValue, Str, IdxOpen + 1);                                  //Вставить значение
+            begin
+              System.Delete(Str, IdxOpen + 1, IdxClose - IdxOpen - 1);  //Удалить значние
+              cValue := FSectionList[i].Value;                      //Взять значение секции
+              if (scwAfterOpenStaple in FWrap) then                 //Перенос после открывающей скобки
+                cValue := LineSeparator + cValue;
+              if (scwBeforeCloseStaple in FWrap) then
+                cValue := cValue + LineSeparator;
+              System.Insert(cValue, Str, IdxOpen + 1);              //Вставить значение
               IsSet := True;
               Break;
-              end;
+            end;
 
             //Обнулить параметры
             cName := '';
             cValue := '';
             State := sNormal;
             Continue;
-            end;
+          end;
 
           cValue := cValue + S;
-          end;
+        end;
 
 
         sShield:
-          begin
+        begin
           State := sValue;
           cValue := cValue + S;
-          end;
+        end;
       end;
 
-      end;//Цикл по строке
+    end;//Цикл по строке
 
 
     //Если секция не изменена, то добавить новую
     if not IsSet then
-      begin
-      if Str <> '' then Str := Str + LineSeparator + LineSeparator;
+    begin
+      if Str <> '' then
+        Str := Str + LineSeparator + LineSeparator;
       Str := Str + GetSectionAsString(FSectionList[i]);
-      end;
+    end;
 
-    end;//For
+  end;//For
 end;
 
 
@@ -747,62 +777,61 @@ begin
 
   //Просмотреть символы по порядку
   for i := 1 to Length(Str) do
-    begin
+  begin
     S := Str[i];
 
     case State of
       sNormal:
-        begin
+      begin
         if S = NamePrefix then
-          begin
+        begin
           State := sName;
           Continue;
-          end;
         end;
+      end;
 
 
       sName:
-        begin
+      begin
         if S = StapleOpen then
-          begin
+        begin
           State := sValue;
           Continue;
-          end;
+        end;
 
         cName := cName + S;
-        end;
+      end;
 
 
       sValue:
-        begin
+      begin
         if S = Shield then
-          begin
+        begin
           State := sShield;
           Continue;
-          end;
+        end;
 
         if S = StapleClose then
-          begin
+        begin
           Add(sgeTrim(cName), sgeTrim(cValue));
           cName := '';
           cValue := '';
           State := sNormal;
           Continue;
-          end;
+        end;
 
         cValue := cValue + S;
-        end;
+      end;
 
 
       sShield:
-        begin
+      begin
         State := sValue;
         cValue := cValue + S;
-        end;
+      end;
     end;
 
-
-    end;//For
+  end;
 end;
 
 
@@ -815,14 +844,15 @@ begin
 
   c := GetCount - 1;
   for i := 0 to c do
-    begin
+  begin
     //Записать секцию в строку
     S := GetSectionAsString(FSectionList[i]);
     Result := Result + S;
 
     //Разделитель строк
-    if i <> c then Result := Result + LineSeparator + LineSeparator;
-    end;
+    if i <> c then
+      Result := Result + LineSeparator + LineSeparator;
+  end;
 end;
 
 
@@ -865,7 +895,8 @@ var
   S: String;
   Size: Integer;
 begin
-  if FileName = '' then FileName := FFileName;
+  if FileName = '' then
+    FileName := FFileName;
 
   //Подготовить строку для записи
   S := ToString;
@@ -893,7 +924,8 @@ var
   S: String;
   Size: Integer;
 begin
-  if FileName = '' then FileName := FFileName;
+  if FileName = '' then
+    FileName := FFileName;
 
   if not sgeFileExists(FileName) then
     raise EsgeException.Create(_UNITNAME, Err_FileNotFound, FileName);
@@ -923,7 +955,8 @@ var
   Ms: TsgeMemoryStream;
   Str: String;
 begin
-  if FileName = '' then FileName := FFileName;
+  if FileName = '' then
+    FileName := FFileName;
 
   if not sgeFileExists(FileName) then
     raise EsgeException.Create(_UNITNAME, Err_FileNotFound, FileName);
@@ -961,7 +994,8 @@ procedure TsgeSimpleContainer.UpdateFromFile(FileName: String);
 var
   Ms: TsgeMemoryStream;
 begin
-  if FileName = '' then FileName := FFileName;
+  if FileName = '' then
+    FileName := FFileName;
 
   try
     Ms := TsgeMemoryStream.Create;

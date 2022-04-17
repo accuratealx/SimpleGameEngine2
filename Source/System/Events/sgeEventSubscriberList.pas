@@ -47,11 +47,11 @@ begin
   for i := 0 to ci do
     for j := 0 to cj - i do
       if FList[j].Priority < FList[j + 1].Priority then
-        begin
+      begin
         El := FList[j];
         FList[j] := FList[j + 1];
         FList[j + 1] := El;
-        end;
+      end;
 end;
 
 
@@ -63,17 +63,15 @@ begin
 
   for i := 0 to FCount - 1 do
     if FList[i].Handler = Handler then
-      begin
-      Result := i;
-      Break;
-      end;
+      Exit(i);
 end;
 
 
 procedure TsgeEventSubscriberList.Add(Subscriber: TsgeEventSubscriber);
 begin
   //Проверить есть ли уже подписчик
-  if IndexOfHandler(Subscriber.Handler) <> -1 then Exit;
+  if IndexOfHandler(Subscriber.Handler) <> -1 then
+    Exit;
 
   //Добавить элемент
   inherited Add(Subscriber);
@@ -86,7 +84,8 @@ end;
 function TsgeEventSubscriberList.Add(Handler: TsgeEventHandler; Priority: Word; Enable: Boolean): TsgeEventSubscriber;
 begin
   //Проверить есть ли уже подписчик
-  if IndexOfHandler(Handler) <> -1 then Exit;
+  if IndexOfHandler(Handler) <> -1 then
+    Exit;
 
   //Создать подписчика
   Result := TsgeEventSubscriber.Create(Handler, Priority, Enable);
@@ -117,15 +116,15 @@ var
 begin
   i := -1;
   while i < FCount - 1 do
-    begin
+  begin
     Inc(i);
 
     if TObject(TMethod(FList[i].Handler).Data) = Obj then
-      begin
+    begin
       Delete(i);
       Dec(i)
-      end;
     end;
+  end;
 end;
 
 

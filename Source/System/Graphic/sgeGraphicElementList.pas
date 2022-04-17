@@ -45,10 +45,11 @@ begin
   //Поиск по полезной нагрузке
   P := FFirst;
   while P <> nil do
-    begin
-    if P^.Item = aItem then Exit(P);
+  begin
+    if P^.Item = aItem then
+      Exit(P);
     P := P^.Next;
-    end;
+  end;
 end;
 
 
@@ -60,13 +61,20 @@ begin
   //Найти указатель на запись
   PItem := IndexOf(Element);
   if pItem <> nil then
-    begin
+  begin
     //Ссылка на данные
     Data := PItem^.Item;
 
     //Поправить ссылки списка
-    if PItem^.Next <> nil then PItem^.Next^.Prev := PItem^.Prev else FLast := PItem^.Prev;    //Следующий элемент
-    if PItem^.Prev <> nil then PItem^.Prev^.Next := PItem^.Next else FFirst := PItem^.Next;   //Предыдущий элемент
+    if PItem^.Next <> nil then
+      PItem^.Next^.Prev := PItem^.Prev
+    else
+      FLast := PItem^.Prev;
+
+    if PItem^.Prev <> nil then
+      PItem^.Prev^.Next := PItem^.Next
+    else
+      FFirst := PItem^.Next;
 
     //Удалить память текущей записи
     Dispose(PItem);
@@ -76,7 +84,7 @@ begin
 
     //Добавить элемент в хвост
     Add(Data);
-    end;
+  end;
 end;
 
 
@@ -116,7 +124,8 @@ begin
   P := FIterator;
 
   //Проверка на пустое значение
-  if FIterator = nil then Exit;
+  if FIterator = nil then
+    Exit;
 
   //Сместить указатель на следующий элемент
   FIterator := FIterator^.Next;

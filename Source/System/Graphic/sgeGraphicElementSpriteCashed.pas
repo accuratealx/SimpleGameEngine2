@@ -23,8 +23,8 @@ uses
 type
   TsgeGraphicElementSpriteCashed = class(TsgeGraphicElementSprite)
   private
-    FSprite: TsgeGraphicSprite;             //Спрайт для вывода
-    FRedraw: Boolean;                       //Флаг обновления спрайта перед перерисовкой
+    FSprite: TsgeGraphicSprite;                                     //Спрайт для вывода
+    FRedraw: Boolean;                                               //Флаг обновления спрайта перед перерисовкой
 
     procedure PostCreate;
   protected
@@ -92,7 +92,7 @@ procedure TsgeGraphicElementSpriteCashed.Draw(Graphic: TsgeGraphic);
 begin
   //Проверить на обновление
   if FRedraw then
-    begin
+  begin
     //Убрат флаг обновления
     FRedraw := False;
 
@@ -120,7 +120,7 @@ begin
     Graphic.RenderPlace := grpScreen;                               //Переключить режим вывода на экран
     Graphic.RenderSprite := nil;                                    //Убрать спрайт из вывода
     Graphic.PopAttrib;                                              //Восстановить параметры
-    end;
+  end;
 
   //Вывести спрайт
   inherited Draw(Graphic);

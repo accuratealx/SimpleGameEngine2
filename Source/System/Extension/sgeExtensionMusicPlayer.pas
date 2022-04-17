@@ -118,26 +118,29 @@ var
 begin
   //Обработать задачу
   if FTaskList.Count > 0 then
-    begin
+  begin
     //Ссылка на задачу
     Task := FTaskList.Item[0];
 
     //Проверить задачу на завершение
-    if Task.Done then FTaskList.Delete(0) else Task.Process;
-    end;
+    if Task.Done then
+      FTaskList.Delete(0)
+    else
+      Task.Process;
+  end;
 
 
 
   //Проверить затухание композиции
   case GetState of
     psPlay:
-      begin
+    begin
       //Секунд до конца дорожки
       TimeToEnd := FSource.Buffer.Time - FSource.OffsetSecond;
 
       //Наступило время
       if (TimeToEnd <= FFadeSeconds) and not FFading then
-        begin
+      begin
         FFading := True;
 
         //Остановить проигрывание
@@ -145,7 +148,7 @@ begin
 
         //Проверить режим проигрывания
         if FRepeatMode <> rmNone then
-          begin
+        begin
           //Текуший трек
           if FRepeatMode = rmTrack then
             Track := FTrackList.CurrentTrack;
@@ -155,18 +158,18 @@ begin
             Track := GetNextTrackByMode(FGroup);
 
           //Проверить дорожку
-          if Track <> nil then FTaskList.Add(TsgeMusicPlayerTaskPlay.Create(Track))
-            else ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_TrackNotFound, FGroup));
-          end;
+          if Track <> nil then
+            FTaskList.Add(TsgeMusicPlayerTaskPlay.Create(Track))
+          else
+            ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_TrackNotFound, FGroup));
         end;
-
-      end;//psPlay
-
-    psStop:
-      begin
-      if FFading then FFading := False;
       end;
 
+    end;//psPlay
+
+    psStop:
+      if FFading then
+        FFading := False;
   end;
 
 
@@ -182,9 +185,14 @@ begin
 
   //Взять следующую дорожку
   case FChangeMode of
-    cmRandom  : Result := FTrackList.GetRandomTrack(aGroup);
-    cmForward : Result := FTrackList.GetNextTrack(aGroup);
-    cmBackward: Result := FTrackList.GetPrevTrack(aGroup);
+    cmRandom:
+      Result := FTrackList.GetRandomTrack(aGroup);
+
+    cmForward:
+      Result := FTrackList.GetNextTrack(aGroup);
+
+    cmBackward:
+      Result := FTrackList.GetPrevTrack(aGroup);
   end;
 end;
 
@@ -192,8 +200,10 @@ end;
 procedure TsgeExtensionMusicPlayer.SetVolume(AVolume: Single);
 begin
   //Проверить диапазон
-  if AVolume < 0 then AVolume := 0;
-  if AVolume > 1 then AVolume := 1;
+  if AVolume < 0 then
+    AVolume := 0;
+  if AVolume > 1 then
+    AVolume := 1;
 
   //Запомнить гормкость
   FVolume := AVolume;
@@ -205,7 +215,8 @@ end;
 
 procedure TsgeExtensionMusicPlayer.SetFadeTime(ATime: Word);
 begin
-  if FFadeTime = ATime then Exit;
+  if FFadeTime = ATime then
+    Exit;
 
   FFadeTime := ATime;
 
@@ -216,7 +227,10 @@ end;
 
 function TsgeExtensionMusicPlayer.GetState: TsgeExtensionMusicPlayerSate;
 begin
-  if FSource.State = sssPlay then Result := psPlay else Result := psStop;
+  if FSource.State = sssPlay then
+    Result := psPlay
+  else
+    Result := psStop;
 end;
 
 
@@ -291,7 +305,8 @@ begin
     raise EsgeException.Create(_UNITNAME, Err_TrackIsEmpty, FGroup);
 
   //Если проигрыватель играет, то остановить
-  if GetState = psPlay then Stop;
+  if GetState = psPlay then
+    Stop;
 
   //Добавить задачу
   FTaskList.Add(TsgeMusicPlayerTaskPlay.Create(Track));
@@ -348,7 +363,8 @@ begin
   FTaskList.Clear;
 
   //Проверка на проигрышь
-  if GetState = psStop then Exit;
+  if GetState = psStop then
+    Exit;
 
   //Добавить задачу остановки
   FTaskList.Add(TsgeMusicPlayerTaskStop.Create);

@@ -112,11 +112,11 @@ var
 begin
   ParamName := Prefix + 'Name';
   if Parameters.Exist[ParamName] then
-    begin
+  begin
     s := Parameters.GetValue(ParamName, '');
     FFont := SGE.ExtResourceList.GetFont(s);
     FName := s;
-    end;
+  end;
 end;
 
 

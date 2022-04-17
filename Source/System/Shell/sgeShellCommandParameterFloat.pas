@@ -21,7 +21,6 @@ uses
 
 type
   TsgeShellCommandParameterFloat = class(TsgeShellCommandParameterBase)
-  private
   public
     constructor Create(Name: ShortString; Required: Boolean; PrefixRequired: Boolean = False; PrefixList: String = ''; PrefixSeparator: String = ',');
   end;

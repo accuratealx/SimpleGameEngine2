@@ -72,7 +72,8 @@ const
 
 procedure TsgeExtensionCursor.SetShowCursor(AShow: Boolean);
 begin
-  if FShowCursor = AShow then Exit;
+  if FShowCursor = AShow then
+    Exit;
 
   FShowCursor := AShow;
   CorrectVisible(FShowCursor);
@@ -81,19 +82,20 @@ end;
 
 procedure TsgeExtensionCursor.SetCursor(ACursor: TsgeCursor);
 begin
-  if FCursor = ACursor then Exit;
+  if FCursor = ACursor then
+    Exit;
 
   FCursor := ACursor;
 
   //Поправить параметры курсора
   if FCursor <> nil then
-    begin
+  begin
     FGUIElement.Frames := FCursor.Frames;
     FGUIElement.W := FCursor.Width;
     FGUIElement.H := FCursor.Height;
     CorrectCoordinate;
     FGUIElement.Update;
-    end;
+  end;
 
   //Поправить видимость
   CorrectVisible(FShowCursor);
@@ -103,24 +105,23 @@ end;
 procedure TsgeExtensionCursor.CorrectVisible(Visible: Boolean);
 begin
   case Visible of
-
     True:
       if FCursor = nil then
-        begin
+      begin
         FExtWindow.ShowCursor := True;
         FGUIElement.Visible := False;
-        end
-        else begin
+      end
+      else
+      begin
         FExtWindow.ShowCursor := False;
         FGUIElement.Visible := True;
-        end;
-
-    False:
-      begin
-      FExtWindow.ShowCursor := False;
-      FGUIElement.Visible := False;
       end;
 
+    False:
+    begin
+      FExtWindow.ShowCursor := False;
+      FGUIElement.Visible := False;
+    end;
   end;
 end;
 
@@ -128,10 +129,10 @@ end;
 procedure TsgeExtensionCursor.CorrectCoordinate;
 begin
   if FCursor <> nil then
-    begin
+  begin
     FGUIElement.X := FCursorPos.X - FCursor.HotPoint.X;
     FGUIElement.Y := FCursorPos.Y - FCursor.HotPoint.Y;
-    end;
+  end;
 end;
 
 

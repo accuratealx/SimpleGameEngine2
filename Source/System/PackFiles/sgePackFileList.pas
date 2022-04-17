@@ -28,12 +28,12 @@ type
   public
     destructor  Destroy; override;
 
-    procedure Clear;                              //Удалить элементы
+    procedure Clear;                                                //Удалить элементы
     procedure Add(PackFile: TsgePackFileReader);
-    procedure Add(FileName: String);              //Добавить из файла (Полный путь)
+    procedure Add(FileName: String);                                //Добавить из файла (Полный путь)
     procedure Delete(Index: Integer);
-    procedure Delete(Name: String);               //Удалить архив по имени без полного пути
-    function  IndexOf(Name: String): Integer;     //Найти индекс по имени без полного пути
+    procedure Delete(Name: String);                                 //Удалить архив по имени без полного пути
+    function  IndexOf(Name: String): Integer;                       //Найти индекс по имени без полного пути
 
     property Count: Integer read GetCount;
     property Item[Index: Integer]: TsgePackFileReader read GetItem;
@@ -150,14 +150,11 @@ begin
   Name := LowerCase(sgeExtractFileName(Name));
   c := GetCount - 1;
   for i := 0 to c do
-    begin
+  begin
     PackName := LowerCase(sgeExtractFileName(FPackList[i].FileName));
     if Name = PackName then
-      begin
-      Result := i;
-      Break;
-      end;
-    end;
+      Exit(i);
+  end;
 end;
 
 

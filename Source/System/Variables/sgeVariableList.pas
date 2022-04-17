@@ -42,10 +42,7 @@ begin
   Name := LowerCase(Name);
   for i := 0 to FCount - 1 do
     if LowerCase(FList[i].Name) = Name then
-      begin
-      Result := i;
-      Break;
-      end;
+      Exit(i);
 end;
 
 
@@ -54,10 +51,8 @@ var
   i: Integer;
 begin
   for i := FCount - 1 downto 0 do
-    begin
     if FList[i].Imbedded = False then
       inherited Delete(i);
-    end;
 end;
 
 
@@ -69,7 +64,8 @@ begin
   Idx := IndexOf(Name);
 
   //Если нет переменной, то выход
-  if Idx = -1 then Exit;
+  if Idx = -1 then
+    Exit;
 
   //Освободить память объекта
   FList[Idx].Free;

@@ -131,10 +131,10 @@ begin
   H := TsgeGUIElementExtended(FOwner).FHeight;
 
   with SGE.ExtGraphic.Graphic do
-    begin
+  begin
     doCoordinateType := gctNormal;
     DrawRectGradient(0, 0, W, H, Col);
-    end;
+  end;
 end;
 
 

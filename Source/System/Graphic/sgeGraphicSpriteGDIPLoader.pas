@@ -119,11 +119,11 @@ begin
 
     //Переворачивание рисунка
     for i := 0 to FHeight - 1 do
-      begin
+    begin
       IdxBmp := i * BytesPerLine;                                                       //Смещение линии GPBitmap
       IdxData := FDataSize - (i * BytesPerLine) - BytesPerLine;                         //Смещение буфера для OpenGL
       Move(Pointer(BmpData.Scan0 + IdxBmp)^, Pointer(FData + IdxData)^, BytesPerLine);  //Копирование из GPBitmap в буфер
-      end;
+    end;
 
     //Разблокировать память
     GdipBitmapUnlockBits(Bmp, @BmpData);
@@ -154,10 +154,10 @@ begin
 
   //Запуск GDI+
   if GdiplusStartup(gdiplusToken, @StartupInput, nil) <> Ok then
-    begin
+  begin
     MessageBox(0, 'Cant initialize GDI+', 'Fatal error', MB_ICONERROR or MB_OK);
     halt;
-    end;
+  end;
 end;
 
 

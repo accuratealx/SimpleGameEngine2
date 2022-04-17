@@ -52,12 +52,15 @@ implementation
 
 procedure TsgeGUIPropertyConstrains.SetMinHeight(AMinHeight: Integer);
 begin
-  if AMinHeight < 0 then AMinHeight := 0;
-  if FMinHeight = AMinHeight then Exit;
+  if AMinHeight < 0 then
+    AMinHeight := 0;
+  if FMinHeight = AMinHeight then
+    Exit;
 
   //Изменить значение
   FMinHeight := AMinHeight;
-  if (FMinHeight > FMaxHeight) and (FMaxHeight <> 0) then FMaxHeight := FMinHeight;
+  if (FMinHeight > FMaxHeight) and (FMaxHeight <> 0) then
+    FMaxHeight := FMinHeight;
 
   //Внести изменения
   UpdateParent;
@@ -66,12 +69,15 @@ end;
 
 procedure TsgeGUIPropertyConstrains.SetMinWidth(AMinWidth: Integer);
 begin
-  if AMinWidth < 0 then AMinWidth := 0;
-  if FMinWidth = AMinWidth then Exit;
+  if AMinWidth < 0 then
+    AMinWidth := 0;
+  if FMinWidth = AMinWidth then
+    Exit;
 
   //Изменить значение
   FMinWidth := AMinWidth;
-  if (FMinWidth > FMaxWidth) and (FMaxWidth <> 0) then FMaxWidth := FMinWidth;
+  if (FMinWidth > FMaxWidth) and (FMaxWidth <> 0) then
+    FMaxWidth := FMinWidth;
 
   //Внести изменения
   UpdateParent;
@@ -80,12 +86,15 @@ end;
 
 procedure TsgeGUIPropertyConstrains.SetMaxHeight(AMaxHeight: Integer);
 begin
-  if AMaxHeight < 0 then AMaxHeight := 0;
-  if FMaxHeight = AMaxHeight then Exit;
+  if AMaxHeight < 0 then
+    AMaxHeight := 0;
+  if FMaxHeight = AMaxHeight then
+    Exit;
 
   //Изменить значение
   FMaxHeight := AMaxHeight;
-  if (FMaxHeight < FMinHeight) and (FMinHeight <> 0) then FMinHeight := FMaxHeight;
+  if (FMaxHeight < FMinHeight) and (FMinHeight <> 0) then
+    FMinHeight := FMaxHeight;
 
   //Внести изменения
   UpdateParent;
@@ -94,12 +103,15 @@ end;
 
 procedure TsgeGUIPropertyConstrains.SetMaxWidth(AMaxWidth: Integer);
 begin
-  if AMaxWidth < 0 then AMaxWidth := 0;
-  if FMaxWidth = AMaxWidth then Exit;
+  if AMaxWidth < 0 then
+    AMaxWidth := 0;
+  if FMaxWidth = AMaxWidth then
+    Exit;
 
   //Изменить значение
   FMaxWidth := AMaxWidth;
-  if (FMaxWidth < FMinWidth) and (FMinWidth <> 0) then FMinWidth := FMaxWidth;
+  if (FMaxWidth < FMinWidth) and (FMinWidth <> 0) then
+    FMinWidth := FMaxWidth;
 
   //Внести изменения
   UpdateParent;
@@ -115,19 +127,23 @@ begin
 
   //MinWidth
   ParamName := Prefix + 'MinWidth';
-  if Parameters.Exist[ParamName] then SetMinWidth(Parameters.GetValue(ParamName, 0));
+  if Parameters.Exist[ParamName] then
+    SetMinWidth(Parameters.GetValue(ParamName, 0));
 
   //MaxWidth
   ParamName := Prefix + 'MaxWidth';
-  if Parameters.Exist[ParamName] then SetMaxWidth(Parameters.GetValue(ParamName, 0));
+  if Parameters.Exist[ParamName] then
+    SetMaxWidth(Parameters.GetValue(ParamName, 0));
 
   //MinHeight
   ParamName := Prefix + 'MinHeight';
-  if Parameters.Exist[ParamName] then SetMinHeight(Parameters.GetValue(ParamName, 0));
+  if Parameters.Exist[ParamName] then
+    SetMinHeight(Parameters.GetValue(ParamName, 0));
 
   //MaxHeight
   ParamName := Prefix + 'MaxHeight';
-  if Parameters.Exist[ParamName] then SetMaxHeight(Parameters.GetValue(ParamName, 0));
+  if Parameters.Exist[ParamName] then
+    SetMaxHeight(Parameters.GetValue(ParamName, 0));
 
   //Разблокировать изменение
   UnlockUpdate;
@@ -136,10 +152,14 @@ end;
 
 procedure TsgeGUIPropertyConstrainsExt.Check(var NewWidth, NewHeight: Integer);
 begin
-  if (FMinWidth <> 0) and (NewWidth < FMinWidth) then NewWidth := FMinWidth;
-  if (FMaxWidth <> 0) and (NewWidth > FMaxWidth) then NewWidth := FMaxWidth;
-  if (FMinHeight <> 0) and (NewHeight < FMinHeight) then NewHeight := FMinHeight;
-  if (FMaxHeight <> 0) and (NewHeight > FMaxHeight) then NewHeight := FMaxHeight;
+  if (FMinWidth <> 0) and (NewWidth < FMinWidth) then
+    NewWidth := FMinWidth;
+  if (FMaxWidth <> 0) and (NewWidth > FMaxWidth) then
+    NewWidth := FMaxWidth;
+  if (FMinHeight <> 0) and (NewHeight < FMinHeight) then
+    NewHeight := FMinHeight;
+  if (FMaxHeight <> 0) and (NewHeight > FMaxHeight) then
+    NewHeight := FMaxHeight;
 end;
 
 

@@ -25,12 +25,12 @@ type
 
   TsgeFile = class
   private
-    FHandle: THandle;                         //Хэндл файла
-    FSize: Int64;                             //Размер
-    FMode: TsgeFileMode;                      //Режим работы с файлом
-    FExclusive: Boolean;                      //Монопольный доступ
-    FPosition: Int64;                         //Текушее положение курсора
-    FFileName: String;                        //Имя файла
+    FHandle: THandle;                                               //Хэндл файла
+    FSize: Int64;                                                   //Размер
+    FMode: TsgeFileMode;                                            //Режим работы с файлом
+    FExclusive: Boolean;                                            //Монопольный доступ
+    FPosition: Int64;                                               //Текушее положение курсора
+    FFileName: String;                                              //Имя файла
 
     procedure OpenFile(FileName: String);
     procedure CloseFile;
@@ -91,32 +91,41 @@ var
   Sz: Int64;
 begin
   //Определить как открывать файл
-  if sgeFileExists(FileName) then Method := MOpen else Method := MCreate;
+  if sgeFileExists(FileName) then
+    Method := MOpen
+  else
+    Method := MCreate;
 
   //Подключиться к файлу
   case Method of
-    MOpen   : H := sgeOpenFile(FileName, Ord(FMode));
-    MCreate : H := sgeCreateFile(FileName, Ord(FMode));
+    MOpen:
+      H := sgeOpenFile(FileName, Ord(FMode));
+
+    MCreate:
+      H := sgeCreateFile(FileName, Ord(FMode));
   end;
 
   //Проверить открытие файла
   if H = FileInvalidHandle then
-    begin
+  begin
     case Method of
-      MCreate : s := Err_CantCreateFile;
-      MOpen   : s := Err_CantOpenFile;
+      MCreate:
+        s := Err_CantCreateFile;
+
+      MOpen:
+        s := Err_CantOpenFile;
     end;
 
     raise EsgeException.Create(_UNITNAME, s, GetLastOSErrorMessage);
-    end;
+  end;
 
   //Прочитать размер
   Sz := sgeGetFileSize(FileName);
   if Sz = -1 then
-    begin
+  begin
     sgeCloseFile(H);
     raise EsgeException.Create(_UNITNAME, Err_CantReadFileSize);
-    end;
+  end;
 
   //Применить параметры
   CloseFile;
@@ -138,7 +147,8 @@ end;
 
 procedure TsgeFile.SetFileName(AFileName: String);
 begin
-  if FFileName = AFileName then Exit;
+  if FFileName = AFileName then
+    Exit;
 
   OpenFile(AFileName);
 end;
@@ -146,8 +156,10 @@ end;
 
 procedure TsgeFile.SetSize(ASize: Int64);
 begin
-  if FHandle = FileInvalidHandle then Exit;
-  if FSize = ASize then Exit;
+  if FHandle = FileInvalidHandle then
+    Exit;
+  if FSize = ASize then
+    Exit;
 
   if not sgeTruncateFile(FHandle, ASize) then
     raise EsgeException.Create(_UNITNAME, Err_CantSetFileSize, GetLastOSErrorMessage);
@@ -160,7 +172,8 @@ end;
 
 procedure TsgeFile.SetMode(AMode: TsgeFileMode);
 begin
-  if FMode = AMode then Exit;
+  if FMode = AMode then
+    Exit;
 
   FMode := AMode;
   CloseFile;
@@ -170,7 +183,8 @@ end;
 
 procedure TsgeFile.SetExclusive(AExclusive: Boolean);
 begin
-  if FExclusive = AExclusive then Exit;
+  if FExclusive = AExclusive then
+    Exit;
 
   FExclusive := AExclusive;
   CloseFile;
@@ -196,7 +210,8 @@ end;
 
 procedure TsgeFile.Flush;
 begin
-  if FHandle = FileInvalidHandle then Exit;
+  if FHandle = FileInvalidHandle then
+    Exit;
 
   if not sgeFlushFile(FHandle) then
     raise EsgeException.Create(_UNITNAME, Err_CantFlushFile, GetLastOSErrorMessage);
@@ -211,7 +226,8 @@ end;
 
 procedure TsgeFile.Seek(Offset: Int64; Origin: TsgeFileOrigin);
 begin
-  if FHandle = FileInvalidHandle then Exit;
+  if FHandle = FileInvalidHandle then
+    Exit;
 
   FPosition := sgeSeekFile(FHandle, Offset, Ord(Origin));
 end;
@@ -219,7 +235,8 @@ end;
 
 procedure TsgeFile.Write(const Buffer; Size: Int64);
 begin
-  if FHandle = FileInvalidHandle then Exit;
+  if FHandle = FileInvalidHandle then
+    Exit;
 
   if not sgeWriteFile(FHandle, Buffer, Size) then
     raise EsgeException.Create(_UNITNAME, Err_CantWriteBuffer, GetLastOSErrorMessage);
@@ -228,7 +245,8 @@ end;
 
 procedure TsgeFile.Read(out Buffer; Size: Int64);
 begin
-  if FHandle = FileInvalidHandle then Exit;
+  if FHandle = FileInvalidHandle then
+    Exit;
 
   if not sgeReadFile(FHandle, Buffer, Size) then
     raise EsgeException.Create(_UNITNAME, Err_CantReadBuffer, GetLastOSErrorMessage);
@@ -238,7 +256,8 @@ end;
 function TsgeFile.ToString: String;
 begin
   Result := '';
-  if FSize = 0 then Exit;
+  if FSize = 0 then
+    Exit;
 
   SetLength(Result, FSize);
   Seek(0, foBegin);

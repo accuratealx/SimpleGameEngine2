@@ -61,7 +61,8 @@ begin
 
   Value := LowerCase(sgeTrim(Value));
   for i := 0 to List.Count - 1 do
-    if LowerCase(List.Part[i]) = Value then Exit(i);
+    if LowerCase(List.Part[i]) = Value then
+      Exit(i);
 end;
 
 

@@ -33,16 +33,14 @@ function TsgeShellCommandQueue.PullFirstCommand: String;
 begin
   FCS.Enter;
   try
-
     if FCount > 0 then
-      begin
+    begin
       //Вернуть результат
       Result := GetItem(0);
 
       //Удалить первую команду
       inherited Delete(0);
-      end;
-
+    end;
   finally
     FCS.Leave;
   end;

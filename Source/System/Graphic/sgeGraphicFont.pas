@@ -104,10 +104,17 @@ function sgeFontAttribToString(Attrib: TsgeGraphicFontAttrib): String;
 begin
   Result := '';
 
-  if (gfaBold in Attrib) then Result := Result + 'B';
-  if (gfaItalic in Attrib) then Result := Result + 'I';
-  if (gfaUnderline in Attrib) then Result := Result + 'U';
-  if (gfaStrikeOut in Attrib) then Result := Result + 'S';
+  if (gfaBold in Attrib) then
+    Result := Result + 'B';
+
+  if (gfaItalic in Attrib) then
+    Result := Result + 'I';
+
+  if (gfaUnderline in Attrib) then
+    Result := Result + 'U';
+
+  if (gfaStrikeOut in Attrib) then
+    Result := Result + 'S';
 end;
 
 
@@ -117,13 +124,21 @@ begin
 
   //Определить параметры
   AttribStr := LowerCase(AttribStr);
-  if sgePos('b', AttribStr) > 0 then Include(Result, gfaBold);
-  if sgePos('i', AttribStr) > 0 then Include(Result, gfaItalic);
-  if sgePos('u', AttribStr) > 0 then Include(Result, gfaUnderline);
-  if sgePos('s', AttribStr) > 0 then Include(Result, gfaStrikeOut);
+  if sgePos('b', AttribStr) > 0 then
+    Include(Result, gfaBold);
+
+  if sgePos('i', AttribStr) > 0 then
+    Include(Result, gfaItalic);
+
+  if sgePos('u', AttribStr) > 0 then
+    Include(Result, gfaUnderline);
+
+  if sgePos('s', AttribStr) > 0 then
+    Include(Result, gfaStrikeOut);
 
   //Особый случай
-  if sgePos('[]', AttribStr) > 0 then Result := [];
+  if sgePos('[]', AttribStr) > 0 then
+    Result := [];
 end;
 
 
@@ -147,10 +162,26 @@ begin
   LogFont.lfWidth := 0;                                             //Автоподбор ширины
   LogFont.lfEscapement := 0;                                        //Угол в десятых долях между вектором спуска и осью x устройства
   LogFont.lfOrientation := 0;                                       //Угол в градусах
-  if (gfaBold in FAttrib) then LogFont.lfWeight := FW_BOLD else LogFont.lfWeight := FW_NORMAL; //Толщина шрифта
-  if (gfaItalic in FAttrib) then LogFont.lfItalic := 1 else LogFont.lfItalic := 0;             //Наклон
-  if (gfaUnderline in FAttrib) then LogFont.lfUnderline := 1 else LogFont.lfUnderline := 0;    //Подчёркивание
-  if (gfaStrikeOut in FAttrib) then LogFont.lfStrikeOut := 1 else LogFont.lfStrikeOut := 0;    //Перечёркивание
+  if (gfaBold in FAttrib) then                                      //Толщина шрифта
+    LogFont.lfWeight := FW_BOLD
+  else
+    LogFont.lfWeight := FW_NORMAL;
+
+  if (gfaItalic in FAttrib) then                                    //Наклон
+    LogFont.lfItalic := 1
+  else
+    LogFont.lfItalic := 0;
+
+  if (gfaUnderline in FAttrib) then                                 //Подчёркивание
+    LogFont.lfUnderline := 1
+  else
+    LogFont.lfUnderline := 0;
+
+  if (gfaStrikeOut in FAttrib) then                                 //Перечёркивание
+    LogFont.lfStrikeOut := 1
+  else
+    LogFont.lfStrikeOut := 0;
+
   LogFont.lfCharSet := DEFAULT_CHARSET;                             //Набор символов
   LogFont.lfOutPrecision := OUT_TT_PRECIS;                          //Точность вывода
   LogFont.lfClipPrecision := CLIP_DEFAULT_PRECIS;                   //Точность отсечения
@@ -193,7 +224,9 @@ end;
 
 procedure TsgeGraphicFont.SetName(AName: String);
 begin
-  if FName = AName then Exit;
+  if FName = AName then
+    Exit;
+
   FName := AName;
   BuildFont;
 end;
@@ -201,8 +234,11 @@ end;
 
 procedure TsgeGraphicFont.SetHeight(AHeight: Word);
 begin
-  if AHeight < 1 then AHeight := 1;
-  if FHeight = AHeight then Exit;
+  if AHeight < 1 then
+    AHeight := 1;
+  if FHeight = AHeight then
+    Exit;
+
   FHeight := AHeight;
   BuildFont;
 end;
@@ -210,7 +246,9 @@ end;
 
 procedure TsgeGraphicFont.SetAttrib(AAttrib: TsgeGraphicFontAttrib);
 begin
-  if FAttrib = AAttrib then Exit;
+  if FAttrib = AAttrib then
+    Exit;
+
   FAttrib := AAttrib;
   BuildFont;
 end;
@@ -218,7 +256,9 @@ end;
 
 constructor TsgeGraphicFont.Create(Name: String; Height: Word; Attrib: TsgeGraphicFontAttrib);
 begin
-  if Height < 1 then Height := 1;                                   //Поправить размер
+  if Height < 1 then                                                //Поправить размер
+    Height := 1;
+
   FHeight := Height;                                                //Запомнить размер
   FName := Name;                                                    //Запомнить имя шрифта
   FAttrib := Attrib;                                                //Атрибуты шрифта
@@ -238,7 +278,9 @@ end;
 
 destructor TsgeGraphicFont.Destroy;
 begin
-  if FGLHandle = 0 then Exit;
+  if FGLHandle = 0 then
+    Exit;
+
   DeleteObject(FFont);            //Удалить логический шрифт
   DeleteDC(FDC);                  //Удалить контекс
   glDeleteLists(FGLHandle, 256);  //Удалить дисплейные списки

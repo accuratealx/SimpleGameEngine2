@@ -57,7 +57,8 @@ implementation
 
 procedure TsgeGUIPropertyScaleXY.SetMode(AMode: TsgeGUIPropertyScaleXYMode);
 begin
-  if FMode = AMode then Exit;
+  if FMode = AMode then
+    Exit;
 
   FMode := AMode;
   UpdateParent;
@@ -108,17 +109,28 @@ begin
   //Mode
   ParamName := Prefix + 'Mode';
   if Parameters.Exist[ParamName] then
-    begin
+  begin
     s := LowerCase(Parameters.GetValue(ParamName, ''));
     case s of
-      'normal'   : FMode := smNormal;
-      'stretch'  : FMode := smStretch;
-      'fitin'    : FMode := smFitIn;
-      'fitout'   : FMode := smFitOut;
-      'usersize' : FMode := smUserSize;
-      'userscale': FMode := smUserScale;
+      'normal':
+        FMode := smNormal;
+
+      'stretch':
+        FMode := smStretch;
+
+      'fitin':
+        FMode := smFitIn;
+
+      'fitout':
+        FMode := smFitOut;
+
+      'usersize':
+        FMode := smUserSize;
+
+      'userscale':
+        FMode := smUserScale;
     end;
-    end;
+  end;
 
   //UserSize
   FUserSize.LoadParameters(Parameters, Prefix + 'UserSize.');
@@ -131,12 +143,23 @@ end;
 function TsgeGUIPropertyScaleXYExt.GetSize(ParentWidth, ParentHeight, ElementWidth, ElementHeight: Integer): TsgeIntPoint;
 begin
   case FMode of
-    smNormal    : Result := sgeGetIntPoint(ElementWidth, ElementHeight);
-    smStretch   : Result := sgeGetIntPoint(ParentWidth, ParentHeight);
-    smFitIn     : Result := sgeFitRectIn(ParentWidth, ParentHeight, ElementWidth, ElementHeight);
-    smFitOut    : Result := sgeFitRectOut(ParentWidth, ParentHeight, ElementWidth, ElementHeight);
-    smUserSize  : Result := sgeGetIntPoint(Round(FUserSize.X), Round(FUserSize.Y));
-    smUserScale : Result := sgeGetIntPoint(Round(ElementWidth * FUserScale.X), Round(ElementHeight * FUserScale.Y));
+    smNormal:
+      Result := sgeGetIntPoint(ElementWidth, ElementHeight);
+
+    smStretch:
+      Result := sgeGetIntPoint(ParentWidth, ParentHeight);
+
+    smFitIn:
+      Result := sgeFitRectIn(ParentWidth, ParentHeight, ElementWidth, ElementHeight);
+
+    smFitOut:
+      Result := sgeFitRectOut(ParentWidth, ParentHeight, ElementWidth, ElementHeight);
+
+    smUserSize:
+      Result := sgeGetIntPoint(Round(FUserSize.X), Round(FUserSize.Y));
+
+    smUserScale:
+      Result := sgeGetIntPoint(Round(ElementWidth * FUserScale.X), Round(ElementHeight * FUserScale.Y));
   end;
 end;
 

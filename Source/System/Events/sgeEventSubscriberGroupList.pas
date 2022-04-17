@@ -30,9 +30,9 @@ type
     function  Subscribe(EventName: ShortString; Handler: TsgeEventHandler; Priority: Word = 0; Enable: Boolean = True): TsgeEventSubscriber;
 
     procedure UnSubscribe(EventName: ShortString; Handler: TsgeEventHandler); //Отписаться от события по имени и обработчику
-    procedure UnSubscribe(EventName: ShortString; Obj: TObject);              //Отписаться от события по имени и объекту
-    procedure UnSubscribe(Handler: TsgeEventHandler);                         //Отписаться от событий по обработчику
-    procedure UnSubscribe(Obj: TObject);                                      //Отписаться от событий по объекту
+    procedure UnSubscribe(EventName: ShortString; Obj: TObject);    //Отписаться от события по имени и объекту
+    procedure UnSubscribe(Handler: TsgeEventHandler);               //Отписаться от событий по обработчику
+    procedure UnSubscribe(Obj: TObject);                            //Отписаться от событий по объекту
   end;
 
 
@@ -66,10 +66,7 @@ begin
     Name := LowerCase(Name);
     for i := 0 to FCount - 1 do
       if Name = LowerCase(FList[i].Name) then
-        begin
-        Result := i;
-        Break;
-        end;
+        Exit(i);
 
   finally
     FCS.Leave;
@@ -89,10 +86,10 @@ begin
 
     //Если нет группы, то создать
     if Idx = -1 then
-      begin
+    begin
       Add(TsgeEventSubscriberGroup.Create(EventName));
       Idx := FCount - 1;
-      end;
+    end;
 
     //Добавить подписчика
     Result := FList[Idx].Subscribers.Add(Handler, Priority, Enable);
@@ -114,13 +111,15 @@ begin
     Idx := IndexOf(EventName);
 
     //Группа не найдена
-    if Idx = -1 then Exit;
+    if Idx = -1 then
+      Exit;
 
     //Удалить подписчика
     FList[Idx].Subscribers.Delete(Handler);
 
     //Проверить на пустую группу
-    if FList[Idx].Subscribers.Count = 0 then Delete(Idx);
+    if FList[Idx].Subscribers.Count = 0 then
+      Delete(Idx);
 
   finally
     FCS.Leave;
@@ -139,13 +138,15 @@ begin
     Idx := IndexOf(EventName);
 
     //Группа не найдена
-    if Idx = -1 then Exit;
+    if Idx = -1 then
+      Exit;
 
     //Удалить подписчика
     FList[Idx].Subscribers.Delete(Obj);
 
     //Проверить на пустую группу
-    if FList[Idx].Subscribers.Count = 0 then Delete(Idx);
+    if FList[Idx].Subscribers.Count = 0 then
+      Delete(Idx);
 
   finally
     FCS.Leave;
@@ -162,7 +163,7 @@ begin
 
     i := -1;
     while i < FCount - 1 do
-      begin
+    begin
       Inc(i);
 
       //Удалить подписчика в группе
@@ -170,11 +171,11 @@ begin
 
       //Проверить на пустую группу
       if FList[i].Subscribers.Count = 0 then
-        begin
+      begin
         Delete(i);
         Dec(i)
-        end;
       end;
+    end;
 
   finally
     FCS.Leave;
@@ -191,7 +192,7 @@ begin
 
     i := -1;
     while i < FCount - 1 do
-      begin
+    begin
       Inc(i);
 
       //Удалить подписчика в группе по объекту
@@ -199,11 +200,11 @@ begin
 
       //Проверить на пустую группу
       if FList[i].Subscribers.Count = 0 then
-        begin
+      begin
         Delete(i);
         Dec(i);
-        end;
       end;
+    end;
 
   finally
     FCS.Leave;

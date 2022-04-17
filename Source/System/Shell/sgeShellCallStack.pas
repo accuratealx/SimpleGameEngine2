@@ -46,13 +46,15 @@ function TsgeShellCallStack.GetLast: TsgeShellStackItem;
 begin
   Result := nil;
 
-  if FCount > 0 then Result := FList[FCount - 1];
+  if FCount > 0 then
+    Result := FList[FCount - 1];
 end;
 
 
 procedure TsgeShellCallStack.DeleteLast;
 begin
-  if FCount > 0 then Delete(FCount - 1);
+  if FCount > 0 then
+    Delete(FCount - 1);
 end;
 
 

@@ -22,35 +22,35 @@ uses
 type
   //Настройки Оси контроллера
   TsgeControllerAxisSettings = record
-    DeviceRange: Cardinal;            //Диапазон значений оси устройства
-    DeviceMiddleValue: Cardinal;      //Значение середины оси устройства
-    Step: Single;                     //Минимальный шаг приращения
-    MiddleValue: Integer;             //Среднее значение
-    MinValue: Integer;                //Наименьшее значение оси
-    MaxValue: Integer;                //Наибольшее значение оси
+    DeviceRange: Cardinal;                                          //Диапазон значений оси устройства
+    DeviceMiddleValue: Cardinal;                                    //Значение середины оси устройства
+    Step: Single;                                                   //Минимальный шаг приращения
+    MiddleValue: Integer;                                           //Среднее значение
+    MinValue: Integer;                                              //Наименьшее значение оси
+    MaxValue: Integer;                                              //Наибольшее значение оси
   end;
 
 
   //Крестовина контроллера
   TsgeControllerPovInfo = record
-    X: SmallInt;                      //Состояние X [-1, 0, 1]
-    Y: SmallInt;                      //Состояние Y [-1, 0, 1]
+    X: SmallInt;                                                    //Состояние X [-1, 0, 1]
+    Y: SmallInt;                                                    //Состояние Y [-1, 0, 1]
   end;
 
 
   //Кнопка контроллера
   TsgeControllerButtonInfo = record
-    Down: Boolean;                    //Состояние нажатия
-    DownOnce: Boolean;                //Нажата впервые
-    RepeatCount: Cardinal;            //Количество повторов
+    Down: Boolean;                                                  //Состояние нажатия
+    DownOnce: Boolean;                                              //Нажата впервые
+    RepeatCount: Cardinal;                                          //Количество повторов
   end;
   PsgeControllerButtonInfo = ^TsgeControllerButtonInfo;
 
 
   //Ось контроллера
   TsgeControllerAxisInfo = record
-    RawValue: Cardinal;               //Реальное значение оси
-    Value: Integer;                   //Значение с учётом диапазона
+    RawValue: Cardinal;                                             //Реальное значение оси
+    Value: Integer;                                                 //Значение с учётом диапазона
   end;
 
 
@@ -65,26 +65,26 @@ type
   TsgeController = class
   private
     //Характеристики устройства
-    FDriverID: Byte;                                  //Идентификатор драйвера
-    FName: String;                                    //Имя драйвера
-    FOEM: String;                                     //OEM строка
-    FPovType: TsgeControllerPovType;                  //Тип крестовины
-    FZAxisExist: Boolean;                             //Ось Z
-    FRAxisExist: Boolean;                             //Ось Rudder
-    FUAxisExist: Boolean;                             //Ось U
-    FVAxisExist: Boolean;                             //Ось V
-    FButtonCount: Byte;                               //Количество кнопок
-    FAxisCount: Byte;                                 //Количество осей
+    FDriverID: Byte;                                                //Идентификатор драйвера
+    FName: String;                                                  //Имя драйвера
+    FOEM: String;                                                   //OEM строка
+    FPovType: TsgeControllerPovType;                                //Тип крестовины
+    FZAxisExist: Boolean;                                           //Ось Z
+    FRAxisExist: Boolean;                                           //Ось Rudder
+    FUAxisExist: Boolean;                                           //Ось U
+    FVAxisExist: Boolean;                                           //Ось V
+    FButtonCount: Byte;                                             //Количество кнопок
+    FAxisCount: Byte;                                               //Количество осей
 
     //Настройки Осей
     FAxisSettings: array[TsgeControllerAxisType] of TsgeControllerAxisSettings;
 
     //Общие настройки
-    FAxisSmooth: Boolean;                             //Сглаживать значения
+    FAxisSmooth: Boolean;                                           //Сглаживать значения
 
     //Последнее состояние устройства
-    FLastInfo: TsgeControllerInfo;                    //Предыдущее состояние
-    FCurrentInfo: TsgeControllerInfo;                 //Текущее состояние
+    FLastInfo: TsgeControllerInfo;                                  //Предыдущее состояние
+    FCurrentInfo: TsgeControllerInfo;                               //Текущее состояние
 
     //Свойства
     procedure SetMinValue(Index: Integer; AMinValue: Integer);
@@ -93,7 +93,7 @@ type
     function  GetMaxValue(Index: Integer): Integer;
 
     //Вспомогательные методы
-    procedure ZeroInfo(var Info: TsgeControllerInfo); //Обнулить значения кнопок
+    procedure ZeroInfo(var Info: TsgeControllerInfo);               //Обнулить значения кнопок
     procedure SetAxisSettings(var AxisSettings: TsgeControllerAxisSettings; MinVal, MaxVal: Integer);
     procedure SetAxisDefaultSettings(var AxisSettings: TsgeControllerAxisSettings; MinVal, MaxVal: Integer);
 
@@ -105,8 +105,8 @@ type
     destructor  Destroy; override;
 
     procedure Reset;
-    procedure GetInfo;                                //Запросить состояние устройства
-    procedure SwapInfo;                               //Записать текущее стостояние в последнее
+    procedure GetInfo;                                              //Запросить состояние устройства
+    procedure SwapInfo;                                             //Записать текущее стостояние в последнее
 
     //Характеристики устройства
     property DriverID: Byte read FDriverID;
@@ -164,7 +164,9 @@ var
   AxisType: TsgeControllerAxisType;
 begin
   AxisType := TsgeControllerAxisType(Index);
-  if FAxisSettings[AxisType].MinValue = AMinValue then Exit;
+  if FAxisSettings[AxisType].MinValue = AMinValue then
+    Exit;
+
   SetAxisSettings(FAxisSettings[AxisType], AMinValue, FAxisSettings[AxisType].MaxValue);
 end;
 
@@ -183,7 +185,9 @@ var
   AxisType: TsgeControllerAxisType;
 begin
   AxisType := TsgeControllerAxisType(Index);
-  if FAxisSettings[AxisType].MaxValue = AMaxValue then Exit;
+  if FAxisSettings[AxisType].MaxValue = AMaxValue then
+    Exit;
+
   SetAxisSettings(FAxisSettings[AxisType], FAxisSettings[AxisType].MinValue, AMaxValue);
 end;
 
@@ -203,10 +207,10 @@ var
 begin
   //Значение осей
   for I := Low(Info.Axis) to High(Info.Axis) do
-    begin
+  begin
     Info.Axis[I].RawValue := FAxisSettings[I].DeviceMiddleValue;
     Info.Axis[I].Value := FAxisSettings[I].MiddleValue;
-    end;
+  end;
 
   //Крестовина
   Info.Pov.X := 0;
@@ -274,16 +278,22 @@ begin
   //Определить тип крестовины
   FPovType := cptVirtual;
   if (Caps.wCaps and JOYCAPS_HASPOV) = JOYCAPS_HASPOV then
-    begin
-    if (Caps.wCaps and JOYCAPS_POV4DIR) = JOYCAPS_POV4DIR then FPovType := cptDirection;
-    if (Caps.wCaps and JOYCAPS_POVCTS) = JOYCAPS_POVCTS then FPovType := cptDegree;
-    end;
+  begin
+    if (Caps.wCaps and JOYCAPS_POV4DIR) = JOYCAPS_POV4DIR then
+      FPovType := cptDirection;
+    if (Caps.wCaps and JOYCAPS_POVCTS) = JOYCAPS_POVCTS then
+      FPovType := cptDegree;
+  end;
 
   //Наличие осей
-  if (Caps.wCaps and JOYCAPS_HASZ) = JOYCAPS_HASZ then FZAxisExist := True;
-  if (Caps.wCaps and JOYCAPS_HASR) = JOYCAPS_HASR then FRAxisExist := True;
-  if (Caps.wCaps and JOYCAPS_HASU) = JOYCAPS_HASU then FUAxisExist := True;
-  if (Caps.wCaps and JOYCAPS_HASV) = JOYCAPS_HASV then FVAxisExist := True;
+  if (Caps.wCaps and JOYCAPS_HASZ) = JOYCAPS_HASZ then
+    FZAxisExist := True;
+  if (Caps.wCaps and JOYCAPS_HASR) = JOYCAPS_HASR then
+    FRAxisExist := True;
+  if (Caps.wCaps and JOYCAPS_HASU) = JOYCAPS_HASU then
+    FUAxisExist := True;
+  if (Caps.wCaps and JOYCAPS_HASV) = JOYCAPS_HASV then
+    FVAxisExist := True;
 
   //Имя устройства
   FName := Caps.szPname;
@@ -368,19 +378,30 @@ begin
   InfoEx.dwFlags := JOY_RETURNX or JOY_RETURNY or JOY_RETURNBUTTONS;
 
   //Оси
-  if FZAxisExist then InfoEx.dwFlags := InfoEx.dwFlags or JOY_RETURNZ;
-  if FRAxisExist then InfoEx.dwFlags := InfoEx.dwFlags or JOY_RETURNR;
-  if FUAxisExist then InfoEx.dwFlags := InfoEx.dwFlags or JOY_RETURNU;
-  if FVAxisExist then InfoEx.dwFlags := InfoEx.dwFlags or JOY_RETURNV;
+  if FZAxisExist then
+    InfoEx.dwFlags := InfoEx.dwFlags or JOY_RETURNZ;
+
+  if FRAxisExist then
+    InfoEx.dwFlags := InfoEx.dwFlags or JOY_RETURNR;
+
+  if FUAxisExist then
+    InfoEx.dwFlags := InfoEx.dwFlags or JOY_RETURNU;
+
+  if FVAxisExist then
+    InfoEx.dwFlags := InfoEx.dwFlags or JOY_RETURNV;
 
   //POV
   case FPovType of
-    cptDirection: InfoEx.dwFlags := InfoEx.dwFlags or JOY_RETURNPOV;
-    cptDegree   : InfoEx.dwFlags := InfoEx.dwFlags or JOY_RETURNPOVCTS;
+    cptDirection:
+      InfoEx.dwFlags := InfoEx.dwFlags or JOY_RETURNPOV;
+
+    cptDegree:
+      InfoEx.dwFlags := InfoEx.dwFlags or JOY_RETURNPOVCTS;
   end;
 
   //Сглаживание осей
-  if FAxisSmooth then InfoEx.dwFlags := InfoEx.dwFlags or JOY_USEDEADZONE;
+  if FAxisSmooth then
+    InfoEx.dwFlags := InfoEx.dwFlags or JOY_USEDEADZONE;
 
   //Запросить значения
   if joyGetPosEx(FDriverID, @InfoEx) <> JOYERR_NOERROR then
@@ -390,14 +411,18 @@ begin
 
   //************************** POV **************************
   if FPovType = cptVirtual then
-    begin
+  begin
     //Определить состояние осей
     X := 0;
     Y := 0;
-    if InfoEx.wYpos = FAxisSettings[catY].MaxValue then Y := 1;
-    if InfoEx.wXpos = FAxisSettings[catX].MaxValue then X := 2;
-    if InfoEx.wYpos = FAxisSettings[catY].MinValue then Y := 4;
-    if InfoEx.wXpos = FAxisSettings[catX].MinValue then X := 8;
+    if InfoEx.wYpos = FAxisSettings[catY].MaxValue then
+      Y := 1;
+    if InfoEx.wXpos = FAxisSettings[catX].MaxValue then
+      X := 2;
+    if InfoEx.wYpos = FAxisSettings[catY].MinValue then
+      Y := 4;
+    if InfoEx.wXpos = FAxisSettings[catX].MinValue then
+      X := 8;
 
     //Вернуть значение POV
     case X + Y of
@@ -411,14 +436,18 @@ begin
       6 : A := 315;
       else A := -1;
     end;
-    end else
-      if InfoEx.dwPOV = $FFFF then A := -1 else A := InfoEx.dwPOV div PovMultiplier;
+  end
+  else
+    if InfoEx.dwPOV = $FFFF then
+      A := -1
+    else
+      A := InfoEx.dwPOV div PovMultiplier;
 
   //Направление осей Pov
   FCurrentInfo.Pov.X := 0;
   FCurrentInfo.Pov.Y := 0;
   if A <> -1 then
-    begin
+  begin
     //Подготовить нормальный угол
     Angle := (360 - A) mod 360;     //Преобразовать угол против часовой стрелки
     Angle := (Angle + 90) mod 360;  //Поворот на 90 градусов по часовой стрелке
@@ -427,17 +456,33 @@ begin
     Angle := Angle * dA;
     FCurrentInfo.Pov.X := Sign(RoundTo(Cos(Angle), -2));
     FCurrentInfo.Pov.Y := Sign(RoundTo(Sin(Angle), -2));
-    end;
+  end;
   //************************** POV **************************
 
 
   //************************** Значение осей **************************
   SetAxisValue(catX, InfoEx.wXpos);
   SetAxisValue(catY, InfoEx.wYpos);
-  if FUAxisExist then SetAxisValue(catU, InfoEx.dwUpos) else SetDefaultAxisValue(catU);
-  if FVAxisExist then SetAxisValue(catV, InfoEx.dwVpos) else SetDefaultAxisValue(catV);
-  if FRAxisExist then SetAxisValue(catR, InfoEx.dwRpos) else SetDefaultAxisValue(catR);
-  if FZAxisExist then SetAxisValue(catZ, InfoEx.wZpos)  else SetDefaultAxisValue(catZ);
+
+  if FUAxisExist then
+    SetAxisValue(catU, InfoEx.dwUpos)
+  else
+    SetDefaultAxisValue(catU);
+
+  if FVAxisExist then
+    SetAxisValue(catV, InfoEx.dwVpos)
+  else
+    SetDefaultAxisValue(catV);
+
+  if FRAxisExist then
+    SetAxisValue(catR, InfoEx.dwRpos)
+  else
+    SetDefaultAxisValue(catR);
+
+  if FZAxisExist then
+    SetAxisValue(catZ, InfoEx.wZpos)
+  else
+    SetDefaultAxisValue(catZ);
   //************************** Значение осей **************************
 
 
@@ -445,12 +490,15 @@ begin
   Mask := 1;
   c := FButtonCount - 1;
   for i := 0 to c do
-    begin
+  begin
     //Ссылка на данные кнопки
     B := @FCurrentInfo.Buttons[i];
 
     //Повторы нажатий
-    if B^.Down then Inc(B^.RepeatCount) else B^.RepeatCount := 0;
+    if B^.Down then
+      Inc(B^.RepeatCount)
+    else
+      B^.RepeatCount := 0;
 
     //Нажатие кнопки
     B^.Down := (InfoEx.wButtons and Mask) = Mask;
@@ -460,7 +508,7 @@ begin
 
     //Сдвинуть бит влево
     Mask := Mask shl 1;
-    end;
+  end;
   //************************** Значение кнопок **************************
 end;
 

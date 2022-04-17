@@ -121,12 +121,23 @@ var
   H: HICON;
 begin
   case AType of
-    sitApplication: H := Loadicon(0, IDI_APPLICATION);
-    sitInformation: H := Loadicon(0, IDI_ASTERISK);
-    sitError      : H := Loadicon(0, IDI_HAND);
-    sitWarning    : H := Loadicon(0, IDI_EXCLAMATION);
-    sitQuestion   : H := Loadicon(0, IDI_QUESTION);
-    sitShield     : H := LoadIcon(0, MakeIntResource(32518));
+    sitApplication:
+      H := Loadicon(0, IDI_APPLICATION);
+
+    sitInformation:
+      H := Loadicon(0, IDI_ASTERISK);
+
+    sitError:
+      H := Loadicon(0, IDI_HAND);
+
+    sitWarning:
+      H := Loadicon(0, IDI_EXCLAMATION);
+
+    sitQuestion:
+      H := Loadicon(0, IDI_QUESTION);
+
+    sitShield:
+      H := LoadIcon(0, MakeIntResource(32518));
   end;
 
   DeleteIcon;

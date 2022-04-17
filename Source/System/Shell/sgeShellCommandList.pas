@@ -53,16 +53,20 @@ begin
 
   //Просмотреть список команд
   for i := 0 to FCount - 1 do
-    begin
+  begin
     //Определить имя
     case MatchType of
-      mtName  : S := FList[i].Name;
-      mtGroup : S := FList[i].GetFullName;
+      mtName:
+        S := FList[i].Name;
+
+      mtGroup:
+        S := FList[i].GetFullName;
     end;
 
     //Проверить на совпадение
-    if LowerCase(S) = Name then List.Add(FList[i]);
-    end;
+    if LowerCase(S) = Name then
+      List.Add(FList[i]);
+  end;
 end;
 
 
@@ -73,13 +77,11 @@ var
 begin
   FCS.Enter;
   try
-
     Result := -1;
 
     CommandName := LowerCase(Command.GetFullName);
     for i := 0 to FCount - 1 do
       if CommandName = LowerCase(FList[i].GetFullName) then Exit(i);
-
   finally
     FCS.Leave;
   end;
@@ -90,13 +92,11 @@ procedure TsgeShellCommandList.Add(Command: TsgeShellCommand);
 begin
   FCS.Enter;
   try
-
     //Проверить команду на существование
     if IndexOf(Command) <> -1 then
       raise EsgeException.Create(_UNITNAME, Err_CommandAlreadyExist, Command.GetFullName);
 
     inherited Add(Command);
-
   finally
     FCS.Leave;
   end;

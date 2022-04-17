@@ -35,23 +35,23 @@ begin
   //Проверка на имя модуля
   Reg.Expression := '_UNITNAME\s*=\s*'#39'\S*'#39';';
   if Reg.Exec(Str) then
-    begin
+  begin
     LineType := ltUnit;
     Idx1 := Pos(#39, Str);
     Idx2 := Pos(#39';', Str);
     ConstValue := Copy(Str, Idx1 + 1, Idx2 - Idx1 - 1);
-    end;
+  end;
 
 
   //Проверка на имя ошибки
   Reg.Expression := 'Err_\S*\s*=\s*'#39'\S*'#39';';
   if Reg.Exec(Str) then
-    begin
+  begin
     LineType := ltError;
     Idx1 := Pos(#39, Str);
     Idx2 := Pos(#39';', Str);
     ConstValue := Copy(Str, Idx1 + 1, Idx2 - Idx1 - 1);
-    end;
+  end;
 
   Reg.Free;
 end;
@@ -69,10 +69,10 @@ begin
   FN := BaseDir + LngFileName;
   LngFile := TsgeSimpleParameters.Create;
   if sgeFileExists(FN) then
-    begin
+  begin
     LngFile.LoadFromFile(FN);
     WriteLn('Найден файл языка ', LngFileName, ' загрузка');
-    end;
+  end;
 
   //Получить список файлов *.Pas
   FileList := TsgeStringList.Create;
@@ -81,7 +81,7 @@ begin
 
   //Просмотреть файлы
   for i := 0 to FileList.Count - 1 do
-    begin
+  begin
     FileLines := TsgeStringList.Create;
     FileLines.LoadFromFile(BaseDir + FileList.Part[i]);
 
@@ -89,26 +89,27 @@ begin
 
     //Обработать строки
     for j := 0 to FileLines.Count - 1 do
-      begin
+    begin
       //Пропуск пустых строк
-      if FileLines.Part[j] = '' then Continue;
+      if FileLines.Part[j] = '' then
+        Continue;
 
       //Определить тип строки и значение
       GetStringParameters(FileLines.Part[j], lt, Value);
 
       case lt of
-        ltError : Param := 'Error:' + Value;
-        ltUnit  : Param := 'Unit:' + Value;
+        ltError: Param := 'Error:' + Value;
+        ltUnit : Param := 'Unit:' + Value;
       end;
 
       //Добавить параметр если его нет
       if lt <> ltEmpty then
         if not LngFile.Exist[Param] then
           LngFile.SetValue(Param, Value);
-      end;
+    end;
 
     FileLines.Free;
-    end;
+  end;
 
 
   //Почистить память
@@ -116,9 +117,12 @@ begin
 
   //Обновить файл если найдена хоть одна константа
   if LngFile.Count > 0 then
-    begin
-    if sgeFileExists(FN) then LngFile.UpdateInFile(FN) else LngFile.SaveToFile(FN);
-    end;
+  begin
+    if sgeFileExists(FN) then
+      LngFile.UpdateInFile(FN)
+    else
+      LngFile.SaveToFile(FN);
+  end;
   LngFile.Free;
 
 

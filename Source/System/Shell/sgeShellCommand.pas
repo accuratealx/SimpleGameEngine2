@@ -127,7 +127,10 @@ function TsgeShellCommand.GetFullName: String;
 const
   SEPARATOR = '.';
 begin
-  if FGroup <> '' then Result := FGroup + SEPARATOR + FName else Result := FName;
+  if FGroup <> '' then
+    Result := FGroup + SEPARATOR + FName
+  else
+    Result := FName;
 end;
 
 

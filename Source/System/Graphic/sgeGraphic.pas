@@ -136,9 +136,9 @@ type
     constructor Create(DC: HDC; Width, Height: Integer);
     destructor  Destroy; override;
 
-    procedure Init;                                                   //Инициализация
-    procedure Done;                                                   //Финализация
-    procedure ShareList(Context: HGLRC);                              //Объеденить ресурсы с контекстом
+    procedure Init;                                                 //Инициализация
+    procedure Done;                                                 //Финализация
+    procedure ShareList(Context: HGLRC);                            //Объеденить ресурсы с контекстом
 
     procedure Activate;
     procedure Deactivate;
@@ -193,8 +193,8 @@ type
     procedure DrawCircle(XCenter, YCenter: Single; Radius: Single; Color: TsgeColor; Quality: Word = 16);
 
     //Функции универсального вывода спрайтов
-    procedure DrawSprite(const Options: TsgeGraphicDrawOptions);                                    //Вывод спрайта с настройками
-    procedure DrawSpriteSegment(const Options: TsgeGraphicDrawOptions; const Metric: TsgeIntRect);  //Вывод спрайта по частям
+    procedure DrawSprite(const Options: TsgeGraphicDrawOptions);
+    procedure DrawSpriteSegment(const Options: TsgeGraphicDrawOptions; const Metric: TsgeIntRect);
 
     //Функции высокого уровня
     procedure DrawSprite(X, Y, W, H: Single; Sprite: TsgeGraphicSprite);
@@ -289,11 +289,20 @@ const
 function TsgeGraphic.GetInfo(Index: TsgeGraphicInfo): String;
 begin
   case Index of
-    giVendor     : Result := glGetString(GL_VENDOR);
-    giRenderer   : Result := glGetString(GL_RENDERER);
-    giVersion    : Result := glGetString(GL_VERSION);
-    giExtensions : Result := glGetString(GL_EXTENSIONS);
-    giShading    : Result := glGetString(GL_SHADING_LANGUAGE_VERSION);
+    giVendor:
+      Result := glGetString(GL_VENDOR);
+
+    giRenderer:
+      Result := glGetString(GL_RENDERER);
+
+    giVersion:
+      Result := glGetString(GL_VERSION);
+
+    giExtensions:
+      Result := glGetString(GL_EXTENSIONS);
+
+    giShading:
+      Result := glGetString(GL_SHADING_LANGUAGE_VERSION);
   end;
 end;
 
@@ -349,9 +358,14 @@ end;
 procedure TsgeGraphic.SetPoligonMode(AMode: TsgeGraphicPolygonMode);
 begin
   case AMode of
-    gpmDot  : glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
-    gpmLine : glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-    gpmFill : glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    gpmDot:
+      glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
+
+    gpmLine:
+      glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+    gpmFill:
+      glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
   end;
 end;
 
@@ -363,17 +377,25 @@ begin
   //rs[0] - Front
   //rs[1] - Back
   glGetIntegerv(GL_POLYGON_MODE, @rs[0]);
-  if rs[0] = GL_POINT then Result := gpmDot;
-  if rs[0] = GL_LINE then Result := gpmLine;
-  if rs[0] = GL_FILL then Result := gpmFill;
+  if rs[0] = GL_POINT then
+    Result := gpmDot;
+
+  if rs[0] = GL_LINE then
+    Result := gpmLine;
+
+  if rs[0] = GL_FILL then
+    Result := gpmFill;
 end;
 
 
 procedure TsgeGraphic.SetShadeModel(AMode: TsgeGraphicShadeModel);
 begin
   case AMode of
-    gsmFlat: glShadeModel(GL_FLAT);
-    gsmSmooth: glShadeModel(GL_SMOOTH);
+    gsmFlat:
+      glShadeModel(GL_FLAT);
+
+    gsmSmooth:
+      glShadeModel(GL_SMOOTH);
   end;
 end;
 
@@ -383,8 +405,11 @@ var
   rs: Integer;
 begin
   glGetIntegerv(GL_SHADE_MODEL, @rs);
-  if rs = GL_FLAT then Result := gsmFlat;
-  if rs = GL_SMOOTH then Result := gsmSmooth;
+  if rs = GL_FLAT then
+    Result := gsmFlat;
+
+  if rs = GL_SMOOTH then
+    Result := gsmSmooth;
 end;
 
 
@@ -393,8 +418,11 @@ begin
   FRenderBuffer := ABuffer;
 
   case FRenderBuffer of
-    grbFront: glDrawBuffer(GL_FRONT);
-    grbBack: glDrawBuffer(GL_BACK);
+    grbFront:
+      glDrawBuffer(GL_FRONT);
+
+    grbBack:
+      glDrawBuffer(GL_BACK);
   end;
 end;
 
@@ -404,7 +432,10 @@ begin
   if wglSwapIntervalEXT = nil then
     raise EsgeException.Create(_UNITNAME, Err_VerticalSyncNotSupported);
 
-  if AEnable then wglSwapIntervalEXT(1) else wglSwapIntervalEXT(0);
+  if AEnable then
+    wglSwapIntervalEXT(1)
+  else
+    wglSwapIntervalEXT(0);
 end;
 
 
@@ -420,11 +451,20 @@ end;
 procedure TsgeGraphic.SetTextureEnvironment(AInvironment: TsgeGraphicTextureEnvironment);
 begin
   case AInvironment of
-    gteAdd      : glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ADD);
-    gteModulate : glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-    gteDecal    : glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
-    gteBlend    : glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_BLEND);
-    gteReplace  : glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+    gteAdd:
+      glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_ADD);
+
+    gteModulate:
+      glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+
+    gteDecal:
+      glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_DECAL);
+
+    gteBlend:
+      glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_BLEND);
+
+    gteReplace:
+      glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
   end;
 end;
 
@@ -436,19 +476,33 @@ begin
   glGetTexEnviv(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, @i);
 
   case i of
-    GL_ADD      : Result := gteAdd;
-    GL_MODULATE : Result := gteModulate;
-    GL_DECAL    : Result := gteDecal;
-    GL_BLEND    : Result := gteBlend;
-    GL_REPLACE  : Result := gteReplace;
-    else Result := gteModulate;
+    GL_ADD:
+      Result := gteAdd;
+
+    GL_MODULATE:
+      Result := gteModulate;
+
+    GL_DECAL:
+      Result := gteDecal;
+
+    GL_BLEND:
+      Result := gteBlend;
+
+    GL_REPLACE:
+      Result := gteReplace;
+
+    else
+      Result := gteModulate;
   end;
 end;
 
 
 procedure TsgeGraphic.SetColorBlend(ABlend: Boolean);
 begin
-  if ABlend then glEnable(GL_BLEND) else glDisable(GL_BLEND);
+  if ABlend then
+    glEnable(GL_BLEND)
+  else
+    glDisable(GL_BLEND);
 end;
 
 
@@ -460,7 +514,10 @@ end;
 
 procedure TsgeGraphic.SetTexturing(ATexturing: Boolean);
 begin
-  if ATexturing then glEnable(GL_TEXTURE_2D) else glDisable(GL_TEXTURE_2D);
+  if ATexturing then
+    glEnable(GL_TEXTURE_2D)
+  else
+    glDisable(GL_TEXTURE_2D);
 end;
 
 
@@ -472,7 +529,10 @@ end;
 
 procedure TsgeGraphic.SetLineStipple(AStipple: Boolean);
 begin
-  if AStipple then glEnable(GL_LINE_STIPPLE) else glDisable(GL_LINE_STIPPLE);
+  if AStipple then
+    glEnable(GL_LINE_STIPPLE)
+  else
+    glDisable(GL_LINE_STIPPLE);
 end;
 
 
@@ -484,11 +544,13 @@ end;
 
 procedure TsgeGraphic.SetBlendFunction(AFunction: TsgeGraphicBlendFunction);
 begin
-  if FBlendFunction = AFunction then Exit;
+  if FBlendFunction = AFunction then
+    Exit;
 
   FBlendFunction := AFunction;
   case AFunction of
-    gbfTransparent: glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    gbfTransparent:
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   end;
 end;
 
@@ -499,7 +561,8 @@ begin
   FRenderSprite := ASprite;
 
   //Если режим вывода в спрайт, то изменить привязку
-  if (FRenderPlace = grpSprite) and (ASprite <> nil) then SetRenderPlace(grpSprite);
+  if (FRenderPlace = grpSprite) and (ASprite <> nil) then
+    SetRenderPlace(grpSprite);
 end;
 
 
@@ -507,20 +570,20 @@ procedure TsgeGraphic.SetRenderPlace(APlace: TsgeGraphicRenderPlace);
 begin
   case APlace of
     grpScreen:
-      begin
-      glBindFramebuffer(GL_FRAMEBUFFER, 0); //Отвязать буфер от вывода
-      SetView(FWidth, FHeight);             //Вернуть размеры окна
-      end;
+    begin
+      glBindFramebuffer(GL_FRAMEBUFFER, 0);                         //Отвязать буфер от вывода
+      SetView(FWidth, FHeight);                                     //Вернуть размеры окна
+    end;
 
     grpSprite:
-      begin
+    begin
       if FRenderSprite = nil then
         raise EsgeException.Create(_UNITNAME, Err_SpriteIsEmpty);
 
       glBindFramebuffer(GL_FRAMEBUFFER, FFrameBuffer);                                                        //Установить временный буфер для вывода
       glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, FRenderSprite.GLHandle, 0); //Связать буфер кадра текстурой
       SetView(FRenderSprite.Width, FRenderSprite.Height);                                                     //Изменить размеры области вывода на размеры спрайта
-      end;
+    end;
   end;
 
   FRenderPlace := APlace;
@@ -529,25 +592,25 @@ end;
 
 procedure TsgeGraphic.SetView(AWidth, AHeight: Integer);
 begin
-  glViewport(0, 0, AWidth, AHeight);      //Задать область вывода
-  glMatrixMode(GL_PROJECTION);            //Выбрать матрицу проекций
-  glLoadIdentity;                         //Изменить проекцию на эталонную
-  glOrtho(0, AWidth, AHeight, 0, -1, 1);  //Изменить проекцию на ортографическую
-  glMatrixMode(GL_MODELVIEW);             //Выбрать матрицу модели
-  glLoadIdentity;                         //Изменить проекцию на эталонную
+  glViewport(0, 0, AWidth, AHeight);                                //Задать область вывода
+  glMatrixMode(GL_PROJECTION);                                      //Выбрать матрицу проекций
+  glLoadIdentity;                                                   //Изменить проекцию на эталонную
+  glOrtho(0, AWidth, AHeight, 0, -1, 1);                            //Изменить проекцию на ортографическую
+  glMatrixMode(GL_MODELVIEW);                                       //Выбрать матрицу модели
+  glLoadIdentity;                                                   //Изменить проекцию на эталонную
 end;
 
 
 procedure TsgeGraphic.FillSprite(const Rect, SpriteRect: TsgeFloatRect);
 begin
   glBegin(GL_QUADS);
-    glTexCoord2f(SpriteRect.X1, SpriteRect.Y1); //Top-Left
+    glTexCoord2f(SpriteRect.X1, SpriteRect.Y1);                     //Top-Left
     glVertex2f(Rect.X1, Rect.Y1);
-    glTexCoord2f(SpriteRect.X1, SpriteRect.Y2); //Bottom-Left
+    glTexCoord2f(SpriteRect.X1, SpriteRect.Y2);                     //Bottom-Left
     glVertex2f(Rect.X1, Rect.Y2);
-    glTexCoord2f(SpriteRect.X2, SpriteRect.Y2); //Bottom-Right
+    glTexCoord2f(SpriteRect.X2, SpriteRect.Y2);                     //Bottom-Right
     glVertex2f(Rect.X2, Rect.Y2);
-    glTexCoord2f(SpriteRect.X2, SpriteRect.Y1); //Top-Right
+    glTexCoord2f(SpriteRect.X2, SpriteRect.Y1);                     //Top-Right
     glVertex2f(Rect.X2, Rect.Y1);
   glEnd;
 end;
@@ -664,7 +727,7 @@ var
 begin
   case Options.CoordinateType of
     gctClassic:
-      begin
+    begin
       //Размеры примитива
       W := Options.Rect.X2 - Options.Rect.X1;
       H := Options.Rect.Y2 - Options.Rect.Y1;
@@ -682,10 +745,10 @@ begin
       Result.X2 := Result.X1 + W;
       Result.Y1 := Options.Rect.Y1 - yt;
       Result.Y2 := Result.Y1 + H;
-      end;
+    end;
 
     gctNormal:
-      begin
+    begin
       //Размеры примитива
       W := Options.Rect.X2;
       H := Options.Rect.Y2;
@@ -703,10 +766,10 @@ begin
       Result.X2 := Result.X1 + W;
       Result.Y1 := Options.Rect.Y1 - yt;
       Result.Y2 := Result.Y1 + H;
-      end;
+    end;
 
     gctCentered:
-      begin
+    begin
       //Размеры примитива
       W := Options.Rect.X2;
       H := Options.Rect.Y2;
@@ -724,7 +787,7 @@ begin
       Result.X2 := Result.X1 + W;
       Result.Y1 := Options.Rect.Y1 - yt - HalfH;
       Result.Y2 := Result.Y1 + H;
-      end;
+    end;
   end;
 end;
 
@@ -737,19 +800,19 @@ begin
 
   //Отражение спрайта по горизонтали
   if grtHorizontal in Options.Reflect then
-    begin
+  begin
     D := Result.X1;
     Result.X1 := Result.X2;
     Result.X2 := D;
-    end;
+  end;
 
   //Отражение спрайта по вертикали
   if grtVertical in Options.Reflect then
-    begin
+  begin
     D := Result.Y1;
     Result.Y1 := Result.Y2;
     Result.Y2 := D;
-    end;
+  end;
 end;
 
 
@@ -763,17 +826,17 @@ begin
 
   //Проверить горизонтальное отражение
   if grtHorizontal in Options.Reflect then
-    begin
+  begin
     Result.X1 := -Result.X1;
     Result.X2 := -Result.X2;
-    end;
+  end;
 
   //Проверить вертикальное отражение
   if grtVertical in Options.Reflect then
-    begin
+  begin
     Result.Y1 := -Result.Y1;
     Result.Y2 := -Result.Y2;
-    end;
+  end;
 end;
 
 
@@ -781,22 +844,22 @@ function TsgeGraphic.GetZeroPoint(const Options: TsgeGraphicDrawOptions): TsgeFl
 begin
   case Options.CoordinateType of
     gctClassic:
-      begin
+    begin
       Result.X := Options.Rect.X1 + (Options.Rect.X2 - Options.Rect.X1) / 2 + Options.AnglePoint.X;
       Result.Y := Options.Rect.Y1 + (Options.Rect.Y2 - Options.Rect.Y1) / 2 + Options.AnglePoint.Y;
-      end;
+    end;
 
     gctNormal:
-      begin
+    begin
       Result.X := Options.Rect.X1 + Options.Rect.X2 / 2 + Options.AnglePoint.X;
       Result.Y := Options.Rect.Y1 + Options.Rect.Y2 / 2 + Options.AnglePoint.Y;
-      end;
+    end;
 
     gctCentered:
-      begin
+    begin
       Result.X := Options.Rect.X1 + Options.AnglePoint.X;
       Result.Y := Options.Rect.Y1 + Options.AnglePoint.Y;
-      end;
+    end;
   end;
 end;
 
@@ -810,20 +873,20 @@ begin
 
   case CoordType of
     gctNormal:
-      begin
+    begin
       Result.X2 := Rect.X1 + Rect.X2;
       Result.Y2 := Rect.Y1 + Rect.Y2;
-      end;
+    end;
 
     gctCentered:
-      begin
+    begin
       HalfWidth := Rect.X2 / 2;
       HalfHeight := Rect.Y2 / 2;
       Result.X1 := Rect.X1 - HalfWidth;
       Result.Y1 := Rect.Y1 - HalfHeight;
       Result.X2 := Result.X1 + HalfWidth;
       Result.Y2 := Result.Y1 + HalfHeight;
-      end;
+    end;
   end;
 end;
 
@@ -839,7 +902,8 @@ begin
   FBlendFunction := gbfTransparent;
 
   //Загрузить библиотеку
-  if GL_LibHandle = nil then InitOpenGL;
+  if GL_LibHandle = nil then
+    InitOpenGL;
 
   //Проверить загрузилась ли Opengl32.dll
   if not Assigned(GL_LibHandle) then
@@ -854,13 +918,13 @@ begin
   //Заполнить Pixel format
   ZeroMemory(@PFD, SizeOf(PFD));
   with PFD do
-    begin
+  begin
     nSize := SizeOf(PFD);
     dwFlags := PFD_SUPPORT_OPENGL or PFD_DOUBLEBUFFER or PFD_DRAW_TO_WINDOW or PFD_TYPE_RGBA; //Поддержка OpenGL, двойной буфер, рисуем на окне, альфаканал
     iPixelType := PFD_TYPE_RGBA;  //Формат цвета 32 бита на точку
     iLayerType := PFD_MAIN_PLANE; //Основная плоскость
     cColorBits := 24;             //Количество бит для одного цвета без альфаканала
-    end;
+  end;
 
   //Попросить Windows подобрать запрошенный формат пикселя
   PixelFormat := ChoosePixelFormat(FDC, @PFD);
@@ -943,10 +1007,12 @@ end;
 procedure TsgeGraphic.ChangeViewArea(AWidth, AHeight: Integer);
 begin
   //Запомнить размеры окна
-  if AWidth < 1 then AWidth := 1;
+  if AWidth < 1 then
+    AWidth := 1;
   FWidth := AWidth;
 
-  if AHeight < 1 then AHeight := 1;
+  if AHeight < 1 then
+    AHeight := 1;
   FHeight := AHeight;
 
   //Установить область вывода
@@ -1049,13 +1115,13 @@ var
   w: Word;
 begin
   case Mode of
-    glsSolid      : w := $FFFF; //****************
-    glsDash       : w := $0F0F; //----****----****
-    glsNarrowDash : w := $7777; //-***-***-***-***
-    glsWideDash   : w := $3F3F; //--******--******
-    glsDot        : w := $5555; //-*-*-*-*-*-*-*-*
-    glsDashDot    : w := $2727; //--*--***--*--***
-    glsDashDotDot : w := $5757; //-*-*-***-*-*-***
+    glsSolid      : w := $FFFF;                                     //****************
+    glsDash       : w := $0F0F;                                     //----****----****
+    glsNarrowDash : w := $7777;                                     //-***-***-***-***
+    glsWideDash   : w := $3F3F;                                     //--******--******
+    glsDot        : w := $5555;                                     //-*-*-*-*-*-*-*-*
+    glsDashDot    : w := $2727;                                     //--*--***--*--***
+    glsDashDotDot : w := $5757;                                     //-*-*-***-*-*-***
   end;
   glLineStipple(Scale, W);
 end;
@@ -1077,10 +1143,10 @@ end;
 
 procedure TsgeGraphic.DrawPoint(X, Y: Single; Color: TsgeColor);
 begin
-  glPushAttrib(GL_CURRENT_BIT);   //Сохранить текущий цвет
-  glColor4fv(@Color);             //Установить цвет
-  DrawPoint(X, Y);                //Вывод точки
-  glPopAttrib;                    //Восстановить цвет
+  glPushAttrib(GL_CURRENT_BIT);                                     //Сохранить текущий цвет
+  glColor4fv(@Color);                                               //Установить цвет
+  DrawPoint(X, Y);                                                  //Вывод точки
+  glPopAttrib;                                                      //Восстановить цвет
 end;
 
 
@@ -1226,10 +1292,10 @@ begin
 
   glBegin(GL_POLYGON);
     for i := 0 to c do
-      begin
+    begin
       SinCos(da * i, aSin, aCos);
       glVertex2f(XCenter + Radius * aCos, YCenter + Radius * aSin);
-      end;
+    end;
   glEnd;
 end;
 
@@ -1248,24 +1314,24 @@ var
   Rect, SprRect: TsgeFloatRect;
   Pt: TsgeFloatPoint;
 begin
-  Rect := GetPrimitiveRect(Options);                            //Координаты примитива
-  SprRect := GetSpriteRect(Options);                            //Подготовить координаты спрайта
+  Rect := GetPrimitiveRect(Options);                                //Координаты примитива
+  SprRect := GetSpriteRect(Options);                                //Подготовить координаты спрайта
 
-  glPushMatrix;                                                 //Сохранить матрицу
-  Pt := GetZeroPoint(Options);                                  //Точка переноса
-  glTranslatef(Pt.X, Pt.Y, 0);                                  //Перенос координат
-  glRotatef(Options.Angle, 0, 0, 1);                            //Поворот
-  glScalef(Options.Scale.X, Options.Scale.Y, 0);                //Масштаб по осям
-  glPushAttrib(GL_CURRENT_BIT or GL_TEXTURE_BIT);               //Запомнить состояние цвета и режима наложения текстуры
-  glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);  //Изменить режим наложения текстуры на смешивание
-  glColor4fv(@Options.TransparentColor);                        //Изменить цвет примитива для смешивания с текстурой
+  glPushMatrix;                                                     //Сохранить матрицу
+  Pt := GetZeroPoint(Options);                                      //Точка переноса
+  glTranslatef(Pt.X, Pt.Y, 0);                                      //Перенос координат
+  glRotatef(Options.Angle, 0, 0, 1);                                //Поворот
+  glScalef(Options.Scale.X, Options.Scale.Y, 0);                    //Масштаб по осям
+  glPushAttrib(GL_CURRENT_BIT or GL_TEXTURE_BIT);                   //Запомнить состояние цвета и режима наложения текстуры
+  glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);      //Изменить режим наложения текстуры на смешивание
+  glColor4fv(@Options.TransparentColor);                            //Изменить цвет примитива для смешивания с текстурой
 
-  glBindTexture(GL_TEXTURE_2D, Options.Sprite.GLHandle);        //Привязать текстуру
-  FillSprite(Rect, SprRect);                                    //Вывод спрайта
-  glBindTexture(GL_TEXTURE_2D, 0);                              //Отвязать текстуру
+  glBindTexture(GL_TEXTURE_2D, Options.Sprite.GLHandle);            //Привязать текстуру
+  FillSprite(Rect, SprRect);                                        //Вывод спрайта
+  glBindTexture(GL_TEXTURE_2D, 0);                                  //Отвязать текстуру
 
-  glPopAttrib;                                                  //Восстановить настройки цвета и режима наложения текстуры
-  glPopMatrix;                                                  //Восстановить матрицу
+  glPopAttrib;                                                      //Восстановить настройки цвета и режима наложения текстуры
+  glPopMatrix;                                                      //Восстановить матрицу
 end;
 
 
@@ -1274,25 +1340,25 @@ var
   Rect, SprRect, MetricRect: TsgeFloatRect;
   Pt: TsgeFloatPoint;
 begin
-  Rect := GetPrimitiveRect(Options);                            //Координаты примитива
-  SprRect := GetSpriteRect(Options);                            //Подготовить координаты спрайта
-  MetricRect := GetSpriteMetricRect(Options, Metric);           //Подготовить смещение для спрайта
+  Rect := GetPrimitiveRect(Options);                                //Координаты примитива
+  SprRect := GetSpriteRect(Options);                                //Подготовить координаты спрайта
+  MetricRect := GetSpriteMetricRect(Options, Metric);               //Подготовить смещение для спрайта
 
-  glPushMatrix;                                                 //Сохранить матрицу
-  Pt := GetZeroPoint(Options);                                  //Точка переноса
-  glTranslatef(Pt.X, Pt.Y, 0);                                  //Перенос координат
-  glRotatef(Options.Angle, 0, 0, 1);                            //Поворот
-  glScalef(Options.Scale.X, Options.Scale.Y, 0);                //Масштаб по осям
-  glPushAttrib(GL_CURRENT_BIT or GL_TEXTURE_BIT);               //Запомнить состояние цвета и режима наложения текстуры
-  glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);  //Изменить режим наложения текстуры на смешивание
-  glColor4fv(@Options.TransparentColor);                        //Изменить цвет примитива для смешивания с текстурой
+  glPushMatrix;                                                     //Сохранить матрицу
+  Pt := GetZeroPoint(Options);                                      //Точка переноса
+  glTranslatef(Pt.X, Pt.Y, 0);                                      //Перенос координат
+  glRotatef(Options.Angle, 0, 0, 1);                                //Поворот
+  glScalef(Options.Scale.X, Options.Scale.Y, 0);                    //Масштаб по осям
+  glPushAttrib(GL_CURRENT_BIT or GL_TEXTURE_BIT);                   //Запомнить состояние цвета и режима наложения текстуры
+  glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);      //Изменить режим наложения текстуры на смешивание
+  glColor4fv(@Options.TransparentColor);                            //Изменить цвет примитива для смешивания с текстурой
 
-  glBindTexture(GL_TEXTURE_2D, Options.Sprite.GLHandle);        //Привязать текстуру
-  FillSpriteSegment(Rect, SprRect, MetricRect, Metric);         //Вывод спрайта по частям
-  glBindTexture(GL_TEXTURE_2D, 0);                              //Отвязать текстуру
+  glBindTexture(GL_TEXTURE_2D, Options.Sprite.GLHandle);            //Привязать текстуру
+  FillSpriteSegment(Rect, SprRect, MetricRect, Metric);             //Вывод спрайта по частям
+  glBindTexture(GL_TEXTURE_2D, 0);                                  //Отвязать текстуру
 
-  glPopAttrib;                                                  //Восстановить настройки цвета и режима наложения текстуры
-  glPopMatrix;                                                  //Восстановить матрицу
+  glPopAttrib;                                                      //Восстановить настройки цвета и режима наложения текстуры
+  glPopMatrix;                                                      //Восстановить матрицу
 end;
 
 
@@ -1306,7 +1372,8 @@ procedure TsgeGraphic.DrawSprite(X, Y: Single; Sprite: TsgeGraphicSprite);
 var
   Opt: TsgeGraphicDrawOptions;
 begin
-  if Sprite = nil then Exit;
+  if Sprite = nil then
+    Exit;
 
   Opt := FDrawOptions;
   Opt.Sprite := Sprite;
@@ -1314,7 +1381,8 @@ begin
   Opt.Rect.Y1 := Y;
   Opt.Rect.X2 := Sprite.Width;
   Opt.Rect.Y2 := Sprite.Height;
-  if Opt.CoordinateType = gctClassic then Opt.CoordinateType := gctNormal;
+  if Opt.CoordinateType = gctClassic then
+    Opt.CoordinateType := gctNormal;
 
   DrawSprite(Opt);
 end;
@@ -1324,7 +1392,8 @@ procedure TsgeGraphic.DrawSprite(Rect: TsgeFloatRect; Sprite: TsgeGraphicSprite)
 var
   Opt: TsgeGraphicDrawOptions;
 begin
-  if Sprite = nil then Exit;
+  if Sprite = nil then
+    Exit;
 
   Opt := FDrawOptions;
   Opt.Sprite := Sprite;
@@ -1338,7 +1407,8 @@ procedure TsgeGraphic.DrawSpritePart(Rect, SpriteRect: TsgeFloatRect; Sprite: Ts
 var
   Opt: TsgeGraphicDrawOptions;
 begin
-  if Sprite = nil then Exit;
+  if Sprite = nil then
+    Exit;
 
   Opt := FDrawOptions;
   Opt.Sprite := Sprite;
@@ -1371,7 +1441,8 @@ procedure TsgeGraphic.DrawSpriteTiled(Rect: TsgeFloatRect; Col, Row: Word; Sprit
 var
   Opt: TsgeGraphicDrawOptions;
 begin
-  if Sprite = nil then Exit;
+  if Sprite = nil then
+    Exit;
 
   Opt := FDrawOptions;
   Opt.Sprite := Sprite;
@@ -1392,7 +1463,8 @@ procedure TsgeGraphic.DrawSpriteTiled(X, Y: Single; Col, Row: Word; Sprite: Tsge
 var
   Opt: TsgeGraphicDrawOptions;
 begin
-  if Sprite = nil then Exit;
+  if Sprite = nil then
+    Exit;
 
   Opt := FDrawOptions;
   Opt.Sprite := Sprite;
@@ -1411,7 +1483,8 @@ var
   Opt: TsgeGraphicDrawOptions;
   Frame: TsgeGraphicAnimationFrame;
 begin
-  if Animation = nil then Exit;
+  if Animation = nil then
+    Exit;
 
   Frame := Animation.CurrentFrame;
 
@@ -1435,7 +1508,8 @@ var
   Opt: TsgeGraphicDrawOptions;
   Frame: TsgeGraphicAnimationFrame;
 begin
-  if Animation = nil then Exit;
+  if Animation = nil then
+    Exit;
 
   Frame := Animation.CurrentFrame;
 
@@ -1446,7 +1520,8 @@ begin
   Opt.Rect.X2 := Animation.Width;
   Opt.Rect.Y2 := Animation.Height;
   Opt.SpriteRect := sgeGetTextureTileRect(Frame.Sprite, Frame.Col, Frame.Row);
-  if Opt.CoordinateType = gctClassic then Opt.CoordinateType := gctNormal;
+  if Opt.CoordinateType = gctClassic then
+    Opt.CoordinateType := gctNormal;
 
   DrawSprite(Opt);
 end;
@@ -1454,14 +1529,16 @@ end;
 
 procedure TsgeGraphic.DrawText(X, Y: Single; Font: TsgeGraphicFont; Text: String);
 begin
-  if Font = nil then Exit;
-  if Text = '' then Exit;
+  if Font = nil then
+    Exit;
+  if Text = '' then
+    Exit;
 
-  glPushAttrib(GL_LIST_BIT);                                    //Сохранить настройки дисплейных списков
-  glRasterPos2f(X, Y + Font.Height - Font.CharDescent);         //Указать координаты вывода растров
-  glListBase(Font.GLHandle);                                    //Выбрать первый дисплейный список
-  glCallLists(Length(Text), GL_UNSIGNED_BYTE, PAnsiChar(Text)); //Вывести списки с номерами равным коду символа
-  glPopAttrib;                                                  //Вернуть настройки
+  glPushAttrib(GL_LIST_BIT);                                        //Сохранить настройки дисплейных списков
+  glRasterPos2f(X, Y + Font.Height - Font.CharDescent);             //Указать координаты вывода растров
+  glListBase(Font.GLHandle);                                        //Выбрать первый дисплейный список
+  glCallLists(Length(Text), GL_UNSIGNED_BYTE, PAnsiChar(Text));     //Вывести списки с номерами равным коду символа
+  glPopAttrib;                                                      //Вернуть настройки
 end;
 
 
@@ -1482,12 +1559,12 @@ begin
   Size := (BytesPerLine + Trash) * FHeight;
 
   //Чтение данных из OpenGL
-  SetLength(DATA, Size);                                    //Буфер для OpenGL
-  glPushClientAttrib(GL_CLIENT_PIXEL_STORE_BIT);            //Запомнить настройки выравнивания битов
-  glPixelStorei(GL_PACK_ALIGNMENT, 4);                      //Выравнивание по dword
-  glReadBuffer(GL_FRONT);                                   //Указать передний буфер кадра
-  glReadPixels(0, 0, FWidth, FHeight, GL_BGR, GL_UNSIGNED_BYTE, @DATA[0]); //Прочесть в буфер цвета точек без прозрачности
-  glPopClientAttrib;                                        //Вернуть настройки выравнивания
+  SetLength(DATA, Size);                                            //Буфер для OpenGL
+  glPushClientAttrib(GL_CLIENT_PIXEL_STORE_BIT);                    //Запомнить настройки выравнивания битов
+  glPixelStorei(GL_PACK_ALIGNMENT, 4);                              //Выравнивание по dword
+  glReadBuffer(GL_FRONT);                                           //Указать передний буфер кадра
+  glReadPixels(0, 0, FWidth, FHeight, GL_BGR, GL_UNSIGNED_BYTE, @DATA[0]);  //Прочесть в буфер цвета точек без прозрачности
+  glPopClientAttrib;                                                //Вернуть настройки выравнивания
 
   //Определить размеры структур
   szFileHeader := SizeOf(TBitmapFileHeader);
@@ -1495,31 +1572,30 @@ begin
 
   //Описатель BMP файла
   ZeroMemory(@BFH, szFileHeader);
-  BFH.bfType := $4D42;                                      //Волшебное слово от микрософта - BM
-  BFH.bfOffBits := szFileHeader + szInfoHeader;             //Смещение от начала файла до самих данных
-  BFH.bfSize := BFH.bfOffBits + Size;                       //Размер файла целиком со структурами и мусором
+  BFH.bfType := $4D42;                                              //Волшебное слово от микрософта - BM
+  BFH.bfOffBits := szFileHeader + szInfoHeader;                     //Смещение от начала файла до самих данных
+  BFH.bfSize := BFH.bfOffBits + Size;                               //Размер файла целиком со структурами и мусором
 
   //Описатель BMP
   ZeroMemory(@BIH, szInfoHeader);
-  BIH.biSize := szInfoHeader;                               //Размер этой структуры. Интересно зачем
-  BIH.biWidth := FWidth;                                    //Ширина битмапа
-  BIH.biHeight := FHeight;                                  //Высота битмапа
-  BIH.biPlanes := 1;                                        //Сколько слоёв
-  BIH.biBitCount := 24;                                     //Бит на пиксель
-  BIH.biCompression := BI_RGB;                              //Без сжатия
-  BIH.biXPelsPerMeter := 3780;                              //Разрешение по X
-  BIH.biYPelsPerMeter := 3780;                              //Разрешение по Y
+  BIH.biSize := szInfoHeader;                                       //Размер этой структуры. Интересно зачем
+  BIH.biWidth := FWidth;                                            //Ширина битмапа
+  BIH.biHeight := FHeight;                                          //Высота битмапа
+  BIH.biPlanes := 1;                                                //Сколько слоёв
+  BIH.biBitCount := 24;                                             //Бит на пиксель
+  BIH.biCompression := BI_RGB;                                      //Без сжатия
+  BIH.biXPelsPerMeter := 3780;                                      //Разрешение по X
+  BIH.biYPelsPerMeter := 3780;                                      //Разрешение по Y
 
   //Записать в поток
-  Stream.Size := 0;                                         //Обнулить память
-  Stream.Write(BFH, 0, SizeOf(BFH));                        //Заголовок файла
-  Stream.Write(BIH, szFileHeader, SizeOf(BIH));             //Описание битмапа
-  Stream.Write(DATA[0], szFileHeader + szInfoHeader, Size); //Записать данные
+  Stream.Size := 0;                                                 //Обнулить память
+  Stream.Write(BFH, 0, SizeOf(BFH));                                //Заголовок файла
+  Stream.Write(BIH, szFileHeader, SizeOf(BIH));                     //Описание битмапа
+  Stream.Write(DATA[0], szFileHeader + szInfoHeader, Size);         //Записать данные
 
   //Очистить буфер
   SetLength(DATA, 0);
 end;
-
 
 
 

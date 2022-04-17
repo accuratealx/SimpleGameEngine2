@@ -58,7 +58,8 @@ const
 
 procedure TsgeJournal.SetEnable(AEnable: Boolean);
 begin
-  if FEnable = AEnable then Exit;
+  if FEnable = AEnable then
+    Exit;
 
   FEnable := AEnable;
   case FEnable of
@@ -78,11 +79,12 @@ end;
 
 procedure TsgeJournal.SetFileName(AFileName: String);
 begin
-  if FFileName = AFileName then Exit;
+  if FFileName = AFileName then
+    Exit;
   FFileName := AFileName;
 
   if FEnable then
-    begin
+  begin
     DestroyFileStream;
 
     try
@@ -92,7 +94,7 @@ begin
       raise EsgeException.Create(_UNITNAME, Err_CantWriteFile, FFileName);
     end;
 
-    end;
+  end;
 end;
 
 
@@ -128,7 +130,8 @@ var
   List: TsgeStringList;
   i: Integer;
 begin
-  if not FEnable then Exit;
+  if not FEnable then
+    Exit;
 
   //В конец файла
   FFile.SeekEnd;
@@ -141,11 +144,13 @@ begin
     try
       //Записать строки в файл
       for i := 0 to List.Count - 1 do
-        begin
+      begin
         Msg := List.Part[i] + sgeLineEnd;
-        if i > 0 then Msg := '  ' + Msg;
+        if i > 0 then
+          Msg := '  ' + Msg;
+
         FFile.Write(Msg[1], Length(Msg));
-        end;
+      end;
     except
     end;
 
@@ -159,7 +164,8 @@ procedure TsgeJournal.LogBlankString(Count: Integer);
 var
   i: Integer;
 begin
-  if not FEnable then Exit;
+  if not FEnable then
+    Exit;
 
   for i := 1 to Count do
     Log('');
@@ -170,9 +176,12 @@ procedure TsgeJournal.LogSeparator(Liter: Char; Count: Integer = 50);
 var
   msg: String;
 begin
-  if not FEnable then Exit;
+  if not FEnable then
+    Exit;
 
-  if Count < 1 then Exit;
+  if Count < 1 then
+    Exit;
+
   SetLength(msg, Count);
   FillChar(msg[1], Count, Liter);
   Log(msg);
@@ -183,7 +192,8 @@ procedure TsgeJournal.LogDetail(Message: String; Separator: String);
 var
   msg: String;
 begin
-  if not FEnable then Exit;
+  if not FEnable then
+    Exit;
 
   msg := sgeFormatDateTime('hh:nn:ss.zzz', sgeNow) + Separator + Message;
   Log(msg);

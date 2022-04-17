@@ -98,13 +98,13 @@ begin
 
   //Music
   if TSimpleGameEngine(SGEObject).ExtMusicPlayer <> nil then
-    begin
+  begin
     TsgeShellCommand_Music_Play.Create(SGEObject);
     TsgeShellCommand_Music_Stop.Create(SGEObject);
     TsgeShellCommand_Music_Next.Create(SGEObject);
     TsgeShellCommand_Music_Prev.Create(SGEObject);
     TsgeShellCommand_Music_Random.Create(SGEObject);
-    end;
+  end;
 
   //CommandHistory
   TsgeShellCommand_CommandHistory_Clear.Create(SGEObject);

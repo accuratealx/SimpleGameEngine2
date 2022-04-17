@@ -22,11 +22,11 @@ uses
 type
   TsgeGraphicElementLayer = class
   private
-    FElementList: TsgeGraphicElementList;     //Список объектов
+    FElementList: TsgeGraphicElementList;                           //Список объектов
 
-    FName: ShortString;                       //Имя
-    FVisible: Boolean;                        //Видимость
-    FIndex: Word;                             //Индекс приоритета
+    FName: ShortString;                                             //Имя
+    FVisible: Boolean;                                              //Видимость
+    FIndex: Word;                                                   //Индекс приоритета
     FOffset: TsgeFloatPoint;
     FScale: Single;
 

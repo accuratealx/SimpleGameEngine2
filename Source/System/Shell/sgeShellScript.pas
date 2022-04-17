@@ -77,14 +77,16 @@ begin
 
     //Добавить строки
     for i := 0 to List.Count - 1 do
+    begin
+      if List.Part[i] = '' then
+        Add(List.Part[i])
+      else
       begin
-      if List.Part[i] = '' then Add(List.Part[i])
-        else begin
         Line.FromString(List.Part[i]);
         for j := 0 to Line.Count - 1 do
           Add(Line.Part[j]);
-        end;
       end;
+    end;
 
   finally
     Line.Free;

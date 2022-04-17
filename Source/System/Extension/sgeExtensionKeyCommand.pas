@@ -31,9 +31,9 @@ type
     FExtShell: TsgeExtensionShell;
 
     //Объекты
-    FKeyboard: TsgeKeyCommandKeyboard;                    //Кнопки клавиатуры
-    FMouse: TsgeKeyCommandMouse;                          //Кнопки мыши
-    FJoystick: TsgeKeyCommandJoystick;                    //Кнопки, крестовина, оси джойстиков
+    FKeyboard: TsgeKeyCommandKeyboard;                              //Кнопки клавиатуры
+    FMouse: TsgeKeyCommandMouse;                                    //Кнопки мыши
+    FJoystick: TsgeKeyCommandJoystick;                              //Кнопки, крестовина, оси джойстиков
 
     //Вспомогательные переменные
     FBlockCharEvent: Boolean;
@@ -86,11 +86,16 @@ const
 function TsgeExtensionKeyCommand.GetMouseButtonIndex(Buttons: TsgeMouseButtons): Byte;
 begin
   Result := 0;
-  if (mbLeft in Buttons) then Result := 0;
-  if (mbMiddle in Buttons) then Result := 1;
-  if (mbRight in Buttons) then Result := 2;
-  if (mbExtra1 in Buttons) then Result := 3;
-  if (mbExtra2 in Buttons) then Result := 4;
+  if (mbLeft in Buttons) then
+    Result := 0;
+  if (mbMiddle in Buttons) then
+    Result := 1;
+  if (mbRight in Buttons) then
+    Result := 2;
+  if (mbExtra1 in Buttons) then
+    Result := 3;
+  if (mbExtra2 in Buttons) then
+    Result := 4;
 end;
 
 
@@ -101,13 +106,13 @@ begin
 
   //Проверить команду
   if Command <> '' then
-    begin
+  begin
     //Дальше не передавать этот объект
     Result := True;
 
     //Выполнить команду
     FExtShell.DoCommand(Command);
-    end;
+  end;
 end;
 
 
@@ -123,11 +128,14 @@ begin
   KeyboardShifts := sgeGetKeyboardShiftsFromKeboardButtons(EventObj.KeyboardButtons);
   Command := FKeyboard.Key[EventObj.Key].GetActionDown(KeyboardShifts);
   if Command <> '' then
-    begin
+  begin
     Result := True;                                           //Дальше не передавать этот объект
     FBlockCharEvent := True;                                  //Заблокировать следующее событие WM_CHAR
-    if EventObj.FirstDown then FExtShell.DoCommand(Command);  //Выполнить команду
-    end else FBlockCharEvent := False;
+    if EventObj.FirstDown then                                //Выполнить команду
+      FExtShell.DoCommand(Command);
+  end
+  else
+    FBlockCharEvent := False;
 end;
 
 
@@ -146,10 +154,10 @@ begin
 
   //Проверить подавление события WM_CHAR
   if FBlockCharEvent then
-    begin
+  begin
     FBlockCharEvent := False;
     Result := True;
-    end;
+  end;
 end;
 
 
@@ -185,15 +193,21 @@ var
   KeyMethod: Byte;
 begin
   //Определить направление
-  if EventObj.Delta > 0 then KeyMethod := ckmUp else KeyMethod := ckmDown;
+  if EventObj.Delta > 0 then
+    KeyMethod := ckmUp
+  else
+    KeyMethod := ckmDown;
 
   //Модификатор
   KeyboardShifts := sgeGetKeyboardShiftsFromKeboardButtons(EventObj.KeyboardButtons);
 
   //Проверить команду
   case KeyMethod of
-    ckmUp   : Command := FMouse.Wheel.GetActionUp(KeyboardShifts);
-    ckmDown : Command := FMouse.Wheel.GetActionDown(KeyboardShifts);
+    ckmUp:
+      Command := FMouse.Wheel.GetActionUp(KeyboardShifts);
+
+    ckmDown:
+      Command := FMouse.Wheel.GetActionDown(KeyboardShifts);
   end;
 
   //Обработать команду

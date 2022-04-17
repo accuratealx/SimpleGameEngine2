@@ -130,7 +130,7 @@ function  sgeGetCommandLine: String;
 
 //Счётчики
 function  sgeGetTickCount: Int64;
-function  SgeGetApplicationTickCount: Int64;  //Милисекунд с момента старта приложения
+function  SgeGetApplicationTickCount: Int64;                        //Милисекунд с момента старта приложения
 function  sgeGetCPUFrequency: Int64;
 function  sgeGetCPUCounter: Int64;
 
@@ -212,10 +212,10 @@ begin
   Result := -1;
 
   if SysUtils.FindFirst(FileName, faAnyFile, R) = 0 then
-    begin
+  begin
     Result := R.Size;
     SysUtils.FindClose(R);
-    end;
+  end;
 end;
 
 
@@ -233,17 +233,24 @@ begin
   case Mode of
     FileModeRead:
       case Exclusive of
-        True  : Md := fmOpenRead or fmShareExclusive;
-        False : Md := fmOpenRead or fmShareDenyNone;
+        True:
+          Md := fmOpenRead or fmShareExclusive;
+
+        False:
+          Md := fmOpenRead or fmShareDenyNone;
       end;
 
     FileModeWrite:
       case Exclusive of
-        True  : Md := fmOpenReadWrite or fmShareExclusive;
-        False : Md := fmOpenReadWrite or fmShareDenyWrite;
+        True:
+          Md := fmOpenReadWrite or fmShareExclusive;
+
+        False:
+          Md := fmOpenReadWrite or fmShareDenyWrite;
       end;
 
-    else Md := fmOpenRead;
+    else
+      Md := fmOpenRead;
   end;
 
   //Открыть файл
@@ -259,17 +266,24 @@ begin
   case Mode of
     FileModeRead:
       case Exclusive of
-        True  : Md := fmOpenRead or fmShareExclusive;
-        False : Md := fmOpenRead or fmShareDenyNone;
+        True:
+          Md := fmOpenRead or fmShareExclusive;
+
+        False:
+          Md := fmOpenRead or fmShareDenyNone;
       end;
 
     FileModeWrite:
       case Exclusive of
-        True  : Md := fmOpenReadWrite or fmShareExclusive;
-        False : Md := fmOpenReadWrite or fmShareDenyWrite;
+        True:
+          Md := fmOpenReadWrite or fmShareExclusive;
+
+        False:
+          Md := fmOpenReadWrite or fmShareDenyWrite;
       end;
 
-    else Md := fmOpenRead;
+    else
+      Md := fmOpenRead;
   end;
 
   //Создать файл
@@ -443,10 +457,10 @@ begin
 
 
   if GetThreadIdealProcessorEx(Thread, @Info) then
-    begin
+  begin
     ProcessorNumber := Info.Number;
     Result := True;
-    end;
+  end;
 end;
 
 
@@ -559,8 +573,11 @@ begin
   d := MB_OK;
 
   case DlgType of
-    mtError: d := d or MB_ICONERROR;
-    mtInfo : d := d or MB_ICONINFORMATION;
+    mtError:
+       d := d or MB_ICONERROR;
+
+    mtInfo:
+      d := d or MB_ICONINFORMATION;
   end;
 
   MessageBox(0, PChar(Message), PChar(Caption), d);
@@ -614,56 +631,47 @@ var
 begin
   Result := 0;
 
-  if Str = '' then                            //Нечего передавать
-    begin
-    Result := 1;
-    Exit;
-    end;
+  if Str = '' then                                                  //Нечего передавать
+    Exit(1);
 
-  WS := Str;                                  //В микрософте юникод 2 байтный, преобразовать
+  WS := Str;                                                        //В микрософте юникод 2 байтный, преобразовать
 
-  Size := (Length(WS) + 1) * 2;               //Определить длину на конце символ #0
+  Size := (Length(WS) + 1) * 2;                                     //Определить длину на конце символ #0
 
-  Handle := GlobalAlloc(GMEM_MOVEABLE, Size); //Выделить память из глобальной кучи
+  Handle := GlobalAlloc(GMEM_MOVEABLE, Size);                       //Выделить память из глобальной кучи
   if Handle = 0 then
-    begin
-    Result := 2;
-    Exit;
-    end;
+    Exit(2);
 
-  ptr := GlobalLock(Handle);                  //Заблокировать память от перемещения
+  ptr := GlobalLock(Handle);                                        //Заблокировать память от перемещения
   if ptr = nil then
-    begin
-    Result := 3;
+  begin
     GlobalFree(Handle);
-    Exit;
-    end;
+    Exit(3);
+  end;
 
-  Move(PWideChar(WS)^, ptr^, Size);           //Скопировать строку в глобальную память
-  GlobalUnlock(Handle);                       //Отменить блокировку памяти
+  Move(PWideChar(WS)^, ptr^, Size);                                 //Скопировать строку в глобальную память
+  GlobalUnlock(Handle);                                             //Отменить блокировку памяти
 
-  if not OpenClipboard(0) then                //Открыть буфер обмена
-    begin
-    Result := 4;
+  if not OpenClipboard(0) then                                      //Открыть буфер обмена
+  begin
     GlobalFree(Handle);
-    Exit;
-    end;
+    Exit(4);
+  end;
 
-  if not EmptyClipboard then                  //Стереть данные в буфере обмена от других программ
-    begin
-    Result := 5;
+  if not EmptyClipboard then                                        //Стереть данные в буфере обмена от других программ
+  begin
     GlobalFree(Handle);
-    Exit;
-    end;
+    Exit(5);
+  end;
 
-  if SetClipboardData(CF_UNICODETEXT, Handle) = 0 then  //Отдать в буфер обмена строку юникода
-    begin
-    Result := 6;
+  if SetClipboardData(CF_UNICODETEXT, Handle) = 0 then              //Отдать в буфер обмена строку юникода
+  begin
     GlobalFree(Handle);
-    Exit;
-    end;
+    Exit(6);
+  end;
 
-  if not CloseClipboard then Result := 7;     //Закрыть буфер обмена
+  if not CloseClipboard then                                        //Закрыть буфер обмена
+    Result := 7;
 end;
 
 
@@ -689,44 +697,29 @@ var
 begin
   Result := 0;
 
-  if not OpenClipboard(0) then                //Открыть буфер обмена
-    begin
-    Result := 1;
-    Exit;
-    end;
+  if not OpenClipboard(0) then                                      //Открыть буфер обмена
+    Exit(1);
 
-  Handle := GetClipboardData(CF_UNICODETEXT); //Взять указатель на глобальный блок памяти
+  Handle := GetClipboardData(CF_UNICODETEXT);                       //Взять указатель на глобальный блок памяти
   if Handle = 0 then
-    begin
-    Result := 2;
-    Exit;
-    end;
+    Exit(2);
 
-  if not CloseClipboard then                  //Закрыть буфер обмена
-    begin
-    Result := 3;
-    Exit;
-    end;
+  if not CloseClipboard then                                        //Закрыть буфер обмена
+    Exit(3);
 
-  ptr := GlobalLock(Handle);                  //Заблокировать память от перемещения
+  ptr := GlobalLock(Handle);                                        //Заблокировать память от перемещения
   if ptr = nil then
-    begin
-    Result := 4;
-    Exit;
-    end;
+    Exit(4);
 
-  Size := GlobalSize(Handle);                 //Узнать размер данных
+  Size := GlobalSize(Handle);                                       //Узнать размер данных
   if Size = 0 then
-    begin
-    Result := 5;
-    Exit;
-    end;
+    Exit(5);
 
-  SetLength(buf, Size);                       //Подготовить буфер для копирования
-  CopyMemory(@buf[0], ptr, Size);             //Скопировать юникодную строку в буфер
-  GlobalUnlock(Handle);                       //Отменить блоктровку памяти
+  SetLength(buf, Size);                                             //Подготовить буфер для копирования
+  CopyMemory(@buf[0], ptr, Size);                                   //Скопировать юникодную строку в буфер
+  GlobalUnlock(Handle);                                             //Отменить блоктровку памяти
 
-  Str := PWideChar(buf);                      //Преобразовать в строку Ansi
+  Str := PWideChar(buf);                                            //Преобразовать в строку Ansi
 
   SetLength(buf, 0);
 end;
@@ -771,7 +764,6 @@ end;
 
 
 
-
 initialization
 begin
   OneSecFrequency := sgeGetCPUFrequency;
@@ -779,8 +771,6 @@ begin
   AppStartTime := 0;
   AppStartTime := SgeGetApplicationTickCount;
 end;
-
-
 
 
 

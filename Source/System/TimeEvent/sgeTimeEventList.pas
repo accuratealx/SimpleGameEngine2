@@ -44,10 +44,9 @@ begin
 
   FCS.Enter;
   try
-
     for i := 0 to FCount - 1 do
-      if FList[i] = AItem then Exit(i);
-
+      if FList[i] = AItem then
+        Exit(i);
   finally
     FCS.Leave;
   end;
@@ -70,10 +69,8 @@ procedure TsgeTimeEventList.Add(AItem: TsgeTimeEventItem);
 begin
   FCS.Enter;
   try
-
     if IndexOf(AItem) = -1 then
       inherited Add(AItem);
-
   finally
     FCS.Leave;
   end;
@@ -86,11 +83,9 @@ var
 begin
   FCS.Enter;
   try
-
     Idx := IndexOf(AItem);
     if Idx <> -1 then
        inherited Delete(Idx);
-
   finally
     FCS.Leave;
   end;

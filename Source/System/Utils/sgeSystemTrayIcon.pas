@@ -35,13 +35,13 @@ type
   //Класс
   TsgeSystemTrayIcon = class
   private
-    FWindowClass: TWNDClassEx;        //Класс невидимого окна
-    FHandle: HANDLE;                  //Хэндл невидимого окна
+    FWindowClass: TWNDClassEx;                                      //Класс невидимого окна
+    FHandle: HANDLE;                                                //Хэндл невидимого окна
 
   private
-    FIcon: HICON;                     //Ссылка на Иконку
-    FHint: String;                    //Подсказка
-    FVisible: Boolean;                //Флаг видимости
+    FIcon: HICON;                                                   //Ссылка на Иконку
+    FHint: String;                                                  //Подсказка
+    FVisible: Boolean;                                              //Флаг видимости
 
     //Обработчики событий
     FOnMouseDown: TsgeSystemTrayIconMouseButtonHandler;
@@ -145,8 +145,8 @@ type
     szInfo: array [0..255] of WideChar;
     u: record
          case longint of
-           0 : ( uTimeout : UINT );
-           1 : ( uVersion : UINT );
+           0: (uTimeout: UINT);
+           1: (uVersion: UINT);
           end;
     szInfoTitle: array[0..63] of WideChar;
     dwInfoFlags: DWORD;
@@ -185,25 +185,29 @@ end;
 
 procedure TsgeSystemTrayIcon.Handler_OnMouseDown(Button: TsgeSystemTrayIconMouseButtons);
 begin
-  if Assigned(FOnMouseDown) then FOnMouseDown(Button);
+  if Assigned(FOnMouseDown) then
+    FOnMouseDown(Button);
 end;
 
 
 procedure TsgeSystemTrayIcon.Handler_OnMouseUp(Button: TsgeSystemTrayIconMouseButtons);
 begin
-  if Assigned(FOnMouseUp) then FOnMouseUp(Button);
+  if Assigned(FOnMouseUp) then
+    FOnMouseUp(Button);
 end;
 
 
 procedure TsgeSystemTrayIcon.Handler_OnMouseDblClick(Button: TsgeSystemTrayIconMouseButtons);
 begin
-  if Assigned(FOnMouseDblClick) then FOnMouseDblClick(Button);
+  if Assigned(FOnMouseDblClick) then
+    FOnMouseDblClick(Button);
 end;
 
 
 procedure TsgeSystemTrayIcon.Handler_OnMouseMove;
 begin
-  if Assigned(FOnMouseMove) then FOnMouseMove;
+  if Assigned(FOnMouseMove) then
+    FOnMouseMove;
 end;
 
 
@@ -218,7 +222,7 @@ begin
 
   //Заполнить класс окна
   with FWindowClass do
-    begin
+  begin
     cbSize := SizeOf(TWNDClassEx);                    //Размер структуры
     style := CS_HREDRAW or CS_VREDRAW;                //Стиль окна
     lpfnWndProc := @sgeSystemTrayIconWndProc;         //Обработчик событий окна
@@ -231,7 +235,7 @@ begin
     lpszMenuName := nil;                              //Имя строки-ресурса системного меню
     lpszClassName := PChar(s);                        //Уникальное имя класса
     hIconSm := 0;                                     //Ссылка на маленькую иконку
-    end;
+  end;
 
 
   //Регистрация окна
@@ -285,12 +289,16 @@ end;
 
 procedure TsgeSystemTrayIcon.SetVisible(AVisible: Boolean);
 begin
-  if FVisible = AVisible then Exit;
+  if FVisible = AVisible then
+    Exit;
 
   FVisible := AVisible;
   case FVisible of
-    True : Add;
-    False: Delete;
+    True:
+      Add;
+
+    False:
+      Delete;
   end;
 end;
 
@@ -299,7 +307,8 @@ procedure TsgeSystemTrayIcon.SetIcon(AIcon: HICON);
 var
   ID: TsgeNotifyIconDataW;
 begin
-  if FIcon = AIcon then Exit;
+  if FIcon = AIcon then
+    Exit;
 
   //Запомнить параметр
   FIcon := AIcon;
@@ -321,7 +330,8 @@ procedure TsgeSystemTrayIcon.SetHint(AHint: String);
 var
   ID: TsgeNotifyIconDataW;
 begin
-  if FHint = AHint then Exit;
+  if FHint = AHint then
+    Exit;
 
   //Запомнить параметр
   FHint := AHint;
@@ -347,16 +357,35 @@ begin
     WM_TRAYICONMESSAGE:
 
       case lParam of
-        WM_LBUTTONDOWN    : Handler_OnMouseDown(mbLeft);
-        WM_LBUTTONUP      : Handler_OnMouseUp(mbLeft);
-        WM_LBUTTONDBLCLK  : Handler_OnMouseDblClick(mbLeft);
-        WM_MBUTTONDOWN    : Handler_OnMouseDown(mbMiddle);
-        WM_MBUTTONUP      : Handler_OnMouseUp(mbMiddle);
-        WM_MBUTTONDBLCLK  : Handler_OnMouseDblClick(mbMiddle);
-        WM_RBUTTONDOWN    : Handler_OnMouseDown(mbRight);
-        WM_RBUTTONUP      : Handler_OnMouseUp(mbRight);
-        WM_RBUTTONDBLCLK  : Handler_OnMouseDblClick(mbRight);
-        WM_MOUSEMOVE      : Handler_OnMouseMove;
+        WM_LBUTTONDOWN:
+          Handler_OnMouseDown(mbLeft);
+
+        WM_LBUTTONUP:
+          Handler_OnMouseUp(mbLeft);
+
+        WM_LBUTTONDBLCLK:
+          Handler_OnMouseDblClick(mbLeft);
+
+        WM_MBUTTONDOWN:
+          Handler_OnMouseDown(mbMiddle);
+
+        WM_MBUTTONUP:
+          Handler_OnMouseUp(mbMiddle);
+
+        WM_MBUTTONDBLCLK:
+          Handler_OnMouseDblClick(mbMiddle);
+
+        WM_RBUTTONDOWN:
+          Handler_OnMouseDown(mbRight);
+
+        WM_RBUTTONUP:
+          Handler_OnMouseUp(mbRight);
+
+        WM_RBUTTONDBLCLK:
+          Handler_OnMouseDblClick(mbRight);
+
+        WM_MOUSEMOVE:
+          Handler_OnMouseMove;
       end;
 
     else
@@ -396,7 +425,8 @@ procedure TsgeSystemTrayIcon.SetFocus;
 var
   ID: TsgeNotifyIconDataW;
 begin
-  if not FVisible then Exit;
+  if not FVisible then
+    Exit;
 
   //Заполнить начальную структуру
   ID := GetIconData(FHandle, FIcon, FHint);
@@ -411,7 +441,8 @@ var
   aCpt, aTxt: WideString;
   ID: TsgeNotifyIconDataW;
 begin
-  if not FVisible then Exit;
+  if not FVisible then
+    Exit;
 
   //Подготовить строки
   aCpt := Utf8ToAnsi(Caption);
@@ -438,7 +469,8 @@ var
   aCpt, aTxt: WideString;
   ID: TsgeNotifyIconDataW;
 begin
-  if not FVisible then Exit;
+  if not FVisible then
+    Exit;
 
   //Подготовить строки
   aCpt := Utf8ToAnsi(Caption);

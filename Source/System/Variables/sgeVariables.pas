@@ -223,9 +223,14 @@ var
   Cm: TsgeExtensionMusicPlayerChangeMode;
 begin
   case AChangeMode of
-    'Random'  : Cm := cmRandom;
-    'Forward' : Cm := cmForward;
-    'Backward': Cm := cmBackward;
+    'Random':
+      Cm := cmRandom;
+
+    'Forward':
+      Cm := cmForward;
+
+    'Backward':
+      Cm := cmBackward;
   end;
 
   SGE.ExtMusicPlayer.ChangeMode := Cm;
@@ -234,9 +239,14 @@ end;
 function ExtensionMusic_GetChangeMode: String;
 begin
   case SGE.ExtMusicPlayer.ChangeMode of
-    cmRandom  : Result := 'Random';
-    cmForward : Result := 'Forward';
-    cmBackward: Result := 'Backward';
+    cmRandom:
+      Result := 'Random';
+
+    cmForward:
+      Result := 'Forward';
+
+    cmBackward:
+      Result := 'Backward';
   end;
 end;
 
@@ -246,9 +256,14 @@ var
   Rm: TsgeExtensionMusicPlayerRepeatMode;
 begin
   case ARepeatMode of
-    'None'  : Rm := rmNone;
-    'Track' : Rm := rmTrack;
-    'List'  : Rm := rmList;
+    'None':
+      Rm := rmNone;
+
+    'Track':
+      Rm := rmTrack;
+
+    'List':
+      Rm := rmList;
   end;
 
   SGE.ExtMusicPlayer.RepeatMode:= Rm;
@@ -257,9 +272,14 @@ end;
 function ExtensionMusic_GetRepeatMode: String;
 begin
   case SGE.ExtMusicPlayer.RepeatMode of
-    rmNone  : Result := 'None';
-    rmTrack : Result := 'Track';
-    rmList  : Result := 'List';
+    rmNone:
+      Result := 'None';
+
+    rmTrack:
+      Result := 'Track';
+
+    rmList:
+      Result := 'List';
   end;
 end;
 
@@ -295,7 +315,7 @@ begin
 
   //Добавить переменные
   with SGE.ExtVariables do
-    begin
+  begin
     //Shell
     AddBoolean('Shell.Enable', False, @ExtensionShell_GetEnable, @ExtensionShell_SetEnable, 'On', 'Off');
     AddColor('Shell.BGColor', sgeGetRGBA(0, 0, 0, 128), @ExtensionShell_GetBGColor, @ExtensionShell_SetBGColor);
@@ -317,7 +337,7 @@ begin
     AddInteger('Controllers.Count', 0, @ExtensionControllers_GetCount, nil);
 
     if SGE.ExtSound <> nil then
-      begin
+    begin
       //Sound
       AddSingle('Sound.Volume', 0.5, @ExtensionSound_GetVolume, @ExtensionSound_SetVolume, 0, 1);
 
@@ -330,8 +350,8 @@ begin
 
       //Track
       AddString('TrackList.Current', '', @ExtensionMusic_TrackList_GetCurrent);
-      end;
     end;
+  end;
 end;
 
 

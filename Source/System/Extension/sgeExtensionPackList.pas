@@ -95,7 +95,8 @@ begin
   try
 
     //Подготовить каталог
-    if Directory = '' then Directory := sgeGetApplicationDirectory;
+    if Directory = '' then
+      Directory := sgeGetApplicationDirectory;
     Directory := sgeCheckPathDelimiter(Directory);
 
     //Получить список файлов

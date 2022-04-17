@@ -48,7 +48,8 @@ uses
 
 procedure TsgeGraphicElementSpriteTile.SetCol(ACol: Word);
 begin
-  if FCol = ACol then Exit;
+  if FCol = ACol then
+    Exit;
 
   FCol := ACol;
   FNewData.SpriteRect := sgeGetTextureTileRect(FNewData.Sprite, FCol, FRow);
@@ -57,7 +58,8 @@ end;
 
 procedure TsgeGraphicElementSpriteTile.SetRow(ARow: Word);
 begin
-  if FRow = ARow then Exit;
+  if FRow = ARow then
+    Exit;
 
   FRow := ARow;
   FNewData.SpriteRect := sgeGetTextureTileRect(FNewData.Sprite, FCol, FRow);

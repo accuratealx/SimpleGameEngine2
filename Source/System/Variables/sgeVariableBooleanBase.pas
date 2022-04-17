@@ -52,8 +52,10 @@ var
 begin
   v := FDefaultValue;
   s := LowerCase(Str);
-  if s = LowerCase(FTrueStr) then v := True;
-  if s = LowerCase(FFalseStr) then v := False;
+  if s = LowerCase(FTrueStr) then
+    v := True;
+  if s = LowerCase(FFalseStr) then
+    v := False;
   SetValue(v);
 end;
 
@@ -61,8 +63,11 @@ end;
 function TsgeVariableBooleanBase.GetStrValue: String;
 begin
   case Value of
-    True: Result := FTrueStr;
-    False: Result := FFalseStr;
+    True:
+      Result := FTrueStr;
+
+    False:
+      Result := FFalseStr;
   end;
 end;
 

@@ -29,24 +29,28 @@ implementation
 
 procedure sgeGUISetValue(Parameters: TsgeSimpleParameters; ParamName: String; var Value: Integer; DefaultValue: Integer);
 begin
-  if Parameters.Exist[ParamName] then Value := Parameters.GetValue(ParamName, DefaultValue);
+  if Parameters.Exist[ParamName] then
+    Value := Parameters.GetValue(ParamName, DefaultValue);
 end;
 
 
 procedure sgeGUISetValue(Parameters: TsgeSimpleParameters; ParamName: String; var Value: Word; DefaultValue: Word);
 begin
-  if Parameters.Exist[ParamName] then Value := Parameters.GetValue(ParamName, DefaultValue);
+  if Parameters.Exist[ParamName] then
+    Value := Parameters.GetValue(ParamName, DefaultValue);
 end;
 
 procedure sgeGUISetValue(Parameters: TsgeSimpleParameters; ParamName: String; var Value: Single; DefaultValue: Single);
 begin
-  if Parameters.Exist[ParamName] then Value := Parameters.GetValue(ParamName, DefaultValue);
+  if Parameters.Exist[ParamName] then
+    Value := Parameters.GetValue(ParamName, DefaultValue);
 end;
 
 
 procedure sgeGUISetValue(Parameters: TsgeSimpleParameters; ParamName: String; var Value: Boolean; DefaultValue: Boolean);
 begin
-  if Parameters.Exist[ParamName] then Value := Parameters.GetValue(ParamName, DefaultValue);
+  if Parameters.Exist[ParamName] then
+    Value := Parameters.GetValue(ParamName, DefaultValue);
 end;
 
 

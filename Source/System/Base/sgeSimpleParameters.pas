@@ -246,7 +246,8 @@ end;
 constructor TsgeSimpleParameters.Create(FileName: String);
 begin
   FFileName := FileName;
-  if sgeFileExists(FFileName) then LoadFromFile(FFileName);
+  if sgeFileExists(FFileName) then
+    LoadFromFile(FFileName);
 end;
 
 
@@ -290,10 +291,7 @@ begin
   c := GetCount - 1;
   for i := 0 to c do
     if LowerCase(FParamList[i].Name) = Name then
-      begin
-      Result := i;
-      Break;
-      end;
+      Exit(i);
 end;
 
 
@@ -312,7 +310,10 @@ var
   Idx: Integer;
 begin
   Idx := IndexOf(Name);
-  if Idx = -1 then Add(Name, Value) else FParamList[Idx].Value := Value;
+  if Idx = -1 then
+    Add(Name, Value)
+  else
+    FParamList[Idx].Value := Value;
 end;
 
 
@@ -332,7 +333,11 @@ procedure TsgeSimpleParameters.SetValue(Name: String; Value: Boolean; TrueStr: S
 var
   s: String;
 begin
-  if Value then s := TrueStr else s := FalseStr;
+  if Value then
+    s := TrueStr
+  else
+    s := FalseStr;
+
   SetValue(Name, s);
 end;
 
@@ -344,7 +349,8 @@ begin
   Result := DefValue;
 
   Idx := IndexOf(Name);
-  if Idx <> -1 then Result := FParamList[Idx].Value;
+  if Idx <> -1 then
+    Result := FParamList[Idx].Value;
 end;
 
 
@@ -356,7 +362,8 @@ begin
 
   Idx := IndexOf(Name);
   if Idx <> -1 then
-    if sgeTryStrToInt(FParamList[Idx].Value, Val) then Result := Val;
+    if sgeTryStrToInt(FParamList[Idx].Value, Val) then
+      Result := Val;
 end;
 
 
@@ -369,7 +376,8 @@ begin
 
   Idx := IndexOf(Name);
   if Idx <> -1 then
-    if sgeTryStrToFloat(FParamList[Idx].Value, Val) then Result := Val;
+    if sgeTryStrToFloat(FParamList[Idx].Value, Val) then
+      Result := Val;
 end;
 
 
@@ -382,16 +390,18 @@ begin
 
   Idx := IndexOf(Name);
   if Idx <> -1 then
-    begin
+  begin
     //Подготовить параметры
     TrueStr := LowerCase(TrueStr);
     FalseStr := LowerCase(FalseStr);
     Val := LowerCase(FParamList[Idx].Value);
 
     //Определить значение
-    if Val = TrueStr then Result := True;
-    if Val = FalseStr then Result := False;
-    end;
+    if Val = TrueStr then
+      Result := True;
+    if Val = FalseStr then
+      Result := False;
+  end;
 end;
 
 
@@ -452,17 +462,17 @@ begin
 
   //True
   if cName = LowerCase(TrueStr) then
-    begin
+  begin
     Result := True;
     Exit;
-    end;
+  end;
 
   //Flase
   if cName = LowerCase(FalseStr) then
-    begin
+  begin
     Result := False;
     Exit;
-    end;
+  end;
 
   //Неизвестное значение
   raise EsgeException.Create(_UNITNAME, Err_UnableToDetermineValue, FParamList[Idx].Value);
@@ -489,7 +499,7 @@ begin
   //Просмотр параметров
   c := GetCount - 1;
   for i := 0 to c do
-    begin
+  begin
     //Подготовить имя параметра из списка
     Param1 := LowerCase(FParamList[i].Name);
 
@@ -497,36 +507,41 @@ begin
     Found := False;
     k := List.Count - 1;
     for j := 0 to k do
-      begin
+    begin
       Prm := List.Part[j];
 
       //Пропуск лишнего
       S := sgeTrim(Prm);
-      if S = '' then Continue;
-      if S[1] = Commentary then Continue;
+      if S = '' then
+        Continue;
+
+      if S[1] = Commentary then
+        Continue;
 
       //Поиск параметра в строке
       Param2 := '';
       m := Length(Prm);
       for l := 1 to m do
-        begin
-        if Prm[l] = Separator then Break;
+      begin
+        if Prm[l] = Separator then
+          Break;
         Param2 := Param2 + Prm[l];
-        end;
+      end;
 
       //Сравнить параметры
       if Param1 = LowerCase(sgeTrim(Param2)) then
-        begin
+      begin
         Found := True;
         Break;
-        end;
       end;
+    end;
 
       //Обработка параметра
       if Found then
         List.Part[j] := Copy(List.Part[j], 1, l + 1) + FParamList[i].Value
-        else List.Add(FParamList[i].Name + ' ' + Separator + ' ' + FParamList[i].Value);
-    end;
+      else
+        List.Add(FParamList[i].Name + ' ' + Separator + ' ' + FParamList[i].Value);
+  end;
 
 
   //Вернуть результат
@@ -577,10 +592,14 @@ begin
   //Обработать строки
   c := List.Count - 1;
   for i := 0 to c do
-    begin
-    S := sgeTrim(List.Part[i]);                //Отрезать мусор
-    if S = '' then Continue;                //Проверить на пустую строку
-    if S[1] = Commentary then Continue;     //Проверить на заметку
+  begin
+    S := sgeTrim(List.Part[i]);
+
+    if S = '' then
+      Continue;
+
+    if S[1] = Commentary then
+      Continue;
 
 
     //Подготовить переменные
@@ -591,31 +610,36 @@ begin
     //Цикл по символам
     k := Length(S);
     for j := 1 to k do
-      begin
+    begin
       //Выделить символ
       Symbol := S[j];
 
       //Проверить на разделитель
       if (Symbol = Separator) and IsName then
-        begin
+      begin
         IsName := False;
         Continue;
-        end;
+      end;
 
       //Добавить символ
       case IsName of
-        True : sParam := sParam + Symbol;
-        False: sValue := sValue + Symbol;
+        True:
+          sParam := sParam + Symbol;
+
+        False:
+          sValue := sValue + Symbol;
       end;
 
-      end;//For
+    end;
 
     //Обработать параметр
     sParam := sgeTrim(sParam);
-    if sParam = '' then Continue;
+    if sParam = '' then
+      Continue;
+
     sValue := sgeTrim(sValue);
     SetValue(sParam, sValue);
-    end;
+  end;
 
   List.Free;
 end;
@@ -628,10 +652,11 @@ begin
   Result := '';
   c := GetCount - 1;
   for i := 0 to c do
-    begin
+  begin
     Result := Result + FParamList[i].Name + ' ' + Separator + ' ' + FParamList[i].Value;
-    if i <> c then Result := Result + LineSeparator;
-    end;
+    if i <> c then
+      Result := Result + LineSeparator;
+  end;
 end;
 
 
@@ -674,7 +699,8 @@ var
   S: String;
   Size: Integer;
 begin
-  if FileName = '' then FileName := FFileName;
+  if FileName = '' then
+    FileName := FFileName;
 
   //Подготовить строку для записи
   S := ToString;
@@ -702,7 +728,8 @@ var
   S: String;
   Size: Integer;
 begin
-  if FileName = '' then FileName := FFileName;
+  if FileName = '' then
+    FileName := FFileName;
 
   if not sgeFileExists(FileName) then
     raise EsgeException.Create(_UNITNAME, Err_FileNotFound, FileName);
@@ -732,7 +759,8 @@ var
   Ms: TsgeMemoryStream;
   Str: String;
 begin
-  if FileName = '' then FileName := FFileName;
+  if FileName = '' then
+    FileName := FFileName;
 
   if not sgeFileExists(FileName) then
     raise EsgeException.Create(_UNITNAME, Err_FileNotFound, FileName);
@@ -770,7 +798,8 @@ procedure TsgeSimpleParameters.UpdateFromFile(FileName: String);
 var
   Ms: TsgeMemoryStream;
 begin
-  if FileName = '' then FileName := FFileName;
+  if FileName = '' then
+    FileName := FFileName;
 
   try
     Ms := TsgeMemoryStream.Create;
@@ -791,8 +820,6 @@ begin
     Ms.Free;
   end;
 end;
-
-
 
 
 

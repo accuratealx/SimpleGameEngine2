@@ -79,8 +79,8 @@ begin
   //Подготовительные действия
   ChunkSize := SizeOf(TChunkHeader);
   FmtSize := SizeOf(TFmtHeader);
-  FillChar(FmtHeader, FmtSize, 0);    //Обнулить заголовок формата
-  FmtHeader.BitsPerSample := 8;       //Частный случай, выравнивание данных по 2 байта будем считать изначально 8 бит
+  FillChar(FmtHeader, FmtSize, 0);                                  //Обнулить заголовок формата
+  FmtHeader.BitsPerSample := 8;                                     //Частный случай, выравнивание данных по 2 байта будем считать изначально 8 бит
 
 
   try
@@ -103,7 +103,7 @@ begin
     //Чтение чанков
     Pos := 12;
     while Pos < Stream.Size do
-      begin
+    begin
       //Чтение имени заголовка
       FillChar(Header, 4, 0);
       Stream.Read(Header, Pos, 4);
@@ -111,7 +111,7 @@ begin
 
       //Чтение описания формата
       if Header = 'fmt ' then
-        begin
+      begin
         //Прочесть заголовок с данными
         Stream.Read(FmtHeader, Pos, FmtSize);
 
@@ -122,17 +122,23 @@ begin
         //Определить формат данных
         case FmtHeader.ChannelNumber of
           //Mono
-          1:case FmtHeader.BitsPerSample of
-              8 : FFormat := AL_FORMAT_MONO8;
-              16: FFormat := AL_FORMAT_MONO16;
+          1:
+            case FmtHeader.BitsPerSample of
+              8:
+                FFormat := AL_FORMAT_MONO8;
+              16:
+                FFormat := AL_FORMAT_MONO16;
               else
                 raise EsgeException.Create(_UNITNAME, Err_BitsPerSampleNotSupport, sgeIntToStr(FmtHeader.BitsPerSample));
             end;
 
           //Stereo
-          2:case FmtHeader.BitsPerSample of
-              8 : FFormat := AL_FORMAT_STEREO8;
-              16: FFormat := AL_FORMAT_STEREO16;
+          2:
+            case FmtHeader.BitsPerSample of
+              8:
+                FFormat := AL_FORMAT_STEREO8;
+              16:
+                FFormat := AL_FORMAT_STEREO16;
               else
                 raise EsgeException.Create(_UNITNAME, Err_BitsPerSampleNotSupport, sgeIntToStr(FmtHeader.BitsPerSample));
             end;
@@ -147,18 +153,19 @@ begin
         //Сместить положение кусора
         Pos := Pos + FmtHeader.HeaderSize + 8;
         Continue;
-        end;
+      end;
 
 
       //Чтение данных звука
       if Header = 'data' then
-        begin
+      begin
         //Прочесть заголовок с данными
         Stream.Read(Chunk, Pos, ChunkSize);
 
         //Определить размер загружаемых данных
         DataSize := Chunk.Size;
-        if (FmtHeader.BitsPerSample = 8) and not odd(DataSize) then Inc(DataSize, 1); //Поправка для 8-битных файлов
+        if (FmtHeader.BitsPerSample = 8) and not odd(DataSize) then //Поправка для 8-битных файлов
+          Inc(DataSize, 1);
 
         //Чтение данных
         Buffer := AllocMem(DataSize);
@@ -176,16 +183,13 @@ begin
         //Сместить положение курсора
         Pos := Pos + DataSize + ChunkSize;
         Continue;
-        end;
-
+      end;
 
 
       //Другие чанки пропускаем
       Stream.Read(Chunk, Pos, ChunkSize);
       Pos := Pos + Chunk.Size + ChunkSize;
-      end;
-
-
+    end;
 
   except
     on E: EsgeException do

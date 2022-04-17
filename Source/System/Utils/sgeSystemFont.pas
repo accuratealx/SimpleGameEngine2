@@ -108,7 +108,6 @@ begin
       on E: EsgeException do
         raise EsgeException.Create(_UNITNAME, Err_CantReadFile, FileName, E.Message);
     end;
-
   finally
     Ms.Free;
   end;
@@ -123,7 +122,6 @@ begin
   if FHandle = 0 then
     raise EsgeException.Create(_UNITNAME, Err_CantCreateFontFromMemory);
 end;
-
 
 
 

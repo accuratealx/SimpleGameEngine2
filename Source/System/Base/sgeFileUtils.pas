@@ -84,10 +84,12 @@ begin
     Dec(I);
 
   if (I > 0) and (FileName[I] = ExtensionSeparator) then
-    begin
+  begin
 	  SOF := (I = 1) or (FileName[i - 1] in AllowDirectorySeparators);
 	  if (Not SOF) or FirstDotAtFileNameStartIsExtension then Result := Copy(FileName, I, MaxInt);
-	  end else Result := '';
+	end
+  else
+    Result := '';
 end;
 
 
@@ -102,7 +104,10 @@ begin
   while (i > 0) and not (FileName[i] in EndSep) do
     Dec(i);
 
-  If I > 0 then Result := Copy(FileName, 1, i) else Result := '';
+  If I > 0 then
+    Result := Copy(FileName, 1, i)
+  else
+    Result := '';
 end;
 
 
@@ -124,9 +129,11 @@ begin
   Result := Path;
 
   c := Length(Result);
-  if c = 0 then Exit;
+  if c = 0 then
+    Exit;
 
-  if Result[c] <> System.DirectorySeparator then Result := Path + System.DirectorySeparator;
+  if Result[c] <> System.DirectorySeparator then
+    Result := Path + System.DirectorySeparator;
 end;
 
 
@@ -138,21 +145,26 @@ begin
   Result := FileName;
 
   //Если разделитель с точкой, то удалить
-  if Ext <> '' then if Ext[1] = sgeExtSeparator then Delete(Ext, 1, 1);
+  if Ext <> '' then
+    if Ext[1] = sgeExtSeparator then
+      Delete(Ext, 1, 1);
 
   for i := Length(FileName) downto 1 do
-    begin
+  begin
     //Дальше смотреть нет смысла
-    if (FileName[i] = sgePathSeparator) then Break;
+    if (FileName[i] = sgePathSeparator) then
+      Break;
 
     //Проверить на разделитель расширения
     if FileName[i] = sgeExtSeparator then
-      begin
+    begin
       Result := Copy(FileName, 1, i - 1);
-      if Ext <> '' then Result := Result + sgeExtSeparator + Ext;
+      if Ext <> '' then
+        Result := Result + sgeExtSeparator + Ext;
+
       Break;
-      end;
     end;
+  end;
 end;
 
 
@@ -166,16 +178,16 @@ begin
 
   Idx := sgeFindFirst(Path + '*', FileAttribAnyFile, o);
   while Idx = 0 do
-    begin
+  begin
 
     if (o.Name <> '.') and (o.Name <> '..') then
-      begin
       if (o.Attr and FileAttribDirectory) = FileAttribDirectory then
-        sgeFindFilesInFolder(Path + o.Name, List) else List.Add(Path + o.Name);
-      end;
+        sgeFindFilesInFolder(Path + o.Name, List)
+      else
+        List.Add(Path + o.Name);
 
     Idx := sgeFindNext(o);
-    end;
+  end;
 
   sgeFindClose(o);
 end;
@@ -190,7 +202,8 @@ var
 begin
   //Подготовить расширение
   Ext := LowerCase(Ext);
-  if (Ext <> '') and (Ext[1] = '.') then Delete(Ext, 1, 1);
+  if (Ext <> '') and (Ext[1] = '.') then
+    Delete(Ext, 1, 1);
 
   //Длина базового пути
   len := Length(Utf8ToAnsi(Path));
@@ -205,30 +218,33 @@ begin
     //Отпилить базовый путь
     c := Lst.Count - 1;
     for i := 0 to c do
-      begin
+    begin
       FnExt := Lst.Part[i];
       Delete(FnExt, 1, len);
       Lst.Part[i] := FnExt;
-      end;
+    end;
 
     //Очистить выходной массив
     List.Clear;
 
     //Проверить расширение на пустое значение
     if Ext = '' then
-      begin
+    begin
       List.CopyFrom(Lst);
       Exit;
-      end;
+    end;
 
     //Проврить расширение
     c := Lst.Count - 1;
     for i := 0 to c do
-      begin
+    begin
       fnExt := LowerCase(sgeExtractFileExt(Lst.Part[i]));
-      if (fnExt <> '') and (fnExt[1] = '.') then Delete(fnExt, 1, 1);
-      if FnExt = Ext then List.Add(Lst.Part[i]);
-      end;
+      if (fnExt <> '') and (fnExt[1] = '.') then
+        Delete(fnExt, 1, 1);
+
+      if FnExt = Ext then
+        List.Add(Lst.Part[i]);
+    end;
 
   finally
     Lst.Free;
@@ -245,13 +261,13 @@ begin
 
   Idx := sgeFindFirst(Path + '*', FileAttribAnyFile, o);
   while Idx = 0 do
-    begin
-
+  begin
     if (o.Name <> '.') and (o.Name <> '..') then
-      if (o.Attr and FileAttribDirectory) <> FileAttribDirectory then List.Add(o.Name);
+      if (o.Attr and FileAttribDirectory) <> FileAttribDirectory then
+        List.Add(o.Name);
 
     Idx := sgeFindNext(o);
-    end;
+  end;
 
   sgeFindClose(o);
 end;
@@ -266,13 +282,13 @@ begin
 
   Idx := sgeFindFirst(Path + '*', FileAttribAnyFile, o);
   while Idx = 0 do
-    begin
-
+  begin
     if (o.Name <> '.') and (o.Name <> '..') then
-      if (o.Attr and FileAttribDirectory) = FileAttribDirectory then List.Add(o.Name);
+      if (o.Attr and FileAttribDirectory) = FileAttribDirectory then
+        List.Add(o.Name);
 
     Idx := sgeFindNext(o);
-    end;
+  end;
 
   sgeFindClose(o);
 end;

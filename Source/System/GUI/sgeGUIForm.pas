@@ -79,7 +79,8 @@ begin
 
   //Alpha
   ParamName := 'Alpha';
-  if Data.Exist[ParamName] then SetAlpha(Data.GetValue(ParamName, 1.0));
+  if Data.Exist[ParamName] then
+    SetAlpha(Data.GetValue(ParamName, 1.0));
 
   //Background
   FBackground.LoadParameters(Data, 'Background.');
@@ -102,8 +103,10 @@ end;
 
 procedure TsgeGUIForm.SetAlpha(AAlpha: Single);
 begin
-  if AAlpha < 0 then AAlpha := 0;
-  if AAlpha > 1 then AAlpha := 1;
+  if AAlpha < 0 then
+    AAlpha := 0;
+  if AAlpha > 1 then
+    AAlpha := 1;
   FAlpha := AAlpha;
 
   Repaint;
@@ -170,13 +173,13 @@ begin
   inherited Draw;
 
   if FGraphicElement <> nil then
-    begin
+  begin
     FGraphicElement.X := FLeft;
     FGraphicElement.Y := FTop;
     FGraphicElement.W := FWidth;
     FGraphicElement.H := FHeight;
     FGraphicElement.Update;
-    end;
+  end;
 end;
 
 

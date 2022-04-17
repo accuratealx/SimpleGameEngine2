@@ -81,11 +81,11 @@ begin
 
     //Выход по нажатию кнопки
     sewrEvent:
-      begin
+    begin
       VarName := Command.Part[1];                                     //Имя переменной
       VarValue := TsgeExtensionShellExt(SGE.ExtShell).FreadKeyChar;  //Значение переменной
       SGE.ExtVariables.SetInteger(VarName, VarValue);                 //Изменить значение переменной
-      end;
+    end;
 
     //Не дождался нажатия
     sewrTimeOut:

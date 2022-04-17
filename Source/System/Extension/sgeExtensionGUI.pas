@@ -78,15 +78,15 @@ type
     constructor Create(ObjectList: TObject); override;
     destructor  Destroy; override;
 
-    procedure RepaintForms;                                                   //Перерисовать формы
+    procedure RepaintForms;                                         //Перерисовать формы
 
     //Мышь
-    procedure MouseCapture(Element: TsgeGUIElement);                          //Установить захват мыши
-    procedure ReleaseMouse(Element: TsgeGUIElement);                          //Отменить захват мыши
+    procedure MouseCapture(Element: TsgeGUIElement);                //Установить захват мыши
+    procedure ReleaseMouse(Element: TsgeGUIElement);                //Отменить захват мыши
 
     //Активный элемент
-    procedure SetFocus(Element: TsgeGUIElement);                              //Установить фокус ввода на элемент
-    procedure LostFocus(Element: TsgeGUIElement);                             //Убрать фокус с элемента
+    procedure SetFocus(Element: TsgeGUIElement);                    //Установить фокус ввода на элемент
+    procedure LostFocus(Element: TsgeGUIElement);                   //Убрать фокус с элемента
 
     //Свойства
     property Enable: Boolean read FEnable write SetEnable;
@@ -111,7 +111,8 @@ procedure TsgeExtensionGUI.SetEnable(AEnable: Boolean);
 var
   i: Integer;
 begin
-  if FEnable = AEnable then Exit;
+  if FEnable = AEnable then
+    Exit;
 
   FEnable := AEnable;
 
@@ -122,7 +123,8 @@ end;
 
 procedure TsgeExtensionGUI.SetVisible(AVisible: Boolean);
 begin
-  if FVisible = AVisible then Exit;
+  if FVisible = AVisible then
+    Exit;
 
   FVisible := AVisible;
 
@@ -202,29 +204,29 @@ begin
 
   //Проверить событие MouseEnter, MouseLeave
   if EventType = emetMove then
-    begin
+  begin
     if FLastElementAtCursor <> Element then
-      begin
+    begin
       //Уход мыши
       if FLastElementAtCursor <> nil then
-        begin
+      begin
         Pt := FLastElementAtCursor.GetGlobalPos;
         Mouse.ChangeXY(MousePoint.X - Pt.X, MousePoint.Y - Pt.Y);
         FLastElementAtCursor.MouseHandler(emetLeave, Mouse);
-        end;
+      end;
 
       //Заход мыши
       if Element <> nil then
-        begin
+      begin
         Pt := Element.GetGlobalPos;
         Mouse.ChangeXY(MousePoint.X - Pt.X, MousePoint.Y - Pt.Y);
         Element.MouseHandler(emetEnter, Mouse);
-        end;
       end;
+    end;
 
     //Запомнить последний элемент под курсором
     FLastElementAtCursor := Element;
-    end;
+  end;
 
   //Если монопольный захват событи мыши, то поправить
   if FCapturedElement <> nil then
@@ -232,11 +234,12 @@ begin
 
   //Проверить что элемент найден
   if Element = nil then
-    begin
+  begin
     //Если нажали вне GUI формы, то сбросить фокус ввода
-    if EventType = emetDown then SetFocus(nil);
+    if EventType = emetDown then
+      SetFocus(nil);
     Exit;
-    end;
+  end;
 
   //Если элемент найден, то подавить событие
   Result := True;
@@ -251,7 +254,7 @@ begin
       Element.MouseHandler(EventType, Mouse);
 
     emetDown:
-      begin
+    begin
       //Найти форму
       Form := TsgeGUIForm(Element.GetTopParent);
 
@@ -260,9 +263,8 @@ begin
 
       //Выполнить обработчик элемента
       Element.MouseHandler(EventType, Mouse);
-      end;
+    end;
   end;
-
 end;
 
 
@@ -277,7 +279,8 @@ end;
 
 procedure TsgeExtensionGUI.ClearForms;
 begin
-  if FFormList.Count = 0 then Exit;
+  if FFormList.Count = 0 then
+    Exit;
 
   //Удалить объекты
   while FFormList.Count > 0 do
@@ -303,11 +306,12 @@ function TsgeExtensionGUI.ElementAtCursor(X, Y: Integer): TsgeGUIElement;
     Result := nil;
 
     //Если элемент неактивен, то выход
-    if not Element.Visible or not Element.Enable then Exit;
+    if not Element.Visible or not Element.Enable then
+      Exit;
 
     //Проверить нахождение координат в текщум объекте
     if CursorInElement(Element, X, Y) then
-      begin
+    begin
 
       //Результат по умолчанию
       Result := Element;
@@ -318,11 +322,12 @@ function TsgeExtensionGUI.ElementAtCursor(X, Y: Integer): TsgeGUIElement;
 
       //Проверить детей
       for i := 0 to Element.ChildList.Count - 1 do
-        begin
+      begin
         E := ProcessElement(Element.ChildList.Item[i], Xl, Yl);
-        if E <> nil then Exit(E);
-        end;
+        if E <> nil then
+          Exit(E);
       end;
+    end;
   end;
 
 var
@@ -333,10 +338,11 @@ begin
 
   //Перебрать формы
   for i := FFormList.Count - 1 downto 0 do
-    begin
+  begin
     E := ProcessElement(FFormList.Item[i], X, Y);
-    if E <> nil then Exit(E);
-    end;
+    if E <> nil then
+      Exit(E);
+  end;
 end;
 
 
@@ -430,22 +436,26 @@ end;
 
 procedure TsgeExtensionGUI.SetFocus(Element: TsgeGUIElement);
 begin
-  if FFocusedElement = Element then Exit;
+  if FFocusedElement = Element then
+    Exit;
 
   //Убираем фокус со старого элемента
-  if FFocusedElement <> nil then FFocusedElement.Focused := False;
+  if FFocusedElement <> nil then
+    FFocusedElement.Focused := False;
 
   //Запомнить новый элемент
   FFocusedElement := Element;
 
   //Установить фокус новому элементу
-  if FFocusedElement <> nil then FFocusedElement.Focused := True;
+  if FFocusedElement <> nil then
+    FFocusedElement.Focused := True;
 end;
 
 
 procedure TsgeExtensionGUI.LostFocus(Element: TsgeGUIElement);
 begin
-  if FFocusedElement = Element then FFocusedElement := nil;
+  if FFocusedElement = Element then
+    FFocusedElement := nil;
 end;
 
 

@@ -80,44 +80,47 @@ begin
   Result := nil;
 
   //Определить направление поиска
-  if Index > FCount div 2 then Direction := dBackward else Direction := dForward;
+  if Index > FCount div 2 then
+    Direction := dBackward
+  else
+    Direction := dForward;
 
   //Поиск указателя на элемент
   case Direction of
 
     dForward:
-      begin
+    begin
       Idx := 0;
       P := FFirst;
       while P <> nil do
-        begin
+      begin
         if Idx = Index then
-          begin
+        begin
           Result := P;
           Break;
-          end;
+        end;
 
         Inc(Idx);
         P := P^.Next;
-        end;
       end;
+    end;
 
     dBackward:
-      begin
+    begin
       Idx := FCount - 1;
       P := FLast;
       while P <> nil do
-        begin
+      begin
         if Idx = Index then
-          begin
+        begin
           Result := P;
           Break;
-          end;
+        end;
 
         Dec(Idx);
         P := P^.Prev;
-        end;
       end;
+    end;
 
   end;
 end;
@@ -126,8 +129,15 @@ end;
 procedure TsgeTemplateThreadSafeList.DeleteItemByPointer(Item: PListItem);
 begin
   //Поправить ссылки
-  if Item^.Next <> nil then Item^.Next^.Prev := Item^.Prev else FLast := Item^.Prev;    //Следующий элемент
-  if Item^.Prev <> nil then Item^.Prev^.Next := Item^.Next else FFirst := Item^.Next;   //Предыдущий элемент
+  if Item^.Next <> nil then
+    Item^.Next^.Prev := Item^.Prev
+  else
+    FLast := Item^.Prev;
+
+  if Item^.Prev <> nil then
+    Item^.Prev^.Next := Item^.Next
+  else
+    FFirst := Item^.Next;
 
   //Удалить память объекта
   if FFreeObjects then
@@ -147,14 +157,12 @@ var
 begin
   FCS.Enter;
   try
-
     if (Index < 0) or (Index > FCount - 1) then
       raise EsgeException.Create(_UNITNAME, Err_IndexOutOfBounds, sgeIntToStr(Index));
 
     //Найти указатель по индексу
     P := GetItemByIndex(Index);
     Result := P^.Item;
-
   finally
     FCS.Leave;
   end;
@@ -186,13 +194,13 @@ var
 begin
   FCS.Enter;
   try
-
-    if FCount = 0 then Exit;
+    if FCount = 0 then
+      Exit;
 
     //Пробежать по элементам
     P := FFirst;
     while P <> nil do
-      begin
+    begin
       //Освободить память объекта
       if FFreeObjects then
         TObject(P^.Item).Free;
@@ -201,13 +209,12 @@ begin
       D := P;
       P := P^.Next;
       Dispose(D);
-      end;
+    end;
 
     //Поправить параметры
     FCount := 0;
     FFirst := nil;
     FLast := nil;
-
   finally
     FCS.Leave;
   end;
@@ -220,7 +227,6 @@ var
 begin
   FCS.Enter;
   try
-
     //Подготовить данные
     New(I);
     I^.Item := Item;
@@ -229,20 +235,20 @@ begin
 
     //Добавить элемент
     if FCount = 0 then
-      begin
+    begin
       //Первый элемент
       FFirst := I;
       FLast := I;
-      end
-      else begin
+    end
+    else
+    begin
       FLast^.Next := I;
       I^.Prev := FLast;
       FLast := I;
-      end;
+    end;
 
     //Увеличить количество
     Inc(FCount);
-
   finally
     FCS.Leave;
   end;
@@ -255,7 +261,6 @@ var
 begin
   FCS.Enter;
   try
-
     if (Index < 0) or (Index > FCount - 1) then
       raise EsgeException.Create(_UNITNAME, Err_IndexOutOfBounds, sgeIntToStr(Index));
 
@@ -264,7 +269,6 @@ begin
 
     //Удалить элемент
     DeleteItemByPointer(P);
-
   finally
     FCS.Leave;
   end;
@@ -278,27 +282,25 @@ var
 begin
   FCS.Enter;
   try
-
     Idx := 0;
     P := FFirst;
     while P <> nil do
-      begin
+    begin
       if P^.Item = Item then
-        begin
+      begin
         //Удалить элемент
         DeleteItemByPointer(P);
 
         //Выход
         Exit;
-        end;
+      end;
 
       Inc(Idx);
       P := P^.Next;
-      end;
+    end;
 
     //Ошибка если не найдено совпадение
     raise EsgeException.Create(_UNITNAME, Err_ItemNotFund);
-
   finally
     FCS.Leave;
   end;
@@ -311,7 +313,6 @@ var
 begin
   FCS.Enter;
   try
-
     if (Index < 0) or (Index > FCount - 1) then
       raise EsgeException.Create(_UNITNAME, Err_IndexOutOfBounds, sgeIntToStr(Index));
 
@@ -332,23 +333,24 @@ begin
     PNew^.Next := PRight;
 
     if PLeft <> nil then
-      begin
+    begin
       PNew^.Prev := PLeft;
       PLeft^.Next := PNew;
-      end
-      else begin
+    end
+    else
+    begin
       //0 элемент
       PNew^.Prev := nil;
       FFirst := PNew;
-      end;
+    end;
 
     //Увеличить счётчик
     Inc(FCount);
-
   finally
     FCS.Leave;
   end;
 end;
+
 
 
 end.

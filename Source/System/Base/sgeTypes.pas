@@ -162,7 +162,11 @@ function sgeFitRectIn(BaseW, BaseH, RectW, RectH: Integer): TsgeIntPoint;
 var
   k: Single;
 begin
-  if (BaseW * RectH < RectW * BaseH) then k := BaseW / RectW else k := BaseH / RectH;
+  if (BaseW * RectH < RectW * BaseH) then
+    k := BaseW / RectW
+  else
+    k := BaseH / RectH;
+
   Result.X := Round(k * RectW);
   Result.Y := Round(k * RectH);
 end;
@@ -172,7 +176,11 @@ function sgeFitRectOut(BaseW, BaseH, RectW, RectH: Integer): TsgeIntPoint;
 var
   k: Single;
 begin
-  if (BaseW * RectH > RectW * BaseH) then k := BaseW / RectW else k := BaseH / RectH;
+  if (BaseW * RectH > RectW * BaseH) then
+    k := BaseW / RectW
+  else
+    k := BaseH / RectH;
+
   Result.X := Round(k * RectW);
   Result.Y := Round(k * RectH);
 end;
@@ -181,12 +189,23 @@ end;
 function sgeGetKeyboardShiftsFromKeboardButtons(KeyboardButtons: TsgeKeyboardButtons): TsgeKeyboardShifts;
 begin
   Result := [];
-  if (kbLeftAlt in KeyboardButtons) then Include(Result, ksLeftAlt);
-  if (kbRightAlt in KeyboardButtons) then Include(Result, ksRightAlt);
-  if (kbLeftCtrl in KeyboardButtons) then Include(Result, ksLeftCtrl);
-  if (kbRightCtrl in KeyboardButtons) then Include(Result, ksRightCtrl);
-  if (kbLeftShift in KeyboardButtons) then Include(Result, ksLeftShift);
-  if (kbRightShift in KeyboardButtons) then Include(Result, ksRightShift);
+  if (kbLeftAlt in KeyboardButtons) then
+    Include(Result, ksLeftAlt);
+
+  if (kbRightAlt in KeyboardButtons) then
+    Include(Result, ksRightAlt);
+
+  if (kbLeftCtrl in KeyboardButtons) then
+    Include(Result, ksLeftCtrl);
+
+  if (kbRightCtrl in KeyboardButtons) then
+    Include(Result, ksRightCtrl);
+
+  if (kbLeftShift in KeyboardButtons) then
+    Include(Result, ksLeftShift);
+
+  if (kbRightShift in KeyboardButtons) then
+    Include(Result, ksRightShift);
 end;
 
 

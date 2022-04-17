@@ -36,13 +36,19 @@ implementation
 
 function sgeMin(a, b: Integer): Integer; inline;
 begin
-  if a < b then Result := a else Result := b;
+  if a < b then
+    Result := a
+  else
+    Result := b;
 end;
 
 
 function sgeMax(a, b: Integer): Integer; inline;
 begin
-  if a > b then Result := a else Result := b;
+  if a > b then
+    Result := a
+  else
+    Result := b;
 end;
 
 

@@ -84,8 +84,10 @@ var
   X1, X2: Single;
 begin
   //Поправить диапазон
-  if Pos <= 0 then Pos := 0;
-  if Pos >= 1 then Pos := 1;
+  if Pos <= 0 then
+    Pos := 0;
+  if Pos >= 1 then
+    Pos := 1;
 
   //Высчитать положение
   N := Length(FValues);
@@ -94,12 +96,12 @@ begin
   X2 := 1;
 
   while I < N do
-    begin
+  begin
     X1 := I / (N - 1);
     X2 := (I + 1) / (N - 1);
     if (Pos >= X1) and (Pos <= X2) then Break;
     Inc(I);
-    end;
+  end;
 
   Result := FValues[I] + (FValues[I + 1] - FValues[I]) * ((Pos - X1) / (X2 - X1));
 end;
@@ -111,37 +113,38 @@ begin
   ValuesClear;
   case Mode of
     sfmNormalToColor:
-      begin
+    begin
       ValuesAdd(0);
       ValuesAdd(FColor.Alpha);
-      end;
+    end;
 
     sfmColorToNormal:
-      begin
+    begin
       ValuesAdd(FColor.Alpha);
       ValuesAdd(0);
-      end;
+    end;
 
     sfmNormalToColorToNormal:
-      begin
+    begin
       ValuesAdd(0);
       ValuesAdd(FColor.Alpha);
       ValuesAdd(0);
-      end;
+    end;
 
     sfmColorToNormalToColor:
-      begin
+    begin
       ValuesAdd(FColor.Alpha);
       ValuesAdd(0);
       ValuesAdd(FColor.Alpha);
-      end;
+    end;
   end;
 end;
 
 
 procedure TsgeScreenFade.DoCallBack(Time: TsgePassedTime);
 begin
-  if Assigned(FCallBackProc) then FCallBackProc(Time);
+  if Assigned(FCallBackProc) then
+    FCallBackProc(Time);
 end;
 
 
@@ -158,7 +161,8 @@ begin
   FTimeMiddle := False;
 
   //Запомнить параметры
-  if Time < 1 then Time := 1;
+  if Time < 1 then
+    Time := 1;
   FTime := Time;
   FCallBackProc := Proc;
   FEnable := True;
@@ -179,30 +183,31 @@ begin
   //Сколько времени прошло с момента запуска
   cTime := sgeGetTickCount - FStartTime;
   if cTime <= FTime then
-    begin
+  begin
     //Положение градиента
     Pos := cTime / FTime;
 
     //Время начала
     if not FTimeBegin and (Pos >= 0) then
-      begin
+    begin
       FTimeBegin := True;
       DoCallBack(ptBegin);
-      end;
+    end;
 
     //Время середины
     if not FTimeMiddle and (Pos >= 0.5) then
-      begin
+    begin
       FTimeMiddle := True;
       DoCallBack(ptMiddle);
-      end;
+    end;
 
     Result := sgeChangeColorAlpha(FColor, ValuesGradient(cTime / FTime))
-    end
-    else begin
+  end
+  else
+  begin
     DoCallBack(ptEnd);
     FEnable := False;
-    end;
+  end;
 end;
 
 

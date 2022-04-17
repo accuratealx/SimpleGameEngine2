@@ -64,7 +64,8 @@ type
 
 procedure TsgeGUIPropertyLabel.SetText(AText: String);
 begin
-  if FText = AText then Exit;
+  if FText = AText then
+    Exit;
 
   FText := AText;
   UpdateParent;
@@ -160,13 +161,13 @@ begin
 
   //Вывод
   with SGE.ExtGraphic.Graphic do
-    begin
+  begin
     //Изменить цвет текста
     Color := FColor.Color;
 
     //Вывод текста
     DrawText(X1, Y1, FFont.Font, FText);
-    end;
+  end;
 end;
 
 

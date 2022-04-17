@@ -76,10 +76,7 @@ begin
   Name := LowerCase(Name);
   for i := 0 to c do
     if Name = LowerCase(FMetaInfoList[i].Name) then
-      begin
-      Result := i;
-      Break;
-      end;
+      Exit(i);
 end;
 
 
@@ -101,9 +98,11 @@ begin
   //Обработать строки
   c := List.Count - 1;
   for i := 0 to c do
-    begin
-    S := sgeTrim(List.Part[i]);             //Отрезать мусор
-    if S = '' then Continue;                //Проверить на пустую строку
+  begin
+    //Отрезать мусор
+    S := sgeTrim(List.Part[i]);
+    if S = '' then
+      Continue;
 
     //Подготовить переменные
     sName := '';
@@ -113,16 +112,16 @@ begin
     //Цикл по символам
     k := Length(S);
     for j := 1 to k do
-      begin
+    begin
       //Выделить символ
       Symbol := S[j];
 
       //Проверить на разделитель
       if (Symbol = '=') and IsName then
-        begin
+      begin
         IsName := False;
         Continue;
-        end;
+      end;
 
       //Добавить символ
       case IsName of
@@ -130,13 +129,14 @@ begin
         False: sValue := sValue + Symbol;
       end;
 
-      end;//For
+    end;
 
     //Подготовить имя
     sName := sgeTrim(sName);
 
     //Пустых имён не может быть
-    if sName = '' then Continue;
+    if sName = '' then
+      Continue;
 
     //Подготовить значение
     sValue := sgeTrim(sValue);
@@ -144,7 +144,7 @@ begin
 
     //Добавить элемент
     SetValue(sName, sValue);
-    end;
+  end;
 
   //Поправить количество элементов
   FCount := Length(FMetaInfoList);
@@ -157,7 +157,8 @@ begin
   Result.Name := '';
   Result.Value := '';
 
-  if (Index < 0) or (Index > FCount - 1) then Exit;
+  if (Index < 0) or (Index > FCount - 1) then
+    Exit;
 
   Result := FMetaInfoList[Index];
 end;
@@ -170,12 +171,14 @@ begin
   idx := IndexOf(MetaInfo.Name);
 
   if idx = -1 then
-    begin
+  begin
     c := Length(FMetaInfoList);
     SetLength(FMetaInfoList, c + 1);
     FMetaInfoList[c] := MetaInfo;
     FCount := c + 1;
-    end else FMetaInfoList[idx].Value := MetaInfo.Value;
+  end
+  else
+    FMetaInfoList[idx].Value := MetaInfo.Value;
 end;
 
 
@@ -222,10 +225,11 @@ begin
 
   Idx := IndexOf(Name);
   if Idx <> -1 then
-    begin
+  begin
     Result := FMetaInfoList[Idx].Value;
-    if Del then Delete(Name);
-    end;
+    if Del then
+      Delete(Name);
+  end;
 end;
 
 
@@ -237,10 +241,13 @@ begin
 
   Idx := IndexOf(Name);
   if Idx <> -1 then
-    begin
-    if sgeTryStrToInt(FMetaInfoList[Idx].Value, Val) then Result := Val;
-    if Del then Delete(Name);
-    end;
+  begin
+    if sgeTryStrToInt(FMetaInfoList[Idx].Value, Val) then
+      Result := Val;
+
+    if Del then
+      Delete(Name);
+  end;
 end;
 
 
@@ -253,10 +260,13 @@ begin
 
   Idx := IndexOf(Name);
   if Idx <> -1 then
-    begin
-    if sgeTryStrToFloat(FMetaInfoList[Idx].Value, Val) then Result := Val;
-    if Del then Delete(Name);
-    end;
+  begin
+    if sgeTryStrToFloat(FMetaInfoList[Idx].Value, Val) then
+      Result := Val;
+
+    if Del then
+      Delete(Name);
+  end;
 end;
 
 
@@ -269,18 +279,21 @@ begin
 
   Idx := IndexOf(Name);
   if Idx <> -1 then
-    begin
+  begin
     //Подготовить параметры
     TrueStr := LowerCase(TrueStr);
     FalseStr := LowerCase(FalseStr);
     Val := LowerCase(FMetaInfoList[Idx].Value);
 
     //Определить значение
-    if Val = TrueStr then Result := True;
-    if Val = FalseStr then Result := False;
+    if Val = TrueStr then
+      Result := True;
+    if Val = FalseStr then
+      Result := False;
 
-    if Del then Delete(Name);
-    end;
+    if Del then
+      Delete(Name);
+  end;
 end;
 
 
@@ -290,7 +303,8 @@ var
 begin
   //Если нет записи, то ничего не делаем
   Index := IndexOf(Name);
-  if Index = -1 then Exit;
+  if Index = -1 then
+    Exit;
 
   //Сдвинуть хвост
   c := Length(FMetaInfoList) - 1;
@@ -323,10 +337,11 @@ begin
   Result := '';
   c := FCount - 1;
   for i := 0 to c do
-    begin
+  begin
     Result := Result + FMetaInfoList[i].Name + '=' + FMetaInfoList[i].Value;
-    if i <> c then Result := Result + FSeparator;
-    end;
+    if i <> c then
+      Result := Result + FSeparator;
+  end;
 end;
 
 

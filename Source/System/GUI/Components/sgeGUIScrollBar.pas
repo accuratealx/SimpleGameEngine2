@@ -42,7 +42,8 @@ implementation
 
 procedure TsgeGUIScrollBar.SetOrientation(AOrientation: TsgeGUIOrientation);
 begin
-  if FOrientation = AOrientation then Exit;
+  if FOrientation = AOrientation then
+    Exit;
 
   FOrientation := AOrientation;
   Resize;

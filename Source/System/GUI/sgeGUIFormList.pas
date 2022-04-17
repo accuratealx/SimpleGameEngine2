@@ -40,13 +40,13 @@ var
 begin
   Idx := IndexOf(Form);
   if Idx <> -1 then
-    begin
+  begin
     //Удалить из текущей позиции
     Delete(Idx);
 
     //Добавить форму в хвост
     Add(Form);
-    end;
+  end;
 end;
 
 
@@ -57,7 +57,8 @@ begin
   Result := -1;
 
   for i := 0 to FCount - 1 do
-    if FList[i] = Form then Exit(i);
+    if FList[i] = Form then
+      Exit(i);
 end;
 
 

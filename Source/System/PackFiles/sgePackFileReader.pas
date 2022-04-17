@@ -21,17 +21,17 @@ uses
 type
   //Описание одного блока при чтении
   TsgePackFileReaderBlock = record
-    StartPos: Int64;                  //Адрес начала данных
-    DataSize: Int64;                  //Длина данных
-    FileName: String;                 //Имя файла
+    StartPos: Int64;                                                //Адрес начала данных
+    DataSize: Int64;                                                //Длина данных
+    FileName: String;                                               //Имя файла
   end;
 
 
   //Класс чтения содержимого архива
   TsgePackFileReader = class
   private
-    FPackFile: TsgeFile;                          //Файл
-    FFileList: array of TsgePackFileReaderBlock;  //Список файлов
+    FPackFile: TsgeFile;                                            //Файл
+    FFileList: array of TsgePackFileReaderBlock;                    //Список файлов
 
     procedure Read;
     procedure Add(ABlock: TsgePackFileReaderBlock);
@@ -86,7 +86,7 @@ begin
   //Читать в цикле блоки
   Offset := SizeOf(TsgePackFileHeader);
   while Offset < FPackFile.Size do
-    begin
+  begin
     FPackFile.Seek(Offset, foBegin);                                  //Подвинуть маркер
     FPackFile.Read(BlockHdr, SizeOf(TsgePackFileBlock));              //Прочитать заголовок блока
 
@@ -104,7 +104,7 @@ begin
 
     //Добавить файл в список
     Add(BlockRec);
-    end;
+  end;
 end;
 
 
@@ -143,8 +143,8 @@ procedure TsgePackFileReader.SetFileName(AFileName: String);
 begin
   if FPackFile.FileName = AFileName then Exit;
 
-  FPackFile.FileName := AFileName;  //Изменить файл
-  Read;                             //Перечитать список файлов
+  FPackFile.FileName := AFileName;                                  //Изменить файл
+  Read;                                                             //Перечитать список файлов
 end;
 
 
@@ -178,10 +178,7 @@ begin
   c := GetCount - 1;
   for i := c downto 0 do
     if FileName = LowerCase(FFileList[i].FileName) then
-      begin
-      Result := i;
-      Break;
-      end;
+      Exit(i);
 end;
 
 

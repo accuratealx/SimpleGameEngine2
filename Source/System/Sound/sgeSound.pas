@@ -81,13 +81,26 @@ var
 begin
   //Определить модель
   case ADistance of
-    sdmNone           : Mdl := AL_NONE;
-    sdmInverse        : Mdl := AL_INVERSE_DISTANCE;
-    sdmInverseClamped : Mdl := AL_INVERSE_DISTANCE_CLAMPED;
-    sdmLinear         : Mdl := AL_LINEAR_DISTANCE;
-    sdmLinearClamped  : Mdl := AL_LINEAR_DISTANCE_CLAMPED;
-    sdmExponent       : Mdl := AL_EXPONENT_DISTANCE;
-    sdmExponentClamped: Mdl := AL_EXPONENT_DISTANCE_CLAMPED;
+    sdmNone:
+      Mdl := AL_NONE;
+
+    sdmInverse:
+      Mdl := AL_INVERSE_DISTANCE;
+
+    sdmInverseClamped:
+      Mdl := AL_INVERSE_DISTANCE_CLAMPED;
+
+    sdmLinear:
+      Mdl := AL_LINEAR_DISTANCE;
+
+    sdmLinearClamped:
+      Mdl := AL_LINEAR_DISTANCE_CLAMPED;
+
+    sdmExponent:
+      Mdl := AL_EXPONENT_DISTANCE;
+
+    sdmExponentClamped:
+      Mdl := AL_EXPONENT_DISTANCE_CLAMPED;
   end;
 
   //Изменить модель расчёта расстояния
@@ -104,22 +117,41 @@ begin
 
   //Определить результат
   case Mdl of
-    AL_INVERSE_DISTANCE         : Result := sdmInverse;
-    AL_INVERSE_DISTANCE_CLAMPED : Result := sdmInverseClamped;
-    AL_LINEAR_DISTANCE          : Result := sdmLinear;
-    AL_LINEAR_DISTANCE_CLAMPED  : Result := sdmLinearClamped;
-    AL_EXPONENT_DISTANCE        : Result := sdmExponent;
-    AL_EXPONENT_DISTANCE_CLAMPED: Result := sdmExponentClamped;
-    else Result := sdmNone;
+    AL_INVERSE_DISTANCE:
+      Result := sdmInverse;
+
+    AL_INVERSE_DISTANCE_CLAMPED:
+      Result := sdmInverseClamped;
+
+    AL_LINEAR_DISTANCE:
+      Result := sdmLinear;
+
+    AL_LINEAR_DISTANCE_CLAMPED:
+      Result := sdmLinearClamped;
+
+    AL_EXPONENT_DISTANCE:
+      Result := sdmExponent;
+
+    AL_EXPONENT_DISTANCE_CLAMPED:
+      Result := sdmExponentClamped;
+
+    else
+      Result := sdmNone;
   end;
 end;
 
 
 procedure TsgeSound.SetGain(AGain: Single);
 begin
-  if AGain <= 0 then AGain := 0;  //Нижний порог усиления 0
-  if AGain >= 1 then AGain := 1;  //Верхний порог усиления 1
-  alListenerf(AL_GAIN, AGain);    //Изменить скалярный множитель
+  //Нижний порог усиления 0
+  if AGain <= 0 then
+    AGain := 0;
+  //Верхний порог усиления 1
+  if AGain >= 1 then
+    AGain := 1;
+
+  //Изменить скалярный множитель
+  alListenerf(AL_GAIN, AGain);
 end;
 
 
@@ -180,7 +212,7 @@ begin
   FOrientation[3] := 0;   //X
   FOrientation[4] := -1;  //Y
   FOrientation[5] := 0;   //Z
-  alListenerfv(AL_ORIENTATION, @FOrientation);  //Изменить ориентацию
+  alListenerfv(AL_ORIENTATION, @FOrientation);                      //Изменить ориентацию
 
   //Прочитать текущие координаты
   alGetListenerfv(AL_POSITION, @FPosition);
@@ -189,11 +221,12 @@ end;
 
 destructor TsgeSound.Destroy;
 begin
-  if not Assigned(alcMakeContextCurrent) then Exit;
+  if not Assigned(alcMakeContextCurrent) then
+    Exit;
 
-  alcMakeContextCurrent(nil);                       //Отменить выбор контекста
-  alcDestroyContext(FContext);                      //Удалить контекст
-  alcCloseDevice(FDevice);                          //Закрыть устройство
+  alcMakeContextCurrent(nil);                                       //Отменить выбор контекста
+  alcDestroyContext(FContext);                                      //Удалить контекст
+  alcCloseDevice(FDevice);                                          //Закрыть устройство
 end;
 
 

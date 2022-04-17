@@ -75,16 +75,20 @@ begin
 
   //Найти дорожки совпавшие по группе
   for i := 0 to FCount - 1 do
-    begin
+  begin
     isAdd := False;
 
     //Проверить совпадение
-    if Group = '' then isAdd := True else
-      if LowerCase(FList[i].Group) = Group then isAdd := True;
+    if Group = '' then
+      isAdd := True
+    else
+      if LowerCase(FList[i].Group) = Group then
+        isAdd := True;
 
     //Добавить в список
-    if isAdd then List.Add(FList[i]);
-    end;
+    if isAdd then
+      List.Add(FList[i]);
+  end;
 end;
 
 
@@ -94,12 +98,11 @@ var
 begin
   FCS.Enter;
   try
-
     Result := -1;
     Name := LowerCase(Name);
     for i := 0 to FCount - 1 do
-      if Name = LowerCase(FList[i].Name) then Exit(i);
-
+      if Name = LowerCase(FList[i].Name) then
+        Exit(i);
   finally
     FCS.Leave;
   end;
@@ -112,12 +115,11 @@ var
 begin
   FCS.Enter;
   try
-
     Result := -1;
     Group := LowerCase(Group);
     for i := 0 to FCount - 1 do
-      if Group = LowerCase(FList[i].Group) then Exit(i);
-
+      if Group = LowerCase(FList[i].Group) then
+        Exit(i);
   finally
     FCS.Leave;
   end;
@@ -128,9 +130,7 @@ procedure TsgeMusicPlayerTrackList.Add(Track: TsgeMusicPLayerTrack);
 begin
   FCS.Enter;
   try
-
     inherited Add(Track);
-
   finally
     FCS.Leave;
   end;
@@ -147,14 +147,12 @@ procedure TsgeMusicPlayerTrackList.Delete(Index: Integer);
 begin
   FCS.Enter;
   try
-
     //Поправить текушую дорожку
     if FList[Index] = FCurrentTrack then
       FCurrentTrack := nil;
 
     //Удалить
     inherited Delete(Index);
-
   finally
     FCS.Leave;
   end;
@@ -167,7 +165,6 @@ var
 begin
   FCS.Enter;
   try
-
     //Найти индекс дорожки
     idx := IndexOfName(Name);
     if idx = -1 then
@@ -175,7 +172,6 @@ begin
 
     //Удалить
     Delete(idx);
-
   finally
     FCS.Leave;
   end;
@@ -188,14 +184,12 @@ var
 begin
   FCS.Enter;
   try
-
     idx := IndexOfGroup(Group);
     while idx <> - 1 do
-      begin
+    begin
       Delete(idx);
       idx := IndexOfGroup(Group);
-      end;
-
+    end;
   finally
     FCS.Leave;
   end;
@@ -210,7 +204,6 @@ begin
 
   FCS.Enter;
   try
-
     //Получить список дорожек по группе
     List := TsgeMusicPlayerTrackList.Create(False);
     GetTrackListByGroup(List, Group);
@@ -224,7 +217,6 @@ begin
 
     //Запомнить текущую дорожку
     FCurrentTrack := Result;
-
   finally
     FCS.Leave;
   end;
@@ -240,36 +232,34 @@ begin
 
   FCS.Enter;
   try
-
     //Получить список дорожек по группе
     List := TsgeMusicPlayerTrackList.Create(False);
     GetTrackListByGroup(List, Group);
 
     if List.Count > 0 then
-      begin
+    begin
       //Определить индекс текущей дорожки
       if FCurrentTrack <> nil then
-        begin
-        //Узнать индекс текущей дорожки
-        Idx := List.IndexOfName(FCurrentTrack.Name);
-        end else Idx := -1;
+        Idx := List.IndexOfName(FCurrentTrack.Name)
+      else
+        Idx := -1;
 
       //Перейти на следующую дорожку
       Inc(Idx);
 
       //Если это последний, то с начала
-      if Idx > List.Count - 1 then Idx := 0;
+      if Idx > List.Count - 1 then
+        Idx := 0;
 
       //Вернуть следующую дорожку
       Result := List.Item[Idx];
-      end;
+    end;
 
     //Почистить память
     List.Free;
 
     //Запомнить текущую дорожку
     FCurrentTrack := Result;
-
   finally
     FCS.Leave;
   end;
@@ -285,36 +275,34 @@ begin
 
   FCS.Enter;
   try
-
     //Получить список дорожек по группе
     List := TsgeMusicPlayerTrackList.Create(False);
     GetTrackListByGroup(List, Group);
 
     if List.Count > 0 then
-      begin
+    begin
       //Определить индекс текущей дорожки
       if FCurrentTrack <> nil then
-        begin
-        //Узнать индекс текущей дорожки
-        Idx := List.IndexOfName(FCurrentTrack.Name);
-        end else Idx := -1;
+        Idx := List.IndexOfName(FCurrentTrack.Name)
+      else
+        Idx := -1;
 
       //Перейти на следующую дорожку
       Dec(Idx);
 
       //Если это первый, то с конца
-      if Idx < 0 then Idx := List.Count - 1;
+      if Idx < 0 then
+        Idx := List.Count - 1;
 
       //Вернуть следующую дорожку
       Result := List.Item[Idx];
-      end;
+    end;
 
     //Почистить память
     List.Free;
 
     //Запомнить текущую дорожку
     FCurrentTrack := Result;
-
   finally
     FCS.Leave;
   end;
@@ -336,7 +324,8 @@ begin
     FCurrentTrack := nil;
 
     //Проверить на затирание дорожек
-    if Mode = mptlmReplace then Clear;
+    if Mode = mptlmReplace then
+      Clear;
 
     //Разобрать строку на список
     List := TsgeStringList.Create;
@@ -348,36 +337,39 @@ begin
 
     //Просмотреть список
     for i := 0 to List.Count - 1 do
-      begin
+    begin
       //Обрезать лишние символы
       s := sgeTrim(List.Part[i]);
 
       //Пустая строка
-      if s = '' then Continue;
+      if s = '' then
+        Continue;
 
       //Проверка на заметку
-      if s[1] = Comment then Continue;
+      if s[1] = Comment then
+        Continue;
 
       //Разобрать строку на части
       Line.FromString(s);
 
       //Проверить наличие 2 частей
-      if Line.Count < 2 then Continue;
+      if Line.Count < 2 then
+        Continue;
 
       //Подготовить данные
       Name := sgeTrim(Line.Part[0]);
       FileName := BasePath + sgeTrim(Line.Part[1]);
       Group := '';
-      if Line.Count > 2 then Group := sgeTrim(Line.Part[2]);
+      if Line.Count > 2 then
+        Group := sgeTrim(Line.Part[2]);
 
       //Добавить дорожку
       Add(TsgeMusicPLayerTrack.Create(Name, FileName, Group));
-      end;
+    end;
 
     //Почистить память
     Line.Free;
     List.Free;
-
   finally
     FCS.Leave;
   end;
@@ -400,7 +392,6 @@ begin
 
   Stream := TsgeMemoryStream.Create;
   try
-
     //Прочитать файл
     try
       Stream.LoadFromFile(FileName);
@@ -410,7 +401,6 @@ begin
 
     //Загрузить
     FromMemoryStream(Stream, sgeExtractFilePath(FileName), Mode);
-
   finally
     Stream.Free;
   end;

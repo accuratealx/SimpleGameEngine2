@@ -45,7 +45,8 @@ implementation
 
 procedure TsgeGUIToggleSpriteButton.SetToggle(AToggle: Boolean);
 begin
-  if FToggle = AToggle then Exit;
+  if FToggle = AToggle then
+    Exit;
 
   FToggle := AToggle;
   Repaint;

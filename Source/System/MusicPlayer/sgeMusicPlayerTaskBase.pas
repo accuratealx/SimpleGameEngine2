@@ -117,7 +117,7 @@ begin
 
   //Начало задачи
   if FState = tsBegin then
-    begin
+  begin
     //Установить количество срабатываний
     FTimes := GetTimes;
 
@@ -129,22 +129,23 @@ begin
 
     //Следующий шаг
     FState := tsWork;
-    end;
+  end;
 
   //Процесс
   if FState = tsWork then
-    begin
+  begin
     Work;
     Dec(FTimes);
-    if FTimes = 0 then FState := tsEnd;
-    end;
+    if FTimes = 0 then
+      FState := tsEnd;
+  end;
 
   //Конец задачи
   if FState = tsEnd then
-    begin
+  begin
     Stop;
     FDone := True;
-    end;
+  end;
 end;
 
 

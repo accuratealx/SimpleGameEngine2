@@ -76,11 +76,11 @@ begin
       SGE.ExtFileSystem.ReadFile(FTrack.FileName, Ms);
     except
       on E: EsgeException do
-        begin
+      begin
         SGE.ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_CantPlay, '', E.Message));
         FDone := True;
         Exit;
-        end;
+      end;
     end;
 
     //Залить в буфер
@@ -94,7 +94,6 @@ begin
 
     //Добавить событие старта
     SGE.EventManager.Publish(TsgeEventMusicPlayerStart.Create(Event_MusicPLayerStart, FTrack));
-
   finally
     Ms.Free;
   end;

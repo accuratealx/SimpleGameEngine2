@@ -59,7 +59,8 @@ uses
 
 procedure TsgeGUIPropertySpriteRect.SetMode(AMode: TsgeGUIPropertySpriteRectMode);
 begin
-  if FMode = AMode then Exit;
+  if FMode = AMode then
+    Exit;
 
   FMode := AMode;
   UpdateParent;
@@ -105,14 +106,19 @@ begin
   //Mode
   ParamName := Prefix + 'Mode';
   if Parameters.Exist[ParamName] then
-    begin
+  begin
     s := LowerCase(Parameters.GetValue(ParamName, ''));
     case s of
-      'full': FMode := srmFull;
-      'tile': FMode := srmTile;
-      'rect': FMode := srmRect;
+      'full':
+        FMode := srmFull;
+
+      'tile':
+        FMode := srmTile;
+
+      'rect':
+        FMode := srmRect;
     end;
-    end;
+  end;
 
   //Tile
   FTile.LoadParameters(Parameters, Prefix + 'Tile.');
@@ -125,9 +131,14 @@ end;
 function TsgeGUIPropertySpriteRectExt.GetRect(Sprite: TsgeGraphicSprite): TsgeFloatRect;
 begin
   case FMode of
-    srmFull: Result := sgeGetFloatRect(0, 1, 1, 0);
-    srmTile: Result := sgeGetTextureTileRect(Sprite, FTile.X, FTile.Y);
-    srmRect: Result := sgeGetTextureRect(Sprite, FRect.Rect);
+    srmFull:
+      Result := sgeGetFloatRect(0, 1, 1, 0);
+
+    srmTile:
+      Result := sgeGetTextureTileRect(Sprite, FTile.X, FTile.Y);
+
+    srmRect:
+      Result := sgeGetTextureRect(Sprite, FRect.Rect);
   end;
 end;
 

@@ -52,7 +52,8 @@ implementation
 
 procedure TsgeGUIPropertyVerticalAlign.SetMode(AMode: TsgeGUIPropertyVerticalAlignMode);
 begin
-  if FMode = AMode then Exit;
+  if FMode = AMode then
+    Exit;
 
   FMode := AMode;
   UpdateParent;
@@ -61,7 +62,8 @@ end;
 
 procedure TsgeGUIPropertyVerticalAlign.SetOffset(AOffset: Integer);
 begin
-  if FOffset = AOffset then Exit;
+  if FOffset = AOffset then
+    Exit;
 
   FOffset := AOffset;
   UpdateParent;
@@ -84,29 +86,44 @@ begin
   //Mode
   ParamName := Prefix + 'Mode';
   if Parameters.Exist[ParamName] then
-    begin
+  begin
     s := LowerCase(Parameters.GetValue(ParamName, ''));
     case s of
-      'top'   : FMode := vamTop;
-      'middle': FMode := vamMiddle;
-      'bottom': FMode := vamBottom;
-      'user'  : FMode := vamUser;
+      'top':
+        FMode := vamTop;
+
+      'middle':
+        FMode := vamMiddle;
+
+      'bottom':
+        FMode := vamBottom;
+
+      'user':
+      FMode := vamUser;
     end;
-    end;
+  end;
 
   //Offset
   ParamName := Prefix + 'Offset';
-  if Parameters.Exist[ParamName] then FOffset := Parameters.GetValue(ParamName, 0);
+  if Parameters.Exist[ParamName] then
+    FOffset := Parameters.GetValue(ParamName, 0);
 end;
 
 
 function TsgeGUIPropertyVerticalAlignExt.GetOffset(BaseHeight, ElementHeight: Integer): Single;
 begin
   case FMode of
-    vamTop    : Result := 0;
-    vamMiddle : Result := BaseHeight / 2 - ElementHeight / 2;
-    vamBottom : Result := BaseHeight - ElementHeight;
-    vamUser   : Result := FOffset;
+    vamTop:
+      Result := 0;
+
+    vamMiddle:
+      Result := BaseHeight / 2 - ElementHeight / 2;
+
+    vamBottom:
+      Result := BaseHeight - ElementHeight;
+
+    vamUser:
+      Result := FOffset;
   end;
 end;
 

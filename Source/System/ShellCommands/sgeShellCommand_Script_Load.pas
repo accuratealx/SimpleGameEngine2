@@ -69,7 +69,9 @@ begin
   fn := Command.Part[1];
 
   //Определить имя скрипта
-  if Command.Count > 2 then SName := Command.Part[2] else
+  if Command.Count > 2 then
+    SName := Command.Part[2]
+  else
     SName := sgeChangeFileExt(sgeExtractFileName(Fn), '');
 
   //Прочитать файл

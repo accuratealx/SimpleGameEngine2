@@ -171,6 +171,7 @@ procedure TsgeWindow.SetStyle(AStyle: TsgeWindowStyle);
 begin
   if FStyle = AStyle then
     Exit;
+
   FStyle := AStyle;
   ChangeWindowStyle;
 end;
@@ -179,9 +180,14 @@ end;
 procedure TsgeWindow.SetViewMode(AMode: TsgeWindowViewMode);
 begin
   case AMode of
-    wvmNormal: Restore;
-    wvmMinimize: Minimize;
-    wvmMaximize: Maximize;
+    wvmNormal:
+      Restore;
+
+    wvmMinimize:
+      Minimize;
+
+    wvmMaximize:
+      Maximize;
   end;
 end;
 
@@ -252,6 +258,7 @@ begin
     i := 0
   else
     i := GetDesktopWindow;
+
   Windows.SetWindowLongPtr(FHandle, GWLP_HWNDPARENT, i);
 end;
 
@@ -318,6 +325,7 @@ var
 begin
   if AClip = FClipCursor then
     Exit;
+
   FClipCursor := AClip;
   if FClipCursor then
   begin

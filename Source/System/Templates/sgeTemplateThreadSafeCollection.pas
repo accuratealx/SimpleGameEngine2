@@ -58,12 +58,10 @@ function TsgeTemplateThreadSafeCollection.GetItem(Index: Integer): T;
 begin
   FCS.Enter;
   try
-
     if (Index < 0) or (Index > FCount - 1) then
       raise EsgeException.Create(_UNITNAME, Err_IndexOutOfBounds, sgeIntToStr(Index));
 
     Result := FList[Index];
-
   finally
     FCS.Leave;
   end;
@@ -94,7 +92,8 @@ var
 begin
   FCS.Enter;
   try
-    if FCount = 0 then Exit;
+    if FCount = 0 then
+      Exit;
 
     //Удалить память объектов
     if FFreeObjects then
@@ -117,11 +116,9 @@ procedure TsgeTemplateThreadSafeCollection.Add(Item: T);
 begin
   FCS.Enter;
   try
-
     Inc(FCount);
     SetLength(FList, FCount);
     FList[FCount - 1] := Item;
-
   finally
     FCS.Leave;
   end;
@@ -134,13 +131,13 @@ var
 begin
   FCS.Enter;
   try
-
     c := Fcount - 1;
     if (Index < 0) or (Index > FCount) then
       raise EsgeException.Create(_UNITNAME, Err_IndexOutOfBounds, sgeIntToStr(Index));
 
     //Удалить память объекта
-    if FFreeObjects then TObject(FList[Index]).Free;
+    if FFreeObjects then
+      TObject(FList[Index]).Free;
 
     //Сдвинуть хвост
     for i := Index to c - 1 do
@@ -151,7 +148,6 @@ begin
 
     //Уменьшить счётчик
     Dec(FCount);
-
   finally
     FCS.Leave;
   end;
@@ -164,7 +160,6 @@ var
 begin
   FCS.Enter;
   try
-
     if (Index < 0) or (Index > FCount) then
       raise EsgeException.Create(_UNITNAME, Err_IndexOutOfBounds, sgeIntToStr(Index));
 
@@ -178,11 +173,11 @@ begin
 
     //Увеличить счётчик
     Inc(FCount);
-
   finally
     FCS.Leave;
   end;
 end;
+
 
 
 end.

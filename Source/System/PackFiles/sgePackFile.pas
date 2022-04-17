@@ -19,15 +19,15 @@ interface
 type
   //Заголовок файла
   TsgePackFileHeader = packed record
-    hLabel: array[0..6] of Byte;      //7b Метка
-    hVersion: Byte;                   //1b Версия архива
+    hLabel: array[0..6] of Byte;                                    //7b Метка
+    hVersion: Byte;                                                 //1b Версия архива
   end;
 
 
   //Заголовок блока
   TsgePackFileBlock = packed record
-    TotalSize: Cardinal;              //4b Размер блока
-    NameSize: Word;                   //2b Длина имени файла
+    TotalSize: Cardinal;                                            //4b Размер блока
+    NameSize: Word;                                                 //2b Длина имени файла
   end;
 
 

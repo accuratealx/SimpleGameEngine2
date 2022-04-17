@@ -225,7 +225,8 @@ begin
   Result := -1;
 
   for i := 0 to FCount - 1 do
-    if FList[i] = Element then Exit(i);
+    if FList[i] = Element then
+      Exit(i);
 end;
 
 
@@ -240,7 +241,8 @@ var
   Idx: Integer;
 begin
   Idx := IndexOf(Element);
-  if Idx <> -1 then Delete(Idx);
+  if Idx <> -1 then
+    Delete(Idx);
 end;
 
 
@@ -256,44 +258,50 @@ const
 var
   Mode: Byte;
 begin
-  if FParent = AParent then Exit;
+  if FParent = AParent then
+    Exit;
 
   Mode := 0;
-  if (FParent = nil) and (AParent <> nil) then Mode := mNewParent;
-  if (FParent <> nil) and (AParent <> nil) then Mode := mChangeParent;
-  if (FParent <> nil) and (AParent = nil) then Mode := mClearParent;
+  if (FParent = nil) and (AParent <> nil) then
+    Mode := mNewParent;
+  if (FParent <> nil) and (AParent <> nil) then
+    Mode := mChangeParent;
+  if (FParent <> nil) and (AParent = nil) then
+    Mode := mClearParent;
 
   case Mode of
     mNewParent:
-      begin
+    begin
       FParent := AParent;
       FParent.AddChild(Self);
-      end;
+    end;
 
     mChangeParent:
-      begin
+    begin
       FParent.DeleteChild(Self);
       FParent := AParent;
       AParent.AddChild(Self);
-      end;
+    end;
 
     mClearParent:
-      begin
+    begin
       FParent.DeleteChild(Self);
       FParent := nil;
-      end;
+    end;
   end;
 end;
 
 
 procedure TsgeGUIElement.SetEnable(AEnabled: Boolean);
 begin
-  if FEnable = AEnabled then Exit;
+  if FEnable = AEnabled then
+    Exit;
 
   FEnable := AEnabled;
 
   //Если элемент неактивен, то убрать монопольный захват мыши
-  if not FEnable then SGE.ExtGUI.ReleaseMouse(Self);
+  if not FEnable then
+    SGE.ExtGUI.ReleaseMouse(Self);
 
   Repaint;
 end;
@@ -301,12 +309,16 @@ end;
 
 procedure TsgeGUIElement.SetVisible(AVisible: Boolean);
 begin
-  if FVisible = AVisible then Exit;
+  if FVisible = AVisible then
+    Exit;
 
   FVisible := AVisible;
 
   //Выполнить обработчик
-  if FVisible then Handler_Show else Handler_Hide;
+  if FVisible then
+    Handler_Show
+  else
+    Handler_Hide;
 
   Notify([esRepaintParent]);
 end;
@@ -314,17 +326,22 @@ end;
 
 procedure TsgeGUIElement.SetFocused(AFocused: Boolean);
 begin
-  if FFocused = AFocused then Exit;
+  if FFocused = AFocused then
+    Exit;
 
   FFocused := AFocused;
 
-  if FFocused then Handler_SetFocus else Handler_LostFocus;
+  if FFocused then
+    Handler_SetFocus
+  else
+    Handler_LostFocus;
 end;
 
 
 procedure TsgeGUIElement.SetAutoSize(AAutoSize: Boolean);
 begin
-  if FAutoSize = AAutoSize then Exit;
+  if FAutoSize = AAutoSize then
+    Exit;
 
   FAutoSize := AAutoSize;
 
@@ -346,98 +363,114 @@ end;
 
 procedure TsgeGUIElement.Handler_Show;
 begin
-  if Assigned(FOnShow) then FOnShow(Self);
+  if Assigned(FOnShow) then
+    FOnShow(Self);
 end;
 
 
 procedure TsgeGUIElement.Handler_Hide;
 begin
-  if Assigned(FOnHide) then FOnHide(Self);
+  if Assigned(FOnHide) then
+    FOnHide(Self);
 end;
 
 
 procedure TsgeGUIElement.Handler_SetFocus;
 begin
-  if Assigned(FOnSetFocus) then FOnSetFocus(Self);
+  if Assigned(FOnSetFocus) then
+    FOnSetFocus(Self);
 end;
 
 
 procedure TsgeGUIElement.Handler_LostFocus;
 begin
-  if Assigned(FOnLostFocus) then FOnLostFocus(Self);
+  if Assigned(FOnLostFocus) then
+    FOnLostFocus(Self);
 end;
 
 
 procedure TsgeGUIElement.Handler_MouseClick(Mouse: TsgeEventMouse);
 begin
-  if Assigned(FOnMouseClick) then FOnMouseClick(Self, Mouse);
+  if Assigned(FOnMouseClick) then
+    FOnMouseClick(Self, Mouse);
 end;
 
 
 procedure TsgeGUIElement.Handler_MouseDoubleClick(Mouse: TsgeEventMouse);
 begin
-  if Assigned(FOnMouseDoubleClick) then FOnMouseDoubleClick(Self, Mouse);
+  if Assigned(FOnMouseDoubleClick) then
+    FOnMouseDoubleClick(Self, Mouse);
 end;
 
 
 procedure TsgeGUIElement.Handler_MouseMove(Mouse: TsgeEventMouse);
 begin
-  if Assigned(FOnMouseMove) then FOnMouseMove(Self, Mouse);
+  if Assigned(FOnMouseMove) then
+    FOnMouseMove(Self, Mouse);
 end;
 
 
 procedure TsgeGUIElement.Handler_MouseDown(Mouse: TsgeEventMouse);
 begin
-  if Assigned(FOnMouseDown) then FOnMouseDown(Self, Mouse);
+  if Assigned(FOnMouseDown) then
+    FOnMouseDown(Self, Mouse);
 end;
 
 
 procedure TsgeGUIElement.Handler_MouseUp(Mouse: TsgeEventMouse);
 begin
-  if Assigned(FOnMouseUp) then FOnMouseUp(Self, Mouse);
+  if Assigned(FOnMouseUp) then
+    FOnMouseUp(Self, Mouse);
 end;
 
 
 procedure TsgeGUIElement.Handler_MouseLeave(Mouse: TsgeEventMouse);
 begin
-  if Assigned(FOnMouseLeave) then FOnMouseLeave(Self, Mouse);
+  if Assigned(FOnMouseLeave) then
+    FOnMouseLeave(Self, Mouse);
 end;
 
 
 procedure TsgeGUIElement.Handler_MouseEnter(Mouse: TsgeEventMouse);
 begin
-  if Assigned(FOnMouseEnter) then FOnMouseEnter(Self, Mouse);
+  if Assigned(FOnMouseEnter) then
+    FOnMouseEnter(Self, Mouse);
 end;
 
 
 procedure TsgeGUIElement.Handler_MouseScroll(Mouse: TsgeEventMouse);
 begin
-  if Assigned(FOnMouseScroll) then FOnMouseScroll(Self, Mouse);
+  if Assigned(FOnMouseScroll) then
+    FOnMouseScroll(Self, Mouse);
 end;
 
 
 procedure TsgeGUIElement.Handler_ButtonDown(Keyboard: TsgeEventKeyboard);
 begin
-  if Assigned(FOnButtonDown) then FOnButtonDown(Self, Keyboard);
+  if Assigned(FOnButtonDown) then
+    FOnButtonDown(Self, Keyboard);
 end;
 
 
 procedure TsgeGUIElement.Handler_ButtonUp(Keyboard: TsgeEventKeyboard);
 begin
-  if Assigned(FOnButtonUp) then FOnButtonUp(Self, Keyboard);
+  if Assigned(FOnButtonUp) then
+    FOnButtonUp(Self, Keyboard);
 end;
 
 
 procedure TsgeGUIElement.Handler_ButtonChar(Keyboard: TsgeEventKeyboardChar);
 begin
-  if Assigned(FOnButtonChar) then FOnButtonChar(Self, Keyboard);
+  if Assigned(FOnButtonChar) then
+    FOnButtonChar(Self, Keyboard);
 end;
 
 
 procedure TsgeGUIElement.GetPrefferedSize(var NewWidth, NewHeight: Integer);
 begin
   //Проверить авторазмер
-  if FAutoSize then CalculateAutosize(NewWidth, NewHeight);
+  if FAutoSize then
+    CalculateAutosize(NewWidth, NewHeight);
 
   //Проверить ограничение размера
   FConstrains.Check(NewWidth, NewHeight);
@@ -463,14 +496,15 @@ end;
 procedure TsgeGUIElement.Notify(Action: TsgeGUIElementState);
 begin
   //Если запрет обновления, то выход
-  if esLockUpdate in FState then Exit;
+  if esLockUpdate in FState then
+    Exit;
 
   //Добавить новое состояние
   FState := FState + Action;
 
   //Поправить размеры
   if esCorrectSize in FState then
-    begin
+  begin
     Exclude(FState, esCorrectSize);                                 //Удалить флаг изменения размеров
     GetPrefferedSize(FWidth, FHeight);                              //Взять предпочтительный размер
 
@@ -479,22 +513,23 @@ begin
       FCanvas.SetSize(FWidth, FHeight);
 
     Include(FState, esRepaint);                                     //Дбавить флаг перерисовки
-    end;
+  end;
 
   //Проверить перерисовку
   if esRepaint in FState then
-    begin
+  begin
     Exclude(FState, esRepaint);                                     //Удалить флаг собственной отрисовки
     Draw;                                                           //Перерисовать себя и элементы
     Include(FState, esRepaintParent);                               //Добавить флаг для родителя о перерисовке
-    end;
+  end;
 
   //Проверить перерисовку родителя
   if esRepaintParent in FState then
-    begin
+  begin
     Exclude(FState, esRepaintParent);                               //Удалить флаг перерисовки родителя
-    if FParent <> nil then FParent.Repaint;                         //Перерисовать родителя
-    end;
+    if FParent <> nil then                                          //Перерисовать родителя
+      FParent.Repaint;
+  end;
 end;
 
 
@@ -504,20 +539,21 @@ var
   El: TsgeGUIElement;
 begin
   for i := 0 to FChildList.Count - 1 do
-    begin
+  begin
     //Указатель на элемент
     El := FChildList.Item[i];
 
     //Пропуск невидимых
-    if not El.Visible then Continue;
+    if not El.Visible then
+      Continue;
 
     //Вывод спрайтов детей
     with SGE.ExtGraphic.Graphic do
-      begin
+    begin
       ResetDrawOptions;
       DrawSprite(El.Left, El.Top, El.Width, El.Height, El.Canvas);
-      end;
     end;
+  end;
 end;
 
 
@@ -534,16 +570,25 @@ begin
   //ClickButton
   ParamName := 'ClickButton';
   if Data.Exist[ParamName] then
-    begin
+  begin
     s := LowerCase(Data.GetValue(ParamName, ''));
     case s of
-      'left'  : FClickButton := mbLeft;
-      'middle': FClickButton := mbMiddle;
-      'right' : FClickButton := mbRight;
-      'extra1': FClickButton := mbExtra1;
-      'extra2': FClickButton := mbExtra2;
+      'left':
+        FClickButton := mbLeft;
+
+      'middle':
+        FClickButton := mbMiddle;
+
+      'right':
+        FClickButton := mbRight;
+
+      'extra1':
+        FClickButton := mbExtra1;
+
+      'extra2':
+        FClickButton := mbExtra2;
     end;
-    end;
+  end;
 
   //Constrains
   FConstrains.LoadParameters(Data, 'Constrains.');
@@ -568,7 +613,8 @@ begin
 
   //Visible
   ParamName := 'Visible';
-  if Data.Exist[ParamName] then SetVisible(Data.GetValue(ParamName, True));
+  if Data.Exist[ParamName] then
+    SetVisible(Data.GetValue(ParamName, True));
 end;
 
 
@@ -588,7 +634,7 @@ end;
 procedure TsgeGUIElement.GraphicPrepare;
 begin
   with SGE.ExtGraphic.Graphic do
-    begin
+  begin
     PushAttrib;
     Reset;
     ResetDrawOptions;
@@ -599,19 +645,19 @@ begin
     //Стереть фон холста
     BGColor := cTransparentWhite;
     EraseBG;
-    end;
+  end;
 end;
 
 
 procedure TsgeGUIElement.GraphicRestore;
 begin
   with SGE.ExtGraphic.Graphic do
-    begin
+  begin
     RenderSprite := nil;
     RenderPlace := grpScreen;
     PopAttrib;
     Finish;
-    end;
+  end;
 end;
 
 
@@ -629,7 +675,8 @@ end;
 
 procedure TsgeGUIElement.SetLeft(ALeft: Integer);
 begin
-  if FLeft = ALeft then Exit;
+  if FLeft = ALeft then
+    Exit;
 
   FLeft := ALeft;
 
@@ -639,7 +686,8 @@ end;
 
 procedure TsgeGUIElement.SetTop(ATop: Integer);
 begin
-  if FTop = ATop then Exit;
+  if FTop = ATop then
+    Exit;
 
   FTop := ATop;
 
@@ -649,8 +697,10 @@ end;
 
 procedure TsgeGUIElement.SetWidth(AWidth: Integer);
 begin
-  if AWidth <= 0 then AWidth := 0;
-  if FWidth = AWidth then Exit;
+  if AWidth <= 0 then
+    AWidth := 0;
+  if FWidth = AWidth then
+    Exit;
 
   FWidth := AWidth;
 
@@ -660,8 +710,10 @@ end;
 
 procedure TsgeGUIElement.SetHeight(AHeight: Integer);
 begin
-  if AHeight <= 0 then AHeight := 0;
-  if FHeight = AHeight then Exit;
+  if AHeight <= 0 then
+    AHeight := 0;
+  if FHeight = AHeight then
+    Exit;
 
   FHeight := AHeight;
 
@@ -671,7 +723,8 @@ end;
 
 procedure TsgeGUIElement.SetDrawAfter(ADrawAfter: TsgeGUIProcEvent);
 begin
-  if FOnDrawBefore = ADrawAfter then Exit;
+  if FOnDrawBefore = ADrawAfter then
+    Exit;
 
   FOnDrawAfter := ADrawAfter;
   Repaint;
@@ -680,7 +733,8 @@ end;
 
 procedure TsgeGUIElement.SetDrawBefore(ADrawBefore: TsgeGUIProcEvent);
 begin
-  if FOnDrawBefore = ADrawBefore then Exit;
+  if FOnDrawBefore = ADrawBefore then
+    Exit;
 
   FOnDrawBefore := ADrawBefore;
   Repaint;
@@ -696,8 +750,10 @@ begin
   H := ABounds.Y2 - ABounds.Y1;
 
   //Поправить размеры
-  if W <= 0 then W := 0;
-  if H <= 0 then H := 0;
+  if W <= 0 then
+    W := 0;
+  if H <= 0 then
+    H := 0;
 
   //Запомнить положение и размеры
   FLeft := Round(ABounds.X1);
@@ -713,12 +769,12 @@ end;
 function TsgeGUIElement.GetBounds: TsgeFloatRect;
 begin
   with Result do
-    begin
+  begin
     X1 := FLeft;
     Y1 := FTop;
     X2 := FLeft + FWidth;
     Y2 := FTop + FHeight;
-    end;
+  end;
 end;
 
 
@@ -796,7 +852,8 @@ end;
 
 procedure TsgeGUIElement.DeleteChild;
 begin
-  if FChildList.Count = 0 then Exit;
+  if FChildList.Count = 0 then
+    Exit;
 
   //Удалить объекты
   while FChildList.Count > 0 do
@@ -816,44 +873,46 @@ procedure TsgeGUIElement.MouseHandler(EventType: TsgeGUIElementMouseEventType; M
 
 begin
   //Если неактивен, то выход
-  if not FVisible or not FEnable then Exit;
+  if not FVisible or not FEnable then
+    Exit;
 
   //Обработать событие
   case EventType of
     emetDown:
-      begin
+    begin
       if PointInElement(Mouse.Pos) then
-        begin
+      begin
         //Запомнить флаг нажатия, если нужная кнопка
         if FClickButton in Mouse.MouseButtons then
-          begin
+        begin
           FPressed := True;
           SGE.ExtGUI.MouseCapture(Self);
-          end;
+        end;
 
         //Обработчик нажатия мыши
         Handler_MouseDown(Mouse);
 
         //Установить фокус ввода
         SGE.ExtGUI.SetFocus(Self);
-        end;
       end;
+    end;
 
     emetUp:
-      begin
+    begin
       if PointInElement(Mouse.Pos) then
-        begin
+      begin
         //Событие OnClick
-        if FPressed then Handler_MouseClick(Mouse);
+        if FPressed then
+          Handler_MouseClick(Mouse);
 
         //Обработчик отпускания мыши
         Handler_MouseUp(Mouse);
-        end;
+      end;
 
       //Сбросить флаг нажатия
       FPressed := False;
       SGE.ExtGUI.ReleaseMouse(Self);
-      end;
+    end;
 
     emetMove:
        Handler_MouseMove(Mouse);
@@ -862,7 +921,8 @@ begin
       Handler_MouseScroll(Mouse);
 
     emetDblClick:
-      if PointInElement(Mouse.Pos) then Handler_MouseDoubleClick(Mouse);
+      if PointInElement(Mouse.Pos) then
+        Handler_MouseDoubleClick(Mouse);
 
     emetLeave:
       Handler_MouseLeave(Mouse);
@@ -876,13 +936,19 @@ end;
 function TsgeGUIElement.ButtonHandler(EventType: TsgeGUIElementButtonEventType; Keyboard: TsgeEventBase): Boolean;
 begin
   Result := False;
-  if not FVisible or not FEnable then Exit;
+  if not FVisible or not FEnable then
+    Exit;
   Result := True;
 
   case EventType of
-    ebetDown: Handler_ButtonDown(TsgeEventKeyboard(Keyboard));
-    ebetUp  : Handler_ButtonUp(TsgeEventKeyboard(Keyboard));
-    ebetChar: Handler_ButtonChar(TsgeEventKeyboardChar(Keyboard));
+    ebetDown:
+      Handler_ButtonDown(TsgeEventKeyboard(Keyboard));
+
+    ebetUp:
+      Handler_ButtonUp(TsgeEventKeyboard(Keyboard));
+
+    ebetChar:
+      Handler_ButtonChar(TsgeEventKeyboardChar(Keyboard));
   end;
 end;
 
@@ -902,29 +968,36 @@ end;
 procedure TsgeGUIElement.Draw;
 begin
   //Проверка на запрет обновления
-  if (esLockUpdate in FState) then Exit;
+  if (esLockUpdate in FState) then
+    Exit;
 
   //Подготовить графику
   GraphicPrepare;
 
   //Вывод перед отрисовкой детей
-  if Assigned(FOnDrawBefore) then FOnDrawBefore(Self) else DrawBefore;
+  if Assigned(FOnDrawBefore) then
+    FOnDrawBefore(Self)
+  else
+    DrawBefore;
 
   //Отрисовка детей
   DrawChild;
 
   //Вывод после отрисовки детей
-  if Assigned(FOnDrawAfter) then FOnDrawAfter(Self) else DrawAfter;
+  if Assigned(FOnDrawAfter) then
+    FOnDrawAfter(Self)
+  else
+    DrawAfter;
 
   //Вывод рамки элемента
   {$IfDef SGE_GUI_Bounds}
   with SGE.ExtGraphic.Graphic do
-    begin
+  begin
     ColorBlend := False;
     PoligonMode := gpmLine;
     Color := cRed;
     DrawRect(1, 0, FWidth - 1, FHeight - 1);
-    end;
+  end;
   {$EndIf}
 
   //Восстановить графику
@@ -941,10 +1014,10 @@ var
 begin
   Data := TsgeSimpleParameters.Create;
   try
-
     //Определить имя секции
     SectionName := GetParameterSectionName;
-    if FStyle <> '' then SectionName := SectionName + Separartor + FStyle;
+    if FStyle <> '' then
+      SectionName := SectionName + Separartor + FStyle;
 
     //Разобрать секцию на параметры
     Data.FromString(Params.GetSection(SectionName));
@@ -957,7 +1030,6 @@ begin
 
     //Разблокировать отрисовку
     UnLockUpdate;
-
   finally
     Data.Free;
   end;
@@ -980,11 +1052,11 @@ begin
   Result := sgeGetIntPoint(FLeft, FTop);
 
   if FParent <> nil then
-    begin
+  begin
     Pt := FParent.GetGlobalPos;
     Result.X := Result.X + Pt.X;
     Result.Y := Result.Y + Pt.Y;
-    end;
+  end;
 end;
 
 

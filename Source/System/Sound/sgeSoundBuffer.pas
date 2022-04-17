@@ -86,12 +86,18 @@ function TsgeSoundBuffer.GetDept: TsgeSoundBufferDept;
 var
   i: TALint;
 begin
-  alGetBufferi(FHandle, AL_BITS, @i); //Запросить глубину
+  //Запросить глубину
+  alGetBufferi(FHandle, AL_BITS, @i);
 
   case i of
-    8 : Result := sbd8Bit;
-    16: Result := sbd16Bit;
-    else Result := sbd0Bit;
+    8:
+      Result := sbd8Bit;
+
+    16:
+      Result := sbd16Bit;
+
+    else
+      Result := sbd0Bit;
   end;
 end;
 
@@ -100,12 +106,18 @@ function TsgeSoundBuffer.GetChannels: TsgeSoundBufferChannes;
 var
   i: TALint;
 begin
-  alGetBufferi(FHandle, AL_CHANNELS, @i); //Запросить каналы
+  //Запросить каналы
+  alGetBufferi(FHandle, AL_CHANNELS, @i);
 
   case i of
-    1: Result := sbcMono;
-    2: Result := sbcStereo;
-    else Result := sbcZero;
+    1:
+      Result := sbcMono;
+
+    2:
+      Result := sbcStereo;
+
+    else
+      Result := sbcZero;
   end;
 end;
 
@@ -134,16 +146,26 @@ var
 begin
   //Определить длину в семплах
   case GetChannels of
-    sbcMono   : Chnl := 1;
-    sbcStereo : Chnl := 2;
-    else Chnl := 0;
+    sbcMono:
+      Chnl := 1;
+
+    sbcStereo:
+      Chnl := 2;
+
+    else
+      Chnl := 0;
   end;
 
   //Определить глубину
   case GetDept of
-    sbd8Bit : Bits := 8;
-    sbd16Bit: Bits := 16;
-    else Bits := 0;
+    sbd8Bit:
+      Bits := 8;
+
+    sbd16Bit:
+      Bits := 16;
+
+    else
+      Bits := 0;
   end;
 
   //Результат
@@ -169,8 +191,11 @@ begin
   //Запросить буфер
   alGenBuffers(1, @FHandle);
   case alGetError() of
-    AL_INVALID_VALUE: raise EsgeException.Create(_UNITNAME, Err_ReachedBufferLimit);
-    AL_OUT_OF_MEMORY: raise EsgeException.Create(_UNITNAME, Err_OutOfMemory);
+    AL_INVALID_VALUE:
+      raise EsgeException.Create(_UNITNAME, Err_ReachedBufferLimit);
+
+    AL_OUT_OF_MEMORY:
+      raise EsgeException.Create(_UNITNAME, Err_OutOfMemory);
   end;
 end;
 
@@ -210,9 +235,12 @@ end;
 
 destructor TsgeSoundBuffer.Destroy;
 begin
-  if not Assigned(alDeleteBuffers) then Exit; //Проверить указатель на функцию
+  //Проверить указатель на функцию
+  if not Assigned(alDeleteBuffers) then
+    Exit;
 
-  alDeleteBuffers(1, @FHandle);               //Удалить буфер
+  //Удалить буфер
+  alDeleteBuffers(1, @FHandle);
 end;
 
 
@@ -230,9 +258,14 @@ begin
 
       //Проверить на ошибки
       case alGetError() of
-        AL_INVALID_VALUE: raise EsgeException.Create(_UNITNAME, Err_WrongDataFormat);
-        AL_OUT_OF_MEMORY: raise EsgeException.Create(_UNITNAME, Err_OutOfMemory);
-        AL_INVALID_ENUM : raise EsgeException.Create(_UNITNAME, Err_UnsupportedFormat);
+        AL_INVALID_VALUE:
+          raise EsgeException.Create(_UNITNAME, Err_WrongDataFormat);
+
+        AL_OUT_OF_MEMORY:
+          raise EsgeException.Create(_UNITNAME, Err_OutOfMemory);
+
+        AL_INVALID_ENUM:
+          raise EsgeException.Create(_UNITNAME, Err_UnsupportedFormat);
       end;
 
     except
@@ -263,7 +296,6 @@ begin
       on E: EsgeException do
         raise EsgeException.Create(_UNITNAME, Err_CantReadFile, FileName, E.Message);
     end;
-
   finally
     Ms.Free;
   end;

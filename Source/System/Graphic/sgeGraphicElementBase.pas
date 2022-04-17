@@ -69,7 +69,9 @@ end;
 
 procedure TsgeGraphicElementBase.Update;
 begin
-  if FNeedUpdate = True then Exit;
+  if FNeedUpdate = True then
+    Exit;
+
   FNeedUpdate := True;
 end;
 

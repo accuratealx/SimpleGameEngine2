@@ -28,15 +28,15 @@ type
   TsgeExtensionWindow = class(TsgeExtensionBase)
   private
     //Классы
-    FWindow: TsgeWindow;                                                                //Класс окна
-    FThread: TsgeThread;                                                                //Поток выборки собщений системы
+    FWindow: TsgeWindow;                                            //Класс окна
+    FThread: TsgeThread;                                            //Поток выборки собщений системы
 
     //Параметры
-    FFullScreen: Boolean;                                                               //Флаг работы в полный экран
-    FShowCursor: Boolean;                                                               //Флаг отображения курсора
+    FFullScreen: Boolean;                                           //Флаг работы в полный экран
+    FShowCursor: Boolean;                                           //Флаг отображения курсора
 
     //Вспомогательные параметры
-    FMouseOut: Boolean;                                                                 //Мышь за границей окна
+    FMouseOut: Boolean;                                             //Мышь за границей окна
     FWindowStyle: TsgeWindowStyle;
 
     //Свойства
@@ -44,16 +44,16 @@ type
     procedure SetShowCursor(AShow: Boolean);
 
     //Методы потока
-    procedure CreateWindow;                                                             //Создать окно
-    procedure DestroyWindow;                                                            //Удалить окно
-    procedure MessageProc;                                                              //Опрос событий
-    procedure ChangeCursor;                                                             //Изменить видимость курсора
+    procedure CreateWindow;                                         //Создать окно
+    procedure DestroyWindow;                                        //Удалить окно
+    procedure MessageProc;                                          //Опрос событий
+    procedure ChangeCursor;                                         //Изменить видимость курсора
 
     //Вспомогательные функции
-    procedure SetMouseTrackEvent;                                                       //Запустить слежение за нестандартными сообщениями мыши
-    function  GetKeyboardButtons: TsgeKeyboardButtons;                                  //Определить функциональные клавиши
-    function  GetMouseButtons(wParam: WPARAM): TsgeMouseButtons;                        //Узнать нажатые клавиши
-    function  GetMouseScrollDelta(wParam: WPARAM): Integer;                             //Определить значение прокрутки
+    procedure SetMouseTrackEvent;                                   //Запустить слежение за нестандартными сообщениями мыши
+    function  GetKeyboardButtons: TsgeKeyboardButtons;              //Определить функциональные клавиши
+    function  GetMouseButtons(wParam: WPARAM): TsgeMouseButtons;    //Узнать нажатые клавиши
+    function  GetMouseScrollDelta(wParam: WPARAM): Integer;         //Определить значение прокрутки
 
     function  WndProc(hWnd: HWND; Msg: UINT; wParam: WPARAM; lParam: LPARAM): LRESULT;
   protected
@@ -96,19 +96,21 @@ end;
 
 procedure TsgeExtensionWindow.SetFullScreen(AFullScreen: Boolean);
 begin
-  if FFullScreen = AFullScreen then Exit;
+  if FFullScreen = AFullScreen then
+    Exit;
 
   FFullScreen := AFullScreen;
   if FFullScreen then
-    begin
+  begin
     FWindowStyle := FWindow.Style;
     FWindow.Style := [];
     FWindow.Maximize;
-    end
-    else begin
+  end
+  else
+  begin
     FWindow.Restore;
     FWindow.Style := FWindowStyle;
-    end;
+  end;
 end;
 
 
@@ -138,7 +140,6 @@ begin
 
     //Запустить механизм отлова уходы мыши с формы
     SetMouseTrackEvent;
-
   except
   end;
 end;
@@ -164,38 +165,42 @@ var
   wp: WPARAM;
 begin
   if GetMessage(Message, 0, 0, 0) then
-    begin
+  begin
     //Отослать событие WM_Char
     TranslateMessage(Message);
 
     //Поправить сообщение
     case Message.message of
       WM_LBUTTONUP:
-        begin
+      begin
         Message.wParam := MK_LBUTTON;
         DispatchMessage(Message);
-        end;
+      end;
 
       WM_MBUTTONUP:
-        begin
+      begin
         Message.wParam := MK_MBUTTON;
         DispatchMessage(Message);
-        end;
+      end;
 
       WM_RBUTTONUP:
-        begin
+      begin
         Message.wParam := MK_RBUTTON;
         DispatchMessage(Message);
-        end;
+      end;
 
       WM_XBUTTONUP:
-        begin
-        if SmallInt(HIWORD(Message.wParam)) = 1 then Message.wParam := MK_XBUTTON1 else Message.wParam := MK_XBUTTON2;
+      begin
+        if SmallInt(HIWORD(Message.wParam)) = 1 then
+          Message.wParam := MK_XBUTTON1
+        else
+          Message.wParam := MK_XBUTTON2;
+
         DispatchMessage(Message);
-        end;
+      end;
 
       WM_MOUSEWHEEL:
-        begin
+      begin
         //Положение курсора относительно экрана, а не окна
         Pos.X := GET_X_LPARAM(Message.lParam);
         Pos.Y := GET_Y_LPARAM(Message.lParam);
@@ -203,10 +208,10 @@ begin
         Message.lParam := MAKELPARAM(Pos.X, Pos.Y);
 
         DispatchMessage(Message);
-        end;
+      end;
 
       WM_MOUSELEAVE:
-        begin
+      begin
         //Положение курсора относительно экрана, а не окна
         Windows.GetCursorPos(Pos);
         Windows.ScreenToClient(Message.hwnd, Pos);
@@ -214,19 +219,30 @@ begin
 
         //Кнопки мыши
         wp := 0;
-        if (GetKeyState(VK_LBUTTON) and $8000) <> 0 then wp := wp or MK_LBUTTON;
-        if (GetKeyState(VK_RBUTTON) and $8000) <> 0 then wp := wp or MK_RBUTTON;
-        if (GetKeyState(VK_MBUTTON) and $8000) <> 0 then wp := wp or MK_MBUTTON;
-        if (GetKeyState(VK_XBUTTON1) and $8000) <> 0 then wp := wp or MK_XBUTTON1;
-        if (GetKeyState(VK_XBUTTON2) and $8000) <> 0 then wp := wp or MK_XBUTTON2;
+        if (GetKeyState(VK_LBUTTON) and $8000) <> 0 then
+          wp := wp or MK_LBUTTON;
+
+        if (GetKeyState(VK_RBUTTON) and $8000) <> 0 then
+          wp := wp or MK_RBUTTON;
+
+        if (GetKeyState(VK_MBUTTON) and $8000) <> 0 then
+          wp := wp or MK_MBUTTON;
+
+        if (GetKeyState(VK_XBUTTON1) and $8000) <> 0 then
+          wp := wp or MK_XBUTTON1;
+
+        if (GetKeyState(VK_XBUTTON2) and $8000) <> 0 then
+          wp := wp or MK_XBUTTON2;
+
         Message.wParam := wp;
 
         DispatchMessage(Message);
-        end;
+      end;
 
-      else DispatchMessage(Message);
+      else
+        DispatchMessage(Message);
     end;
-    end;
+  end;
 end;
 
 
@@ -240,30 +256,56 @@ procedure TsgeExtensionWindow.SetMouseTrackEvent;
 var
   tme: TTrackMouseEvent;
 begin
-  tme.cbSize := SizeOf(TTrackMouseEvent); //Размер структуры
-  tme.hwndTrack := FWindow.Handle;        //Хэндл окна
-  tme.dwFlags := TME_LEAVE;               //Вызывать сообщение только ухода мыши
-  tme.dwHoverTime := 0;                   //Таймаут нависания (в моём случае не используется)
-  TrackMouseEvent(tme);                   //Запустить КОСТЫЛЬ!
+  tme.cbSize := SizeOf(TTrackMouseEvent);                           //Размер структуры
+  tme.hwndTrack := FWindow.Handle;                                  //Хэндл окна
+  tme.dwFlags := TME_LEAVE;                                         //Вызывать сообщение только ухода мыши
+  tme.dwHoverTime := 0;                                             //Таймаут нависания (в моём случае не используется)
+  TrackMouseEvent(tme);                                             //Запустить КОСТЫЛЬ!
 end;
 
 
 function TsgeExtensionWindow.GetKeyboardButtons: TsgeKeyboardButtons;
 begin
   Result := [];
-  if (GetKeyState(VK_LMENU) and $8000) <> 0 then Include(Result, kbLeftAlt);
-  if (GetKeyState(VK_RMENU) and $8000) <> 0 then Include(Result, kbRightAlt);
-  if (GetKeyState(VK_LCONTROL) and $8000) <> 0 then Include(Result, kbLeftCtrl);
-  if (GetKeyState(VK_RCONTROL) and $8000) <> 0 then Include(Result, kbRightCtrl);
-  if (GetKeyState(VK_LSHIFT) and $8000) <> 0 then Include(Result, kbLeftShift);
-  if (GetKeyState(VK_RSHIFT) and $8000) <> 0 then Include(Result, kbRightShift);
-  if (GetKeyState(VK_CAPITAL) and 1) = 1 then Include(Result, kbCapsLock);
-  if (GetKeyState(VK_NUMLOCK) and 1) = 1 then Include(Result, kbNumLock);
-  if (GetKeyState(VK_SCROLL) and 1) = 1 then Include(Result, kbScrollLock);
-  if (GetKeyState(VK_INSERT) and 1) = 1 then Include(Result, kbInsert);
-  if (kbLeftAlt in Result) or (kbRightAlt in Result) then Include(Result, kbAlt);
-  if (kbLeftCtrl in Result) or (kbRightCtrl in Result) then Include(Result, kbCtrl);
-  if (kbLeftShift in Result) or (kbRightShift in Result) then Include(Result, kbShift);
+
+  if (GetKeyState(VK_LMENU) and $8000) <> 0 then
+    Include(Result, kbLeftAlt);
+
+  if (GetKeyState(VK_RMENU) and $8000) <> 0 then
+    Include(Result, kbRightAlt);
+
+  if (GetKeyState(VK_LCONTROL) and $8000) <> 0 then
+    Include(Result, kbLeftCtrl);
+
+  if (GetKeyState(VK_RCONTROL) and $8000) <> 0 then
+    Include(Result, kbRightCtrl);
+
+  if (GetKeyState(VK_LSHIFT) and $8000) <> 0 then
+    Include(Result, kbLeftShift);
+
+  if (GetKeyState(VK_RSHIFT) and $8000) <> 0 then
+    Include(Result, kbRightShift);
+
+  if (GetKeyState(VK_CAPITAL) and 1) = 1 then
+    Include(Result, kbCapsLock);
+
+  if (GetKeyState(VK_NUMLOCK) and 1) = 1 then
+    Include(Result, kbNumLock);
+
+  if (GetKeyState(VK_SCROLL) and 1) = 1 then
+    Include(Result, kbScrollLock);
+
+  if (GetKeyState(VK_INSERT) and 1) = 1 then
+    Include(Result, kbInsert);
+
+  if (kbLeftAlt in Result) or (kbRightAlt in Result) then
+    Include(Result, kbAlt);
+
+  if (kbLeftCtrl in Result) or (kbRightCtrl in Result) then
+    Include(Result, kbCtrl);
+
+  if (kbLeftShift in Result) or (kbRightShift in Result) then
+    Include(Result, kbShift);
 end;
 
 
@@ -271,11 +313,21 @@ function TsgeExtensionWindow.GetMouseButtons(wParam: WPARAM): TsgeMouseButtons;
 begin
   Result := [];
   wParam := LOWORD(wParam);
-  if (wParam and MK_LBUTTON) = MK_LBUTTON then Include(Result, mbLeft);
-  if (wParam and MK_MBUTTON) = MK_MBUTTON then Include(Result, mbMiddle);
-  if (wParam and MK_RBUTTON) = MK_RBUTTON then Include(Result, mbRight);
-  if (wParam and MK_XBUTTON1) = MK_XBUTTON1 then Include(Result, mbExtra1);
-  if (wParam and MK_XBUTTON2) = MK_XBUTTON2 then Include(Result, mbExtra2);
+
+  if (wParam and MK_LBUTTON) = MK_LBUTTON then
+    Include(Result, mbLeft);
+
+  if (wParam and MK_MBUTTON) = MK_MBUTTON then
+    Include(Result, mbMiddle);
+
+  if (wParam and MK_RBUTTON) = MK_RBUTTON then
+    Include(Result, mbRight);
+
+  if (wParam and MK_XBUTTON1) = MK_XBUTTON1 then
+    Include(Result, mbExtra1);
+
+  if (wParam and MK_XBUTTON2) = MK_XBUTTON2 then
+    Include(Result, mbExtra2);
 end;
 
 
@@ -305,12 +357,16 @@ begin
 
 
     WM_SHOWWINDOW:
-      if wParam = 1 then EventManager.Publish(TsgeEventBase.Create(Event_WindowShow)) else
+      if wParam = 1 then
+        EventManager.Publish(TsgeEventBase.Create(Event_WindowShow))
+      else
         EventManager.Publish(TsgeEventBase.Create(Event_WindowHide));
 
 
     WM_ACTIVATE:
-      if wParam = WA_INACTIVE then EventManager.Publish(TsgeEventBase.Create(Event_WindowDeActivate)) else
+      if wParam = WA_INACTIVE then
+        EventManager.Publish(TsgeEventBase.Create(Event_WindowDeActivate))
+      else
         EventManager.Publish(TsgeEventBase.Create(Event_WindowActivate));
 
 
@@ -343,32 +399,32 @@ begin
 
 
     WM_MOUSEMOVE:
-      begin
+    begin
       //Координаты курсора
       CursorPos.X := GET_X_LPARAM(lParam);
       CursorPos.Y := GET_Y_LPARAM(lParam);
 
       //Обработать возврат мыши на форму
       if FMouseOut then
-        begin
+      begin
         FMouseOut := False;
         SetMouseTrackEvent;
         EventManager.Publish(TsgeEventMouse.Create(Event_MouseEnter, CursorPos.X, CursorPos.Y, GetMouseButtons(wParam), GetKeyboardButtons));
-        end;
+      end;
 
       EventManager.Publish(TsgeEventMouse.Create(Event_MouseMove, CursorPos.X, CursorPos.Y, GetMouseButtons(wParam), GetKeyboardButtons));
-      end;
+    end;
 
 
     WM_MOUSELEAVE:
-      begin
+    begin
       FMouseOut := True;
       EventManager.Publish(TsgeEventMouse.Create(Event_MouseLeave, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), GetMouseButtons(wParam), GetKeyboardButtons));
-      end;
+    end;
 
 
     WM_SIZE:
-      begin
+    begin
       EventManager.Publish(TsgeEventWindowSize.Create(Event_WindowSize, LOWORD(lParam), HIWORD(lParam)));
 
       case wParam of
@@ -376,7 +432,7 @@ begin
         SIZE_MINIMIZED: EventManager.Publish(TsgeEventBase.Create(Event_WindowMinimize));
         SIZE_MAXIMIZED: EventManager.Publish(TsgeEventBase.Create(Event_WindowMaximize));
       end;
-      end;
+    end;
 
 
     {WM_SIZING:
@@ -389,10 +445,12 @@ begin
     WM_ERASEBKGND: ;
 
     WM_SYSCOMMAND:
-      if wParam <> SC_KEYMENU then Result := DefWindowProc(hWnd, Msg, wParam, lParam);  //Убирает пиканье при нажатии Alt
+      //Убирает пиканье при нажатии Alt
+      if wParam <> SC_KEYMENU then
+        Result := DefWindowProc(hWnd, Msg, wParam, lParam);
 
-
-    else Result := DefWindowProc(hWnd, Msg, wParam, lParam);
+    else
+      Result := DefWindowProc(hWnd, Msg, wParam, lParam);
   end;
 end;
 
@@ -432,13 +490,13 @@ begin
   FThread.LoopProc := nil;
 
   if FWindow <> nil then
-    begin
+  begin
     //Послать окну сообщение что бы поток вышел из GetMessage
     PostMessage(FWindow.Handle, WM_NULL, 0, 0);
 
     //Уничтожить окно
     FThread.RunProcAndWait(@DestroyWindow);
-    end;
+  end;
 
   //Уничтожить поток
   FThread.Free;

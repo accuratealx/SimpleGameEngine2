@@ -69,9 +69,7 @@ function TsgeExtensionList.GetCount: Integer;
 begin
   FCS.Enter;
   try
-
     Result := Length(FList);
-
   finally
     FCS.Leave;
   end;
@@ -82,12 +80,10 @@ function TsgeExtensionList.GetItem(Index: Integer): TsgeExtensionBase;
 begin
   FCS.Enter;
   try
-
     if (Index < 0) or (Index > GetCount - 1) then
       raise EsgeException.Create(_UNITNAME, Err_IndexOutOfBounds, sgeIntToStr(Index));
 
     Result := FList[Index];
-
   finally
     FCS.Leave;
   end;
@@ -117,10 +113,7 @@ begin
   c := Length(FList) - 1;
   for i := 0 to c do
     if LowerCase(FList[i].Name) = Name then
-      begin
-      Result := i;
-      Break;
-      end;
+      Exit(i);
 end;
 
 
@@ -130,12 +123,10 @@ var
 begin
   FCS.Enter;
   try
-
     //Уничтожить расширения
     c := GetCount - 1;
     for i := c downto 0 do
       FList[i].Free;
-
   finally
     FCS.Leave;
   end;
@@ -148,11 +139,9 @@ var
 begin
   FCS.Enter;
   try
-
     c := GetCount;
     SetLength(FList, c + 1);
     FList[c] := Extension;
-
   finally
     FCS.Leave;
   end;
@@ -190,7 +179,8 @@ begin
   Result := nil;
 
   Idx := IndexOf(Name);
-  if Idx <> -1 then Result := FList[Idx];
+  if Idx <> -1 then
+    Result := FList[Idx];
 end;
 
 

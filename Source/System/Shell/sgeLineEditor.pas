@@ -20,12 +20,12 @@ uses
 type
   TsgeLineEditor = class
   private
-    FLine: String;                                            //Строка введённого текста
-    FStopChars: String;                                       //Стоповые символы
-    FCursorPos: Integer;                                      //Текущее положение курсора
-    FSelecting: Boolean;                                      //Режим выделения
-    FSelectBeginPos: Integer;                                 //Начальное положение курсора выделения
-    FSelectEndPos: Integer;                                   //Конечное положение курсора выделения
+    FLine: String;                                                  //Строка введённого текста
+    FStopChars: String;                                             //Стоповые символы
+    FCursorPos: Integer;                                            //Текущее положение курсора
+    FSelecting: Boolean;                                            //Режим выделения
+    FSelectBeginPos: Integer;                                       //Начальное положение курсора выделения
+    FSelectEndPos: Integer;                                         //Конечное положение курсора выделения
 
     procedure GetSelectionIdxAndSize(out Idx, Size: Integer);
     procedure InsertString(APos: Integer; Str: String);
@@ -79,7 +79,11 @@ uses
 
 procedure TsgeLineEditor.GetSelectionIdxAndSize(out Idx, Size: Integer);
 begin
-  if SelectEndPos > FSelectBeginPos then Idx := FSelectBeginPos else Idx := FSelectEndPos;
+  if SelectEndPos > FSelectBeginPos then
+    Idx := FSelectBeginPos
+  else
+    Idx := FSelectEndPos;
+
   Size := GetSelectCount;
 end;
 
@@ -89,8 +93,11 @@ var
   c: Integer;
 begin
   c := Length(FLine);
-  if APos < 0 then APos := 0;
-  if APos > c then APos := c;
+  if APos < 0 then
+    APos := 0;
+  if APos > c then
+    APos := c;
+
   Insert(Str, FLine, APos + 1);
   FCursorPos := APos + Length(Str);
 end;
@@ -104,10 +111,7 @@ begin
   c := Length(FStopChars);
   for i := 1 to c do
     if Chr = FStopChars[i] then
-      begin
-      Result := True;
-      Break;
-      end;
+      Exit(True);
 end;
 
 
@@ -130,8 +134,11 @@ var
   c: Integer;
 begin
   c := Length(FLine);
-  if APos < 0 then APos := 0;
-  if APos > c then APos := c;
+  if APos < 0 then
+    APos := 0;
+  if APos > c then
+    APos := c;
+
   FCursorPos := APos;
 end;
 
@@ -141,8 +148,11 @@ var
   c: Integer;
 begin
   c := Length(FLine);
-  if APos < 0 then APos := 0;
-  if APos > c then APos := c;
+  if APos < 0 then
+    APos := 0;
+  if APos > c then
+    APos := c;
+
   FSelectBeginPos := APos;
 end;
 
@@ -152,8 +162,11 @@ var
   c: Integer;
 begin
   c := Length(FLine);
-  if APos < 0 then APos := 0;
-  if APos > c then APos := c;
+  if APos < 0 then
+    APos := 0;
+  if APos > c then
+    APos := c;
+
   FSelectEndPos := APos;
 end;
 
@@ -164,18 +177,16 @@ var
   chr1, chr2: Char;
 begin
   Result := 0;
-  if FCursorPos < 1 then Exit;
+  if FCursorPos < 1 then
+    Exit;
 
   for i := FCursorPos - 1 downto 2 do
-    begin
+  begin
     chr1 := FLine[i];
     chr2 := FLine[i - 1];
     if IsStopChar(chr1) and (chr1 <> chr2) then
-      begin
-      Result := i;
-      Break;
-      end;
-    end;
+      Exit(i);
+  end;
 end;
 
 
@@ -187,32 +198,36 @@ begin
   c := Length(FLine);
   Result := c;
   Dec(c);
-  if FCursorPos > c then Exit;
+  if FCursorPos > c then
+    Exit;
 
   for i := FCursorPos + 2 to c do
-    begin
+  begin
     chr1 := FLine[i];
     chr2 := FLine[i + 1];
     if IsStopChar(chr1) and (chr1 <> chr2) then
-      begin
-      Result := i - 1;
-      Break;
-      end;
-    end;
+      Exit(i - 1);
+  end;
 end;
 
 
 procedure TsgeLineEditor.CursorToBegin;
 begin
   FCursorPos := 0;
-  if FSelecting then FSelectEndPos := FCursorPos else ClearSelection;
+  if FSelecting then
+    FSelectEndPos := FCursorPos
+  else
+    ClearSelection;
 end;
 
 
 procedure TsgeLineEditor.CursorToEnd;
 begin
   FCursorPos := Length(FLine);
-  if FSelecting then FSelectEndPos := FCursorPos else ClearSelection;
+  if FSelecting then
+    FSelectEndPos := FCursorPos
+  else
+    ClearSelection;
 end;
 
 
@@ -222,43 +237,58 @@ var
 begin
   c := Length(FLine);
   Inc(FCursorPos);
-  if FCursorPos > c then FCursorPos := c;
-  if FSelecting then FSelectEndPos := FCursorPos else ClearSelection;
+  if FCursorPos > c then
+    FCursorPos := c;
+  if FSelecting then
+    FSelectEndPos := FCursorPos
+  else
+    ClearSelection;
 end;
 
 
 procedure TsgeLineEditor.CursorToLeft;
 begin
   Dec(FCursorPos);
-  if FCursorPos < 0 then FCursorPos := 0;
-  if FSelecting then FSelectEndPos := FCursorPos else ClearSelection;
+  if FCursorPos < 0 then
+    FCursorPos := 0;
+  if FSelecting then
+    FSelectEndPos := FCursorPos
+  else
+    ClearSelection;
 end;
 
 
 procedure TsgeLineEditor.CursorToRightStopChar;
 begin
   FCursorPos := GetRightStopCharIndex;
-  if FSelecting then FSelectEndPos := FCursorPos else ClearSelection;
+  if FSelecting then
+    FSelectEndPos := FCursorPos
+  else
+    ClearSelection;
 end;
 
 
 procedure TsgeLineEditor.CursorToLeftStopChar;
 begin
   FCursorPos := GetLeftStopCharIndex;
-  if FSelecting then FSelectEndPos := FCursorPos else ClearSelection;
+  if FSelecting then
+    FSelectEndPos := FCursorPos
+  else
+    ClearSelection;
 end;
 
 
 procedure TsgeLineEditor.DeleteSymbolRight;
 begin
-  if FCursorPos > Length(FLine) then Exit;
+  if FCursorPos > Length(FLine) then
+    Exit;
 
   if not FSelecting and (SelectCount <> 0) then
-    begin
+  begin
     DeleteSelection;
     ClearSelection;
     Exit;
-    end;
+  end;
 
   Delete(FLine, FCursorPos + 1, 1);
 end;
@@ -266,14 +296,15 @@ end;
 
 procedure TsgeLineEditor.DeleteSymbolLeft;
 begin
-  if FCursorPos < 1 then Exit;
+  if FCursorPos < 1 then
+    Exit;
 
   if not FSelecting and (SelectCount <> 0) then
-    begin
+  begin
     DeleteSelection;
     ClearSelection;
     Exit;
-    end;
+  end;
 
   Delete(FLine, FCursorPos, 1);
   Dec(FCursorPos);
@@ -283,11 +314,11 @@ end;
 procedure TsgeLineEditor.DeleteSymbolRightToStopChar;
 begin
   if not FSelecting and (SelectCount <> 0) then
-    begin
+  begin
     DeleteSelection;
     ClearSelection;
     Exit;
-    end;
+  end;
 
   Delete(FLine, FCursorPos + 1, GetRightStopCharIndex - FCursorPos);
 end;
@@ -298,11 +329,11 @@ var
   Idx: Integer;
 begin
   if not FSelecting and (SelectCount <> 0) then
-    begin
+  begin
     DeleteSelection;
     ClearSelection;
     Exit;
-    end;
+  end;
 
   Idx := GetLeftStopCharIndex;
   Delete(FLine, Idx + 1, FCursorPos - Idx);
@@ -315,7 +346,9 @@ var
   Idx, Count: Integer;
   s: String;
 begin
-  if SelectCount = 0 then Exit;
+  if SelectCount = 0 then
+    Exit;
+
   GetSelectionIdxAndSize(Idx, Count);
   s := Copy(FLine, Idx + 1, Count);
   sgeCopyToClipboard(s);
@@ -330,7 +363,9 @@ begin
   DeleteSelection;
   s := '';
   Idx := sgeCopyFromClipboard(s);
-  if Idx <> 0 then Exit;
+  if Idx <> 0 then
+    Exit;
+
   InsertString(FCursorPos, GetClearString(s));
   ClearSelection;
 end;
@@ -341,7 +376,9 @@ var
   Idx, Count: Integer;
   s: String;
 begin
-  if SelectCount = 0 then Exit;
+  if SelectCount = 0 then
+    Exit;
+
   GetSelectionIdxAndSize(Idx, Count);
   s := Copy(FLine, Idx + 1, Count);
   DeleteSelection;
@@ -355,7 +392,8 @@ var
 begin
   Result := '';
   for i := 1 to Length(Str) do
-    if Ord(Str[i]) >= 32 then Result := Result + Str[i];
+    if Ord(Str[i]) >= 32 then
+      Result := Result + Str[i];
 end;
 
 
@@ -384,7 +422,9 @@ procedure TsgeLineEditor.DeleteSelection;
 var
   Idx, Count: Integer;
 begin
-  if SelectCount = 0 then Exit;
+  if SelectCount = 0 then
+    Exit;
+
   GetSelectionIdxAndSize(Idx, Count);
   Delete(FLine, Idx + 1, Count);
   FCursorPos := Idx;
@@ -397,20 +437,35 @@ var
   c: Integer;
 begin
   c := Length(FLine);
-  if APos < 0 then APos := 0;
-  if APos > c then APos := c;
+  if APos < 0 then
+    APos := 0;
+  if APos > c then
+    APos := c;
+
   Result := Copy(FLine, 1, APos);
 end;
 
 
 procedure TsgeLineEditor.ProcessChar(Chr: Char; KeyboardButtons: TsgeKeyboardButtons);
 begin
-  if kbCtrl in KeyboardButtons then Exit;             //Выход, функциональные клавиши
-  if not FSelecting then DeleteSelection;             //Удалить выделенное перед вводом
-  if Chr < #32 then Exit;                             //Выход, если непечатаемые символы
-  if kbShift in KeyboardButtons then DeleteSelection; //Кнопка нажимается вместе с Shift, удалить выделенное
+  //Выход, функциональные клавиши
+  if kbCtrl in KeyboardButtons then
+    Exit;
 
-  InsertString(FCursorPos, Chr);                      //Вставить символ
+  //Удалить выделенное перед вводом
+  if not FSelecting then
+    DeleteSelection;
+
+  //Выход, если непечатаемые символы
+  if Chr < #32 then
+    Exit;
+
+  //Кнопка нажимается вместе с Shift, удалить выделенное
+  if kbShift in KeyboardButtons then
+    DeleteSelection;
+
+  //Вставить символ
+  InsertString(FCursorPos, Chr);
 end;
 
 
@@ -418,24 +473,64 @@ procedure TsgeLineEditor.ProcessKey(Key: Byte; KeyboardButtons: TsgeKeyboardButt
 begin
   //Проверить режим выделения
   if (kbShift in KeyboardButtons) then
-    begin
-    FSelecting := True;                       //Включить выделение
-    if SelectCount = 0 then ClearSelection;   //Если ничего не выделено, поправить положение
-    end else FSelecting := False;             //Иначе отключить
+  begin
+    FSelecting := True;                                             //Включить выделение
+    if SelectCount = 0 then ClearSelection;                         //Если ничего не выделено, поправить положение
+  end
+  else
+    FSelecting := False;                                            //Иначе отключить
 
   //Обработать кнопку
   case Key of
-    keyHome   : CursorToBegin;
-    keyEnd    : CursorToEnd;
-    keyLeft   : if (kbCtrl in KeyboardButtons) then CursorToLeftStopChar else CursorToLeft;
-    keyRight  : if (kbCtrl in KeyboardButtons) then CursorToRightStopChar else CursorToRight;
-    keyDelete : if (kbCtrl in KeyboardButtons) then DeleteSymbolRightToStopChar else DeleteSymbolRight;
-    keyBack   : if (kbCtrl in KeyboardButtons) then DeleteSymbolLeftToStopChar else DeleteSymbolLeft;
-    keyY      : if (kbCtrl in KeyboardButtons) then SetLine('');
-    keyA      : if (kbCtrl in KeyboardButtons) then SelectAll;
-    keyX      : if (kbCtrl in KeyboardButtons) then ClipboardCut;
-    keyC      : if (kbCtrl in KeyboardButtons) then ClipboardCopy;
-    keyV      : if (kbCtrl in KeyboardButtons) then ClipboardPaste;
+    keyHome:
+      CursorToBegin;
+
+    keyEnd:
+      CursorToEnd;
+
+    keyLeft:
+      if (kbCtrl in KeyboardButtons) then
+        CursorToLeftStopChar
+      else
+        CursorToLeft;
+
+    keyRight:
+      if (kbCtrl in KeyboardButtons) then
+        CursorToRightStopChar
+      else
+      CursorToRight;
+
+    keyDelete:
+      if (kbCtrl in KeyboardButtons) then
+        DeleteSymbolRightToStopChar
+      else
+        DeleteSymbolRight;
+
+    keyBack:
+      if (kbCtrl in KeyboardButtons) then
+        DeleteSymbolLeftToStopChar
+      else
+        DeleteSymbolLeft;
+
+    keyY:
+      if (kbCtrl in KeyboardButtons) then
+        SetLine('');
+
+    keyA:
+      if (kbCtrl in KeyboardButtons) then
+        SelectAll;
+
+    keyX:
+      if (kbCtrl in KeyboardButtons) then
+        ClipboardCut;
+
+    keyC:
+      if (kbCtrl in KeyboardButtons) then
+      ClipboardCopy;
+
+    keyV:
+      if (kbCtrl in KeyboardButtons) then
+      ClipboardPaste;
   end;
 end;
 

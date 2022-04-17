@@ -98,11 +98,15 @@ begin
 
   //Добавить команду
   Count := FCommands.Count - 1;
-  if Count < 0 then FCommands.Add(Cmd) else
-    if LowerCase(FCommands.Part[Count]) <> LowerCase(Cmd) then FCommands.Add(Cmd);
+  if Count < 0 then
+    FCommands.Add(Cmd)
+  else
+    if LowerCase(FCommands.Part[Count]) <> LowerCase(Cmd) then
+      FCommands.Add(Cmd);
 
   //Проверить на выход за максимальное количество
-  if FCommands.Count > FMaxLines then FCommands.Delete(0);
+  if FCommands.Count > FMaxLines then
+    FCommands.Delete(0);
 
   //Поправить индекс
   FCurrentIndex := FCommands.Count;
@@ -160,10 +164,13 @@ end;
 function TsgeCommandHistory.GetPreviousCommand: String;
 begin
   Result := '';
-  if FCommands.Count = 0 then Exit;
+  if FCommands.Count = 0 then
+    Exit;
 
   Dec(FCurrentIndex);
-  if FCurrentIndex < 0 then FCurrentIndex := 0;
+  if FCurrentIndex < 0 then
+    FCurrentIndex := 0;
+
   Result := FCommands.Part[FCurrentIndex];
 end;
 
@@ -174,12 +181,16 @@ var
 begin
   Result := '';
   c := FCommands.Count;
-  if c = 0 then Exit;
+  if c = 0 then
+    Exit;
 
   Inc(FCurrentIndex);
-  if FCurrentIndex >= c then FCurrentIndex := c - 1;
+  if FCurrentIndex >= c then
+    FCurrentIndex := c - 1;
+
   Result := FCommands.Part[FCurrentIndex];
 end;
+
 
 
 end.

@@ -21,14 +21,14 @@ uses
 type
   TsgeGraphicAnimation = class
   private
-    FResources: TsgeResourceList;         //Указатель на таблицу ресурсов
+    FResources: TsgeResourceList;                                   //Указатель на таблицу ресурсов
 
-    FFileName: String;                    //имя файла
-    FFrames: TsgeGraphicAnimationFrames;  //Массив кадров
-    FNeedFreeFrames: Boolean;             //Флаг освобождения памяти, если загрузка из файла
-    FCurrentFrameIndex: Cardinal;         //Текущий индекс кадра
-    FLastChangeTime: Int64;               //Время последней смены кадра
-    FTimeOffset: Integer;                 //Смещение времени для всех кадров
+    FFileName: String;                                              //имя файла
+    FFrames: TsgeGraphicAnimationFrames;                            //Массив кадров
+    FNeedFreeFrames: Boolean;                                       //Флаг освобождения памяти, если загрузка из файла
+    FCurrentFrameIndex: Cardinal;                                   //Текущий индекс кадра
+    FLastChangeTime: Int64;                                         //Время последней смены кадра
+    FTimeOffset: Integer;                                           //Смещение времени для всех кадров
 
     FWidth: Integer;
     FHeight: Integer;
@@ -93,17 +93,20 @@ begin
   Process;
 
   //Вернуть запись о кадре
-  if FFrames.Count = 0 then Result := DefaultAnimationFrame else Result := FFrames.Frame[FCurrentFrameIndex];
+  if FFrames.Count = 0 then
+    Result := DefaultAnimationFrame
+  else
+    Result := FFrames.Frame[FCurrentFrameIndex];
 end;
 
 
 procedure TsgeGraphicAnimation.SetFrames(AFrames: TsgeGraphicAnimationFrames);
 begin
   if FNeedFreeFrames then
-    begin
+  begin
     FNeedFreeFrames := False;
     FFrames.Free;
-    end;
+  end;
   FFrames := AFrames;
   Reset;
 end;
@@ -128,15 +131,17 @@ procedure TsgeGraphicAnimation.Process;
 var
   CurrentTime: Int64;
 begin
-  if FFrames.Count < 1 then Exit;
+  if FFrames.Count < 1 then
+    Exit;
 
   CurrentTime := sgeGetTickCount;
   if CurrentTime - FLastChangeTime - FTimeOffset >= FFrames.Frame[FCurrentFrameIndex].Time then
-    begin
+  begin
     FLastChangeTime := CurrentTime;
     Inc(FCurrentFrameIndex);
-    if FCurrentFrameIndex >= FFrames.Count then FCurrentFrameIndex := 0;
-    end;
+    if FCurrentFrameIndex >= FFrames.Count then
+      FCurrentFrameIndex := 0;
+  end;
 end;
 
 
@@ -177,7 +182,8 @@ end;
 
 destructor TsgeGraphicAnimation.Destroy;
 begin
-  if FNeedFreeFrames then FFrames.Free;
+  if FNeedFreeFrames then
+    FFrames.Free;
 end;
 
 
@@ -196,22 +202,20 @@ end;
 procedure TsgeGraphicAnimation.FromMemoryStream(Stream: TsgeMemoryStream);
 begin
   try
-
     case FNeedFreeFrames of
       True:
-        begin
+      begin
         FFrames.FromMemoryStream(Stream);
         Reset;
-        end;
+      end;
 
       False:
-        begin
+      begin
         FNeedFreeFrames := True;
         FFrames := TsgeGraphicAnimationFrames.Create(Stream, FResources);
         Reset;
-        end;
+      end;
     end;
-
   except
     on E: EsgeException do
       raise EsgeException.Create(_UNITNAME, Err_CantLoadFromStream, '', E.Message);
@@ -222,22 +226,20 @@ end;
 procedure TsgeGraphicAnimation.LoadFromFile(FileName: String);
 begin
   try
-
     case FNeedFreeFrames of
       True:
-        begin
+      begin
         FFrames.LoadFromFile(FileName);
         Reset;
-        end;
+      end;
 
       False:
-        begin
+      begin
         FNeedFreeFrames := True;
         FFrames := TsgeGraphicAnimationFrames.Create(FileName, FResources);
         Reset;
-        end;
+      end;
     end;
-
   except
     on E: EsgeException do
       raise EsgeException.Create(_UNITNAME, Err_CantReadFile, FileName, E.Message);

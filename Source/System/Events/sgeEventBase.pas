@@ -17,10 +17,10 @@ interface
 
 const
   //Приоритеты подписок событий
-  Event_Priority_Max = $FFFF;
-  Event_Priority_Shell = $FFFE;
+  Event_Priority_Max        = $FFFF;
+  Event_Priority_Shell      = $FFFE;
   Event_Priority_KeyCommand = $FFFD;
-  Event_Priority_GUI = $FFFC;
+  Event_Priority_GUI        = $FFFC;
 
 
 type

@@ -68,12 +68,14 @@ uses
 
 procedure TsgeGUISpriteButton.SetSprite(ASprite: TsgeGraphicSprite);
 begin
-  if FSprite = ASprite then Exit;
+  if FSprite = ASprite then
+    Exit;
 
   FSprite := ASprite;
 
   //Спрайт всегда должен быть
-  if FSprite = nil then FSprite := SGE.ExtResourceList.Default.Sprite;
+  if FSprite = nil then
+    FSprite := SGE.ExtResourceList.Default.Sprite;
 
   Repaint;
 end;
@@ -140,7 +142,10 @@ end;
 
 procedure TsgeGUISpriteButton.SetEnable(AEnabled: Boolean);
 begin
-  if AEnabled then FButtonState := bsNormal else FButtonState := bsDisable;
+  if AEnabled then
+    FButtonState := bsNormal
+  else
+    FButtonState := bsDisable;
 
   inherited SetEnable(AEnabled);
 end;
@@ -148,7 +153,10 @@ end;
 
 procedure TsgeGUISpriteButton.Handler_MouseEnter(Mouse: TsgeEventMouse);
 begin
-  if FPressed then FButtonState := bsPressed else FButtonState := bsActive;
+  if FPressed then
+    FButtonState := bsPressed
+  else
+    FButtonState := bsActive;
   Repaint;
 
   inherited Handler_MouseEnter(Mouse);
@@ -166,7 +174,8 @@ end;
 
 procedure TsgeGUISpriteButton.Handler_MouseDown(Mouse: TsgeEventMouse);
 begin
-  if FPressed then FButtonState := bsPressed;
+  if FPressed then
+    FButtonState := bsPressed;
   Repaint;
 
   inherited Handler_MouseDown(Mouse);

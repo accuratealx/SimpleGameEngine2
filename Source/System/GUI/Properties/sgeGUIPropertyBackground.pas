@@ -64,7 +64,8 @@ implementation
 
 procedure TsgeGUIPropertyBackground.SetType(AType: TsgeGUIPropertyBackgroundType);
 begin
-  if FType = AType then Exit;
+  if FType = AType then
+    Exit;
 
   FType := AType;
   UpdateParent;
@@ -118,14 +119,18 @@ begin
   //Type
   ParamName := Prefix + 'Type';
   if Parameters.Exist[ParamName] then
-    begin
+  begin
     s := LowerCase(Parameters.GetValue(ParamName, ''));
     case s of
-      'color'   : FType := pbtColor;
-      'gradient': FType := pbtGradient;
-      'sprite'  : FType := pbtSprite;
+      'color':
+        FType := pbtColor;
+
+      'gradient':
+        FType := pbtGradient;
+      'sprite':
+        FType := pbtSprite;
     end;
-    end;
+  end;
 
   //Color
   FColor.LoadParameters(Parameters, Prefix);
@@ -143,9 +148,14 @@ begin
   if FOwner = nil then Exit;
 
   case FType of
-    pbtColor    : FColor.Draw;
-    pbtGradient : FGradient.Draw;
-    pbtSprite   : FSprite.Draw;
+    pbtColor:
+      FColor.Draw;
+
+    pbtGradient:
+      FGradient.Draw;
+
+    pbtSprite:
+      FSprite.Draw;
   end;
 end;
 

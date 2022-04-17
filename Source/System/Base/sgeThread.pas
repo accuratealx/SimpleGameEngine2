@@ -114,11 +114,11 @@ var
 begin
   //Бесконечный цикл
   while not Thread.FTerminated do
-    begin
+  begin
 
     //Проверить указатель на одноразовый метод с ожиданием
     if Thread.FRunOnceProcWait <> nil then
-      begin
+    begin
       //Выполнить метод
       try
         Thread.FRunOnceProcWait();
@@ -141,20 +141,22 @@ begin
 
       //Обработать модификатор
       case Modifier of
-        tpemSuspend: Thread.Suspend;
+        tpemSuspend:
+          Thread.Suspend;
+
         tpemDestroy:
-          begin
+        begin
           Thread.FFreeOnTerminate := True;
           Thread.FTerminated := True;
           Continue;
-          end;
+        end;
       end;
-      end;
+    end;
 
 
     //Проверить указатель анонимной функции
     if Thread.FRunOnceProc <> nil then
-      begin
+    begin
       //Выполнить метод
       try
         Thread.FRunOnceProc();
@@ -174,31 +176,33 @@ begin
 
       //Обработать модификатор
       case Modifier of
-        tpemSuspend: Thread.Suspend;
+        tpemSuspend:
+          Thread.Suspend;
+
         tpemDestroy:
-          begin
+        begin
           Thread.FFreeOnTerminate := True;
           Thread.FTerminated := True;
           Continue;
-          end;
+        end;
       end;
-      end;
+    end;
 
 
 
     //Проверить указатель бесконечного метода
     if Thread.FRunLoopProc <> nil then
-        try
-          Thread.FRunLoopProc();
-        except
-          on E: EsgeException do
-            begin
-            Thread.FException := E;       //Запомнить исключение
-            Thread.FTerminated := True;   //Остановить поток
-            end;
+      try
+        Thread.FRunLoopProc();
+      except
+        on E: EsgeException do
+        begin
+          Thread.FException := E;         //Запомнить исключение
+          Thread.FTerminated := True;     //Остановить поток
         end;
+      end;
 
-    end;  // while not Terminate
+  end;  // while not Terminate
 
 
 
@@ -206,7 +210,8 @@ begin
   Thread.FFinished := True;
 
   //Уничтожить поток если установлен флаг
-  if Thread.FFreeOnTerminate then Thread.Free;
+  if Thread.FFreeOnTerminate then
+    Thread.Free;
 
   //Результат
   Result := 0;
@@ -231,7 +236,8 @@ begin
     raise EsgeException.Create(_UNITNAME, Err_CantGetThreadPriority);
 
   for I := Low(TsgeThreadPriority) to High(TsgeThreadPriority) do
-    if Priorities[I] = Res then Result := I;
+    if Priorities[I] = Res then
+      Exit(I);
 end;
 
 
@@ -255,7 +261,8 @@ var
 begin
   //Поправить наибольшее значение
   Max := GetProcessorCount - 1;
-  if AValue > Max then AValue := Max;
+  if AValue > Max then
+    AValue := Max;
 
   if not sgeSetThreadIdealProcessor(FHandle, AValue) then
     raise EsgeException.Create(_UNITNAME, Err_CantSetThreadProcessorID);
@@ -283,7 +290,8 @@ begin
     raise EsgeException.Create(_UNITNAME, Err_CantCreateThread);
 
   //Запуск потока
-  if not Suspended then Resume;
+  if not Suspended then
+    Resume;
 end;
 
 
@@ -291,19 +299,20 @@ destructor TsgeThread.Destroy;
 begin
   //Если нет потока, то ничего не делать
   if FHandle <> 0 then
-    begin
+  begin
     //Почистить указатели
     FRunLoopProc := nil;
     FRunOnceProc := nil;
     FRunOnceProcWait := nil;
 
     //Если поток не завершил свою работу, то прибить
-    if not FFinished then Terminate(True);
+    if not FFinished then
+      Terminate(True);
 
     //Обнулить переменные
     FHandle := 0;
     FID := 0;
-    end;
+  end;
 
   //Удалить синхронизатор
   FWaitEvent.Free;
@@ -357,13 +366,15 @@ begin
   Resume;
 
   //Подождать завершения
-  if Wait then sgeWaitForSingleObject(FHandle, INFINITE);
+  if Wait then
+    sgeWaitForSingleObject(FHandle, INFINITE);
 end;
 
 
 procedure TsgeThread.Suspend;
 begin
-  if FSuspended then Exit;
+  if FSuspended then
+    Exit;
 
   FSuspended := True;
 
@@ -374,7 +385,8 @@ end;
 
 procedure TsgeThread.Resume;
 begin
-  if not FSuspended then Exit;
+  if not FSuspended then
+    Exit;
 
   FSuspended := False;
 

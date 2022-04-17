@@ -22,23 +22,23 @@ type
 
   TsgeSystemTimeEvent = class
   private
-    FDelay: Cardinal;                               //Задержка между тиками
-    FEnable: Boolean;                               //Флаг работы
-    FProc: TsgeEventProc;                           //Процедура для вызова
-    FTimes: Integer;                                //Сколько раз срабатывать (меньше 0 - бесконечный вызов)
-    FTimerID: Cardinal;                             //Идентификатор таймера
-    FCount: Cardinal;                               //Всего вызовов
-    FTimesCount: Cardinal;                          //Вызовов с каждого момента запуска
+    FDelay: Cardinal;                                               //Задержка между тиками
+    FEnable: Boolean;                                               //Флаг работы
+    FProc: TsgeEventProc;                                           //Процедура для вызова
+    FTimes: Integer;                                                //Сколько раз срабатывать (меньше 0 - бесконечный вызов)
+    FTimerID: Cardinal;                                             //Идентификатор таймера
+    FCount: Cardinal;                                               //Всего вызовов
+    FTimesCount: Cardinal;                                          //Вызовов с каждого момента запуска
 
-    FMinPeriod: Cardinal;                           //Миниимальный интервал
-    FMaxPeriod: Cardinal;                           //Максимальный интервал
+    FMinPeriod: Cardinal;                                           //Миниимальный интервал
+    FMaxPeriod: Cardinal;                                           //Максимальный интервал
 
-    procedure SetEnable(AEnable: Boolean);          //Переключить флаг работы
-    procedure SetDelay(ADelay: Cardinal);           //Изменить задержку между вызовами
-    procedure SetTimes(ATimes: Integer);            //Установить количество срабатываний после запуска
-    procedure StartEvent;                           //Запуск таймера
-    procedure StopEvent;                            //Останов таймера
-    procedure CorrectPeriod(var Period: Cardinal);  //Поправить задержку
+    procedure SetEnable(AEnable: Boolean);                          //Переключить флаг работы
+    procedure SetDelay(ADelay: Cardinal);                           //Изменить задержку между вызовами
+    procedure SetTimes(ATimes: Integer);                            //Установить количество срабатываний после запуска
+    procedure StartEvent;                                           //Запуск таймера
+    procedure StopEvent;                                            //Останов таймера
+    procedure CorrectPeriod(var Period: Cardinal);                  //Поправить задержку
   public
     constructor Create(Delay: Cardinal; Enable: Boolean; Proc: TsgeEventProc; Times: Integer = -1);
     destructor  Destroy; override;
@@ -78,28 +78,36 @@ var
 begin
   //Подготовить ссылку
   //Eo := TsgeEvent(dwUser);
-  if Eo = nil then Exit;
+  if Eo = nil then
+    Exit;
 
   //Выполнить процедуру
   if Eo.FProc <> nil then
-    begin
-    Eo.Proc;                //Вызвать метод
-    Inc(Eo.FCount);         //Прибавить вызов
-    end;
+  begin
+    Eo.Proc;                                                        //Вызвать метод
+    Inc(Eo.FCount);                                                 //Прибавить вызов
+  end;
 
   //Предусмотреть бесконечую работу, при отрицательных значениях
-  if Eo.FTimes < 0 then Exit;
+  if Eo.FTimes < 0 then
+    Exit;
 
   //Обработать счётчик ограниченной работы
   Inc(Eo.FTimesCount);
-  if Eo.FTimesCount >= Eo.FTimes then Eo.StopEvent;
+  if Eo.FTimesCount >= Eo.FTimes then
+    Eo.StopEvent;
 end;
 
 
 procedure TsgeSystemTimeEvent.SetEnable(AEnable: Boolean);
 begin
-  if FEnable = AEnable then Exit;
-  if AEnable then StartEvent else StopEvent;
+  if FEnable = AEnable then
+    Exit;
+
+  if AEnable then
+    StartEvent
+  else
+    StopEvent;
 end;
 
 
@@ -107,27 +115,29 @@ procedure TsgeSystemTimeEvent.SetDelay(ADelay: Cardinal);
 begin
   CorrectPeriod(ADelay);
 
-  if FDelay = ADelay then Exit;
-  FDelay := ADelay;
+  if FDelay = ADelay then
+    Exit;
 
+  FDelay := ADelay;
   if FEnable then
-    begin
+  begin
     StopEvent;
     StartEvent;
-    end;
+  end;
 end;
 
 
 procedure TsgeSystemTimeEvent.SetTimes(ATimes: Integer);
 begin
-  if FTimes = ATimes then Exit;
-  FTimes := ATimes;
+  if FTimes = ATimes then
+    Exit;
 
+  FTimes := ATimes;
   if FEnable then
-    begin
+  begin
     StopEvent;
     StartEvent;
-    end;
+  end;
 end;
 
 
@@ -143,17 +153,19 @@ end;
 
 procedure TsgeSystemTimeEvent.StopEvent;
 begin
-  sgeTimeKillEvent(FTimerID);             //Прибить таймер
-  FEnable := False;                       //Выклоючить флаг работы
-  FTimerID := 0;                          //Обнулить ID таймера
-  FTimesCount := 0;                       //Обнулить счётчик ограниченной работы
+  sgeTimeKillEvent(FTimerID);                                       //Прибить таймер
+  FEnable := False;                                                 //Выклоючить флаг работы
+  FTimerID := 0;                                                    //Обнулить ID таймера
+  FTimesCount := 0;                                                 //Обнулить счётчик ограниченной работы
 end;
 
 
 procedure TsgeSystemTimeEvent.CorrectPeriod(var Period: Cardinal);
 begin
-  if Period < FMinPeriod then Period := FMinPeriod;
-  if Period > FMaxPeriod then Period := FMaxPeriod;
+  if Period < FMinPeriod then
+    Period := FMinPeriod;
+  if Period > FMaxPeriod then
+    Period := FMaxPeriod;
 end;
 
 
@@ -169,10 +181,11 @@ begin
   //Поправить диапазон
   CorrectPeriod(Delay);
 
-  FDelay := Delay;                        //Задержка
-  FProc := Proc;                          //Метод класса без параметров
-  FTimes := Times;                        //Раз срабатываний
-  if Enable then StartEvent;              //Запуск если нужно
+  FDelay := Delay;                                                  //Задержка
+  FProc := Proc;                                                    //Метод класса без параметров
+  FTimes := Times;                                                  //Раз срабатываний
+  if Enable then                                                    //Запуск если нужно
+    StartEvent;
 end;
 
 

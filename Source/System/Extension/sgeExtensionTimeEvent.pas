@@ -73,23 +73,24 @@ begin
     //Цикл по элементам
     Idx := 0;
     while Idx < FTimeEventList.Count do
-      begin
+    begin
       //Проверка на разрушение объекта
-      if FDestroying then Break;
+      if FDestroying then
+        Break;
 
       //Ссылка на элемент
       El := FTimeEventList.Item[Idx];
 
       //Проверить на активность
       if not El.Enable then
-        begin
+      begin
         Inc(Idx);
         Continue;
-        end;
+      end;
 
       //Проверить, прошло время для выполнения или нет
       if El.IsTimePassed then
-        begin
+      begin
         //Увеличить счётчик срабатываний
         El.IncTimes;
 
@@ -98,24 +99,22 @@ begin
 
         //Проверить на предел по количеству выполнений
         if (El.Times <> -1) and (El.TimesCount >= El.Times) then
-          begin
+        begin
           //Остановить выполнение
           El.Enable := False;
 
           //Проверить на автоудаление
           if El.AutoDelete then
-            begin
+          begin
             El.Free;
             Dec(Idx);
-            end;
           end;
-
         end;
 
-      Inc(Idx);
       end;
 
-
+      Inc(Idx);
+    end;
 
   finally
     //Разблокировать список
@@ -132,7 +131,8 @@ begin
   FTimeEventList.Lock;
   try
 
-    if FTimeEventList.Count = 0 then Exit;
+    if FTimeEventList.Count = 0 then
+      Exit;
 
     //Удалить объекты
     while FTimeEventList.Count > 0 do

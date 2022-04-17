@@ -105,7 +105,7 @@ begin
 
   //Рассылаем события
   while FEventList.Count <> 0 do
-    begin
+  begin
     //Получить событие
     EventObj := FEventList.Item[0];
 
@@ -116,37 +116,37 @@ begin
     Idx := FSubscriberGroupList.IndexOf(EventObj.Name);
 
     if Idx <> -1 then
-      begin
+    begin
       //Ссылка на список
       SubscriberList := FSubscriberGroupList.Item[Idx].Subscribers;
 
       //Доставить событие подписчикам
       for i := 0 to SubscriberList.Count - 1 do
-        begin
-          //Пропуск неактивных
-          if not SubscriberList.Item[i].Enable then Continue;
+      begin
+        //Пропуск неактивных
+        if not SubscriberList.Item[i].Enable then
+          Continue;
 
-          //Вызвать обработчик
-          try
-            if SubscriberList.Item[i].Handler(EventObj) then Break;
-          except
-            on E: EsgeException do
-              if Assigned(FErrorHandler)
-                then FErrorHandler(sgeCreateErrorString(_UNITNAME, Err_DispatchError, '', E.Message));
-          end;
-
+        //Вызвать обработчик
+        try
+          if SubscriberList.Item[i].Handler(EventObj) then
+            Break;
+        except
+          on E: EsgeException do
+            if Assigned(FErrorHandler)
+              then FErrorHandler(sgeCreateErrorString(_UNITNAME, Err_DispatchError, '', E.Message));
         end;
 
       end;
 
+    end;
+
     //Разблокировать подписчиков
     FSubscriberGroupList.Unlock;
 
-
-
     //Удалить объект события
     FEventList.Delete(0);
-    end;
+  end;
 end;
 
 

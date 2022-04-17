@@ -39,8 +39,6 @@ type
 
 
 
-
-
 implementation
 
 uses
@@ -83,16 +81,17 @@ procedure TsgeMemoryStream.Write(const Buffer; Offset: Int64; Size: Int64);
 var
   Sz: Int64;
 begin
-  if Size = 0 then Exit;
+  if Size = 0 then
+    Exit;
 
   //Проверить длину памяти что бы влез буфер
   try
     Sz := Offset + Size;
     if Sz > FSize then
-      begin
+    begin
       FData := ReAllocMem(FData, Sz);
       FSize := Sz;
-      end;
+    end;
   except
     raise EsgeException.Create(_UNITNAME, Err_CantReallocMemory, sgeIntToStr(Sz));
   end;
@@ -122,17 +121,18 @@ procedure TsgeMemoryStream.FromString(Str: String);
 var
   Sz: Int64;
 begin
-  Sz := Length(Str);                //Узнать длину
-  FData := ReAllocMem(FData, Sz);   //Подготовить память
-  Move(Str[1], FData^, Sz);         //Скопировать данные
-  FSize := Sz;                      //Запомнить размер
+  Sz := Length(Str);                                                //Узнать длину
+  FData := ReAllocMem(FData, Sz);                                   //Подготовить память
+  Move(Str[1], FData^, Sz);                                         //Скопировать данные
+  FSize := Sz;                                                      //Запомнить размер
 end;
 
 
 function TsgeMemoryStream.ToString: String;
 begin
   Result := '';
-  if FSize = 0 then Exit;
+  if FSize = 0 then
+    Exit;
 
   SetLength(Result, FSize);
   Read(Result[1], 0, FSize);
@@ -176,7 +176,6 @@ begin
       on E: EsgeException do
         raise EsgeException.Create(_UNITNAME, Err_CantReadFile, FileName, E.Message);
     end;
-
 
   finally
     F.Free;

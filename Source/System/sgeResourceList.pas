@@ -168,6 +168,7 @@ begin
   Idx := IndexOf(Name);
   if Idx = -1 then
     Exit;
+
   Result := FResources[Idx].Obj;
 end;
 
@@ -180,6 +181,7 @@ begin
   Idx := IndexOf(Name, ResType);
   if Idx = -1 then
     Exit;
+
   Result := FResources[Idx].Obj;
 end;
 
@@ -308,10 +310,7 @@ begin
   Name := LowerCase(Name);
   for i := 0 to c do
     if Name = LowerCase(FResources[i].Name) then
-    begin
-      Result := i;
-      Break;
-    end;
+      Exit(i);
 end;
 
 
@@ -324,10 +323,7 @@ begin
   Name := LowerCase(Name);
   for i := 0 to c do
     if (Name = LowerCase(FResources[i].Name)) and (ResType = FResources[i].ResType) then
-    begin
-      Result := i;
-      Break;
-    end;
+      Exit(i);
 end;
 
 
@@ -339,10 +335,7 @@ begin
   c := GetCount - 1;
   for i := 0 to c do
     if FResources[i].Obj = Obj then
-    begin
-      Result := i;
-      Break;
-    end;
+      Exit(i);
 end;
 
 

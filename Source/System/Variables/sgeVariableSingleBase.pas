@@ -54,7 +54,9 @@ procedure TsgeVariableSingleBase.SetStrValue(Str: String);
 var
   i: Double;
 begin
-  if not sgeTryStrToFloat(Str, i) then i := FDefaultValue;
+  if not sgeTryStrToFloat(Str, i) then
+    i := FDefaultValue;
+
   Value := i;
 end;
 
@@ -67,8 +69,10 @@ end;
 
 procedure TsgeVariableSingleBase.CheckValue(var AValue: Single);
 begin
-  if AValue < FMinValue then AValue := FMinValue;
-  if AValue > FMaxValue then AValue := FMaxValue;
+  if AValue < FMinValue then
+    AValue := FMinValue;
+  if AValue > FMaxValue then
+    AValue := FMaxValue;
 end;
 
 

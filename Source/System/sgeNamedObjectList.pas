@@ -74,9 +74,7 @@ function TsgeNamedObjectList.GetCount: Integer;
 begin
   FCS.Enter;
   try
-
     Result := Length(FList);
-
   finally
     FCS.Leave;
   end;
@@ -87,11 +85,10 @@ function TsgeNamedObjectList.GetItem(Index: Integer): TsgeNamedObjectListItem;
 begin
   FCS.Enter;
   try
-
     if (Index < 0) or (Index > GetCount - 1) then
       raise EsgeException.Create(_UNITNAME, Err_IndexOutOfBounds, sgeIntToStr(Index));
-    Result := FList[Index];
 
+    Result := FList[Index];
   finally
     FCS.Leave;
   end;
@@ -117,7 +114,6 @@ var
 begin
   FCS.Enter;
   try
-
     Result := -1;
 
     Name := LowerCase(Name);
@@ -125,7 +121,6 @@ begin
     for i := 0 to c do
       if LowerCase(FList[i].Name) = Name then
         Exit(i);
-
   finally
     FCS.Leave;
   end;
@@ -136,9 +131,7 @@ procedure TsgeNamedObjectList.Clear;
 begin
   FCS.Enter;
   try
-
     SetLength(FList, 0);
-
   finally
     FCS.Leave;
   end;
@@ -151,7 +144,6 @@ var
 begin
   FCS.Enter;
   try
-
     if IndexOf(Name) <> -1 then
       raise EsgeException.Create(_UNITNAME, Err_ObjectAlreadyExists, Name);
 
@@ -159,7 +151,6 @@ begin
     SetLength(FList, c + 1);
     FList[c].Name := Name;
     FList[c].Obj := Obj;
-
   finally
     FCS.Leave;
   end;
@@ -172,7 +163,6 @@ var
 begin
   FCS.Enter;
   try
-
     //Найти индекс
     Idx := IndexOf(Name);
     if Idx = -1 then
@@ -184,7 +174,6 @@ begin
       FList[i] := FList[i + 1];
 
     SetLength(FList, c + 1);
-
   finally
     FCS.Leave;
   end;
@@ -195,9 +184,7 @@ function TsgeNamedObjectList.Exist(Name: String): Boolean;
 begin
   FCS.Enter;
   try
-
     Result := (IndexOf(Name) <> -1);
-
   finally
     FCS.Leave;
   end;
@@ -210,12 +197,10 @@ var
 begin
   FCS.Enter;
   try
-
     Result := nil;
     Idx := IndexOf(Name);
     if Idx <> -1 then
       Result := FList[Idx].Obj;
-
   finally
     FCS.Leave;
   end;

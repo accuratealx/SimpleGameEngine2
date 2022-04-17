@@ -56,7 +56,9 @@ var
 begin
   Result := inherited Execute(Command);
 
-  if not sgeTryStrToInt(Command.GetTail(1), Time) then Time := 0;
+  if not sgeTryStrToInt(Command.GetTail(1), Time) then
+    Time := 0;
+
   sgeSleep(Time);
 end;
 

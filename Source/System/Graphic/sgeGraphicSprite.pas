@@ -30,18 +30,18 @@ type
 
   TsgeGraphicSprite = class
   private
-    FGLHandle: GLuint;                  //Номер OpenGL
-    FGLTileWidth: Single;               //Ширина одной плитки в координатах OpenGL
-    FGLTileHeight: Single;              //Высота одной плитки в координатах OpenGL
-    FGLPixelWidth: Single;              //Ширина одного пикселя в координатах OpenGL
-    FGLPixelHeight: Single;             //Высота одного пикселя в координатах OpenGL
-    FFileName: String;                  //Имя файла
-    FWidth: Integer;                    //Ширина спрайта в пикселях
-    FHeight: Integer;                   //Высота спрайта в пикселях
-    FTileCols: Word;                    //Плиток по X
-    FTileRows: Word;                    //Плиток по Y
-    FTileWidth: Word;                   //Ширина одной плитки в пикселях
-    FTileHeight: Word;                  //Высота одной плитки в пикселях
+    FGLHandle: GLuint;                                              //Номер OpenGL
+    FGLTileWidth: Single;                                           //Ширина одной плитки в координатах OpenGL
+    FGLTileHeight: Single;                                          //Высота одной плитки в координатах OpenGL
+    FGLPixelWidth: Single;                                          //Ширина одного пикселя в координатах OpenGL
+    FGLPixelHeight: Single;                                         //Высота одного пикселя в координатах OpenGL
+    FFileName: String;                                              //Имя файла
+    FWidth: Integer;                                                //Ширина спрайта в пикселях
+    FHeight: Integer;                                               //Высота спрайта в пикселях
+    FTileCols: Word;                                                //Плиток по X
+    FTileRows: Word;                                                //Плиток по Y
+    FTileWidth: Word;                                               //Ширина одной плитки в пикселях
+    FTileHeight: Word;                                              //Высота одной плитки в пикселях
 
     procedure SetMagFilter(AFilter: TsgeGraphicSpriteFilter);
     function  GetMagFilter: TsgeGraphicSpriteFilter;
@@ -120,8 +120,11 @@ var
   Filter: GLint;
 begin
   case AFilter of
-    gsfNearest: Filter := GL_NEAREST;
-    gsfLinear : Filter := GL_LINEAR;
+    gsfNearest:
+      Filter := GL_NEAREST;
+
+    gsfLinear:
+      Filter := GL_LINEAR;
   end;
 
   glBindTexture(GL_TEXTURE_2D, FGLHandle);
@@ -139,8 +142,11 @@ begin
   glBindTexture(GL_TEXTURE_2D, 0);
 
   case Filter of
-    GL_NEAREST: Result := gsfNearest;
-    GL_LINEAR : Result := gsfLinear;
+    GL_NEAREST:
+      Result := gsfNearest;
+
+    GL_LINEAR:
+      Result := gsfLinear;
   end;
 end;
 
@@ -150,8 +156,11 @@ var
   Filter: GLint;
 begin
   case AFilter of
-    gsfNearest: Filter := GL_NEAREST;
-    gsfLinear : Filter := GL_LINEAR;
+    gsfNearest:
+      Filter := GL_NEAREST;
+
+    gsfLinear:
+      Filter := GL_LINEAR;
   end;
 
   glBindTexture(GL_TEXTURE_2D, FGLHandle);
@@ -169,8 +178,11 @@ begin
   glBindTexture(GL_TEXTURE_2D, 0);
 
   case Filter of
-    GL_NEAREST: Result := gsfNearest;
-    GL_LINEAR : Result := gsfLinear;
+    GL_NEAREST:
+      Result := gsfNearest;
+
+    GL_LINEAR:
+      Result := gsfLinear;
   end;
 end;
 
@@ -180,9 +192,14 @@ var
   Mode: GLint;
 begin
   case AMode of
-    gswmClampToEdge : Mode := GL_CLAMP_TO_EDGE;
-    gswmRepeat      : Mode := GL_REPEAT;
-    gswmRepeatMirror: Mode := GL_MIRRORED_REPEAT;
+    gswmClampToEdge:
+      Mode := GL_CLAMP_TO_EDGE;
+
+    gswmRepeat:
+      Mode := GL_REPEAT;
+
+    gswmRepeatMirror:
+      Mode := GL_MIRRORED_REPEAT;
   end;
 
   glBindTexture(GL_TEXTURE_2D, FGLHandle);
@@ -200,9 +217,14 @@ begin
   glBindTexture(GL_TEXTURE_2D, 0);
 
   case Mode of
-    GL_CLAMP_TO_EDGE   : Result := gswmClampToEdge;
-    GL_REPEAT          : Result := gswmRepeat;
-    GL_MIRRORED_REPEAT : Result := gswmRepeatMirror;
+    GL_CLAMP_TO_EDGE:
+      Result := gswmClampToEdge;
+
+    GL_REPEAT:
+      Result := gswmRepeat;
+
+    GL_MIRRORED_REPEAT:
+      Result := gswmRepeatMirror;
   end;
 end;
 
@@ -212,9 +234,14 @@ var
   Mode: GLint;
 begin
   case AMode of
-    gswmClampToEdge : Mode := GL_CLAMP_TO_EDGE;
-    gswmRepeat      : Mode := GL_REPEAT;
-    gswmRepeatMirror: Mode := GL_MIRRORED_REPEAT;
+    gswmClampToEdge:
+      Mode := GL_CLAMP_TO_EDGE;
+
+    gswmRepeat:
+      Mode := GL_REPEAT;
+
+    gswmRepeatMirror:
+      Mode := GL_MIRRORED_REPEAT;
   end;
 
   glBindTexture(GL_TEXTURE_2D, FGLHandle);
@@ -232,16 +259,23 @@ begin
   glBindTexture(GL_TEXTURE_2D, 0);
 
   case Mode of
-    GL_CLAMP_TO_EDGE   : Result := gswmClampToEdge;
-    GL_REPEAT          : Result := gswmRepeat;
-    GL_MIRRORED_REPEAT : Result := gswmRepeatMirror;
+    GL_CLAMP_TO_EDGE:
+      Result := gswmClampToEdge;
+
+    GL_REPEAT:
+      Result := gswmRepeat;
+
+    GL_MIRRORED_REPEAT:
+      Result := gswmRepeatMirror;
   end;
 end;
 
 
 procedure TsgeGraphicSprite.SetTileCols(ACols: Word);
 begin
-  if ACols < 1 then ACols := 1;
+  if ACols < 1 then
+    ACols := 1;
+
   FTileCols := ACols;
   CalcTiles;
 end;
@@ -249,7 +283,9 @@ end;
 
 procedure TsgeGraphicSprite.SetTileRows(ARows: Word);
 begin
-  if ARows < 1 then ARows := 1;
+  if ARows < 1 then
+    ARows := 1;
+
   FTileRows := ARows;
   CalcTiles;
 end;
@@ -273,7 +309,9 @@ end;
 
 procedure TsgeGraphicSprite.SetWidth(AWidth: Integer);
 begin
-  if AWidth < 0 then AWidth := 0;
+  if AWidth < 0 then
+    AWidth := 0;
+
   FWidth := AWidth;
   CalcTiles;
   ChangeTexture(FWidth, FHeight, nil);
@@ -282,7 +320,9 @@ end;
 
 procedure TsgeGraphicSprite.SetHeight(AHeight: Integer);
 begin
-  if AHeight < 0 then AHeight := 0;
+  if AHeight < 0 then
+    AHeight := 0;
+
   FHeight := AHeight;
   CalcTiles;
   ChangeTexture(FWidth, FHeight, nil);
@@ -299,13 +339,13 @@ end;
 
 procedure TsgeGraphicSprite.PreCreate;
 begin
-  glGenTextures(1, @FGLHandle);                                           //Выделить память для текстуры
-  glBindTexture(GL_TEXTURE_2D, FGLHandle);                                //Сделать текстуру активной
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);    //Привязывать края к границе полигона X
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);    //Привязывать края к границе полигона Y
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);      //Интерполяция при увеличении по соседям
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);      //Интерполяция при уменьшении по соседям
-  glBindTexture(GL_TEXTURE_2D, 0);                                        //Отменить выбор текстуры
+  glGenTextures(1, @FGLHandle);                                     //Выделить память для текстуры
+  glBindTexture(GL_TEXTURE_2D, FGLHandle);                          //Сделать текстуру активной
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);  //Привязывать края к границе полигона X
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);  //Привязывать края к границе полигона Y
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);  //Интерполяция при увеличении по соседям
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);  //Интерполяция при уменьшении по соседям
+  glBindTexture(GL_TEXTURE_2D, 0);                                  //Отменить выбор текстуры
 end;
 
 
@@ -314,9 +354,11 @@ begin
   PreCreate;
 
   //Обработать информацию о плитках
-  if TileCols < 1 then TileCols := 1;                                     //Поправить количество плиток
-  if TileRows < 1 then TileRows := 1;
-  FTileCols := TileCols;                                                  //Запомнить количество плиток
+  if TileCols < 1 then
+    TileCols := 1;
+  if TileRows < 1 then
+    TileRows := 1;
+  FTileCols := TileCols;
   FTileRows := TileRows;
 
   //Попробовать загрузить данные из файла
@@ -343,8 +385,10 @@ begin
   PreCreate;
 
   //Размеры
-  if Width < 0 then Width := 0;
-  if Height < 0 then Height := 0;
+  if Width < 0 then
+    Width := 0;
+  if Height < 0 then
+    Height := 0;
   FWidth := Width;
   FHeight := Height;
 
@@ -368,8 +412,10 @@ begin
   PreCreate;
 
   //Обработать информацию о плитках
-  if TileCols < 1 then TileCols := 1;
-  if TileRows < 1 then TileRows := 1;
+  if TileCols < 1 then
+    TileCols := 1;
+  if TileRows < 1 then
+    TileRows := 1;
   FTileCols := TileCols;
   FTileRows := TileRows;
 
@@ -386,8 +432,10 @@ begin
   PreCreate;
 
   //Размеры
-  if Width < 0 then Width := 0;
-  if Height < 0 then Height := 0;
+  if Width < 0 then
+    Width := 0;
+  if Height < 0 then
+    Height := 0;
   FWidth := Width;
   FHeight := Height;
 
@@ -408,17 +456,21 @@ end;
 
 destructor TsgeGraphicSprite.Destroy;
 begin
-  if FGLHandle = 0 then Exit;
+  if FGLHandle = 0 then
+    Exit;
+
   glDeleteTextures(1, @FGLHandle);
 end;
 
 
 procedure TsgeGraphicSprite.SetSize(AWidth, AHeight: Integer);
 begin
-  if AWidth < 1 then AWidth := 1;
+  if AWidth < 1 then
+    AWidth := 1;
   FWidth := AWidth;
 
-  if AHeight < 1 then AHeight := 1;
+  if AHeight < 1 then
+    AHeight := 1;
   FHeight := AHeight;
 
   ChangeTexture(FWidth, FHeight, nil);
@@ -443,13 +495,13 @@ begin
   //Подготовить массив точек с прозрачностью
   c := (Size div 4) - 1;                      //Номер последнего пиксела
   for i := 0 to c do
-    begin
+  begin
     Idx := i * 4;                             //Индекс начала RGBQuad
     Data[Idx + 0] := cl.Blue;                 //Blue
     Data[Idx + 1] := cl.Green;                //Green
     Data[Idx + 2] := cl.Red;                  //Red
     Data[Idx + 3] := cl.Alpha;                //Alpha
-    end;
+  end;
 
   //Залить в OpenGL
   ChangeTexture(FWidth, FHeight, @Data[0]);
@@ -466,7 +518,8 @@ var
   a: Byte;
 begin
   //Поправить размер клетки
-  if CellSize < 1 then CellSize := 1;
+  if CellSize < 1 then
+    CellSize := 1;
 
   //Определить размер
   Size := FWidth * FHeight * 4;
@@ -477,7 +530,7 @@ begin
   //Подготовить массив точек с прозрачностью
   c := (Size div 4) - 1;                      //Номер последнего пикселя
   for i := 0 to c do
-    begin
+  begin
     X := i div FWidth div CellSize;           //Номер столбца с учётом ширины клетки
     Y := (i mod FWidth) div CellSize;         //Номер строки с учётом ширины клетки
 
@@ -488,7 +541,7 @@ begin
     Data[Idx + 1] := a;                       //Green
     Data[Idx + 2] := a;                       //Red
     Data[Idx + 3] := 255;                     //Alpha
-    end;
+  end;
 
   //Залить в OpenGL
   ChangeTexture(FWidth, FHeight, @Data[0]);
@@ -511,7 +564,6 @@ begin
 
       //Загрузить из потока
       FromMemoryStream(Ms);
-
     except
       on E: EsgeException do
         raise EsgeException.Create(_UNITNAME, Err_CantReadFile, FileName, E.Message);

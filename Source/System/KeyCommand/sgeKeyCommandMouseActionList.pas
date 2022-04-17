@@ -101,13 +101,14 @@ var
 begin
   Idx := IndexOf(KeyboardShifts);
   if Idx <> -1 then
-    begin
+  begin
     FList[Idx].Action.Up := Up;
     FList[Idx].Action.Down := Down;
     FList[Idx].Action.DblClick := DblClick;
     CheckActionForDelete(Idx);
-    end
-    else Add(TsgeKeyCommandMouseAction.Create(KeyboardShifts, Down, Up, DblClick));
+  end
+  else
+    Add(TsgeKeyCommandMouseAction.Create(KeyboardShifts, Down, Up, DblClick));
 end;
 
 
@@ -117,11 +118,12 @@ var
 begin
   Idx := IndexOf(KeyboardShifts);
   if Idx <> -1 then
-    begin
+  begin
     FList[Idx].Action.Up := Up;
     CheckActionForDelete(Idx);
-    end
-    else Add(TsgeKeyCommandMouseAction.Create(KeyboardShifts, '', Up, ''));
+  end
+  else
+    Add(TsgeKeyCommandMouseAction.Create(KeyboardShifts, '', Up, ''));
 end;
 
 
@@ -131,11 +133,12 @@ var
 begin
   Idx := IndexOf(KeyboardShifts);
   if Idx <> -1 then
-    begin
+  begin
     FList[Idx].Action.Down := Down;
     CheckActionForDelete(Idx);
-    end
-    else Add(TsgeKeyCommandMouseAction.Create(KeyboardShifts, Down, '', ''));
+  end
+  else
+    Add(TsgeKeyCommandMouseAction.Create(KeyboardShifts, Down, '', ''));
 end;
 
 
@@ -145,11 +148,12 @@ var
 begin
   Idx := IndexOf(KeyboardShifts);
   if Idx <> -1 then
-    begin
+  begin
     FList[Idx].Action.DblClick := DblClick;
     CheckActionForDelete(Idx);
-    end
-    else Add(TsgeKeyCommandMouseAction.Create(KeyboardShifts, '', '', DblClick));
+  end
+  else
+    Add(TsgeKeyCommandMouseAction.Create(KeyboardShifts, '', '', DblClick));
 end;
 
 
@@ -159,7 +163,8 @@ var
 begin
   Result := '';
   Idx := IndexOf(KeyboardShifts);
-  if Idx = -1 then Exit;
+  if Idx = -1 then
+    Exit;
 
   Result := FList[Idx].Action.Up;
 end;
@@ -171,7 +176,8 @@ var
 begin
   Result := '';
   Idx := IndexOf(KeyboardShifts);
-  if Idx = -1 then Exit;
+  if Idx = -1 then
+    Exit;
 
   Result := FList[Idx].Action.Down;
 end;
@@ -183,7 +189,8 @@ var
 begin
   Result := '';
   Idx := IndexOf(KeyboardShifts);
-  if Idx = -1 then Exit;
+  if Idx = -1 then
+    Exit;
 
   Result := FList[Idx].Action.DblClick;
 end;

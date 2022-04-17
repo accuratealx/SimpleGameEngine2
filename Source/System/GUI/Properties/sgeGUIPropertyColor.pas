@@ -58,8 +58,10 @@ uses
 
 procedure TsgeGUIPropertyColor.CheckValue(var Value: Single);
 begin
-  if Value < 0 then Value := 0;
-  if Value > 1 then Value := 1;
+  if Value < 0 then
+    Value := 0;
+  if Value > 1 then
+    Value := 1;
 end;
 
 
@@ -124,20 +126,20 @@ var
 begin
   ParamName := Prefix + 'Color';
   if Parameters.Exist[ParamName] then
-    begin
+  begin
     s := Parameters.GetValue(ParamName, '0.0.0.255');
     FColor := sgeRGBAToColor(sgeStringToRGBA(s));
-    end;
+  end;
 end;
 
 
 procedure TsgeGUIPropertyColorExt.Draw;
 begin
   with SGE.ExtGraphic.Graphic do
-    begin
+  begin
     BGColor := FColor;
     EraseBG;
-    end;
+  end;
 end;
 
 

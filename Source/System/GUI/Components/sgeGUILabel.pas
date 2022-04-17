@@ -84,10 +84,10 @@ procedure TsgeGUILabel.DrawBefore;
 begin
   //Вывод фона
   with SGE.ExtGraphic.Graphic do
-    begin
+  begin
     BGColor := FBGColor.Color;
     EraseBG;
-    end;
+  end;
 
   //Вывод метки
   FLabel.Draw;
@@ -108,8 +108,10 @@ begin
   W := FLabel.Font.GetTextWidth(FLabel.Text);
   H := FLabel.Font.GetTextHeight(FLabel.Text);
 
-  if NewWidth < W then NewWidth := W;
-  if NewHeight < H then NewHeight := H;
+  if NewWidth < W then
+    NewWidth := W;
+  if NewHeight < H then
+    NewHeight := H;
 end;
 
 

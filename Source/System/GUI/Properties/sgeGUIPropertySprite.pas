@@ -72,7 +72,8 @@ type
 
 procedure TsgeGUIPropertySprite.SetSprite(ASprite: TsgeGraphicSprite);
 begin
-  if FSprite = ASprite then Exit;
+  if FSprite = ASprite then
+    Exit;
 
   FSprite := ASprite;
   UpdateParent;
@@ -169,7 +170,8 @@ var
   BaseWidth, BaseHeight: Integer;
   Size: TsgeIntPoint;
 begin
-  if FSprite = nil then Exit;
+  if FSprite = nil then
+    Exit;
 
   //Определить размеры элемента
   BaseWidth := TsgeGUIElementHack(FOwner).FWidth;
@@ -196,8 +198,11 @@ begin
 
   //Вывод в зависимости от метода
   case FDrawMethod.Mode of
-    dmmNormal : SGE.ExtGraphic.Graphic.DrawSprite(DrawOpt);
-    dmmSegment: SGE.ExtGraphic.Graphic.DrawSpriteSegment(DrawOpt, FDrawMethod.Offset.Rect);
+    dmmNormal:
+      SGE.ExtGraphic.Graphic.DrawSprite(DrawOpt);
+
+    dmmSegment:
+      SGE.ExtGraphic.Graphic.DrawSpriteSegment(DrawOpt, FDrawMethod.Offset.Rect);
   end;
 end;
 

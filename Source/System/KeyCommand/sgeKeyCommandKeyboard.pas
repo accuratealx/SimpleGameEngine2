@@ -367,10 +367,7 @@ begin
   Name := LowerCase(Name);
   for i := 0 to MAX_BUTTONS do
     if Name = LowerCase(KeyNames[i]) then
-      begin
-      Result := i;
-      Break;
-      end;
+      Exit(i);
 end;
 
 
@@ -405,7 +402,6 @@ begin
 
   Delete(Idx);
 end;
-
 
 
 

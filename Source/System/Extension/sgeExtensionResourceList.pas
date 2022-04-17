@@ -149,18 +149,17 @@ var
   FntName: String;
 begin
   //Name
-  if Cmd.Count >= 4 then FntName := Cmd.Part[3] else FntName := '';
+  if Cmd.Count >= 4 then
+    FntName := Cmd.Part[3]
+  else
+    FntName := '';
 
   //Size
   Size := Meta.GetValue('Size', 12, True);
 
   //Attrib
-  fAttr := [];
-  s := LowerCase(Meta.GetValue('Attrib', '', True));
-  if Pos('b', s) <> 0 then Include(fAttr, gfaBold);
-  if Pos('i', s) <> 0 then Include(fAttr, gfaItalic);
-  if Pos('u', s) <> 0 then Include(fAttr, gfaUnderline);
-  if Pos('s', s) <> 0 then Include(fAttr, gfaStrikeOut);
+  s := Meta.GetValue('Attrib', '', True);
+  fAttr := sgeFontStringToAttrib(s);
 
   //Вернуть объект
   Result := TsgeGraphicFont.Create(FntName, Size, fAttr);
@@ -172,9 +171,14 @@ function TsgeExtensionResourceList.LoadResource_Sprite(Stream: TsgeMemoryStream;
   function GetValue(Str: String): TsgeGraphicSpriteFilter;
   begin
     case LowerCase(Str) of
-      'linear' : Result := gsfLinear;
-      'nearest': Result := gsfNearest;
-      else Result := gsfNearest;
+      'linear':
+        Result := gsfLinear;
+
+      'nearest':
+        Result := gsfNearest;
+
+      else
+        Result := gsfNearest;
     end;
   end;
 
@@ -245,7 +249,10 @@ var
   Frames: TsgeGraphicAnimationFrames;
 begin
   //Frame name
-  if Cmd.Count >= 4 then FrameName := Cmd.Part[3] else FrameName := '';
+  if Cmd.Count >= 4 then
+    FrameName := Cmd.Part[3]
+  else
+    FrameName := '';
 
   //Найти указатель на кадры
   Frames := TsgeGraphicAnimationFrames(FResourceList.TypedObj[FrameName, rtAnimationFrames]);
@@ -316,11 +323,11 @@ begin
   s := sgeTrim(Cmd.GetTail(4));
 
   if (s <> '') and (s[1] = '[') and (s[Length(s)] = ']') then
-    begin
+  begin
     System.Delete(s, Length(s), 1);
     System.Delete(s, 1, 1);
     MetaStr := s;
-    end;
+  end;
 
   //Создать объект метаинформации из строки
   MetaObj := TsgeMetaInfoList.Create(MetaStr);
@@ -344,75 +351,74 @@ begin
       //Создать ресурс
       case ResType of
         rtSystemFont:
-          begin
+        begin
           ResObj := LoadResource_SystemFont(Stream);
           TsgeSystemFont(ResObj).FileName := fn;
           rt := rtSystemFont;
-          end;
+        end;
 
         rtFont:
-          begin
+        begin
           ResObj := LoadResource_Font(Cmd, MetaObj);
           rt := rtFont;
-          end;
+        end;
 
         rtCursor:
-          begin
+        begin
           ResObj := LoadResource_Cursor(Cmd, MetaObj);
           rt := rtCursor;
-          end;
+        end;
 
         rtSprite:
-          begin
+        begin
           ResObj := LoadResource_Sprite(Stream, MetaObj);
           TsgeGraphicSprite(ResObj).FileName := fn;
           rt := rtSprite;
-          end;
+        end;
 
         rtAnimationFrames:
-          begin
+        begin
           ResObj := LoadResource_AnimationFrames(Stream);
           TsgeGraphicAnimationFrames(ResObj).FileName := fn;
           rt := rtAnimationFrames;
-          end;
+        end;
 
         rtAnimation:
-          begin
+        begin
           ResObj := LoadResource_Animation(Stream, MetaObj);
           TsgeGraphicAnimation(ResObj).FileName := fn;
           rt := rtAnimation;
-          end;
+        end;
 
         rtSoundBuffer:
-          begin
+        begin
           ResObj := LoadResource_SoundBuffer(Stream);
           TsgeSoundBuffer(ResObj).FileName := fn;
           rt := rtSoundBuffer;
-          end;
+        end;
 
         rtStringList:
-          begin
+        begin
           ResObj := LoadResource_StringList(Stream);
           rt := rtStringList;
-          end;
+        end;
 
         rtParameters:
-          begin
+        begin
           ResObj := LoadResource_Parameters(Stream);
           TsgeSimpleParameters(ResObj).FileName := fn;
           rt := rtParameters;
-          end;
+        end;
 
         rtContainer:
-          begin
+        begin
           ResObj := LoadResource_Container(Stream);
           TsgeSimpleContainer(ResObj).FileName := fn;
           rt := rtContainer;
-          end;
+        end;
 
         rtUnknown:
           raise EsgeException.Create(_UNITNAME, Err_UnknownResource, Cmd.Part[1]);
-
 
         else
           raise EsgeException.Create(_UNITNAME, Err_UnknownResource, Cmd.Part[1]);
@@ -425,10 +431,10 @@ begin
 
     except
       on E: EsgeException do
-        begin
+      begin
         MetaObj.Free;
         raise EsgeException.Create(E.Message);
-        end;
+      end;
     end;
 
 
@@ -445,7 +451,8 @@ begin
     raise EsgeException.Create(_UNITNAME, Err_NotEnoughParameters);
 
   //Поправить базовый каталог
-  if BaseDirectory <> '' then BaseDirectory := sgeCheckPathDelimiter(BaseDirectory);
+  if BaseDirectory <> '' then
+    BaseDirectory := sgeCheckPathDelimiter(BaseDirectory);
 
   //Загрузить таблицу
   LoadFromFile(BaseDirectory + Cmd.Part[1]);
@@ -513,10 +520,10 @@ function TsgeExtensionResourceList.GetFont(Name: String): TsgeGraphicFont;
 begin
   Result := TsgeGraphicFont(FResourceList.TypedObj[Name, rtFont]);
   if Result = nil then
-    begin
+  begin
     Result := FDefault.Font;
     ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_ResourceNotFound, Name));
-    end;
+  end;
 end;
 
 
@@ -524,10 +531,10 @@ function TsgeExtensionResourceList.GetSprite(Name: String): TsgeGraphicSprite;
 begin
   Result := TsgeGraphicSprite(FResourceList.TypedObj[Name, rtSprite]);
   if Result = nil then
-    begin
+  begin
     Result := FDefault.Sprite;
     ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_ResourceNotFound, Name));
-    end;
+  end;
 end;
 
 
@@ -535,10 +542,10 @@ function TsgeExtensionResourceList.GetFrames(Name: String): TsgeGraphicAnimation
 begin
   Result := TsgeGraphicAnimationFrames(FResourceList.TypedObj[Name, rtAnimationFrames]);
   if Result = nil then
-    begin
+  begin
     Result := FDefault.Frames;
     ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_ResourceNotFound, Name));
-    end;
+  end;
 end;
 
 
@@ -546,10 +553,10 @@ function TsgeExtensionResourceList.GetAnimation(Name: String): TsgeGraphicAnimat
 begin
   Result := TsgeGraphicAnimation(FResourceList.TypedObj[Name, rtAnimation]);
   if Result = nil then
-    begin
+  begin
     Result := FDefault.Animation;
     ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_ResourceNotFound, Name));
-    end;
+  end;
 end;
 
 
@@ -557,10 +564,10 @@ function TsgeExtensionResourceList.GetSoundBuffer(Name: String): TsgeSoundBuffer
 begin
   Result := TsgeSoundBuffer(FResourceList.TypedObj[Name, rtSoundBuffer]);
   if Result = nil then
-    begin
+  begin
     Result := FDefault.SoundBufer;
     ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_ResourceNotFound, Name));
-    end;
+  end;
 end;
 
 
@@ -568,10 +575,10 @@ function TsgeExtensionResourceList.GetStringList(Name: String): TsgeStringList;
 begin
   Result := TsgeStringList(FResourceList.TypedObj[Name, rtStringList]);
   if Result = nil then
-    begin
+  begin
     Result := FDefault.StringList;
     ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_ResourceNotFound, Name));
-    end;
+  end;
 end;
 
 
@@ -579,10 +586,10 @@ function TsgeExtensionResourceList.GetParameters(Name: String): TsgeSimpleParame
 begin
   Result := TsgeSimpleParameters(FResourceList.TypedObj[Name, rtParameters]);
   if Result = nil then
-    begin
+  begin
     Result := FDefault.Parameters;
     ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_ResourceNotFound, Name));
-    end;
+  end;
 end;
 
 
@@ -590,10 +597,10 @@ function TsgeExtensionResourceList.GetContainer(Name: String): TsgeSimpleContain
 begin
   Result := TsgeSimpleContainer(FResourceList.TypedObj[Name, rtContainer]);
   if Result = nil then
-    begin
+  begin
     Result := FDefault.Container;
     ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_ResourceNotFound, Name));
-    end;
+  end;
 end;
 
 
@@ -601,10 +608,10 @@ function TsgeExtensionResourceList.GetCursor(Name: String): TsgeCursor;
 begin
   Result := TsgeCursor(FResourceList.TypedObj[Name, rtCursor]);
   if Result = nil then
-    begin
+  begin
     Result := FDefault.Cursor;
     ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_ResourceNotFound, Name));
-    end;
+  end;
 end;
 
 
@@ -627,21 +634,33 @@ begin
     //Пробежать по строкам
     c := Lines.Count - 1;
     for i := 0 to c do
-      begin
-      Lines.Part[i] := sgeTrim(Lines.Part[i]);                                        //Отрезать лишнее
-      if Lines.Part[i] = '' then Continue;                                            //Пусто
-      if Lines.Part[i][1] = '#' then Continue;                                        //Заметка
+    begin
+      Lines.Part[i] := sgeTrim(Lines.Part[i]);                      //Отрезать лишнее
+      if Lines.Part[i] = '' then                                    //Пусто
+        Continue;
+      if Lines.Part[i][1] = '#' then                                //Заметка
+        Continue;
       Lines.Part[i] := sgeSubstituteParamsToString(Lines.Part[i], Params, '%', '%');  //Подставить в строку переменные
-      Cmd.Command := Lines.Part[i];                                                   //Разобрать на части
+      Cmd.Command := Lines.Part[i];                                 //Разобрать на части
 
       //Загрузить ресурс
       try
         case LowerCase(Cmd.Part[0]) of
-          rcClearParameters : Command_ClearParams(Params);
-          rcSetParameter    : Command_SetParam(Params, Cmd);
-          rcDeleteParameter : Command_DeleteParam(Params, Cmd);
-          rcLoadTable       : Command_LoadTable(Cmd, BaseDirectory);
-          rcLoadResource    : Command_LoadResource(Cmd, BaseDirectory);
+          rcClearParameters:
+            Command_ClearParams(Params);
+
+          rcSetParameter:
+            Command_SetParam(Params, Cmd);
+
+          rcDeleteParameter:
+            Command_DeleteParam(Params, Cmd);
+
+          rcLoadTable:
+            Command_LoadTable(Cmd, BaseDirectory);
+
+          rcLoadResource:
+            Command_LoadResource(Cmd, BaseDirectory);
+
           else
             raise EsgeException.Create(_UNITNAME, Err_UnknownCommand, Cmd.Part[0]);
         end;
@@ -650,7 +669,7 @@ begin
           raise EsgeException.Create(_UNITNAME, Err_LoadResourceError, Cmd.Part[2] + ' [' + sgeIntToStr(i + 1) + ']', E.Message);
       end;
 
-      end;
+    end;
 
   finally
     Lines.Free;
@@ -668,7 +687,6 @@ end;
 
 procedure TsgeExtensionResourceList.LoadFromFile(FileName: String);
 var
-  //F: TsgeFile;
   MS: TsgeMemoryStream;
   S, BaseDirectory: String;
 begin
@@ -681,10 +699,8 @@ begin
 
     MS := TsgeMemoryStream.Create;
     try
-
       FExtFileSystem.ReadFile(FileName, MS);
       S := MS.ToString;
-
     except
       raise EsgeException.Create(_UNITNAME, Err_CantReadFile, FileName);
     end;

@@ -339,7 +339,10 @@ var
   Idx: Integer;
 begin
   Idx := FVariableList.IndexOf(Name);
-  if Idx = -1 then AddInteger(Name, Value, 0, False) else FVariableList.Item[Idx].StrValue := sgeIntToStr(Value);
+  if Idx = -1 then
+    AddInteger(Name, Value, 0, False)
+  else
+    FVariableList.Item[Idx].StrValue := sgeIntToStr(Value);
 end;
 
 
@@ -348,8 +351,10 @@ var
   Idx: Integer;
 begin
   Idx := FVariableList.IndexOf(Name);
-  if Idx = -1 then AddSingle(Name, Value, 0, False)
-    else FVariableList.Item[Idx].StrValue := sgeFloatToStr(Value);
+  if Idx = -1 then
+    AddSingle(Name, Value, 0, False)
+  else
+    FVariableList.Item[Idx].StrValue := sgeFloatToStr(Value);
 end;
 
 
@@ -358,8 +363,10 @@ var
   Idx: Integer;
 begin
   Idx := FVariableList.IndexOf(Name);
-  if Idx = -1 then AddString(Name, Value, '', False)
-    else FVariableList.Item[Idx].StrValue := Value;
+  if Idx = -1 then
+    AddString(Name, Value, '', False)
+  else
+    FVariableList.Item[Idx].StrValue := Value;
 end;
 
 
@@ -368,8 +375,10 @@ var
   Idx: Integer;
 begin
   Idx := FVariableList.IndexOf(Name);
-  if Idx = -1 then AddBoolean(Name, Value, False, False)
-    else FVariableList.Item[Idx].StrValue := sgeBoolToStr(Value);
+  if Idx = -1 then
+    AddBoolean(Name, Value, False, False)
+  else
+    FVariableList.Item[Idx].StrValue := sgeBoolToStr(Value);
 end;
 
 
@@ -378,8 +387,10 @@ var
   Idx: Integer;
 begin
   Idx := FVariableList.IndexOf(Name);
-  if Idx = -1 then AddColor(Name, Value, sgeGetRGBA(0, 0, 0, 1), False)
-    else FVariableList.Item[Idx].StrValue := sgeRGBAToString(Value);
+  if Idx = -1 then
+    AddColor(Name, Value, sgeGetRGBA(0, 0, 0, 1), False)
+  else
+    FVariableList.Item[Idx].StrValue := sgeRGBAToString(Value);
 end;
 
 
@@ -388,8 +399,10 @@ var
   Idx: Integer;
 begin
   Idx := FVariableList.IndexOf(Name);
-  if Idx = -1 then AddEnum(Name, Value, Value, '', 0, False)  //Если Enum с именем "Name" нет, то создать c одним значением
-    else FVariableList.Item[Idx].StrValue := Value;
+  if Idx = -1 then                                                  //Если Enum с именем "Name" нет, то создать c одним значением
+    AddEnum(Name, Value, Value, '', 0, False)
+  else
+    FVariableList.Item[Idx].StrValue := Value;
 end;
 
 

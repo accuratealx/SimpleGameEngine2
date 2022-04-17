@@ -52,7 +52,8 @@ implementation
 
 procedure TsgeGUIPropertyHorizontalAlign.SetMode(AMode: TsgeGUIPropertyHorizontalAlignMode);
 begin
-  if FMode = AMode then Exit;
+  if FMode = AMode then
+    Exit;
 
   FMode := AMode;
   UpdateParent;
@@ -61,7 +62,8 @@ end;
 
 procedure TsgeGUIPropertyHorizontalAlign.SetOffset(AOffset: Integer);
 begin
-  if FOffset = AOffset then Exit;
+  if FOffset = AOffset then
+    Exit;
 
   FOffset := AOffset;
   UpdateParent;
@@ -84,15 +86,22 @@ begin
   //Mode
   ParamName := Prefix + 'Mode';
   if Parameters.Exist[ParamName] then
-    begin
+  begin
     s := LowerCase(Parameters.GetValue(ParamName, ''));
     case s of
-      'left'  : FMode := hamLeft;
-      'middle': FMode := hamMiddle;
-      'right' : FMode := hamRight;
-      'user'  : FMode := hamUser;
+      'left':
+        FMode := hamLeft;
+
+      'middle':
+        FMode := hamMiddle;
+
+      'right':
+        FMode := hamRight;
+
+      'user':
+        FMode := hamUser;
     end;
-    end;
+  end;
 
   //Offset
   ParamName := Prefix + 'Offset';
@@ -103,10 +112,17 @@ end;
 function TsgeGUIPropertyHorizontalAlignExt.GetOffset(BaseWidth, ElementWidth: Integer): Single;
 begin
   case FMode of
-    hamLeft   : Result := 0;
-    hamMiddle : Result := BaseWidth / 2 - ElementWidth / 2;
-    hamRight  : Result := BaseWidth - ElementWidth;
-    hamUser   : Result := FOffset;
+    hamLeft:
+      Result := 0;
+
+    hamMiddle:
+      Result := BaseWidth / 2 - ElementWidth / 2;
+
+    hamRight:
+      Result := BaseWidth - ElementWidth;
+
+    hamUser:
+      Result := FOffset;
   end;
 end;
 

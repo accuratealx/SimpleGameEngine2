@@ -155,16 +155,18 @@ begin
 
   Idx := FindFirst(Path + '*', faAnyFile, o);
   while Idx = 0 do
-    begin
+  begin
 
     if (o.Name <> '.') and (o.Name <> '..') then
-      begin
-      if (o.Attr and faDirectory) = faDirectory then FindFilesInFolders(Path + o.Name, List)
-        else List.Add(Path + o.Name);
-      end;
+    begin
+      if (o.Attr and faDirectory) = faDirectory then
+        FindFilesInFolders(Path + o.Name, List)
+      else
+        List.Add(Path + o.Name);
+    end;
 
     Idx := FindNext(o);
-    end;
+  end;
 
   FindClose(o);
 end;
@@ -181,10 +183,10 @@ begin
   List.FromString(Directory);
 
   if List.Count >= 1 then
-    begin
+  begin
     List.Delete(List.Count - 1);
     Result := List.ToString;
-    end;
+  end;
 
   List.Free;
 end;
@@ -232,7 +234,8 @@ var
   Fl: TsgePackFileWriterBlock;
   f: TsgeFile;
 begin
-  if TreePath <> '' then TreePath := IncludeTrailingBackslash(TreePath);
+  if TreePath <> '' then
+    TreePath := IncludeTrailingBackslash(TreePath);
 
   //Подготовить запись
   Fl.PackName := TreePath + ExtractFileName(FileName);
@@ -260,10 +263,10 @@ begin
 
   //Построить путь
   while Node.Parent <> nil do
-    begin
+  begin
     Result := Node.Text + '\' + Result;
     Node := Node.Parent;
-    end;
+  end;
 end;
 
 
@@ -273,7 +276,8 @@ var
 begin
   Result := '';
   Node := FolderTree.Selected;
-  if Node = nil then Exit;
+  if Node = nil then
+    Exit;
 
   Result := GetPathFromTreeView(Node);
 end;
@@ -289,16 +293,12 @@ begin
   c := Node.Count - 1;
   for i := 0 to c do
     if UTF8LowerCase(Node.Items[i].Text) = FolderName then
-      begin
-      Result := True;
-      Break;
-      end;
+      Exit(True);
 end;
 
 
 procedure TMainFrm.AddPathToTree(Tree: TTreeView; Path: String);
 var
-  //sa: TStringArray;
   List: TsgeStringList;
   Count, i: Integer;
   RootNode, Node: TTreeNode;
@@ -312,22 +312,21 @@ begin
   RootNode := Tree.Items.GetFirstNode;
   if Count > 0 then
     for i := 0 to Count - 1 do
-      begin
+    begin
       //Поиск узла по имени
-      Node := RootNode.FindNode(List.Part[i] {sa[i]});
+      Node := RootNode.FindNode(List.Part[i]);
 
       if Node = nil then
-        begin
+      begin
         //Не найден узел
-        RootNode := Tree.Items.AddChild(RootNode, List.Part[i] {sa[i]});
+        RootNode := Tree.Items.AddChild(RootNode, List.Part[i]);
         RootNode.ImageIndex := 0;
         RootNode.SelectedIndex := 1;
-        end
-        else begin
+      end
+      else
         //Найден
         RootNode := Node;
-        end;
-      end;
+    end;
 
   List.Free;
 end;
@@ -348,10 +347,11 @@ begin
   c := List.Count - 1;
 
   for i := 0 to c do
-    begin
+  begin
     Idx := Node.IndexOfText(List.Part[i]);
-    if idx <> -1 then Node := Node.Items[Idx];
-    end;
+    if idx <> -1 then
+      Node := Node.Items[Idx];
+  end;
 
   Node.Selected := True;
 
@@ -371,18 +371,18 @@ begin
   c := FFileList.Count - 1;
   Path := UTF8LowerCase(Path);
   for i := 0 to c do
-    begin
+  begin
     s := UTF8LowerCase(ExtractFilePath(FFileList.Item[i].PackName));
 
     if Path = s then
-      begin
+    begin
       Li := FolderView.Items.Add;
       Li.Caption := ExtractFileName(FFileList.Item[i].PackName);
       Li.ImageIndex := 0;
       Li.StateIndex := 0;
       Li.SubItems.Add(IntToStr(FFileList.Item[i].FileSize));
-      end;
     end;
+  end;
 
   FolderView.Items.EndUpdate;
 
@@ -443,19 +443,18 @@ begin
 
   FTempDirectory := GetTempDir(True);
   if FTempDirectory = '' then
-    begin
+  begin
     ShowMessage('Невозможно получить каталог по умолчанию');
     halt;
-    end;
-
+  end;
 
   //Создать новый проект
   NewProject;
 
-
   //Проверить на открытие архива
   fn := ParamStr(1);
-  if FileExists(fn) then OpenProjectFromFile(fn) else;
+  if FileExists(fn) then
+    OpenProjectFromFile(fn);
 end;
 
 
@@ -477,35 +476,37 @@ begin
   try
     c := Length(FileNames) - 1;
     for i := 0 to c do
-      begin
+    begin
       List.Clear;
 
       if DirectoryExists(FileNames[i]) then
-        begin
+      begin
         BasePath := GetBaseDirectoryPart(FileNames[i]);     //Найти базовый каталог
         FindFilesInFolders(FileNames[i], List {@sa});       //Поиск всех файлов в каталоге
 
         k := List.Count - 1;
         for j := 0 to k do
-          begin
+        begin
           TreePath := List.Part[j];
           Delete(TreePath, 1, Length(BasePath) + 1);
           TreePath := ExcludeTrailingBackslash(Path + ExtractFilePath(TreePath));
           AddFileToList(TreePath, List.Part[j]);
-          end;
+        end;
 
-        end else AddFileToList(Path, FileNames[i]);
+      end
+      else
+        AddFileToList(Path, FileNames[i]);
 
-      end;
+    end;
 
 
 
   except
     on E: EsgeException do
-      begin
+    begin
       ShowMessage(E.Message);
       Exit;
-      end;
+    end;
   end;
 
 
@@ -526,14 +527,13 @@ var
 begin
   PackListSaveDialog.FileName := FProjectName;
   if PackListSaveDialog.Execute then
-    begin
+  begin
     List := TsgeStringList.Create;
 
     //Подготовить список
     c := FFileList.Count - 1;
     for i := 0 to c do
       List.Add(FFileList.Item[i].PackName);
-
 
     //Сохранить
     try
@@ -547,8 +547,7 @@ begin
       List.Free;
     end;
 
-
-    end;
+  end;
 end;
 
 
@@ -587,8 +586,8 @@ var
   SelectNode: TTreeNode;
 begin
   SelectNode := FolderTree.Selected;
-  if SelectNode = nil then Exit;
-
+  if SelectNode = nil then
+    Exit;
 
   Tree_AddNode(FolderTree.Items, SelectNode, 'Новый');
 end;
@@ -608,7 +607,8 @@ end;
 
 procedure TMainFrm.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
-  if FModified and (MessageDlg('Вопрос', 'Сохранить архив?', mtConfirmation, mbYesNo, 0) = mrYes) then SaveProject;
+  if FModified and (MessageDlg('Вопрос', 'Сохранить архив?', mtConfirmation, mbYesNo, 0) = mrYes) then
+    SaveProject;
 end;
 
 
@@ -619,7 +619,8 @@ var
 begin
   Node := TTreeView(Sender).Selected;
 
-  if Node = nil then Exit;
+  if Node = nil then
+    Exit;
 
   Path := GetPathFromTreeView;
 
@@ -668,8 +669,8 @@ end;
 procedure TMainFrm.FolderTreeKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 begin
   case Key of
-    VK_DELETE     : Tree_DeleteNode;
-    VK_F2         : Tree_RenameNode;
+    VK_DELETE : Tree_DeleteNode;
+    VK_F2     : Tree_RenameNode;
   end;
 end;
 
@@ -693,7 +694,8 @@ var
   Ms: TsgeMemoryStream;
   F: TsgePackFileReader;
 begin
-  if FolderView.SelCount <> 1 then Exit;
+  if FolderView.SelCount <> 1 then
+    Exit;
 
   //Полное имя файла
   PackFn := GetPathFromTreeView + FolderView.ItemFocused.Caption;
@@ -701,7 +703,8 @@ begin
   //Индекс в массиве
   Idx := FFileList.IndexOf(PackFn);
 
-  if Idx = -1 then Exit;
+  if Idx = -1 then
+    Exit;
 
   try
     try
@@ -712,11 +715,11 @@ begin
           Ms.LoadFromFile(FFileList.Item[Idx].FileName);
 
         pftPack:
-          begin
+        begin
           F := TsgePackFileReader.Create(FFileList.Item[Idx].FileName);
           F.GetItemData(FFileList.Item[Idx].Index, Ms);
           FreeAndNil(F);
-          end;
+        end;
       end;
       Fn := FTempDirectory + FolderView.ItemFocused.Caption;
       Ms.SaveToFile(Fn);
@@ -737,7 +740,10 @@ end;
 procedure TMainFrm.CorrectCaption;
 begin
   //Caption
-  if FProjectName <> '' then Caption := FProjectName + ' - ' + FormTitle else Caption := FormTitle;
+  if FProjectName <> '' then
+    Caption := FProjectName + ' - ' + FormTitle
+  else
+    Caption := FormTitle;
 end;
 
 
@@ -754,15 +760,14 @@ end;
 
 procedure TMainFrm.NewProject;
 begin
-  if FModified and (MessageDlg('Вопрос', 'Сохранить архив?', mtConfirmation, mbYesNo, 0) = mrYes) then SaveProject;
-
+  if FModified and (MessageDlg('Вопрос', 'Сохранить архив?', mtConfirmation, mbYesNo, 0) = mrYes) then
+    SaveProject;
 
   //Устанавливаем параметры проекта
   FModified := False;
   FProjectFileName := '';
   FProjectName := 'Новый';
   FFileList.Clear;
-
 
   //Обновить интерфейс
   BuildTree;
@@ -784,18 +789,21 @@ var
   Fn, TempFn: String;
 begin
   if FModified then
-    begin
+  begin
     FPack := nil;
     Ms := nil;
     Cancel := False;
 
     //Определить имя файла
     if FProjectFileName = '' then
-      begin
+    begin
       PackSaveDialog.FileName := FProjectName;
-      if not PackSaveDialog.Execute then Exit;
+      if not PackSaveDialog.Execute then
+        Exit;
       Fn := PackSaveDialog.FileName;
-      end else Fn := FProjectFileName;
+    end
+    else
+      Fn := FProjectFileName;
     TempFn := ChangeFileExt(Fn, '.tmp');
 
 
@@ -816,7 +824,7 @@ begin
         //Записать файлы в архив
         c := FFileList.Count - 1;
         for i := 0 to c do
-          begin
+        begin
           Ms := TsgeMemoryStream.Create;
 
           try
@@ -826,19 +834,19 @@ begin
                 Ms.LoadFromFile(FFileList.Item[i].FileName);
 
               pftPack:
-                begin
+              begin
                 FPack := TsgePackFileReader.Create(FFileList.Item[i].FileName);
                 FPack.GetItemData(FFileList.Item[i].Index, Ms);
                 FreeAndNil(FPack);
-                end;
+              end;
             end;
 
           except
             if MessageDlg('Вопрос...', 'Не могу открыть файл для чтения. Прервать?' + #13#10 + FFileList.Item[i].FileName, mtConfirmation, mbYesNo, 0) = mrYes then
-              begin
+            begin
               Cancel := True;
               Break;
-              end;
+            end;
           end;
 
 
@@ -861,19 +869,17 @@ begin
           ProgressFrm.Step;
           Application.ProcessMessages;
           if not ProgressFrm.Visible then
-            begin
+          begin
             Cancel := True;
             Break;
-            end;
+          end;
 
-          end;  //For
+        end;  //For
 
 
       except
         on E: EsgeException do
-          begin
           ShowMessage(E.Message);
-          end;
       end;
 
 
@@ -886,37 +892,37 @@ begin
 
 
     if Cancel then
-      begin
+    begin
       ShowMessage('Операция сохранения прервана!');
       DeleteFile(TempFn);
-      end
-      else begin
+    end
+    else
+    begin
       //Поменять файлы местами
       if FileExists(Fn) then
-        begin
+      begin
         //Удалить старый файл проекта
         if not DeleteFile(Fn) then
-          begin
+        begin
           ShowMessage('Не могу удалить старый архив!' + #13#10 + Fn);
           DeleteFile(TempFn);
           Exit;
-          end;
         end;
+      end;
 
       //Заменить временный файл проекта новым
       if not RenameFile(TempFn, Fn) then
-        begin
+      begin
         ShowMessage('Не могу переименовать архив!' + #13#10 + TempFn);
         Exit;
-        end;
+      end;
 
       //Поправить параметры проекта
       FModified := False;
       FProjectFileName := Fn;
       FProjectName := ChangeFileExt(ExtractFileName(FProjectFileName), '');
       CorrectCaption;
-      end;
-
+    end;
 
     end;
 end;
@@ -932,7 +938,8 @@ end;
 
 procedure TMainFrm.OpenProject;
 begin
-  if FModified and (MessageDlg('Вопрос', 'Сохранить архив?', mtConfirmation, mbYesNo, 0) = mrYes) then SaveProject;
+  if FModified and (MessageDlg('Вопрос', 'Сохранить архив?', mtConfirmation, mbYesNo, 0) = mrYes) then
+    SaveProject;
 
   if PackOpenDialog.Execute then
     OpenProjectFromFile(PackOpenDialog.FileName);
@@ -955,7 +962,7 @@ begin
       FFileList.Clear;
       c := F.Count - 1;
       for i := 0 to c do
-        begin
+      begin
         Item.FileName := FileName;
         Item.FileSize := F.Item[i].DataSize;
         Item.FileType := pftPack;
@@ -964,14 +971,14 @@ begin
 
         //Добавить в список
         FFileList.Add(Item);
-        end;
+      end;
 
     except
       on E: EsgeException do
-        begin
+      begin
         ShowMessage(E.Message);
         Exit;
-        end;
+      end;
     end;
 
 
@@ -1001,10 +1008,10 @@ begin
   Idx := 0;
   s := NodeName + #32 + IntToStr(Idx);
   while SelectedNode.IndexOfText(s) <> -1 do
-    begin
+  begin
     Inc(Idx);
     s := NodeName + #32 + IntToStr(Idx);
-    end;
+  end;
 
 
   //Добавить узел
@@ -1028,8 +1035,10 @@ var
   FL: TsgePackFileWriterBlock;
 begin
   Node := FolderTree.Selected;
-  if Node = nil then Exit;
-  if Node.Text = '\' then Exit;
+  if Node = nil then
+    Exit;
+  if Node.Text = '\' then
+    Exit;
 
   //Определить путь без имени катлога
   BasePath := GetPathFromTreeView(Node.Parent);   //Путь без имени текущего каталога
@@ -1039,13 +1048,13 @@ begin
 
 A1:
   if InputQuery('Укажите новое имя каталога', 'Имя каталога', NewName) then
-    begin
+  begin
     //Проверить имя на уникальность
     if FolderExist(Node.Parent, NewName) then
-      begin
+    begin
       ShowMessage('Каталог "' + NewName + '" существует, укажите другое имя.');
       goto A1;
-      end;
+    end;
 
 
     //Поправить Tree
@@ -1055,10 +1064,10 @@ A1:
     //Просмотреть файлы на совпадение
     c := FFileList.Count - 1;
     for i := 0 to c do
-      begin
+    begin
       s := UTF8LowerCase(FFileList.Item[i].PackName);
       if UTF8Pos(OldName, s) = 1 then
-        begin
+      begin
         s2 := FFileList.Item[i].PackName;
         UTF8Delete(s2, 1, OldPathSize);
         s2 := NewName + s2;
@@ -1066,14 +1075,12 @@ A1:
         FL := FFileList.Item[i];
         FL.PackName := s2;
         FFileList.Item[i] := FL;
-        end;
       end;
-
-
+     end;
 
     //Всякая шляпа
     FModified := True;
-    end;
+  end;
 end;
 
 
@@ -1084,27 +1091,30 @@ var
   Node: TTreeNode;
 begin
   Node := FolderTree.Selected;
-  if Node = nil then Exit;
-  if Node.Text = '\' then Exit;
+  if Node = nil then
+    Exit;
+  if Node.Text = '\' then
+    Exit;
 
 
-  if MessageDlg('Вопрос', 'Удалить каталог? "' + Node.Text + '"' + #13#10 + 'Внимание буду удалены дочерние элементы!', mtConfirmation, mbYesNo, 0) = mrNo then Exit;
+  if MessageDlg('Вопрос', 'Удалить каталог? "' + Node.Text + '"' + #13#10 + 'Внимание буду удалены дочерние элементы!', mtConfirmation, mbYesNo, 0) = mrNo then
+    Exit;
 
   Path := UTF8LowerCase(GetPathFromTreeView);
 
   //Удалить файлы с вхождением Path
   i := -1;
   while i < FFileList.Count - 1 do
-    begin
+  begin
     Inc(i);
 
     s := UTF8LowerCase(FFileList.Item[i].PackName);
     if UTF8Pos(Path, s) = 1 then
-      begin
+    begin
       FFileList.Delete(i);
       Dec(i)
-      end;
     end;
+  end;
 
   //Всякая шляпа
   BuildTree;
@@ -1119,20 +1129,21 @@ var
   Node: TTreeNode;
   i: Integer;
 begin
-  if MessageDlg('Вопрос', 'Удалить все каталоги кроме корня?', mtConfirmation, mbYesNo, 0) = mrNo then Exit;
+  if MessageDlg('Вопрос', 'Удалить все каталоги кроме корня?', mtConfirmation, mbYesNo, 0) = mrNo then
+    Exit;
 
   //Удалить все файлы с каталогами
   i := -1;
   while i < FFileList.Count - 1 do
-    begin
+  begin
     Inc(i);
 
     if Pos('\', FFileList.Item[i].PackName) <> 0 then
-      begin
+    begin
       FFileList.Delete(i);
       Dec(i)
-      end;
     end;
+  end;
 
   //Удалить Node
   Node := FolderTree.Items.GetFirstNode;
@@ -1163,21 +1174,24 @@ begin
 
 
   //Узнать количество извлекаемых файлов
-  if Path = '' then c := FFileList.Count
-    else begin
+  if Path = '' then
+    c := FFileList.Count
+  else
+  begin
     c := 0;
     s := UTF8LowerCase(Path);
     for i := 0 to FFileList.Count - 1 do
-      if UTF8Pos(s, UTF8LowerCase(FFileList.Item[i].PackName)) = 1 then Inc(c);
-    end;
+      if UTF8Pos(s, UTF8LowerCase(FFileList.Item[i].PackName)) = 1 then
+        Inc(c);
+  end;
 
 
   //Нет файлов для извлечения
   if c = 0 then
-    begin
+  begin
     ShowMessage('Нет файлов для извлечения');
     Exit;
-    end;
+  end;
 
 
   //Выбрать каталог
@@ -1196,13 +1210,16 @@ begin
         //Найти выделенные файлы и извлечь
         c := FFileList.Count - 1;
         for i := 0 to c do
-          begin
+        begin
           B := False;
-          if Path = '' then B := True else
-            if UTF8Pos(s, UTF8LowerCase(FFileList.Item[i].PackName)) = 1 then B := True;
+          if Path = '' then
+            B := True
+          else
+            if UTF8Pos(s, UTF8LowerCase(FFileList.Item[i].PackName)) = 1 then
+              B := True;
 
           if B then
-            begin
+          begin
             //Читаем данные в память
             Ms := TsgeMemoryStream.Create;
             case FFileList.Item[i].FileType of
@@ -1210,11 +1227,11 @@ begin
                 Ms.LoadFromFile(FFileList.Item[i].FileName);
 
               pftPack:
-                begin
+              begin
                 F := TsgePackFileReader.Create(FFileList.Item[i].FileName);
                 F.GetItemData(FFileList.Item[i].Index, Ms);
                 FreeAndNil(F);
-                end;
+              end;
             end;
 
             //Проверить на существование файла
@@ -1224,7 +1241,8 @@ begin
             fn := SavePath + fn{FFileList.Item[i].PackName};          //Определить имя файла
             ForceDirectories(ExtractFilePath(fn));                //Создать дерево каталогов
             if FileExists(fn) then
-              if MessageDlg('Вопрос', 'Файл "' + ExtractFileName(fn) + '" существует. Переписать?', mtConfirmation, mbYesNo, 0) = mrNo then Continue;
+              if MessageDlg('Вопрос', 'Файл "' + ExtractFileName(fn) + '" существует. Переписать?', mtConfirmation, mbYesNo, 0) = mrNo then
+                Continue;
 
 
             //Сохранить в папку
@@ -1235,14 +1253,14 @@ begin
             ProgressFrm.Step;
             Application.ProcessMessages;
             if not ProgressFrm.Visible then
-              begin
+            begin
               ShowMessage('Извлечение прервано!');
               Break;
-              end;
             end;
+          end;
 
 
-          end;//For
+        end;//For
 
       except
         on E: EsgeException do
@@ -1274,7 +1292,7 @@ begin
 
 
   if FolderViewExtractDialog.Execute then
-    begin
+  begin
     //Подготовить путь для сохранения
     SavePath := IncludeTrailingBackslash(FolderViewExtractDialog.FileName);
 
@@ -1292,10 +1310,11 @@ begin
         c := FolderView.Items.Count - 1;
         for i := 0 to c do
           if FolderView.Items.Item[i].Selected then
-            begin
+          begin
             PackName := Path + FolderView.Items.Item[i].Caption;  //Узнать имя в проекте
             Idx := FFileList.IndexOf(PackName);                   //Индекс файла
-            if Idx = -1 then Continue;
+            if Idx = -1 then
+              Continue;
 
 
             //Читаем данные в память
@@ -1306,17 +1325,18 @@ begin
 
 
               pftPack:
-                begin
+              begin
                 F := TsgePackFileReader.Create(FFileList.Item[Idx].FileName);
                 F.GetItemData(FFileList.Item[Idx].Index, Ms);
                 FreeAndNil(F);
-                end;
+              end;
             end;
 
             //Проверить на существование файла
             fn := SavePath + FolderView.Items.Item[i].Caption;
             if FileExists(fn) then
-              if MessageDlg('Вопрос', 'Файл "' + FolderView.Items.Item[i].Caption + '" существует. Переписать?', mtConfirmation, mbYesNo, 0) = mrNo then Continue;
+              if MessageDlg('Вопрос', 'Файл "' + FolderView.Items.Item[i].Caption + '" существует. Переписать?', mtConfirmation, mbYesNo, 0) = mrNo then
+                Continue;
 
 
             //Сохранить в папку
@@ -1327,18 +1347,16 @@ begin
             ProgressFrm.Step;
             Application.ProcessMessages;
             if not ProgressFrm.Visible then
-              begin
+            begin
               ShowMessage('Извлечение прервано!');
               Break;
-              end;
             end;
+          end;
 
 
       except
         on E: EsgeException do
-          begin
           ShowMessage(E.Message);
-          end;
       end;
 
 
@@ -1350,7 +1368,7 @@ begin
 
     //Закрыть прогресс
     ProgressFrm.Hide;
-    end;
+  end;
 end;
 
 
@@ -1362,7 +1380,7 @@ var
   Item: TsgePackFileWriterBlock;
 begin
   if FolderViewOpenDialog.Execute then
-    begin
+  begin
     F := Nil;
 
     //Путь в дереве
@@ -1371,7 +1389,7 @@ begin
     //Цикл по открываемым файлам
     c := FolderViewOpenDialog.Files.Count - 1;
     for i := 0 to c do
-      begin
+    begin
       Fn := FolderViewOpenDialog.Files.Strings[i];
 
       try
@@ -1381,7 +1399,7 @@ begin
           //Цикл по файлам внутри архива
           k := F.Count - 1;
           for j := 0 to k do
-            begin
+          begin
             //Подготовить запись
             Item.FileName := Fn;
             Item.FileSize := F.Item[j].DataSize;
@@ -1391,16 +1409,16 @@ begin
 
             //Добавить в проект
             FFileList.Add(Item);
-            end;
+          end;
 
           FreeAndNil(F);
 
         except
           on E: EsgeException do
-            begin
+          begin
             ShowMessage(E.Message);
             Exit;
-            end;
+          end;
         end;
 
 
@@ -1409,14 +1427,14 @@ begin
       end;
 
 
-      end;
+    end;
 
     //Всякая шляпа
     FModified := True;
     BuildTree;
     BuildView(Path);
     CorrectStatusBar;
-    end;
+  end;
 end;
 
 
@@ -1426,7 +1444,7 @@ var
   i: Integer;
 begin
   if FolderViewOpenDialog.Execute then
-    begin
+  begin
     SetLength(Files, FolderViewOpenDialog.Files.Count);
 
     for i := 0 to FolderViewOpenDialog.Files.Count - 1 do
@@ -1434,7 +1452,7 @@ begin
 
     FormDropFiles(Self, Files); //Грязный хак
     SetLength(Files, 0);
-    end;
+  end;
 end;
 
 
@@ -1445,12 +1463,14 @@ var
   Nm, Path, Ext: String;
   F: TsgePackFileWriterBlock;
 begin
-  if FolderView.SelCount = 0 then Exit;
+  if FolderView.SelCount = 0 then
+    Exit;
 
 
   Li := FolderView.Selected;
 
-  if Li = nil then Exit;
+  if Li = nil then
+    Exit;
 
   Path := GetPathFromTreeView;
 
@@ -1461,7 +1481,7 @@ begin
   Ext := ExtractFileExt(Li.Caption);
   Nm := ChangeFileExt(Li.Caption, '');
   if InputQuery('Укажите новое имя файла', 'Имя файла', Nm) then
-    begin
+  begin
     Nm := ChangeFileExt(Nm, Ext);
     F := FFileList.Item[Idx];
     F.PackName := Path + Nm;
@@ -1470,7 +1490,7 @@ begin
 
     //Всякая шляпа
     FModified := True;
-    end;
+  end;
 end;
 
 
@@ -1479,10 +1499,12 @@ var
   i, c: Integer;
   Path: String;
 begin
-  if FolderView.SelCount = 0 then Exit;
+  if FolderView.SelCount = 0 then
+    Exit;
 
 
-  if MessageDlg('Вопрос', 'Удалить выбранные файлы?', mtConfirmation, mbYesNo, 0) = mrNo then Exit;
+  if MessageDlg('Вопрос', 'Удалить выбранные файлы?', mtConfirmation, mbYesNo, 0) = mrNo then
+    Exit;
 
   Path := GetPathFromTreeView;
 
@@ -1503,7 +1525,8 @@ var
   i, c: Integer;
   Path: String;
 begin
-  if MessageDlg('Вопрос', 'Удалить файлы в текущем каталоге?', mtConfirmation, mbYesNo, 0) = mrNo then Exit;
+  if MessageDlg('Вопрос', 'Удалить файлы в текущем каталоге?', mtConfirmation, mbYesNo, 0) = mrNo then
+    Exit;
 
   Path := GetPathFromTreeView;
 

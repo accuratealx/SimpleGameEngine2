@@ -213,54 +213,56 @@ begin
 
   //Проверить на аварийный останов
   if (EventObj.Key = keyX) and (kbCtrl in EventObj.KeyboardButtons) and (kbAlt in EventObj.KeyboardButtons) then
-    begin
+  begin
     StopCommand;
     RepaintInner;
     Exit;
-    end;
+  end;
 
 
   //Проверить на команду ReadKey
   if FReadKeyMode then
-    begin
+  begin
     FSkipChar := True;            //Флаг пропуска ввода символа в консоль
     FReadKeyMode := False;        //Выключить режим чтения одной кнопки
     FreadKeyChar := EventObj.Key; //Запомнить код клавиши
     FEvent.Up;                    //Сказать потоку что нажали кнопку
     RepaintInner;                 //Перерисовать оболочку
     Exit;
-    end;
+  end;
 
 
   //Обработать системные клавиши
   case EventObj.Key of
 
     //Закрыть оболочку
-    keyEscape: if not FCommandIsRunning then Enable := False;
+    keyEscape:
+      if not FCommandIsRunning then
+        Enable := False;
 
     //Выполнить команду
     keyEnter:
-      begin
+    begin
       //Проверить на команду Read, ReadLn
       if FReadLnMode then
-        begin
+      begin
         FReadLnMode := False;
         FEvent.Up;
         Exit;
-        end;
+      end;
 
       //Проверить не выполняется ли ещё команда
       if FCommandIsRunning then
-        begin
+      begin
         //Ошибка, команда ещё выполняется
         ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_CommandStillRunning));
         Exit;
-        end;
+      end;
 
       //Подготовить команду
       s := sgeTrim(FEditor.Line);
       if s <> '' then
-        begin
+      begin
         //Стереть строку ввода
         FEditor.Line := '';
 
@@ -269,29 +271,34 @@ begin
 
         //Выполнить команду
         DoCommand(s);
-        end;
       end;
+    end;
 
 
-      //Установить предыдущую команду в поле редактора
-      keyUp: FEditor.Line := FCommandHistory.GetPreviousCommand;
+    //Установить предыдущую команду в поле редактора
+    keyUp:
+      FEditor.Line := FCommandHistory.GetPreviousCommand;
 
 
-      //Установить следующую команду в поле редактора
-      keyDown: FEditor.Line := FCommandHistory.GetNextCommand;
+    //Установить следующую команду в поле редактора
+    keyDown:
+      FEditor.Line := FCommandHistory.GetNextCommand;
 
 
-      //Прокрутить журнал вверх
-      keyPageUp: JournalUp(not (kbCtrl in EventObj.KeyboardButtons));
+    //Прокрутить журнал вверх
+    keyPageUp:
+      JournalUp(not (kbCtrl in EventObj.KeyboardButtons));
 
 
-      //Прокрутить журнал вниз
-      keyPageDown: JournalDown(not (kbCtrl in EventObj.KeyboardButtons));
+    //Прокрутить журнал вниз
+    keyPageDown:
+      JournalDown(not (kbCtrl in EventObj.KeyboardButtons));
 
 
-      //Очистить журнал оболочки
-      keyL:
-        if (kbCtrl in EventObj.KeyboardButtons) then FJournal.Clear;
+    //Очистить журнал оболочки
+    keyL:
+      if (kbCtrl in EventObj.KeyboardButtons) then
+        FJournal.Clear;
 
     else
       FEditor.ProcessKey(EventObj.Key, EventObj.KeyboardButtons);
@@ -314,11 +321,11 @@ begin
 
   //Проверить на пропуск ввода
   if FSkipChar then
-    begin
+  begin
     FSkipChar := False;
     RepaintInner;
     Exit;
-    end;
+  end;
 
   //Отослать в редактор
   FEditor.ProcessChar(EventObj.Char, EventObj.KeyboardButtons);
@@ -353,7 +360,10 @@ begin
   Result := True;
 
   Page := (kbCtrl in EventObj.KeyboardButtons);
-  if EventObj.Delta > 0 then JournalUp(Page) else JournalDown(Page);
+  if EventObj.Delta > 0 then
+    JournalUp(Page)
+  else
+    JournalDown(Page);
 end;
 
 
@@ -372,22 +382,21 @@ begin
   imgR := ImageW / ImageH;
 
   if scrR < imgR then
-    begin
+  begin
     D := ShellH * ImageW / ImageH;
-
     Result.Y1 := 0;
     Result.Y2 := ShellH;
     Result.X1 := (ShellW / 2) - (D / 2);
     Result.X2 := Result.X1 + D;
-    end else
-    begin
+  end
+  else
+  begin
     D := ShellW * ImageH / ImageW;
-
     Result.X1 := 0;
     Result.X2 := ShellW;
     Result.Y1 := (ShellH / 2) - (D / 2);
     Result.Y2 := Result.Y1 + D;
-    end;
+  end;
 end;
 
 
@@ -398,10 +407,10 @@ var
 begin
   Result := Str;
   for i := 0 to FExtVariables.Variables.Count - 1 do
-    begin
+  begin
     V := FExtVariables.Variables.Item[i];
     Result := sgeStringReplace(Result, VariablePrefix + V.Name, V.StrValue, [rfReplaceAll, rfIgnoreCase]);
-    end;
+  end;
 end;
 
 
@@ -423,13 +432,15 @@ var
   JLine: TsgeShellLine;
 begin
   //Обработать аварийный останов
-  if FStopExecuting then Exit;
+  if FStopExecuting then
+    Exit;
 
   Command := nil;
 
   //Определить режим работы
   Mode := ModeEmpty;
-  if LowerCase(Cmd.Part[0]) = 'autor' then Mode := ModeAutor;
+  if LowerCase(Cmd.Part[0]) = 'autor' then
+    Mode := ModeAutor;
 
   try
     //Найти имена команд без имени группы
@@ -437,39 +448,43 @@ begin
     FCommandList.GetMatchCommandList(Cmd.Part[0], mtName, MatchList); //Получить список
 
     //Определить результат поиска
-    Match := MatchError;                                              //Нет команды
-    if MatchList.Count = 1 then Match := MatchOneCommand;             //Одна команда
-    if MatchList.Count > 1 then Match := MatchDuplicate;              //Больше одной
+    Match := MatchError;                                            //Нет команды
+    if MatchList.Count = 1 then
+      Match := MatchOneCommand;                                     //Одна команда
+    if MatchList.Count > 1 then
+      Match := MatchDuplicate;                                      //Больше одной
 
     //Обработать результат поиска без групп
     case Match of
       MatchError:
-        begin
+      begin
         //Найти список команд с полным именем
         FCommandList.GetMatchCommandList(Cmd.Part[0], mtGroup, MatchList);
 
         //Если есть хоть одна запись, то запомнить указатель
-        if MatchList.Count = 1 then Command := MatchList.Item[0];
-        end;
+        if MatchList.Count = 1 then
+          Command := MatchList.Item[0];
+      end;
 
       MatchOneCommand:
         Command := MatchList.Item[0];
 
       MatchDuplicate:
-        begin
+      begin
         //Подготовить список найденных комманд для ошибки
         c := MatchList.Count - 1;
         s := '';
         for i := 0 to c do
-          begin
+        begin
           S := S + MatchList.Item[i].GetFullName;
-          if i <> c then S := S + ', ';
-          end;
+          if i <> c then
+            S := S + ', ';
+        end;
 
         //Обработать ошибку
         ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_MultipleCommand, S));
         Exit;
-        end;
+      end;
     end;
 
   finally
@@ -478,22 +493,22 @@ begin
 
 
   //Проверить указатель команды
-  if Command <> nil then Mode := ModeCommand;
+  if Command <> nil then
+    Mode := ModeCommand;
 
   //Обработать режим работы
   case Mode of
     ModeEmpty:
       ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_CommandNotFound, Cmd.Part[0]));
 
-
     ModeCommand:
-      begin
+    begin
       //Проверить хватает ли параметров
       if Cmd.Count < Command.MinParamCount + 1 then
-        begin
+      begin
         ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_NotEnoughParameters, Cmd.Command));
         Exit;
-        end;
+      end;
 
       //Выполнить команду
       try
@@ -506,18 +521,16 @@ begin
       //Проверить результат выполнения
       if CmdResult <> '' then
         ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_CommandError, Cmd.Command, CmdResult));
-      end;
-
+    end;
 
     ModeAutor:
-      begin
+    begin
       S := Utf8ToAnsi('Творческий Человек  [accuratealx@gmail.com]');
       JLine := FJournal.Add;
       for i := 1 to Length(S) do
         JLine.Add(S[i], sgeGetRandomColor);
-      end;
+    end;
   end;
-
 end;
 
 
@@ -534,15 +547,17 @@ begin
     //Выполнить части по очереди
     c := Line.Count - 1;
     for i := 0 to c do
-      begin
+    begin
       //Выделить часть
       Str := sgeTrim(Line.Part[i]);
 
       //Пустая строка
-      if Str = '' then Continue;
+      if Str = '' then
+        Continue;
 
       //Заметка
-      if Str[1] = '#' then Continue;
+      if Str[1] = '#' then
+        Continue;
 
       //Подставить параметры в строку
       Str := SubstituteVariables(Str);
@@ -552,19 +567,20 @@ begin
         Cmd := TsgeSimpleCommand.Create(Str, FWeakSeparator);
 
         //Проверить пусто
-        if Cmd.Count = 0 then Continue;
+        if Cmd.Count = 0 then
+          Continue;
 
         //Проверить на алиас
         Idx := FAliases.IndexOf(Cmd.Part[0]);
         if Idx <> -1 then
-          begin
+        begin
           //Подставить алиас
           Str := sgeStringReplace(Str, FAliases.Parameter[Idx].Name, FAliases.Parameter[Idx].Value, [rfIgnoreCase]);
 
           //Выполнить
           ExecuteCommand(Str);
           Continue;
-          end;
+        end;
 
         //Выполнить команду
         RunCommand(Cmd);
@@ -574,8 +590,9 @@ begin
 
 
       //Проверить на останов выполнения
-      if FStopExecuting then Break;
-      end;  //For
+      if FStopExecuting then
+        Break;
+    end;
 
   finally
     Line.Free;
@@ -598,31 +615,33 @@ begin
   FCallStack.Clear;
   FCallStack.Add(ScriptName, 0);
 
-
   //Выполнять команды пока есть хоть один элемент в стеке вызова
   while True do
-    begin
+  begin
     //Проверить на останов выполнения
-    if FStopExecuting then Break;
+    if FStopExecuting then
+      Break;
 
     //Ссылка на последний переход
     Call := FCallStack.GetLast;
 
     //Если нет перехода то завершить выполнение скрипта
-    if Call = nil then Break;
+    if Call = nil then
+      Break;
 
     //Найти ссылку на скрипт
     Script := FScriptList.GetByName(Call.Name);
 
     //не найден скрипт, выход
-    if Script = nil then Break;
+    if Script = nil then
+      Break;
 
     //Проверить выход курсора за пределы скрипта
     if Call.Pos > Script.Count - 1 then
-      begin
+    begin
       FCallStack.DeleteLast;  //Удалить последний элемент стека вызовов
       Continue;
-      end;
+    end;
 
     //Взять строку
     s := Script.Item[Call.Pos];
@@ -632,19 +651,17 @@ begin
 
     //Выполнить команду
     ExecuteCommand(s);
-    end;
-
+  end;
 
   //Удалить временный сценарий
   FScriptList.SafeDelete(ScriptName);
 
-
   //Обработать аварийный останов
   if FStopExecuting and not FDestroying then
-    begin
+  begin
     ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_BreakByUser));  //Обработать ошибку
     RepaintThread;                                                                //Перерисовать оболочку
-    end;
+  end;
 end;
 
 
@@ -672,13 +689,12 @@ begin
   MaxCharWidth := sgeFloor((W - Indent * 2) / CharW);               //Максимум символов по ширине
   XOffset := 0;
 
-
   //Проверить размеры холста и поправить
-  if (FCanvas.Width <> W) or (FCanvas.Height <> H) then FCanvas.SetSize(W, H);
-
+  if (FCanvas.Width <> W) or (FCanvas.Height <> H) then
+    FCanvas.SetSize(W, H);
 
   with Graphic do
-    begin
+  begin
     //Подготовить спрайт для вывода
     PushAttrib;                                                     //Сохранить параметры
     Reset;                                                          //Сбросить геометрию
@@ -687,7 +703,6 @@ begin
     ResetDrawOptions;                                               //Сбросить настройки вывода
     doCoordinateType := gctClassic;
 
-
     //Залить фоновым цветом
     ColorBlend := False;                                            //Отключить смешивание цветов
     PoligonMode := gpmFill;                                         //Установить режим заливки полигонов
@@ -695,57 +710,53 @@ begin
     DrawRect(0, 0, FCanvas.Width, FCanvas.Height);                  //Вывести прямоугольник
     ColorBlend := True;                                             //Включить смештвание цветов
 
-
     //Вывод фоновой картинки если есть
     if Assigned(FBGSprite) then
-      begin
+    begin
       Rct := FitSprite(W, H, FBGSprite.Width, FBGSprite.Height);
       DrawSprite(Rct, FBGSprite);
-      end;
-
+    end;
 
     //Координаты Начала вывода строки редактора
     X := Indent;
     Y := H - Indent - FFont.Height;
 
-
     //Вывод спецсимвола ожидания ввода
     s := '';
-    if FReadLnMode then s := '?';
-    if FReadKeyMode then s := '#';
+    if FReadLnMode then
+      s := '?';
+
+    if FReadKeyMode then
+      s := '#';
+
     if s <> '' then
-      begin
+    begin
       Color := FEditorTextColor;
       DrawText(X, Y, FFont, s);
       XOffset := CharW;
-      end;
-
+    end;
 
     //Вывод строки редактора
     Color := FEditorTextColor;
     DrawText(X + XOffset, Y, FFont, FEditor.Line);
 
-
     //Границы высоты выделения строки редактора
     Y1 := Y - 2;
     Y2 := H - Indent + 2;
 
-
     //Выделение строки редактора
     if FEditor.SelectCount > 0 then
-      begin
+    begin
       X1 := Indent + XOffset + FFont.GetStringWidth(FEditor.GetTextBeforePos(FEditor.SelectBeginPos));
       X2 := Indent + XOffset + FFont.GetStringWidth(FEditor.GetTextBeforePos(FEditor.SelectEndPos));
       Color := FEditorSelectColor;
       DrawRect(X1, Y1, X2, Y2);
-      end;
-
+    end;
 
     //Курсор строки редактора
     X1 := Indent + XOffset + FFont.GetStringWidth(FEditor.GetTextBeforePos(FEditor.CursorPos));
     Color := FEditorCursorColor;
     DrawLine(X1, Y1, X1, Y2);
-
 
     //Вывод журнала оболочки
     JEnd := FJournal.Count - 1 - FJournalOffset;
@@ -760,20 +771,22 @@ begin
 
       //Вывод элементов
       for j := 0 to Line.Count - 1 do
-        begin
+      begin
         Item := Line.Item[j];                                       //Ссылка на элемент
-        if DrawChar >= MaxCharWidth then Break;                     //Проверить на переполнение вывода
+        if DrawChar >= MaxCharWidth then                            //Проверить на переполнение вывода
+          Break;
+
         C := DrawChar + Length(Item.Text);                          //Длина текста с предыдущим выводом
         s := Item.Text;
         X1 := Indent + DrawChar * CharW;                            //Координата X элемента строки
 
         //Если текст вылез за границу спрайта, то обрезать
         if C > MaxCharWidth then
-          begin
+        begin
           CharToCut := C - MaxCharWidth + 3;                        //Сколько отрезать от вывода
           Delete(s, Length(s) - CharToCut + 1, CharToCut);          //Отрезать лишний текст
           s := s + '...';                                           //Для красоты
-          end;
+        end;
 
         //Вывод фона
         ItemW := Length(s);
@@ -786,19 +799,17 @@ begin
 
         //Сместить начало вывода нового символа
         Inc(DrawChar, ItemW);
-        end;
       end;
-
+    end;
 
     //Восстановить графику
     RenderPlace := grpScreen;                                       //Изменить вывод на экран
     RenderSprite := nil;                                            //Отвязать спрайт от вывода
     PopAttrib;                                                      //Восстановить параметры
 
-
     //Выполнить действия над спрайтом
     Finish;
-    end;
+  end;
 
   //Разблоктровать перерисовку
   FRepaintCS.Leave;
@@ -820,12 +831,16 @@ procedure TsgeExtensionShell.JournalUp(UsePage: Boolean);
 var
   d, i: Integer;
 begin
-  if UsePage then i := FJournalPage else i := 1;
+  if UsePage then
+    i := FJournalPage
+  else
+    i := 1;
   Inc(FJournalOffset, i);
 
   //Проверить выход за границы
   d := sgeMax(FJournal.Count - FJournalLines, 0);
-  if FJournalOffset >= d then FJournalOffset := d;
+  if FJournalOffset >= d then
+    FJournalOffset := d;
 
   //Перерисовать оболочку
   RepaintInner;
@@ -836,11 +851,16 @@ procedure TsgeExtensionShell.JournalDown(UsePage: Boolean);
 var
   i: Integer;
 begin
-  if UsePage then i := FJournalPage else i := 1;
+  if UsePage then
+    i := FJournalPage
+  else
+    i := 1;
+
   Dec(FJournalOffset, i);
 
   //Проверить выход за границы
-  if FJournalOffset <= 0 then FJournalOffset := 0;
+  if FJournalOffset <= 0 then
+    FJournalOffset := 0;
 
   //Перерисовать оболочку
   RepaintInner;
@@ -850,10 +870,10 @@ end;
 procedure TsgeExtensionShell.InitGraphic;
 begin
   with TsgeExtensionGraphicHack(FExtGraphic).FGraphicShell do
-    begin
+  begin
     Init;
     Activate;
-    end;
+  end;
 end;
 
 
@@ -877,16 +897,18 @@ begin
 
   //Выполнить накопленные команды
   while FCommandQueue.Count > 0 do
-    begin
+  begin
     //проверить на аварийный останов
-    if FStopExecuting then Break;
+    if FStopExecuting then
+      Break;
 
     //Проверить на изменение размеров контекста
-    if FChangeSize then ChangeGraphicSize;
+    if FChangeSize then
+      ChangeGraphicSize;
 
     //Создать скрипт и выполнить команду
     RunScriptByCommand(FCommandQueue.PullFirstCommand);
-    end;
+  end;
 
   //Сбросить флаг аварийного останова
   FStopExecuting := False;
@@ -907,7 +929,10 @@ begin
 
   //Добавить в журнал строки, первая ошибка
   for i := 0 to List.Count - 1 do
-    if i = 0 then LogMessage(List.Part[i], smtError) else LogMessage('  ' + List.Part[i], smtNote);
+    if i = 0 then
+      LogMessage(List.Part[i], smtError)
+    else
+      LogMessage('  ' + List.Part[i], smtNote);
 
   //Почистить память
   List.Free;
@@ -1087,9 +1112,14 @@ var
 begin
   //Определить цвет строки
   case MsgType of
-    smtText : Color := FTextColor;
-    smtError: Color := FErrorColor;
-    smtNote : Color := FNoteColor;
+    smtText:
+      Color := FTextColor;
+
+    smtError:
+      Color := FErrorColor;
+
+    smtNote:
+      Color := FNoteColor;
   end;
 
   //Добавить строку в журнал
@@ -1106,15 +1136,18 @@ begin
   FCommandQueue.Add(Cmd);
 
   //Установить обработчик для потока
-  if Wait then FThread.RunProcAndWait(@ProcessCommand, tpemSuspend)
-    else FThread.RunProc(@ProcessCommand, tpemSuspend);
+  if Wait then
+    FThread.RunProcAndWait(@ProcessCommand, tpemSuspend)
+  else
+    FThread.RunProc(@ProcessCommand, tpemSuspend);
 end;
 
 
 procedure TsgeExtensionShell.StopCommand;
 begin
   //Если скрипт не авполняется, то выход
-  if not FCommandIsRunning then Exit;
+  if not FCommandIsRunning then
+    Exit;
 
   //Записать флаг остановки
   FStopExecuting := True;

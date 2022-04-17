@@ -160,9 +160,7 @@ procedure TsgeErrorManager.LogJournal(Message: String);
 begin
   FCS.Enter;
   try
-
     FJournal.LogDetail(Message);
-
   finally
     FCS.Leave;
   end;
@@ -173,9 +171,7 @@ procedure TsgeErrorManager.LogMessage(Message: String);
 begin
   FCS.Enter;
   try
-
     sgeShowMessage(Message, 'Error', mtError);
-
   finally
     FCS.Leave;
   end;
@@ -186,10 +182,8 @@ procedure TsgeErrorManager.LogShell(Message: String);
 begin
   FCS.Enter;
   try
-
     if Assigned(FShellHandler) then
       FShellHandler(Message);
-
   finally
     FCS.Leave;
   end;
@@ -204,8 +198,10 @@ begin
   //Обработать ошибку
   if FWriteToJournal then
     LogJournal(Error);
+
   if FWriteToShell then
     LogShell(Error);
+
   if FShowMessage then
     LogMessage(Error);
 end;

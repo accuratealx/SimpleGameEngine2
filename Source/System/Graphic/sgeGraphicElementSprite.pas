@@ -84,7 +84,8 @@ begin
   if ASprite = nil then
     raise EsgeException.Create(_UNITNAME, Err_EmptySprite);
 
-  if FNewData.Sprite = ASprite then Exit;
+  if FNewData.Sprite = ASprite then
+    Exit;
 
   FNewData.Sprite := ASprite;
 end;

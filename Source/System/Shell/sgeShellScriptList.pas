@@ -39,7 +39,7 @@ uses
 const
   _UNITNAME = 'ShellScriptList';
 
-  Err_ScriptNotFound      = 'ScriptNotFound';
+  Err_ScriptNotFound = 'ScriptNotFound';
 
 
 function TsgeShellScriptList.IndexOf(Name: ShortString): Integer;
@@ -51,10 +51,7 @@ begin
   Name := LowerCase(Name);
   for i := 0 to FCount - 1 do
     if Name = LowerCase(FList[i].Name) then
-      begin
-      Result := i;
-      Break;
-      end;
+      Exit(i);
 end;
 
 
@@ -67,10 +64,7 @@ begin
   Name := LowerCase(Name);
   for i := 0 to FCount - 1 do
     if Name = LowerCase(FList[i].Name) then
-      begin
-      Result := FList[i];
-      Break;
-      end;
+      Exit(FList[i]);
 end;
 
 
@@ -80,8 +74,10 @@ var
 begin
   //Проверить на дубликат
   Idx := IndexOf(Name);
-  if Idx <> -1 then FList[Idx].FromString(Lines)
-    else inherited Add(TsgeShellScript.Create(Name, Lines));
+  if Idx <> -1 then
+    FList[Idx].FromString(Lines)
+  else
+    inherited Add(TsgeShellScript.Create(Name, Lines));
 end;
 
 

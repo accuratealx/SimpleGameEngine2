@@ -47,7 +47,8 @@ uses
 
 procedure TsgeGUIPropertyIntPoint.SetX(AX: Integer);
 begin
-  if FX = AX then Exit;
+  if FX = AX then
+    Exit;
 
   FX := AX;
   UpdateParent;
@@ -56,7 +57,8 @@ end;
 
 procedure TsgeGUIPropertyIntPoint.SetY(AY: Integer);
 begin
-  if FY = AY then Exit;
+  if FY = AY then
+    Exit;
 
   FY := AY;
   UpdateParent;

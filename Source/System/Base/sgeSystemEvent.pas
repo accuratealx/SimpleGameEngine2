@@ -80,10 +80,17 @@ end;
 function TsgeSystemEvent.Wait(Timeout: Cardinal): TsgeSystemEventWaitResult;
 begin
   case sgeWaitForSingleObject(FHandle, Timeout) of
-    WAIT_OBJECT_0 : Result := sewrEvent;
-    WAIT_ABANDONED: Result := sewrAbandoned;
-    WAIT_TIMEOUT  : Result := sewrTimeOut;
-    WAIT_FAILED   : Result := sewrError;
+    WAIT_OBJECT_0:
+      Result := sewrEvent;
+
+    WAIT_ABANDONED:
+      Result := sewrAbandoned;
+
+    WAIT_TIMEOUT:
+      Result := sewrTimeOut;
+
+    WAIT_FAILED:
+      Result := sewrError;
   end;
 end;
 

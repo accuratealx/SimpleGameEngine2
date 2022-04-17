@@ -23,16 +23,16 @@ type
   TsgeTimeEventItem = class
   private
     //Основные параметры
-    FDelay: Cardinal;                           //Задержка между вызовами в ms
-    FEnable: Boolean;                           //Активность
-    FTimes: Integer;                            //Количество срабатываний, -1 - бесконечно
-    FProc: TsgeTimeEventProc;                   //Указатель на метод
-    FStartDelay: Cardinal;                      //Задержка перед первым выполнением
-    FAutoDelete: Boolean;                       //Автоудаление при выполнении
+    FDelay: Cardinal;                                               //Задержка между вызовами в ms
+    FEnable: Boolean;                                               //Активность
+    FTimes: Integer;                                                //Количество срабатываний, -1 - бесконечно
+    FProc: TsgeTimeEventProc;                                       //Указатель на метод
+    FStartDelay: Cardinal;                                          //Задержка перед первым выполнением
+    FAutoDelete: Boolean;                                           //Автоудаление при выполнении
 
     //Дополнительные параметры
-    FLastExecuteTime: Int64;                    //Время последнего вызова
-    FTimesCount: Int64;                         //Количество срабатываний
+    FLastExecuteTime: Int64;                                        //Время последнего вызова
+    FTimesCount: Int64;                                             //Количество срабатываний
 
     procedure SetTimes(ATimes: Integer);
     procedure SetEnable(AEnable: Boolean);
@@ -75,8 +75,10 @@ const
 
 procedure TsgeTimeEventItem.SetTimes(ATimes: Integer);
 begin
-  if ATimes < 0 then ATimes := -1;
-  if FTimes = ATimes then Exit;
+  if ATimes < 0 then
+    ATimes := -1;
+  if FTimes = ATimes then
+    Exit;
 
   FTimes := ATimes;
 end;
@@ -84,10 +86,12 @@ end;
 
 procedure TsgeTimeEventItem.SetEnable(AEnable: Boolean);
 begin
-  if AEnable = FEnable then Exit;
+  if AEnable = FEnable then
+    Exit;
 
   FEnable := AEnable;
-  if FEnable then FLastExecuteTime := sgeGetTickCount + FStartDelay;
+  if FEnable then
+    FLastExecuteTime := sgeGetTickCount + FStartDelay;
 end;
 
 
@@ -131,10 +135,10 @@ begin
 
   Now := sgeGetTickCount;
   if (Now - FLastExecuteTime) > FDelay then
-    begin
+  begin
     FLastExecuteTime := Now;
     Result := True;
-    end;
+  end;
 end;
 
 

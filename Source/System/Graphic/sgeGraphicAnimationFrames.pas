@@ -21,11 +21,11 @@ uses
 type
   //Инормация об одном кадре
   TsgeGraphicAnimationFrame = record
-    Sprite: TsgeGraphicSprite;  //Указатель на спрайт
-    SpriteName: String;         //Имя спрайта в таблице ресурсов
-    Col: Word;                  //Номер столбца плитки
-    Row: Word;                  //Номер строки плитки
-    Time: Integer;              //Время показа на экране в милисекундах
+    Sprite: TsgeGraphicSprite;                                      //Указатель на спрайт
+    SpriteName: String;                                             //Имя спрайта в таблице ресурсов
+    Col: Word;                                                      //Номер столбца плитки
+    Row: Word;                                                      //Номер строки плитки
+    Time: Integer;                                                  //Время показа на экране в милисекундах
   end;
 
 
@@ -35,10 +35,10 @@ type
 
   TsgeGraphicAnimationFrames = class
   private
-    FResources: TsgeResourceList;             //Указатель на список ресурсов
+    FResources: TsgeResourceList;                                   //Указатель на список ресурсов
 
-    FFrames: TsgeGraphicAnimationFrameArray;  //Список кадров
-    FFileName: String;                        //Имя файла
+    FFrames: TsgeGraphicAnimationFrameArray;                        //Список кадров
+    FFileName: String;                                              //Имя файла
 
     function  GetCount: Integer;
     procedure SetFrame(Index: Integer; AFrame: TsgeGraphicAnimationFrame);
@@ -247,11 +247,11 @@ begin
   if (Index < 0) or (Index > c) then
     raise EsgeException.Create(_UNITNAME, Err_IndexOutOfBounds, sgeIntToStr(Index));
 
-  SetLength(FFrames, c + 1);      //Добавить 1 кадр
-  for i := c downto Index + 1 do  //Сместить кадры
+  SetLength(FFrames, c + 1);                                        //Добавить 1 кадр
+  for i := c downto Index + 1 do                                    //Сместить кадры
     FFrames[i] := FFrames[i - 1];
 
-  FFrames[Index] := AFrame;       //Вставить новый кадр
+  FFrames[Index] := AFrame;                                         //Вставить новый кадр
 end;
 
 
@@ -285,7 +285,7 @@ begin
       SetLength(TempFrames, 0);
 
       for i := 0 to Cnt do
-        begin
+      begin
         //Почистить запись
         Fr.SpriteName := '';
         Fr.Sprite := nil;
@@ -325,7 +325,7 @@ begin
         c := Length(TempFrames);
         SetLength(TempFrames, c + 1);
         TempFrames[c] := Fr;
-        end;
+      end;
 
 
     except
@@ -356,10 +356,11 @@ begin
   c := Length(FFrames) - 1;
   Result := '';
   for i := 0 to c do
-    begin
+  begin
     Result := Result + GetFrameAsString(FFrames[i]);
-    if i <> c then Result := Result + LineSeparator;
-    end;
+    if i <> c then
+      Result := Result + LineSeparator;
+  end;
 end;
 
 
@@ -368,7 +369,6 @@ var
   F: TsgeFile;
 begin
   try
-
     try
       F := TsgeFile.Create(FileName, fmRead, False);
       FromString(F.ToString);
@@ -376,7 +376,6 @@ begin
       on E: EsgeException do
         raise EsgeException.Create(_UNITNAME, Err_CantReadFile, FileName, E.Message);
     end;
-
   finally
     F.Free;
   end;
@@ -389,7 +388,6 @@ var
   F: TsgeFile;
 begin
   try
-
     try
       F := TsgeFile.Create(FileName, fmWrite, True);
       s := ToString;
@@ -398,7 +396,6 @@ begin
     except
       raise EsgeException.Create(_UNITNAME, Err_CantWriteFile, FileName);
     end;
-
   finally
     F.Free;
   end;

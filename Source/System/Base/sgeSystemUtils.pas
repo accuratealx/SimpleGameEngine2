@@ -52,9 +52,13 @@ var
   Ofs, Len: integer;
 begin
   len := Length(S);
-  while (Len > 0) and (S[Len] in WhiteSpace) do dec(Len);
+  while (Len > 0) and (S[Len] in WhiteSpace) do
+    dec(Len);
+
   Ofs := 1;
-  while (Ofs <= Len) and (S[Ofs] in WhiteSpace) do Inc(Ofs);
+  while (Ofs <= Len) and (S[Ofs] in WhiteSpace) do
+    Inc(Ofs);
+
   result := Copy(S, Ofs, 1 + Len - Ofs);
 end;
 
@@ -65,7 +69,9 @@ var
 begin
   l := length(s);
   i := 1;
-  while (i <= l) and (s[i] in whitespace) do inc(i);
+  while (i <= l) and (s[i] in whitespace) do
+    inc(i);
+
   Result := copy(s, i, l);
 end;
 
@@ -75,7 +81,9 @@ var
   l: integer;
 begin
   l := length(s);
-  while (l > 0) and (s[l] in whitespace) do dec(l);
+  while (l > 0) and (s[l] in whitespace) do
+    dec(l);
+
   result := copy(s, 1, l);
 end;
 
@@ -131,13 +139,19 @@ end;
 
 function sgeBoolToStr(Value: Boolean; TrueStr: String; FalseStr: String): String;
 begin
-  if Value then Result := TrueStr else Result := FalseStr;
+  if Value then
+    Result := TrueStr
+  else
+    Result := FalseStr;
 end;
 
 
 function sgeCompareMem(P1, P2: Pointer; Length: PtrUInt): Boolean;
 begin
-  if P1 = P2 then Result := True else Result := CompareByte(P1^, P2^, Length) = 0;
+  if P1 = P2 then
+    Result := True
+  else
+    Result := CompareByte(P1^, P2^, Length) = 0;
 end;
 
 
@@ -155,21 +169,18 @@ var
 begin
   Result := 0;
   if (Length(SubStr) > 0) and (Offset > 0) and (Offset <= Length(Source)) then
-    begin
+  begin
     MaxLen := Length(source) - Length(SubStr);
     i := Offset - 1;
     pc := @source[Offset];
     while (i <= MaxLen) do
-      begin
+    begin
       inc(i);
       if (SubStr[1]= pc^) and (CompareByte(Substr[1], pc^, Length(SubStr)) = 0) then
-        begin
-        Result := i;
-        exit;
-        end;
+        Exit(i);
       inc(pc);
-      end;
     end;
+  end;
 end;
 
 

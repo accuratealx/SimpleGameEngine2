@@ -52,7 +52,8 @@ implementation
 
 procedure TsgeGUIPropertyDrawMethod.SetMode(AMode: TsgeGUIPropertyDrawMethodMode);
 begin
-  if FMode = AMode then Exit;
+  if FMode = AMode then
+    Exit;
 
   FMode := AMode;
   UpdateParent;
@@ -88,13 +89,16 @@ begin
   //Mode
   ParamName := Prefix + 'Mode';
   if Parameters.Exist[ParamName] then
-    begin
+  begin
     s := LowerCase(Parameters.GetValue(ParamName, ''));
     case s of
-      'normal'  : FMode := dmmNormal;
-      'segment' : FMode := dmmSegment;
+      'normal':
+        FMode := dmmNormal;
+
+      'segment':
+        FMode := dmmSegment;
     end;
-    end;
+  end;
 
   //FOffset
   FOffset.LoadParameters(Parameters, Prefix + 'Offset.');

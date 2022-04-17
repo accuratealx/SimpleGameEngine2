@@ -41,11 +41,11 @@ begin
   Pos := sgePos(Separator, Str);
 
   if Pos > 0 then
-    begin
+  begin
     //Есть имя скрипта
     Script := Copy(Str, 1, Pos - 1);
     LabelName := Copy(Str, Pos + 1, Length(Str) - Pos);
-    end;
+  end;
 end;
 
 
@@ -59,19 +59,18 @@ begin
 
   Line := TsgeSimpleCommand.Create;
   try
-
     for i := 0 to Script.Count - 1 do
-      begin
+    begin
       //Разобрать строку
       Line.Command := Script.Item[i];
 
       //Пропуск не подходящих строк
-      if Line.Count < 2 then Continue;
+      if Line.Count < 2 then
+        Continue;
 
       //Проверить на совпадение имени метки
       if (LowerCase(Line.Part[0]) = 'label') and (LowerCase(Line.Part[1]) = LabelName) then Exit(i);
-      end;
-
+    end;
   finally
     Line.Free;
   end;
@@ -88,9 +87,8 @@ begin
 
   Line := TsgeSimpleCommand.Create;
   try
-
     for i := 0 to Script.Count - 1 do
-      begin
+    begin
       //Разобрать строку
       Line.Command := Script.Item[i];
 
@@ -98,9 +96,9 @@ begin
       if Line.Count < 2 then Continue;
 
       //Проверить на совпадение имени метки
-      if (LowerCase(Line.Part[0]) = 'procedure') and (LowerCase(Line.Part[1]) = ProcedureName) then Exit(i);
-      end;
-
+      if (LowerCase(Line.Part[0]) = 'procedure') and (LowerCase(Line.Part[1]) = ProcedureName) then
+        Exit(i);
+    end;
   finally
     Line.Free;
   end;
@@ -117,19 +115,19 @@ begin
 
   Line := TsgeSimpleCommand.Create;
   try
-
     for i := StartPos to Script.Count - 1 do
-      begin
+    begin
       //Разобрать строку на части
       Line.Command := Script.Item[i];
 
       //Пропуск если нет двух частей
-      if Line.Count < 2 then Continue;
+      if Line.Count < 2 then
+        Continue;
 
       //Проверить совпадение
-      if (LowerCase(Line.Part[0]) = 'return') and (LowerCase(Line.Part[1]) = ProcedureName) then Exit(i);
-      end;
-
+      if (LowerCase(Line.Part[0]) = 'return') and (LowerCase(Line.Part[1]) = ProcedureName) then
+        Exit(i);
+    end;
   finally
     Line.Free;
   end;

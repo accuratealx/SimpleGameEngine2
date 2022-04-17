@@ -71,7 +71,7 @@ begin
 
   //Определить нужно ли записывать значение в переменную
   if Command.Count > 1 then
-    begin
+  begin
     //Имя переменной
     VarName := Command.Part[1];
 
@@ -80,7 +80,7 @@ begin
 
     //Изменить значение переменной
     SGE.ExtVariables.SetString(VarName, VarValue);
-    end;
+  end;
 
   //Удалить строку редактора
   SGE.ExtShell.Editor.Line := '';

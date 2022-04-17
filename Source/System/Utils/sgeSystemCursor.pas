@@ -121,20 +121,47 @@ var
   H: HCURSOR;
 begin
   case AType of
-    sctArrow                  : H := LoadCursor(Hinstance, IDC_ARROW);
-    sctAppStart               : H := LoadCursor(Hinstance, IDC_APPSTARTING);
-    sctCross                  : H := LoadCursor(Hinstance, IDC_CROSS);
-    sctHand                   : H := LoadCursor(Hinstance, IDC_HAND);
-    sctHelp                   : H := LoadCursor(Hinstance, IDC_HELP);
-    sctIbeam                  : H := LoadCursor(Hinstance, IDC_IBEAM);
-    sctNo                     : H := LoadCursor(Hinstance, IDC_NO);
-    sctSize                   : H := LoadCursor(Hinstance, IDC_SIZEALL);
-    sctSizeUpDown             : H := LoadCursor(Hinstance, IDC_SIZENS);
-    sctSizeLeftRight          : H := LoadCursor(Hinstance, IDC_SIZEWE);
-    sctSizeTopLeftBottomRight : H := LoadCursor(Hinstance, IDC_SIZENWSE);
-    sctSizeTopRightBottomLeft : H := LoadCursor(Hinstance, IDC_SIZENESW);
-    sctUpArrow                : H := LoadCursor(Hinstance, IDC_UPARROW);
-    sctWait                   : H := LoadCursor(Hinstance, IDC_WAIT);
+    sctArrow:
+      H := LoadCursor(Hinstance, IDC_ARROW);
+
+    sctAppStart:
+      H := LoadCursor(Hinstance, IDC_APPSTARTING);
+
+    sctCross:
+      H := LoadCursor(Hinstance, IDC_CROSS);
+
+    sctHand:
+      H := LoadCursor(Hinstance, IDC_HAND);
+
+    sctHelp:
+      H := LoadCursor(Hinstance, IDC_HELP);
+
+    sctIbeam:
+      H := LoadCursor(Hinstance, IDC_IBEAM);
+
+    sctNo:
+      H := LoadCursor(Hinstance, IDC_NO);
+
+    sctSize:
+      H := LoadCursor(Hinstance, IDC_SIZEALL);
+
+    sctSizeUpDown:
+      H := LoadCursor(Hinstance, IDC_SIZENS);
+
+    sctSizeLeftRight:
+      H := LoadCursor(Hinstance, IDC_SIZEWE);
+
+    sctSizeTopLeftBottomRight:
+      H := LoadCursor(Hinstance, IDC_SIZENWSE);
+
+    sctSizeTopRightBottomLeft:
+      H := LoadCursor(Hinstance, IDC_SIZENESW);
+
+    sctUpArrow:
+      H := LoadCursor(Hinstance, IDC_UPARROW);
+
+    sctWait:
+      H := LoadCursor(Hinstance, IDC_WAIT);
   end;
 
   DeleteCursor;

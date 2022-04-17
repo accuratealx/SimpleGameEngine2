@@ -77,14 +77,14 @@ begin
 
   //Если указано имя скрипта, то найти
   if ScriptName <> '' then
-    begin
+  begin
     //Найти указатель на сценарий
     Script := SGE.ExtShell.ScriptList.GetByName(ScriptName);
 
     //Проверить на пустой указатель
     if Script = nil then
       Exit(sgeCreateErrorString(_UNITNAME, Err_ScriptNotFound, ScriptName));
-    end;
+  end;
 
   //Найти номер строки метки
   Pos := sgeGetLabelPosInScript(Script, LabelName);
@@ -94,7 +94,9 @@ begin
     Exit(sgeCreateErrorString(_UNITNAME, Err_LabelNotFound, Command.Part[1]));
 
   //Внести изменения в стек вызовов
-  if ScriptName <> '' then Call.Name := ScriptName;
+  if ScriptName <> '' then
+    Call.Name := ScriptName;
+
   Call.Pos := Pos + 1;
 end;
 

@@ -56,10 +56,21 @@ begin
   List.FromString(Str);
 
   //Выделить компоненты
-  if List.Count > 0 then if sgeTryStrToInt(List.Part[0], i) then Result.Red := i;
-  if List.Count > 1 then if sgeTryStrToInt(List.Part[1], i) then Result.Green := i;
-  if List.Count > 2 then if sgeTryStrToInt(List.Part[2], i) then Result.Blue := i;
-  if List.Count > 3 then if sgeTryStrToInt(List.Part[3], i) then Result.Alpha := i;
+  if List.Count > 0 then
+    if sgeTryStrToInt(List.Part[0], i) then
+      Result.Red := i;
+
+  if List.Count > 1 then
+    if sgeTryStrToInt(List.Part[1], i) then
+      Result.Green := i;
+
+  if List.Count > 2 then
+    if sgeTryStrToInt(List.Part[2], i) then
+      Result.Blue := i;
+
+  if List.Count > 3 then
+    if sgeTryStrToInt(List.Part[3], i) then
+      Result.Alpha := i;
 
   //Удалить список
   List.Free;

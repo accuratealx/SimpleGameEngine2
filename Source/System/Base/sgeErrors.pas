@@ -55,8 +55,12 @@ const
   LineSeparator = #13#10;
 begin
   Result := ModuleName + ParamSeparator + Error;
-  if Info <> '' then Result := Result + ParamSeparator + Info;
-  if NewLine <> '' then Result := Result + LineSeparator + NewLine;
+
+  if Info <> '' then
+    Result := Result + ParamSeparator + Info;
+
+  if NewLine <> '' then
+    Result := Result + LineSeparator + NewLine;
 end;
 
 

@@ -55,7 +55,8 @@ implementation
 
 procedure TsgeGUITimer.Timer;
 begin
-  if Assigned(FOnTimer) then FOnTimer();
+  if Assigned(FOnTimer) then
+    FOnTimer();
 end;
 
 

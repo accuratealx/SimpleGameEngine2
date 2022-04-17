@@ -76,7 +76,8 @@ end;
 
 procedure TsgeGUIPropertySegmentOffset.SetTop(ATop: Word);
 begin
-  if FTop = ATop then Exit;
+  if FTop = ATop then
+    Exit;
 
   FTop := ATop;
   UpdateParent;
@@ -85,7 +86,8 @@ end;
 
 procedure TsgeGUIPropertySegmentOffset.SetLeft(ALeft: Word);
 begin
-  if FLeft = ALeft then Exit;
+  if FLeft = ALeft then
+    Exit;
 
   FLeft := ALeft;
   UpdateParent;
@@ -94,7 +96,8 @@ end;
 
 procedure TsgeGUIPropertySegmentOffset.SetRight(ARight: Word);
 begin
-  if FRight = ARight then Exit;
+  if FRight = ARight then
+    Exit;
 
   FRight := ARight;
   UpdateParent;
@@ -103,7 +106,8 @@ end;
 
 procedure TsgeGUIPropertySegmentOffset.SetBottom(ABottom: Word);
 begin
-  if FBottom = ABottom then Exit;
+  if FBottom = ABottom then
+    Exit;
 
   FBottom := ABottom;
   UpdateParent;

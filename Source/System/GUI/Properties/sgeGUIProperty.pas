@@ -42,7 +42,8 @@ type
 procedure TsgeGUIProperty.UpdateParent;
 begin
   //Проверить блокировку обновления
-  if FLockUpdate then Exit;
+  if FLockUpdate then
+    Exit;
 
   //Если есть родитель, то обновить
   if FOwner <> nil then

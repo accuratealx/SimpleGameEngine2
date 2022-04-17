@@ -99,24 +99,26 @@ begin
   //Цикл в обратном порядке по архивам
   c := FExtPackList.PackList.Count - 1;
   for i := c downto 0 do
-    begin
+  begin
     //Цикл в обратном порядке по архиву
     k := FExtPackList.PackList.Item[i].Count - 1;
     for j := k downto 0 do
       if FileName = LowerCase(FExtPackList.PackList.Item[i].Item[j].FileName) then
-        begin
+      begin
         PackIndex := i;
         FileIndex := j;
         Exit;
-        end;
-    end;
+      end;
+  end;
 end;
 
 
 function TsgeExtensionFileSystem.GetNormalFileName(FileName: String): String;
 begin
-  if sgeIsFullPath(FileName) then Result := FileName
-    else Result := FMainDir + FileName;
+  if sgeIsFullPath(FileName) then
+    Result := FileName
+  else
+    Result := FMainDir + FileName;
 end;
 
 
@@ -147,7 +149,8 @@ end;
 
 procedure TsgeExtensionFileSystem.ForceDirectories(Directory: String);
 begin
-  if Directory = '' then Exit;
+  if Directory = '' then
+    Exit;
 
   if not sgeForceDirectories(FMainDir + Directory) then
     raise EsgeException.Create(_UNITNAME, Err_CantCreateDirectory, Directory);
@@ -166,10 +169,7 @@ var
 begin
   //Проверить в файловой системе
   if sgeFileExists(GetNormalFileName(FileName)) then
-    begin
-    Result := True;
-    Exit;
-    end;
+    Exit(True);
 
   //Проверить файл в архивах
   GetFilePackIndex(FileName, PackIdx, FileIdx);
@@ -191,8 +191,10 @@ begin
   Fn := GetNormalFileName(FileName);
 
   //Определить режим загрузки
-  if sgeFileExists(Fn) then Mode := ModeFile
-    else Mode := ModePack;
+  if sgeFileExists(Fn) then
+    Mode := ModeFile
+  else
+    Mode := ModePack;
 
   //Загрузить файл
   case Mode of
@@ -204,16 +206,16 @@ begin
         F.Free;
       except
         on E: EsgeException do
-          begin
+        begin
           F.Free;
           raise EsgeException.Create(_UNITNAME, Err_CantReadFile, FileName, E.Message);
-          end;
+        end;
       end;
 
 
     //Чтение из архива
     ModePack:
-      begin
+    begin
       //Поиск индекса в архивах
       GetFilePackIndex(FileName, PackIdx, FileIdx);
 
@@ -226,8 +228,7 @@ begin
       except
         raise EsgeException.Create(_UNITNAME, Err_CantReadFile, FileName);
       end;
-
-      end;
+    end;
   end;
 end;
 
@@ -346,18 +347,20 @@ begin
 
 
   //Получить список из архивов
-  if Directory <> '' then Directory := LowerCase(sgeCheckPathDelimiter(Directory));
+  if Directory <> '' then
+    Directory := LowerCase(sgeCheckPathDelimiter(Directory));
 
   c := FExtPackList.PackList.Count - 1;
   for i := c downto 0 do
-    begin
+  begin
     k := FExtPackList.PackList.Item[i].Count - 1;
     for j := k downto 0 do
-      begin
+    begin
       fnPath := LowerCase(sgeExtractFilePath(FExtPackList.PackList.Item[i].Item[j].FileName));
-      if fnPath = Directory then List.Add(sgeExtractFileName(FExtPackList.PackList.Item[i].Item[j].FileName));
-      end;
+      if fnPath = Directory then
+        List.Add(sgeExtractFileName(FExtPackList.PackList.Item[i].Item[j].FileName));
     end;
+  end;
 
   //Вернуть режим списку
   List.SearchOptions := so;
@@ -382,7 +385,8 @@ begin
 
 
   //Получить список каталогов из архивов
-  if Directory <> '' then Directory := LowerCase(sgeCheckPathDelimiter(Directory));
+  if Directory <> '' then
+    Directory := LowerCase(sgeCheckPathDelimiter(Directory));
   DirSize := Length(Directory);
 
   //Просмотреть архивы
@@ -391,22 +395,24 @@ begin
 
   c := FExtPackList.PackList.Count - 1;
   for i := c downto 0 do
-    begin
+  begin
     k := FExtPackList.PackList.Item[i].Count - 1;
     for j := k downto 0 do
-      begin
+    begin
       fn := sgeExtractFilePath(FExtPackList.PackList.Item[i].Item[j].FileName); //Выделить путь из имени файла
       B := False;
-      if Directory = '' then B := True;                             //Частный случай, Корень системы
-      if sgePos(Directory, LowerCase(fn)) = 1 then B := True;       //Совпадение с начальным каталогом
+      if Directory = '' then                                        //Частный случай, Корень системы
+        B := True;
+      if sgePos(Directory, LowerCase(fn)) = 1 then                  //Совпадение с начальным каталогом
+         B := True;
       if B then
-        begin
+      begin
         Delete(fn, 1, DirSize);                                     //Отрезать базовый путь
         Lst.FromString(fn);                                         //Разобрать путь на части
         if Lst.Count > 0 then List.Add(Lst.Part[0]);                //Если есть больше одной части, то добавить
-        end;
       end;
     end;
+  end;
   Lst.Free;
 
   //Вернуть режим списку
@@ -427,45 +433,45 @@ begin
   List.SearchOptions := [soUnique];
 
   //Подготовить базовый каталог
-  if Directory <> '' then Directory := LowerCase(sgeCheckPathDelimiter(Directory));
+  if Directory <> '' then
+    Directory := LowerCase(sgeCheckPathDelimiter(Directory));
   DirSize := Length(Directory);
 
   //Получить список из файловой системы
   sgeFindFilesInFolderByExt(Directory, List, Ext);
 
-
-
   //Поиск файлов в архивах
   c := FExtPackList.PackList.Count - 1;
   Ext := LowerCase(Ext);
   for i := c downto 0 do
-    begin
+  begin
     k := FExtPackList.PackList.Item[i].Count - 1;
     for j := k downto 0 do
-      begin
+    begin
       //Имя файла
       fn := FExtPackList.PackList.Item[i].Item[j].FileName;
 
       //Проверить каталог
       if (Directory = '') or (sgePos(Directory, LowerCase(fn)) = 1) then
-        begin
+      begin
         //Проверить по расширению
         Delete(fn, 1, DirSize);
         B := False;
-        if Ext = '' then B := True
-          else begin
+        if Ext = '' then
+          B := True
+        else
+        begin
           fnExt := LowerCase(sgeExtractFileExt(fn));
           if (fnExt <> '') and (fnExt[1] = '.') then Delete(fnExt, 1, 1);
           if fnExt = Ext then B := True;
-          end;
-
-        //Добавить в результат
-        if B then List.Add(fn);
         end;
 
+        //Добавить в результат
+        if B then
+          List.Add(fn);
       end;
     end;
-
+  end;
 
   //Вернуть режим списку
   List.SearchOptions := so;

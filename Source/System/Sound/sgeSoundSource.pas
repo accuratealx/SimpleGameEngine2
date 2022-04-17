@@ -113,8 +113,11 @@ const
 
 procedure TsgeSoundSource.SetGain(AGain: Single);
 begin
-  if AGain <= 0 then AGain := 0;
-  if AGain >= 1 then AGain := 1;
+  if AGain <= 0 then
+    AGain := 0;
+  if AGain >= 1 then
+    AGain := 1;
+
   alSourcefv(FHandle, AL_GAIN, @AGain);
 end;
 
@@ -127,8 +130,11 @@ end;
 
 procedure TsgeSoundSource.SetMinGain(AGain: Single);
 begin
-  if AGain <= 0 then AGain := 0;
-  if AGain >= 1 then AGain := 1;
+  if AGain <= 0 then
+    AGain := 0;
+  if AGain >= 1 then
+    AGain := 1;
+
   alSourcefv(FHandle, AL_MIN_GAIN, @AGain);
 end;
 
@@ -141,8 +147,11 @@ end;
 
 procedure TsgeSoundSource.SetMaxGain(AGain: Single);
 begin
-  if AGain <= 0 then AGain := 0;
-  if AGain >= 1 then AGain := 1;
+  if AGain <= 0 then
+    AGain := 0;
+  if AGain >= 1 then
+    AGain := 1;
+
   alSourcefv(FHandle, AL_MAX_GAIN, @AGain);
 end;
 
@@ -178,7 +187,11 @@ procedure TsgeSoundSource.SetRelativePos(ARelative: Boolean);
 var
   i: TALint;
 begin
-  if ARelative then i := AL_TRUE else i := AL_FALSE;
+  if ARelative then
+    i := AL_TRUE
+  else
+    i := AL_FALSE;
+
   alSourceiv(FHandle, AL_SOURCE_RELATIVE, @i);
 end;
 
@@ -188,7 +201,10 @@ var
   i: TALint;
 begin
   alGetSourceiv(FHandle, AL_SOURCE_RELATIVE, @i);
-  if i = AL_TRUE then Result := True else Result := False;
+  if i = AL_TRUE then
+    Result := True
+  else
+    Result := False;
 end;
 
 
@@ -197,11 +213,15 @@ var
   i: TALint;
 begin
   alGetSourceiv(FHandle, AL_SOURCE_TYPE, @i);
-
   case i of
-    AL_STATIC   : Result := ssmStatic;
-    AL_STREAMING: Result := ssmStream;
-    else Result := ssmUnknown;
+    AL_STATIC:
+      Result := ssmStatic;
+
+    AL_STREAMING:
+      Result := ssmStream;
+
+    else
+      Result := ssmUnknown;
   end;
 end;
 
@@ -213,10 +233,17 @@ begin
   alGetSourceiv(FHandle, AL_SOURCE_STATE, @i);
 
   case i of
-    AL_INITIAL: Result := sssInitial;
-    AL_PLAYING: Result := sssPlay;
-    AL_PAUSED : Result := sssPause;
-    AL_STOPPED: Result := sssStop;
+    AL_INITIAL:
+      Result := sssInitial;
+
+    AL_PLAYING:
+      Result := sssPlay;
+
+    AL_PAUSED:
+      Result := sssPause;
+
+    AL_STOPPED:
+      Result := sssStop;
   end;
 end;
 
@@ -225,7 +252,10 @@ procedure TsgeSoundSource.SetLoop(ALoop: Boolean);
 var
   i: TALint;
 begin
-  if ALoop then i := AL_TRUE else i := AL_FALSE;
+  if ALoop then
+    i := AL_TRUE
+  else
+    i := AL_FALSE;
   alSourceiv(FHandle, AL_LOOPING, @i);
 end;
 
@@ -235,13 +265,18 @@ var
   i: TALint;
 begin
   alGetSourceiv(FHandle, AL_LOOPING, @i);
-  if i = AL_TRUE then Result := True else Result := False;
+  if i = AL_TRUE then
+    Result := True
+  else
+    Result := False;
 end;
 
 
 procedure TsgeSoundSource.SetPitch(APitch: single);
 begin
-  if APitch < 0 then APitch := 0;
+  if APitch < 0 then
+    APitch := 0;
+
   alSourcefv(FHandle, AL_PITCH, @APitch);
 end;
 
@@ -254,7 +289,9 @@ end;
 
 procedure TsgeSoundSource.SetMaxDistance(ADistance: Single);
 begin
-  if ADistance < 0 then ADistance := 0;
+  if ADistance < 0 then
+    ADistance := 0;
+
   alSourcefv(FHandle, AL_MAX_DISTANCE, @ADistance);
 end;
 
@@ -267,7 +304,9 @@ end;
 
 procedure TsgeSoundSource.SetReferenceDistance(ADistance: Single);
 begin
-  if ADistance < 0 then ADistance := 0;
+  if ADistance < 0 then
+    ADistance := 0;
+
   alSourcefv(FHandle, AL_REFERENCE_DISTANCE, @ADistance);
 end;
 
@@ -280,7 +319,9 @@ end;
 
 procedure TsgeSoundSource.SetRollOffFactor(AFactor: Single);
 begin
-  if AFactor < 0 then AFactor := 0;
+  if AFactor < 0 then
+    AFactor := 0;
+
   alSourcefv(FHandle, AL_ROLLOFF_FACTOR, @AFactor);
 end;
 
@@ -303,9 +344,14 @@ begin
   //Запросить буфер
   alGenSources(1, @FHandle);
   case alGetError() of
-    AL_INVALID_VALUE    : raise EsgeException.Create(_UNITNAME, Err_ReachedSourceLimit);
-    AL_OUT_OF_MEMORY    : raise EsgeException.Create(_UNITNAME, Err_OutOfMemory);
-    AL_INVALID_OPERATION: raise EsgeException.Create(_UNITNAME, Err_MissingContext);
+    AL_INVALID_VALUE:
+      raise EsgeException.Create(_UNITNAME, Err_ReachedSourceLimit);
+
+    AL_OUT_OF_MEMORY:
+      raise EsgeException.Create(_UNITNAME, Err_OutOfMemory);
+
+    AL_INVALID_OPERATION:
+      raise EsgeException.Create(_UNITNAME, Err_MissingContext);
   end;
 
   //Прочитать текущие координаты
@@ -315,7 +361,8 @@ end;
 
 destructor TsgeSoundSource.Destroy;
 begin
-  if not Assigned(alDeleteSources) then Exit; //Проверить указатель на функцию
+  if not Assigned(alDeleteSources) then       //Проверить указатель на функцию
+    Exit;
   Stop;                                       //Остановить проигрывание
   alDeleteSources(1, @FHandle);               //Удалить источник
 end;
@@ -328,7 +375,10 @@ begin
   Stop;
   FBuffer := ABuffer;
 
-  if FBuffer = nil then Idx := AL_NONE else Idx := FBuffer.Handle;
+  if FBuffer = nil then
+    Idx := AL_NONE
+  else
+    Idx := FBuffer.Handle;
 
   alSourcei(FHandle, AL_BUFFER, Idx);
 end;
@@ -345,14 +395,17 @@ var
   Len: Single;
 begin
   //Без буфера смещение не работает
-  if FBuffer = nil then Exit;
+  if FBuffer = nil then
+    Exit;
 
   //Длина буфера в секундах
   Len := FBuffer.Time;
 
   //Поправить смещение
-  if AOffset < 0 then AOffset := 0;
-  if AOffset > Len then AOffset := Len;
+  if AOffset < 0 then
+    AOffset := 0;
+  if AOffset > Len then
+    AOffset := Len;
 
   //Сместить курсор воспроизведения
   alSourcef(FHandle, AL_SEC_OFFSET, AOffset);
@@ -387,7 +440,6 @@ procedure TsgeSoundSource.Rewind;
 begin
   alSourceRewind(FHandle);
 end;
-
 
 
 

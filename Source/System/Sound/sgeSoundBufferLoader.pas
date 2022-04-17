@@ -22,10 +22,10 @@ type
   //Базовый класс чтения звуковых данных
   TsgeSoundBufferLoader = class
   protected
-    FFormat: Integer;                               //Формат данных
-    FFrequency: Cardinal;                           //Частота
-    FSize: Cardinal;                                //Длина данных в байтах
-    FData: Pointer;                                 //Указатель на данные
+    FFormat: Integer;                                               //Формат данных
+    FFrequency: Cardinal;                                           //Частота
+    FSize: Cardinal;                                                //Длина данных в байтах
+    FData: Pointer;                                                 //Указатель на данные
   public
     constructor Create(FileName: String);
     constructor Create(Stream: TsgeMemoryStream);
@@ -85,17 +85,14 @@ begin
 
       //Загрузка из потока
       FromMemoryStream(Ms);
-
     except
       on E: EsgeException do
         raise EsgeException.Create(_UNITNAME, Err_CantReadFile, FileName, E.Message);
     end;
-
   finally
     Ms.Free;
   end;
 end;
-
 
 
 

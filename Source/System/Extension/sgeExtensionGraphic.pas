@@ -166,14 +166,14 @@ begin
     gdcSync: Draw;
 
     gdcProgram:
-      begin
+    begin
       FDrawCurrentTime := sgeGetCPUCounter;
       if (FDrawCurrentTime - FDrawLastTime) >= FDrawDelay then
-        begin
+      begin
         FDrawLastTime := FDrawCurrentTime;
         Draw;
-        end;
       end;
+    end;
   end;
 end;
 
@@ -189,24 +189,30 @@ begin
   FGraphicInner.ResetDrawOptions;
 
   //Стереть фон
-  if FAutoEraseBG then FGraphicInner.EraseBG;
+  if FAutoEraseBG then
+    FGraphicInner.EraseBG;
 
   //Вывод елементов
   DrawElements;
 
   //Вывод затемнения
-  if FFade.Enable then DrawFade;
+  if FFade.Enable then
+    DrawFade;
 
   //Вывод FPS
-  if FFPS.Enable then DrawFPS;
+  if FFPS.Enable then
+    DrawFPS;
 
   //Восстановить состояние
   FGraphicInner.PopAttrib;
 
   //Смена кадров
   case FGraphicInner.RenderBuffer of
-    grbBack : FGraphicInner.SwapBuffers;
-    grbFront: FGraphicInner.Finish;
+    grbBack:
+      FGraphicInner.SwapBuffers;
+
+    grbFront:
+      FGraphicInner.Finish;
   end;
 end;
 
@@ -222,12 +228,13 @@ begin
 
   //Вывод слоёв
   for I := 0 to FLayerList.Count - 1 do
-    begin
+  begin
     //Ссылка на слой
     Layer := FLayerList.Item[I];
 
     //Проверить видимость слоя
-    if not Layer.Visible then Continue;
+    if not Layer.Visible then
+      Continue;
 
     //Настроить графику графики
     FGraphicInner.PushAttrib;
@@ -243,28 +250,30 @@ begin
     //Обработать элементы в слое
     El := Layer.Elements.GetFirst;
     while El <> nil do
-      begin
+    begin
       //Удалить элемент
       if El.NeedDelete then
-        begin
+      begin
         Layer.Elements.DeleteCurrentElement;
         El := Layer.Elements.GetNext;
         Continue;
-        end;
+      end;
 
       //Обновить данные
-      if El.NeedUpdate then El.ApplySettings;
+      if El.NeedUpdate then
+        El.ApplySettings;
 
       //Нарисовать элемент
-      if El.Visible then El.Draw(FGraphicInner);
+      if El.Visible then
+        El.Draw(FGraphicInner);
 
       //Следующий элемент
       El := Layer.Elements.GetNext;
-      end;
+    end;
 
     //Восстановить параметры графики
     FGraphicInner.PopAttrib;
-    end;
+  end;
 
   //Разблокировать список
   FLayerList.UnLock;
@@ -291,16 +300,26 @@ begin
 
   //Вертикальное выравнивание
   case FFPS.VerticalAlign of
-    vaTop   : Y := 0;
-    vaCenter: Y := FExtWindow.Window.Height div 2 - TxtH div 2;
-    vaBottom: Y := FExtWindow.Window.Height - TxtH;
+    vaTop:
+      Y := 0;
+
+    vaCenter:
+      Y := FExtWindow.Window.Height div 2 - TxtH div 2;
+
+    vaBottom:
+      Y := FExtWindow.Window.Height - TxtH;
   end;
 
   //Горизонтальное выравнивание
   case FFPS.HorizontalAlign of
-    haLeft  : X := 0;
-    haCenter: X := FExtWindow.Window.Width div 2 - TxtW div 2;
-    haRight : X := FExtWindow.Window.Width - TxtW;
+    haLeft:
+      X := 0;
+
+    haCenter:
+      X := FExtWindow.Window.Width div 2 - TxtW div 2;
+
+    haRight:
+      X := FExtWindow.Window.Width - TxtW;
   end;
 
   //Смещение
@@ -335,7 +354,8 @@ end;
 
 procedure TsgeExtensionGraphic.SetDrawControl(AMetod: TsgeExtensionGraphicDrawControl);
 begin
-  if FDrawControl = AMetod then Exit;
+  if FDrawControl = AMetod then
+    Exit;
 
   FDrawControl := AMetod;
   FThread.RunProcAndWait(@ChangeDrawControl);
@@ -348,8 +368,10 @@ end;
 
 procedure TsgeExtensionGraphic.SetMaxFPS(AMaxFPS: Word);
 begin
-  if AMaxFPS = 0 then AMaxFPS := 1;
-  if FMaxFPS = AMaxFPS then Exit;
+  if AMaxFPS = 0 then
+    AMaxFPS := 1;
+  if FMaxFPS = AMaxFPS then
+    Exit;
 
   FMaxFPS := AMaxFPS;
   FDrawDelay := Round(OneSecFrequency / FMaxFPS);
@@ -374,7 +396,8 @@ begin
   FGraphic.ChangeViewArea(FNewWidth, FNewHeight);
 
   //Изменить размер контекста внутреннего потока
-  if FGraphicInner <> nil then FThread.RunProc(@ChangeSize);
+  if FGraphicInner <> nil then
+    FThread.RunProc(@ChangeSize);
 end;
 
 
@@ -449,10 +472,10 @@ destructor TsgeExtensionGraphic.Destroy;
 begin
   //Прибить поток
   if FThread <> nil then
-    begin
+  begin
     FThread.LoopProc := nil;              //Убрать метод отрисовки
     FThread.RunProcAndWait(@DoneGraphic); //Деактивировать контекст
-    end;
+  end;
 
   //Удалить объекты
   FThread.Free;

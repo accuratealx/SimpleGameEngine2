@@ -54,7 +54,9 @@ procedure TsgeVariableIntegerBase.SetStrValue(Str: String);
 var
   i: Integer;
 begin
-  if not sgeTryStrToInt(Str, i) then i := FDefaultValue;
+  if not sgeTryStrToInt(Str, i) then
+    i := FDefaultValue;
+
   Value := i;
 end;
 
@@ -67,8 +69,10 @@ end;
 
 procedure TsgeVariableIntegerBase.CheckValue(var AValue: Integer);
 begin
-  if AValue < FMinValue then AValue := FMinValue;
-  if AValue > FMaxValue then AValue := FMaxValue;
+  if AValue < FMinValue then
+    AValue := FMinValue;
+  if AValue > FMaxValue then
+    AValue := FMaxValue;
 end;
 
 

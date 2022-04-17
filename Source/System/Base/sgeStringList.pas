@@ -138,22 +138,23 @@ begin
   Result := -1;
 
   //Проверить модификатор поиска
-  if not (soCaseSensivity in FSearchOptions) then Part := LowerCase(Part);
+  if not (soCaseSensivity in FSearchOptions) then
+    Part := LowerCase(Part);
 
 
   c := Length(FStringList) - 1;
   for i := 0 to c do
-    begin
+  begin
     //Проверить модификатор поиска
-    if not (soCaseSensivity in FSearchOptions) then s := LowerCase(FStringList[i]) else s := FStringList[i];
+    if not (soCaseSensivity in FSearchOptions) then
+      s := LowerCase(FStringList[i])
+    else
+      s := FStringList[i];
 
     //Сравнить
     if s = Part then
-      begin
-      Result := i;
-      Break;
-      end;
-    end;
+      Exit(i);
+  end;
 end;
 
 
@@ -162,7 +163,8 @@ var
   c: Integer;
 begin
   //Проверить модификаторы поиска
-  if (soUnique in FSearchOptions) and (IndexOf(Part) <> -1) then Exit;
+  if (soUnique in FSearchOptions) and (IndexOf(Part) <> -1) then
+    Exit;
 
   //Добавить часть
   c := GetCount;
@@ -190,7 +192,8 @@ begin
     raise EsgeException.Create(_UNITNAME, Err_IndexOutOfBounds, sgeIntToStr(Index));
 
   //Проверить модификаторы поиска
-  if (soUnique in FSearchOptions) and (IndexOf(Part) <> -1) then Exit;
+  if (soUnique in FSearchOptions) and (IndexOf(Part) <> -1) then
+    Exit;
 
   //Раздвинуть
   SetLength(FStringList, c + 1);
@@ -208,10 +211,10 @@ var
 begin
   c := List.Count - 1;
   for i := 0 to c do
-    begin
+  begin
     Insert(Index, List.Part[i]);
     Inc(Index);
-    end;
+  end;
 end;
 
 
@@ -244,10 +247,11 @@ var
 begin
   c := List.Count - 1;
   for i := 0 to c do
-    begin
+  begin
     Idx := IndexOf(List.Part[i]);
-    if Idx <> -1 then Delete(Idx);
-    end;
+    if Idx <> -1 then
+      Delete(Idx);
+  end;
 end;
 
 
@@ -258,10 +262,11 @@ begin
   Result := '';
   c := GetCount - 1;
   for i := 0 to c do
-    begin
+  begin
     Result := Result + FStringList[i];
-    if c <> i then Result := Result + FSeparator;
-    end;
+    if c <> i then
+      Result := Result + FSeparator;
+  end;
 end;
 
 
@@ -278,26 +283,25 @@ begin
   Size := Length(Str);
   l := Length(FSeparator);
 
-
   repeat
-   //Поиск вхождения разделителя
-   i := sgePos(FSeparator, Str, StartIdx);
+    //Поиск вхождения разделителя
+    i := sgePos(FSeparator, Str, StartIdx);
 
-   //Есть совпадение
-   if i > 0 then
+    //Есть совпадение
+    if i > 0 then
     begin
-    s := Copy(Str, StartIdx, i - StartIdx);
-    Add(s);
-    StartIdx := i + l;
+     s := Copy(Str, StartIdx, i - StartIdx);
+     Add(s);
+     StartIdx := i + l;
     end;
 
     //Нет совпадения
     if (i = 0) and (i <> Size) then
-      begin
+    begin
       s := '';
       s := Copy(Str, StartIdx, Size - StartIdx + 1);
       Add(s);
-      end;
+    end;
 
   until i <= 0;
 end;
@@ -429,17 +433,18 @@ var
 begin
   //Определить количество перемешиваний
   c := GetCount;
-  if Count = -1 then Count := c div 2;
+  if Count = -1 then
+    Count := c div 2;
 
   //Перемешивать строки
   for i := 0 to Count do
-    begin
+  begin
     Idx1 := Random(c);
     Idx2 := Random(c);
     s := FStringList[Idx1];
     FStringList[Idx1] := FStringList[Idx2];
     FStringList[Idx2] := s;
-    end;
+  end;
 end;
 
 
@@ -451,9 +456,14 @@ begin
 
   for i := 0 to c do
     case Method of
-      tsBoth : FStringList[i] := sgeTrim(FStringList[i]);
-      tsLeft : FStringList[i] := sgeTrimLeft(FStringList[i]);
-      tsRight: FStringList[i] := sgeTrimRight(FStringList[i]);
+      tsBoth:
+        FStringList[i] := sgeTrim(FStringList[i]);
+
+      tsLeft:
+        FStringList[i] := sgeTrimLeft(FStringList[i]);
+
+      tsRight:
+        FStringList[i] := sgeTrimRight(FStringList[i]);
     end;
 end;
 
@@ -468,18 +478,18 @@ begin
 
     //Пузырьковая
     smBubble:
-      begin
+    begin
       ci := GetCount - 1;
       cj := ci - 1;
       for i := 0 to ci do
         for j := 0 to cj - i do
           if FStringList[j] > FStringList[j + 1] then
-            begin
+          begin
             s := FStringList[j];
             FStringList[j] := FStringList[j + 1];
             FStringList[j + 1] := s;
-            end;
-      end;
+          end;
+    end;
 
   end;
 
@@ -487,18 +497,16 @@ begin
   //Отразить сверху вниз
   ci := GetCount - 1;
   if (FSortDirection = dBackward) and (ci > 0) then
-    begin
+  begin
     cj := ci div 2;
     for i := 0 to cj do
-      begin
+    begin
       s := FStringList[i];
       FStringList[i] := FStringList[ci - i];
       FStringList[ci - i] := s;
-      end;
     end;
+  end;
 end;
-
-
 
 
 

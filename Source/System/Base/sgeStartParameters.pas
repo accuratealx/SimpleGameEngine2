@@ -24,11 +24,11 @@ type
 
   TsgeStartParameters = class
   private
-    FList: array of TsgeStartParameterItem;       //Массив параметров
-    FParamSeparator: Char;                        //Разделитель между параметрами
-    FValueSeparator: Char;                        //Разделитель между именем параметра и значением
-    FParamLine: String;                           //Строка параметров без ParamStr(0)
-    FCmdLine: String;                             //Сырая строка параметров от системы
+    FList: array of TsgeStartParameterItem;                         //Массив параметров
+    FParamSeparator: Char;                                          //Разделитель между параметрами
+    FValueSeparator: Char;                                          //Разделитель между именем параметра и значением
+    FParamLine: String;                                             //Строка параметров без ParamStr(0)
+    FCmdLine: String;                                               //Сырая строка параметров от системы
 
     procedure SetParamSeparator(ASeparator: Char);
     procedure SetValueSeparator(ASeparator: Char);
@@ -100,13 +100,14 @@ var
 begin
   Idx := IndexOf(Name);
   if Idx = -1 then
-    begin
+  begin
     c := GetCount;
     SetLength(FList, c + 1);
     FList[c].Name := Name;
     FList[c].Value := Value;
-    end
-    else FList[Idx].Value := Value;
+  end
+  else
+    FList[Idx].Value := Value;
 end;
 
 
@@ -126,10 +127,7 @@ begin
   c := GetCount - 1;
   for i := 0 to c do
     if Name = LowerCase(FList[i].Name) then
-      begin
-      Result := i;
-      Break;
-      end;
+      Exit(i);
 end;
 
 
@@ -173,23 +171,26 @@ begin
   //Цикл по символам
   c := Length(Str);
   for i := 1 to c do
-    begin
+  begin
     //Выделить символ
     Symbol := Str[i];
 
     //Проверить на разделитель
     if (Symbol = FValueSeparator) and IsName then
-      begin
+    begin
       IsName := False;
       Continue;
-      end;
+    end;
 
     //Добавить символ
     case IsName of
-      True : pName := pName + Symbol;
-      False: pValue := pValue + Symbol;
+      True:
+        pName := pName + Symbol;
+
+      False:
+        pValue := pValue + Symbol;
     end;
-    end;
+  end;
 
   //Поправить результат
   pName := sgeTrim(pName);
@@ -210,19 +211,20 @@ begin
   Add(ParamStr(0), '');
 
   //Подготовить список
-  List := TsgeSimpleCommand.Create;                       //Создать список
-  List.Separators := #32;                                 //Изменить разделитель на пробел
-  List.WeakSeparator := True;                             //Мягкий разделитель
-  List.Command := Str;                                    //Разбить строку на части через пробелы
+  List := TsgeSimpleCommand.Create;                                 //Создать список
+  List.Separators := #32;                                           //Изменить разделитель на пробел
+  List.WeakSeparator := True;                                       //Мягкий разделитель
+  List.Command := Str;                                              //Разбить строку на части через пробелы
 
   //Цикл по частям
   c := List.Count - 1;
   for i := 0 to c do
-    begin
-    GetNameAndValueFromString(List.Part[i], pName, pValue); //Вернуть из строки имя и значение
-    if pName = '' then Continue;                            //Пропуск, если нет имени
-    Add(pName, pValue);                                     //Добавить в массив
-    end;
+  begin
+    GetNameAndValueFromString(List.Part[i], pName, pValue);         //Вернуть из строки имя и значение
+    if pName = '' then
+      Continue;                                                     //Пропуск, если нет имени
+    Add(pName, pValue);                                             //Добавить в массив
+  end;
 
   //Очистить список
   List.Free;
@@ -235,16 +237,20 @@ var
   Quote: Boolean;
 begin
   Result := FCmdLine;
-  if Result = '' then Exit;
+  if Result = '' then
+    Exit;
 
   //Определить длину первого параметра
   c := Length(Result);
   Quote := False;
   for i := 1 to c do
-    begin
-    if Result[i] = '"' then Quote := not Quote;
-    if (Result[i] = ' ') and (not Quote) then Break;
-    end;
+  begin
+    if Result[i] = '"' then
+      Quote := not Quote;
+
+    if (Result[i] = ' ') and (not Quote) then
+      Break;
+  end;
 
   //Отрезать первый параметр
   Delete(Result, 1, i);
@@ -275,7 +281,6 @@ destructor TsgeStartParameters.Destroy;
 begin
   Clear;
 end;
-
 
 
 

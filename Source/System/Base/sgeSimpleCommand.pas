@@ -18,13 +18,13 @@ interface
 type
   TsgeSimpleCommand = class
   private
-    FPartList: array of String;                           //Массив частей команды
-    FCommand: String;                                     //Строка для разбора
-    FSeparators: ShortString;                             //Разделители частей
-    FStaple: Char;                                        //Кавычка
-    FControl: Char;                                       //Экран
-    FWeakSeparator: Boolean;                              //Мягкий разделитель
-    FCount: Integer;                                      //Количество частей
+    FPartList: array of String;                                     //Массив частей команды
+    FCommand: String;                                               //Строка для разбора
+    FSeparators: ShortString;                                       //Разделители частей
+    FStaple: Char;                                                  //Кавычка
+    FControl: Char;                                                 //Экран
+    FWeakSeparator: Boolean;                                        //Мягкий разделитель
+    FCount: Integer;                                                //Количество частей
 
     procedure SetSeparators(ASeparators: ShortString);
     procedure SetStaple(AStaple: Char);
@@ -45,7 +45,7 @@ type
     constructor Create(Command: String = ''; WeakSeparator: Boolean = True; Separators: ShortString = #32#9; Staple: Char = #39; Control: Char = '`');
     destructor  Destroy; override;
 
-    function GetTail(StartPart: Integer): String;                         //Возврат сырой части команды начиная со StartPart
+    function GetTail(StartPart: Integer): String;                   //Возврат сырой части команды начиная со StartPart
     function GetPartSafe(Index: Integer; DefValue: String = ''): String;  //Безопасный возврат части
 
     property Command: String read FCommand write SetCommand;
@@ -75,8 +75,10 @@ const
 
 procedure TsgeSimpleCommand.SetSeparators(ASeparators: ShortString);
 begin
-  if ASeparators = '' then ASeparators := #32;
-  if FSeparators = ASeparators then Exit;
+  if ASeparators = '' then
+    ASeparators := #32;
+  if FSeparators = ASeparators then
+    Exit;
 
   FSeparators := ASeparators;
   Parse;
@@ -85,7 +87,8 @@ end;
 
 procedure TsgeSimpleCommand.SetStaple(AStaple: Char);
 begin
-  if FStaple = AStaple then Exit;
+  if FStaple = AStaple then
+    Exit;
 
   FStaple := AStaple;
   Parse;
@@ -94,7 +97,8 @@ end;
 
 procedure TsgeSimpleCommand.SetControl(AControl: Char);
 begin
-  if FControl = AControl then Exit;
+  if FControl = AControl then
+    Exit;
 
   FControl := AControl;
   Parse;
@@ -103,7 +107,8 @@ end;
 
 procedure TsgeSimpleCommand.SetWeakSeparator(AWeakSeparator: Boolean);
 begin
-  if FWeakSeparator = AWeakSeparator then Exit;
+  if FWeakSeparator = AWeakSeparator then
+    Exit;
 
   FWeakSeparator := AWeakSeparator;
   Parse;
@@ -112,7 +117,8 @@ end;
 
 procedure TsgeSimpleCommand.SetCommand(ACommand: String);
 begin
-  if FCommand = ACommand then Exit;
+  if FCommand = ACommand then
+    Exit;
 
   FCommand := ACommand;
   Parse;
@@ -139,8 +145,10 @@ end;
 
 procedure TsgeSimpleCommand.SetCount(ACount: Integer);
 begin
-  if ACount < 0 then ACount := 0;
-  if FCount = ACount then Exit;
+  if ACount < 0 then
+    ACount := 0;
+  if FCount = ACount then
+    Exit;
 
   FCount := ACount;
   SetLength(FPartList, FCount);
@@ -159,48 +167,50 @@ begin
   //Цикл по частям
   c := Length(FPartList) - 1;
   for i := 0 to c do
-    begin
+  begin
     sPart := '';
     s := FPartList[i];
     bSeparator := False;
 
     //Пробежать по строке
     for j := 1 to Length(s) do
-      begin
+    begin
       if (s[j] = FStaple) or (s[j] = FControl) then
-        begin
+      begin
         sPart := sPart + FControl + s[j];
         Continue;
-        end;
+      end;
 
       if IsSeparator(s[j]) then
-        begin
+      begin
 
         if not bSeparator then
-          begin
+        begin
           bSeparator := True;
           sPart := sPart + FStaple + s[j];
-          end
-          else sPart := sPart + s[j];
+        end
+        else
+          sPart := sPart + s[j];
 
         Continue;
-        end;
+      end;
 
       if bSeparator then
-        begin
+      begin
         bSeparator := False;
         sPart := sPart + FStaple + s[j];
-        end
-        else sPart := sPart + s[j];
+      end
+      else
+        sPart := sPart + s[j];
 
-      end;//For
-
+    end;
 
 
     //Добавить в результат
     Result := Result + sPart;
-    if i <> c then Result := Result + PartSeparator;
-    end;
+    if i <> c then
+      Result := Result + PartSeparator;
+  end;
 end;
 
 
@@ -219,10 +229,7 @@ begin
   c := Length(FSeparators);
   for i := 1 to c do
     if FSeparators[i] = Symbol then
-      begin
-      Result := True;
-      Break;
-      end;
+      Exit(True);
 end;
 
 
@@ -234,10 +241,10 @@ begin
   Idx := c - 1;
 
   if c = 0 then
-    begin
+  begin
     SetLength(FPartList, 1);
     Idx := 0;
-    end;
+  end;
 
   FPartList[Idx] := FPartList[Idx] + S;
 end;
@@ -260,7 +267,8 @@ var
   State: Byte;
 begin
   //Проверить на пустую команду
-  if FCommand = '' then Exit;
+  if FCommand = '' then
+    Exit;
 
   //Подготовка
   SetLength(FPartList, 0);
@@ -269,7 +277,7 @@ begin
   //Просмотреть символы по порядку
   Cnt := Length(FCommand);
   for i := 1 to Cnt do
-    begin
+  begin
     //Определить символ
     S := FCommand[i];
 
@@ -277,74 +285,75 @@ begin
     A1:
     case State of
       sNormal:
-        begin
+      begin
         if IsSeparator(S) then
-          begin
+        begin
           State := sSeparator;
           Continue;
-          end;
+        end;
 
         if S = FStaple then
-          begin
+        begin
           State := sStaple;
           Continue;
-          end;
+        end;
 
         if S = FControl then
-          begin
+        begin
           State := sControl;
           Continue;
-          end;
+        end;
 
         AddSymbolToLastPart(S);
-        end;
+      end;
 
 
       sSeparator:
-        begin
-        if FWeakSeparator and IsSeparator(S) then Continue;
+      begin
+        if FWeakSeparator and IsSeparator(S) then
+          Continue;
 
         //Добавить новую часть
         c := Length(FPartList);
         SetLength(FPartList, c + 1);
         State := sNormal;
         goto A1;
-        end;
+      end;
 
 
       sStaple:
-        begin
+      begin
         if S = FControl then
-          begin
+        begin
           State := sControlInStaple;
           Continue;
-          end;
+        end;
 
         if S = FStaple then
-          begin
+        begin
           State := sNormal;
           Continue;
-          end;
+        end;
 
         AddSymbolToLastPart(S);
-        end;
+      end;
 
 
       sControl:
-        begin
+      begin
         AddSymbolToLastPart(S);
         State := sNormal;
-        end;
+      end;
 
 
       sControlInStaple:
-        begin
+      begin
         AddSymbolToLastPart(S);
         State := sStaple;
-        end;
+      end;
     end;
 
-    end;//For
+  end;
 
 
   //Запомнить длину частей
@@ -390,7 +399,8 @@ begin
   Result := '';
 
   //Проверить на пустую команду
-  if FCommand = '' then Exit;
+  if FCommand = '' then
+    Exit;
 
   //Подготовка
   CurrentIndex := 0;
@@ -399,7 +409,7 @@ begin
   //Просмотреть символы по порядку
   Cnt := Length(FCommand);
   for i := 1 to Cnt do
-    begin
+  begin
     //Определить символ
     S := FCommand[i];
 
@@ -407,75 +417,82 @@ begin
     A1:
     case State of
       sNormal:
-        begin
+      begin
         if IsSeparator(S) then
-          begin
+        begin
           State := sSeparator;
-          if CurrentIndex >= StartPart then Result := Result + S;
+          if CurrentIndex >= StartPart then
+            Result := Result + S;
           Continue;
-          end;
+        end;
 
         if S = FStaple then
-          begin
+        begin
           State := sStaple;
           Continue;
-          end;
+        end;
 
         if S = FControl then
-          begin
+        begin
           State := sControl;
           Continue;
-          end;
+        end;
 
         //Если дошли до нужной части, то добавить в результат
-        if CurrentIndex >= StartPart then Result := Result + S;
-        end;
+        if CurrentIndex >= StartPart then
+          Result := Result + S;
+      end;
 
 
       sSeparator:
-        begin
-        if FWeakSeparator and IsSeparator(S) then Continue;
+      begin
+        if FWeakSeparator and IsSeparator(S) then
+          Continue;
 
         //Следующая часть
         Inc(CurrentIndex);
         State := sNormal;
         goto A1;
-        end;
+      end;
 
 
       sStaple:
-        begin
+      begin
         if S = FControl then
-          begin
-          if CurrentIndex >= StartPart then Result := Result + S;
+        begin
+          if CurrentIndex >= StartPart then
+            Result := Result + S;
           Continue;
-          end;
+        end;
 
         if S = FStaple then
-          begin
+        begin
           State := sNormal;
           Continue;
-          end;
-
-        if CurrentIndex >= StartPart then Result := Result + S;
         end;
+
+        if CurrentIndex >= StartPart then
+          Result := Result + S;
+      end;
 
 
       sControl:
-        begin
-        if CurrentIndex >= StartPart then Result := Result + S;
+      begin
+        if CurrentIndex >= StartPart then
+          Result := Result + S;
         State := sNormal;
-        end;
+      end;
 
 
       sControlInStaple:
-        begin
-        if CurrentIndex >= StartPart then Result := Result + S;
+      begin
+        if CurrentIndex >= StartPart then
+          Result := Result + S;
         State := sStaple;
-        end;
+      end;
     end;
 
-    end;//For
+  end;
 end;
 
 
@@ -483,7 +500,8 @@ function TsgeSimpleCommand.GetPartSafe(Index: Integer; DefValue: String): String
 begin
   Result := DefValue;
 
-  if (Index >= 0) and (Index < FCount) then Result := FPartList[Index];
+  if (Index >= 0) and (Index < FCount) then
+    Result := FPartList[Index];
 end;
 
 
