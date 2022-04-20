@@ -68,13 +68,11 @@ begin
 
     //Создать список архивов
     FPackList := TsgePackFileList.Create;
-
   except
     on E: EsgeException do
       raise EsgeException.Create(_UNITNAME, Err_CantCreateExtension, '', E.Message);
   end;
 end;
-
 
 
 destructor TsgeExtensionPackList.Destroy;
@@ -85,7 +83,6 @@ begin
 end;
 
 
-
 procedure TsgeExtensionPackList.LoadPackFromDirectory(Directory: String; Ext: String);
 var
   List: TsgeStringList;
@@ -93,7 +90,6 @@ var
 begin
   List := TsgeStringList.Create;
   try
-
     //Подготовить каталог
     if Directory = '' then
       Directory := sgeGetApplicationDirectory;
@@ -111,11 +107,11 @@ begin
        on E: EsgeException do
          raise EsgeException.Create(_UNITNAME, Err_CantLoadPackFile, '', E.Message);
     end;
-
   finally
     List.Free;
   end;
 end;
+
 
 
 end.
