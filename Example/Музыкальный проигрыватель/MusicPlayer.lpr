@@ -84,7 +84,7 @@ begin
   AddText(10, 110, '1 - Change mode: Random');
   AddText(10, 130, '2 - Change mode: Forward');
   AddText(10, 150, '3 - Change mode: Backward');
-  AddText(10, 170, '4 - Repeat mode: Node');
+  AddText(10, 170, '4 - Repeat mode: None');
   AddText(10, 190, '5 - Repeat mode: Track');
   AddText(10, 210, '6 - Repeat mode: List');
   AddText(10, 230, '9 - Volume down');
@@ -160,9 +160,6 @@ constructor TGame.Create(Options: TsgeInitOptions);
 begin
   Randomize;
   inherited Create(Options);
-
-  //Привязать основные команды на кнопки
-  AttachDefaultCommand;
 
   //Подписка на события
   EventManager.SubscriberGroupList.Subscribe(Event_KeyboardDown, TsgeEventHandler(@EventWindowKeyDown));

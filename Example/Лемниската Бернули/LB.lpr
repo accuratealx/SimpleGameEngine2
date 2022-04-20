@@ -17,7 +17,7 @@ type
     procedure ThreadProc;
 
   public
-    constructor Create(InitSound: Boolean = True); override;
+    constructor Create(Options: TsgeInitOptions = InitOptionsAll); virtual;
     destructor  Destroy; override;
   end;
 
@@ -89,21 +89,18 @@ end;
 
 
 
-constructor TGame.Create(InitSound: Boolean);
+constructor TGame.Create(Options: TsgeInitOptions = InitOptionsAll);
 var
   i: Integer;
 begin
   Randomize;
-  inherited Create(InitSound);
-
-  //Привязать основные команды на кнопки
-  AttachDefaultCommand;
+  inherited Create(Options);
 
   //Подписка на нажатие клавиш
-  EventManager.Subscribe(Event_KeyboardDown, TsgeEventHandler(@EventWindowKeyDown));
+  EventManager.SubscriberGroupList.Subscribe(Event_KeyboardDown, TsgeEventHandler(@EventWindowKeyDown));
 
   //Лемниската Бернули
-  ExtGraphic.DrawList.AddLayer('Circle', 0);
+  ExtGraphic.LayerList.Add('Circle', 0);
   for i := 0 to MaxItem do
     begin
     FElArray[i].El := TsgeGraphicElementCircle.Create(400 + Random(100), Random(ExtGraphic.Graphic.Height), Random(10) + 2, sgeGetRandomColor(1), 16{3 + Random(9)});
@@ -111,7 +108,7 @@ begin
     FElArray[i].Angle := sgeDegToRad(Random(360 * 3));
     FElArray[i].Enable := True;
     FElArray[i].Speed := Random + 0.01;
-    ExtGraphic.DrawList.AddElement(FElArray[i].El, 'Circle');
+    ExtGraphic.LayerList.AddElement(FElArray[i].El, 'Circle');
     end;
 
   //Поток изменения координат
@@ -134,7 +131,7 @@ end;
 
 
 begin
-  Game := TGame.Create(False);
+  Game := TGame.Create([]);
   Game.Run;
   Game.Free;
 end.
