@@ -23,16 +23,15 @@ type
   TsgeReplaceFlags = set of (rfReplaceAll, rfIgnoreCase);
 
 
-
 function  sgeStringReplace(const S, OldPattern, NewPattern: string; Flags: TsgeReplaceFlags): string;
 function  sgeSubstituteParamsToString(Str: String; Parameters: TsgeSimpleParameters; OpenQuote: String = ''; CloseQuote: String = ''): String;
 function  sgeGetListIndexByValue(List: TsgeStringList; Value: String): Integer;
-
+function  sgeMatchString(const Str: String; const Mask: String = '*'): Boolean;
 
 implementation
 
 uses
-  SysUtils, sgeSystemUtils;
+  SysUtils, sgeSystemUtils, sgeMatch;
 
 
 function sgeStringReplace(const S, OldPattern, NewPattern: string; Flags: TsgeReplaceFlags): string;
@@ -63,6 +62,17 @@ begin
   for i := 0 to List.Count - 1 do
     if LowerCase(List.Part[i]) = Value then
       Exit(i);
+end;
+
+
+function sgeMatchString(const Str: String; const Mask: String): Boolean;
+begin
+  with TsgeMatch.Create(Mask) do
+  try
+    Result := Match(Str);
+  finally
+    Free;
+  end;
 end;
 
 
