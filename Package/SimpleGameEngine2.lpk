@@ -15,7 +15,7 @@
     </CompilerOptions>
     <Description Value="Simple Game Engine 2"/>
     <Version Major="1"/>
-    <Files Count="240">
+    <Files Count="242">
       <Item1>
         <Filename Value="..\Source\ThirdParty\GDIPlus\GDIPAPI.pas"/>
         <UnitName Value="GDIPAPI"/>
@@ -981,6 +981,14 @@
         <Filename Value="..\Source\System\Utils\sgeWindowsVersion.pas"/>
         <UnitName Value="sgeWindowsVersion"/>
       </Item240>
+      <Item241>
+        <Filename Value="..\Source\System\Base\sgeMatch.pas"/>
+        <UnitName Value="sgeMatch"/>
+      </Item241>
+      <Item242>
+        <Filename Value="..\Source\System\Base\sgeMatchMask.pas"/>
+        <UnitName Value="sgeMatchMask"/>
+      </Item242>
     </Files>
     <CompatibilityMode Value="True"/>
     <UsageOptions>
