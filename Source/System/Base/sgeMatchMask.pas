@@ -70,7 +70,7 @@ end;
 
 function TsgeMatchMask.GetItem(Index: Integer): TsgeMatchMaskItem;
 begin
-  if (Index < 0) or (Index > Fcount - 1) then ;
+  if (Index < 0) or (Index > Fcount - 1) then
     raise EsgeException.Create(_UNITNAME, Err_IndexOutOfBounds, sgeIntToStr(Index));
 
   Result := FItemList[Index];
