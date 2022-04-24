@@ -22,7 +22,7 @@ procedure sgeExtractScriptAndLabel(Str: String; var Script: ShortString; var Lab
 function  sgeGetLabelPosInScript(Script: TsgeShellScript; LabelName: ShortString): Integer;
 function  sgeGetProcedurePosInScript(Script: TsgeShellScript; ProcedureName: ShortString): Integer;
 function  sgeGetProcedureEndInScript(Script: TsgeShellScript; ProcedureName: ShortString; StartPos: Integer): Integer;
-
+function  sgeGetMaskSafe(Str: String; Strict: Boolean = True): String;
 
 implementation
 
@@ -132,6 +132,30 @@ begin
     Line.Free;
   end;
 end;
+
+
+function sgeGetMaskSafe(Str: String; Strict: Boolean): String;
+const
+  sAsterisk = '*';
+var
+  s: String;
+begin
+  s := sgeTrim(str);
+  if s = '' then
+    s := sAsterisk;
+
+  if not Strict then
+  begin
+    if s[1] <> sAsterisk then
+      s := sAsterisk + s;
+
+    if s[Length(s)] <> sAsterisk then
+      s[Length(s)] := sAsterisk;
+  end;
+
+  Result := s;
+end;
+
 
 
 end.
