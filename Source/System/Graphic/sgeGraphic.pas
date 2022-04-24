@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGraphic.pas
-Версия            1.9
+Версия            1.10
 Создан            27.04.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс графики
@@ -851,8 +851,8 @@ begin
 
     gctNormal:
     begin
-      Result.X := Options.Rect.X1 + Options.Rect.X2 / 2 + Options.AnglePoint.X;
-      Result.Y := Options.Rect.Y1 + Options.Rect.Y2 / 2 + Options.AnglePoint.Y;
+      Result.X := Options.Rect.X1 + (Options.Rect.X2 * Options.Scale.X)/ 2 + Options.AnglePoint.X;
+      Result.Y := Options.Rect.Y1 + (Options.Rect.Y2 * Options.Scale.Y)/ 2 + Options.AnglePoint.Y;
     end;
 
     gctCentered:
