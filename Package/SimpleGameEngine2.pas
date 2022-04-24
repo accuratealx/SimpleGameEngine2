@@ -78,13 +78,14 @@ uses
   sgeVariableEnumClass, sgeEventGraphic, sgeGUIToggleSpriteButton, 
   sgeShellCommand_Music_Next, sgeShellCommand_Music_Play, 
   sgeShellCommand_Music_Prev, sgeShellCommand_CommandHistory_Load, 
-  sgeShellCommand_System_Stop, sgeGUIPropertyFont, sgeGUILabel, 
+  sgeShellCommand_Command_List, sgeGUIPropertyFont, sgeGUILabel, 
   sgeGUIPropertyLabel, sgeGUIScrollBar, sgeGUITypes, sgeCursor, 
   sgeExtensionCursor, sgeShellCommand_CommandHistory_Clear, 
   sgeShellCommand_CommandHistory_Save, sgeShellCommand_Music_Stop, 
   sgeShellCommand_Script_Load, sgeKeyCommandMouseAction, 
   sgeKeyCommandMouseActionList, sgeKeyCommandKeyboardAction, 
-  sgeKeyCommandKeyboardActionList, sgeWindowsVersion, sgeMatch, sgeMatchMask;
+  sgeKeyCommandKeyboardActionList, sgeWindowsVersion, sgeMatch, sgeMatchMask, 
+  sgeShellCommand_System_Stop;
 
 implementation
 

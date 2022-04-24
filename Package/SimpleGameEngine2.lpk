@@ -15,7 +15,7 @@
     </CompilerOptions>
     <Description Value="Simple Game Engine 2"/>
     <Version Major="1"/>
-    <Files Count="242">
+    <Files Count="243">
       <Item1>
         <Filename Value="..\Source\ThirdParty\GDIPlus\GDIPAPI.pas"/>
         <UnitName Value="GDIPAPI"/>
@@ -914,8 +914,8 @@
         <UnitName Value="sgeShellCommand_CommandHistory_Load"/>
       </Item223>
       <Item224>
-        <Filename Value="..\Source\System\ShellCommands\sgeShellCommand_System_Stop.pas"/>
-        <UnitName Value="sgeShellCommand_System_Stop"/>
+        <Filename Value="..\Source\System\ShellCommands\sgeShellCommand_Command_List.pas"/>
+        <UnitName Value="sgeShellCommand_Command_List"/>
       </Item224>
       <Item225>
         <Filename Value="..\Source\System\GUI\Properties\sgeGUIPropertyFont.pas"/>
@@ -989,6 +989,10 @@
         <Filename Value="..\Source\System\Base\sgeMatchMask.pas"/>
         <UnitName Value="sgeMatchMask"/>
       </Item242>
+      <Item243>
+        <Filename Value="..\Source\System\ShellCommands\sgeShellCommand_System_Stop.pas"/>
+        <UnitName Value="sgeShellCommand_System_Stop"/>
+      </Item243>
     </Files>
     <CompatibilityMode Value="True"/>
     <UsageOptions>
