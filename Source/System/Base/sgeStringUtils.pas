@@ -26,7 +26,7 @@ type
 function  sgeStringReplace(const S, OldPattern, NewPattern: string; Flags: TsgeReplaceFlags): string;
 function  sgeSubstituteParamsToString(Str: String; Parameters: TsgeSimpleParameters; OpenQuote: String = ''; CloseQuote: String = ''): String;
 function  sgeGetListIndexByValue(List: TsgeStringList; Value: String): Integer;
-function  sgeMatchString(const Str: String; const Mask: String = '*'): Boolean;
+function  sgeMatchString(const Str: String; const Mask: String = '*'; IgnoreCase: Boolean = True): Boolean;
 
 implementation
 
@@ -65,9 +65,9 @@ begin
 end;
 
 
-function sgeMatchString(const Str: String; const Mask: String): Boolean;
+function sgeMatchString(const Str: String; const Mask: String; IgnoreCase: Boolean): Boolean;
 begin
-  with TsgeMatch.Create(Mask) do
+  with TsgeMatch.Create(Mask, IgnoreCase) do
   try
     Result := Match(Str);
   finally
