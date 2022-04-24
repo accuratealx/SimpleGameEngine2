@@ -25,6 +25,7 @@ const
   Group_Variables       = 'Variable';
   Group_Script          = 'Script';
   Group_CommandHistory  = 'CommandHistory';
+  Group_Command         = 'Command';
   Group_Dialog          = 'Dialog';
 
   //Ошибки
@@ -39,6 +40,9 @@ const
   Err_ScriptNotFound        = 'ScriptNotFound';
   Err_VariableIsReadOnly    = 'VariableIsReadOnly';
 
+  //Константы
+  Const_CommandList         = 'CommandList';
+  Const_Total               = 'Total';
 
 type
   //Класс команды

@@ -62,6 +62,9 @@ uses
   sgeShellCommand_CommandHistory_Save,
   sgeShellCommand_CommandHistory_Load,
 
+  //Command
+  sgeShellCommand_Command_List,
+
   //WinDialogs
   sgeShellCommand_Dialog_Message;
 
@@ -111,11 +114,12 @@ begin
   TsgeShellCommand_CommandHistory_Save.Create(SGEObject);
   TsgeShellCommand_CommandHistory_Load.Create(SGEObject);
 
+  //Command
+  TsgeShellCommand_Command_List.Create(SGEObject);
+
   //WinDialogs
   TsgeShellCommand_Dialog_Message.Create(SGEObject);
 end;
-
-
 
 
 

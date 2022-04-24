@@ -54,6 +54,7 @@ type
     FCanvas: TsgeGraphicSprite;                                     //Холст для отрисовки оболочки
     FFont: TsgeGraphicFont;                                         //Шрифт
     FRepaintCS: TsgeCriticalSection;                                //Синхронизация перерисовки из разных потоков
+    FLanguage: TsgeSimpleParameters;                                //Таблица с языком
 
     //Ссылки на объекты подписки
     FEventSubscriber: array [0..MAX_SUB_COUNT] of TsgeEventSubscriber;
@@ -61,6 +62,8 @@ type
     //Параметры
     FEnable: Boolean;
     FWeakSeparator: Boolean;
+    FStrictSearch: Boolean;                                         //Строгий поиск по маске
+    FIgnoreCase: Boolean;                                           //Игнорировать регистр
     FJournalLines: Byte;                                            //Количество строк журнала
     FJournalPage: Byte;                                             //Размер страницы прокрутки
     FJournalOffset: Integer;                                        //Смещение журнала
@@ -135,6 +138,7 @@ type
 
     //Добавить строку в журнал
     procedure LogMessage(Text: String; MsgType: TsgeShellMessageType = smtText);
+    function  GetLocalizedString(Str: String): String;              //Перевести строку
 
     //Выполнить команду
     procedure DoCommand(Cmd: String; Wait: Boolean = False);
@@ -147,12 +151,15 @@ type
     property ScriptList: TsgeShellScriptList read FScriptList;
     property CallStack: TsgeShellCallStack read FCallStack;
     property Editor: TsgeLineEditor read FEditor;
+    property Language: TsgeSimpleParameters read FLanguage;
 
     //Параметры
     property Enable: Boolean read FEnable write SetEnable;
     property Journal: TsgeShellLineList read FJournal;
     property WeakSeparator: Boolean read FWeakSeparator write FWeakSeparator;
     property JournalPage: Byte read FJournalPage write FJournalPage;
+    property StrictSearch: Boolean read FStrictSearch write FStrictSearch;
+    property IgnoreCase: Boolean read FIgnoreCase write FIgnoreCase;
 
     property BGSprite: TsgeGraphicSprite read FBGSprite write SetBGSprite;
     property BGColor: TsgeColor read FBGColor write FBGColor;
@@ -1022,10 +1029,13 @@ begin
     FAliases := TsgeSimpleParameters.Create;
     FCommandList := TsgeShellCommandList.Create(True);
     FEditor := TsgeLineEditor.Create;
+    FLanguage := TsgeSimpleParameters.Create;
     FFont := TsgeGraphicFont.Create('Lucida Console', 14, [gfaBold]);
 
     //Задать параметры
     FEnable := False;
+    FStrictSearch := True;
+    FIgnoreCase := True;
     FWeakSeparator := True;
     FReadLnMode := False;
     FReadKeyMode := False;
@@ -1091,6 +1101,7 @@ begin
 
   //Удалить объекты
   FThread.Free;
+  FLanguage.Free;
   FRepaintCS.Free;
   FEvent.Free;
   FCallStack.Free;
@@ -1127,6 +1138,12 @@ begin
 
   //Сместить прокрутку журнала в низ
   FJournalOffset := 0;
+end;
+
+
+function TsgeExtensionShell.GetLocalizedString(Str: String): String;
+begin
+  Result := FLanguage.GetValue('Const:' + Str, Str);
 end;
 
 
