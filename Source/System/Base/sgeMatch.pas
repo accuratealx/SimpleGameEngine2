@@ -21,12 +21,13 @@ type
   TsgeMatch = class
   private
     FMask: TsgeMatchMask;
+    FIgnoreCase: Boolean;
 
   public
-    constructor Create(Mask: String = '');
+    constructor Create(Mask: String = ''; IgnoreCase: Boolean = True);
     destructor  Destroy; override;
 
-    function Match(const Str: String): Boolean;
+    function Match(Str: String): Boolean;
   end;
 
 
@@ -34,8 +35,11 @@ type
 implementation
 
 
-constructor TsgeMatch.Create(Mask: String);
+constructor TsgeMatch.Create(Mask: String; IgnoreCase: Boolean);
 begin
+  FIgnoreCase := IgnoreCase;
+  if IgnoreCase then
+    Mask := LowerCase(Mask);
   FMask := TsgeMatchMask.Create(Mask);
 end;
 
@@ -46,7 +50,7 @@ begin
 end;
 
 
-function TsgeMatch.Match(const Str: String): Boolean;
+function TsgeMatch.Match(Str: String): Boolean;
 var
   StrEnd, MaskEnd: Integer;
 
@@ -89,6 +93,9 @@ var
 begin
   if FMask.Count = 0 then
     Exit(False);
+
+  if FIgnoreCase then
+    Str := LowerCase(Str);
 
   StrEnd := Length(Str);
   MaskEnd := FMask.Count - 1;
