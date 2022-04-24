@@ -37,16 +37,21 @@ type
     FShowCursor: Boolean;                                           //Показывать курсор
     FCursor: TsgeCursor;                                            //Текущий курсор
     FCursorPos: TsgeIntPoint;                                       //Последние координаты курсора
+    FScale: Single;                                                 //Масштаб курсора
+    FLeftHand: Boolean;                                             //Курсор для левшей
 
-    procedure SetShowCursor(AShow: Boolean);
-    procedure SetCursor(ACursor: TsgeCursor);
-
-    procedure CorrectVisible(Visible: Boolean);
-    procedure CorrectCoordinate;
+    procedure UpdateCursor;                                         //Поправить параметры курсора
+    procedure CorrectCoordinate;                                    //Поправить координаты
+    procedure CorrectVisible(Visible: Boolean);                     //Поправить видимость курсора
 
     function Handler_MouseMove(EventObj: TsgeEventMouse): Boolean;
     function Handler_MouseEnter(EventObj: TsgeEventMouse): Boolean;
     function Handler_MouseLeave(EventObj: TsgeEventMouse): Boolean;
+
+    procedure SetCursor(ACursor: TsgeCursor);
+    procedure SetShowCursor(AShow: Boolean);
+    procedure SetScale(AScale: Single);
+    procedure SetLeftHanded(ALeft: Boolean);
   protected
     class function GetName: String; override;
 
@@ -57,48 +62,51 @@ type
 
     property ShowCursor: Boolean read FShowCursor write SetShowCursor;
     property Cursor: TsgeCursor read FCursor write SetCursor;
+    property Scale: Single read FScale write SetScale;
+    property LeftHanded: Boolean read FLeftHand write SetLeftHanded;
   end;
 
 
 implementation
 
 uses
-  sgeErrors;
+  sgeErrors, sgeGraphic;
 
 
 const
   _UNITNAME = 'ExtensionCursors';
 
 
-procedure TsgeExtensionCursor.SetShowCursor(AShow: Boolean);
+
+procedure TsgeExtensionCursor.UpdateCursor;
+var
+  X: Single;
 begin
-  if FShowCursor = AShow then
+  if FCursor = nil then
     Exit;
 
-  FShowCursor := AShow;
-  CorrectVisible(FShowCursor);
+  FGUIElement.Frames := FCursor.Frames;
+  FGUIElement.W := FCursor.Width;
+  FGUIElement.H := FCursor.Height;
+  FGUIElement.CoordType := gctNormal;
+
+  X := FScale;
+  if FLeftHand then
+    X := -FScale;
+  FGUIElement.Scale := sgeGetFloatPoint(X, FScale);
+
+  CorrectCoordinate;
 end;
 
 
-procedure TsgeExtensionCursor.SetCursor(ACursor: TsgeCursor);
+procedure TsgeExtensionCursor.CorrectCoordinate;
 begin
-  if FCursor = ACursor then
+  if FCursor = nil then
     Exit;
 
-  FCursor := ACursor;
-
-  //Поправить параметры курсора
-  if FCursor <> nil then
-  begin
-    FGUIElement.Frames := FCursor.Frames;
-    FGUIElement.W := FCursor.Width;
-    FGUIElement.H := FCursor.Height;
-    CorrectCoordinate;
-    FGUIElement.Update;
-  end;
-
-  //Поправить видимость
-  CorrectVisible(FShowCursor);
+  FGUIElement.X := FCursorPos.X - FCursor.HotPoint.X;
+  FGUIElement.Y := FCursorPos.Y - FCursor.HotPoint.Y;
+  FGUIElement.Update;
 end;
 
 
@@ -126,16 +134,6 @@ begin
 end;
 
 
-procedure TsgeExtensionCursor.CorrectCoordinate;
-begin
-  if FCursor <> nil then
-  begin
-    FGUIElement.X := FCursorPos.X - FCursor.HotPoint.X;
-    FGUIElement.Y := FCursorPos.Y - FCursor.HotPoint.Y;
-  end;
-end;
-
-
 function TsgeExtensionCursor.Handler_MouseMove(EventObj: TsgeEventMouse): Boolean;
 begin
   Result := False;
@@ -145,7 +143,6 @@ begin
 
   //Поправить графический примитив
   CorrectCoordinate;
-  FGUIElement.Update;
 end;
 
 
@@ -168,6 +165,51 @@ begin
   //Показать сиситемный если он скрыт
   if not FExtWindow.ShowCursor then
     FExtWindow.ShowCursor := true;
+end;
+
+
+procedure TsgeExtensionCursor.SetCursor(ACursor: TsgeCursor);
+begin
+  if FCursor = ACursor then
+    Exit;
+
+  FCursor := ACursor;
+
+  //Поправить параметры курсора
+  UpdateCursor;
+
+  //Поправить видимость
+  CorrectVisible(FShowCursor);
+end;
+
+
+procedure TsgeExtensionCursor.SetShowCursor(AShow: Boolean);
+begin
+  if FShowCursor = AShow then
+    Exit;
+
+  FShowCursor := AShow;
+
+  //Поправить видимость
+  CorrectVisible(FShowCursor);
+end;
+
+
+procedure TsgeExtensionCursor.SetScale(AScale: Single);
+begin
+  FScale := AScale;
+
+  UpdateCursor;
+end;
+
+
+procedure TsgeExtensionCursor.SetLeftHanded(ALeft: Boolean);
+begin
+  if FLeftHand = ALeft then
+    Exit;
+
+  FLeftHand := ALeft;
+  UpdateCursor;
 end;
 
 
@@ -199,6 +241,8 @@ begin
 
     //Задать параметры
     FShowCursor := True;
+    FScale := 1;
+    FLeftHand := False;
 
     //Создать слой для вывода курсора
     FExtGraphic.LayerList.Add(LayerName, Graphic_LayerIndex_Cursor, True);
