@@ -16,14 +16,14 @@ unit sgeMathUtils;
 interface
 
 
-function sgeMin(a, b: Integer): Integer;
-function sgeMax(a, b: Integer): Integer;
+function sgeMin(a, b: Integer): Integer; inline;
+function sgeMax(a, b: Integer): Integer; inline;
 
-function sgeFloor(x: Single): integer;
-function sgeFloor(x: Double): integer;
+function sgeFloor(x: Single): integer; inline;
+function sgeFloor(x: Double): integer; inline;
 
-function sgeCeil(x: Single): Integer;
-function sgeCeil(x: Double): Integer;
+function sgeCeil(x: Single): Integer; inline;
+function sgeCeil(x: Double): Integer; inline;
 
 function sgeRadToDeg(Rad: Single): Single; inline;
 function sgeRadToDeg(Rad: Double): Double; inline;
