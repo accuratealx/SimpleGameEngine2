@@ -85,7 +85,7 @@ uses
   sgeShellCommand_Script_Load, sgeKeyCommandMouseAction, 
   sgeKeyCommandMouseActionList, sgeKeyCommandKeyboardAction, 
   sgeKeyCommandKeyboardActionList, sgeWindowsVersion, sgeMatch, sgeMatchMask, 
-  sgeShellCommand_System_Stop;
+  sgeShellCommand_System_Stop, sgeGraphicElementFade;
 
 implementation
 

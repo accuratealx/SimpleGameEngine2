@@ -15,7 +15,7 @@
     </CompilerOptions>
     <Description Value="Simple Game Engine 2"/>
     <Version Major="1"/>
-    <Files Count="243">
+    <Files Count="244">
       <Item1>
         <Filename Value="..\Source\ThirdParty\GDIPlus\GDIPAPI.pas"/>
         <UnitName Value="GDIPAPI"/>
@@ -993,6 +993,10 @@
         <Filename Value="..\Source\System\ShellCommands\sgeShellCommand_System_Stop.pas"/>
         <UnitName Value="sgeShellCommand_System_Stop"/>
       </Item243>
+      <Item244>
+        <Filename Value="..\Source\System\Graphic\sgeGraphicElementFade.pas"/>
+        <UnitName Value="sgeGraphicElementFade"/>
+      </Item244>
     </Files>
     <CompatibilityMode Value="True"/>
     <UsageOptions>
