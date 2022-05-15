@@ -338,11 +338,11 @@ begin
   except
     //Ошибка инициализации движка
     on E: EsgeException do
-      begin
+    begin
       FErrorManager.ShowMessage := True;
       FErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_CantCreateSimpleGameEngine, '', E.Message));
       Halt;
-      end;
+    end;
   end;
 end;
 
@@ -353,7 +353,7 @@ begin
   if ioAutoStopScript in FInitOptions then
     RunScript(Script_AutoStopName, True);
 
-  //Пользосательская финализация
+  //Пользовательская финализация
   DeInit;
 
   //Отписать системные обработчики событий
