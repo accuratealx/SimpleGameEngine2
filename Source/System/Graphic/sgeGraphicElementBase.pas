@@ -31,16 +31,16 @@ type
 
   protected
     procedure UpdateData; virtual; abstract;                        //Обновление данных
+    procedure ApplySettings;                                        //Применение изменений
 
   public
     constructor Create;
 
-    procedure ApplySettings;
     procedure Update;
     procedure Delete;
 
     //Пользовательские функции
-    procedure Draw(Graphic: TsgeGraphic); virtual; abstract;        //Отрисовка элемента
+    procedure Draw(Graphic: TsgeGraphic); virtual; abstract;
 
     property Visible: Boolean read FVisible write FVisible;
     property NeedUpdate: Boolean read FNeedUpdate;
@@ -51,27 +51,21 @@ type
 implementation
 
 
+procedure TsgeGraphicElementBase.ApplySettings;
+begin
+  UpdateData;
+  FNeedUpdate := False;
+end;
+
+
 constructor TsgeGraphicElementBase.Create;
 begin
   FVisible := True;
 end;
 
 
-procedure TsgeGraphicElementBase.ApplySettings;
-begin
-  //Применить данные
-  UpdateData;
-
-  //Снять флаг обновления
-  FNeedUpdate := False;
-end;
-
-
 procedure TsgeGraphicElementBase.Update;
 begin
-  if FNeedUpdate = True then
-    Exit;
-
   FNeedUpdate := True;
 end;
 
@@ -80,6 +74,7 @@ procedure TsgeGraphicElementBase.Delete;
 begin
   FNeedDelete := True;
 end;
+
 
 
 end.

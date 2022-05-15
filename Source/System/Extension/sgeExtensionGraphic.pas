@@ -18,7 +18,7 @@ uses
   sgeTypes, sgeThread, sgeMemoryStream,
   sgeGraphicColor, sgeGraphic,
   sgeCounter, sgeWindow,
-  sgeExtensionBase, sgeGraphicElementLayerList, sgeGraphicElementBase, sgeGraphicFPS,
+  sgeExtensionBase, sgeGraphicElementLayerList, sgeGraphicElementBase, sgeGraphicElementFade, sgeGraphicFPS,
   sgeScreenFade, sgeEventBase, sgeEventWindow,
   sgeExtensionWindow;
 
@@ -48,7 +48,9 @@ type
     FThread: TsgeThread;                                            //Поток основного класса графики
     FFPS: TsgeGraphicFPS;                                           //Настройки вывода FPS
     FFPSCounter: TsgeCounter;                                       //Счётчик FPS
-    FFade: TsgeScreenFade;                                          //Затемнение экрана
+
+    FFadeElement: TsgeGraphicElementFade;                           //Элемент затемнения
+    FFadeID: Integer;                                               //Идентификатор перехода
 
     //Перменные
     FDrawControl: TsgeExtensionGraphicDrawControl;                  //Способ ограничения кадров
@@ -78,7 +80,6 @@ type
     //Вывод графики
     procedure DrawElements;
     procedure DrawFPS;
-    procedure DrawFade;
 
     //Свойства
     procedure SetDrawControl(AMetod: TsgeExtensionGraphicDrawControl);
@@ -101,7 +102,7 @@ type
     destructor  Destroy; override;
 
     //Методы
-    procedure Fade(Mode: TsgeExtensionFadeMode; Color: TsgeColor; Time: Cardinal);
+    procedure Fade(Mode: TsgeExtensionFadeMode; Color: TsgeColor; Time: Cardinal; ID: Integer = -1);
     procedure ScreenShot(Stream: TsgeMemoryStream);
 
     //Объекты
@@ -127,6 +128,10 @@ uses
 
 const
   _UNITNAME = 'ExtensionGraphic';
+
+
+type
+  TsgeGraphicElementBaseExt = class(TsgeGraphicElementBase);
 
 
 procedure TsgeExtensionGraphic.InitGraphic;
@@ -162,6 +167,11 @@ end;
 
 procedure TsgeExtensionGraphic.SystemDraw;
 begin
+  //Если уничтожение, то не рисовать
+  if FDestroying then
+    Exit;
+
+  //Отрисовка
   case FDrawControl of
     gdcSync: Draw;
 
@@ -180,6 +190,10 @@ end;
 
 procedure TsgeExtensionGraphic.Draw;
 begin
+  //Если уничтожение, то не рисовать
+  if FDestroying then
+    Exit;
+
   //Увеличить счётчик кадров
   FFPSCounter.Inc;
 
@@ -194,10 +208,6 @@ begin
 
   //Вывод елементов
   DrawElements;
-
-  //Вывод затемнения
-  if FFade.Enable then
-    DrawFade;
 
   //Вывод FPS
   if FFPS.Enable then
@@ -229,6 +239,10 @@ begin
   //Вывод слоёв
   for I := 0 to FLayerList.Count - 1 do
   begin
+    //Если уничтожение, то не рисовать
+    if FDestroying then
+      Exit;
+
     //Ссылка на слой
     Layer := FLayerList.Item[I];
 
@@ -259,13 +273,16 @@ begin
         Continue;
       end;
 
-      //Обновить данные
-      if El.NeedUpdate then
-        El.ApplySettings;
-
-      //Нарисовать элемент
+      //Вывести элемент
       if El.Visible then
+      begin
+        //Обновить данные
+        if El.NeedUpdate then
+          TsgeGraphicElementBaseExt(El).ApplySettings;
+
+        //Нарисовать элемент
         El.Draw(FGraphicInner);
+      end;
 
       //Следующий элемент
       El := Layer.Elements.GetNext;
@@ -286,6 +303,10 @@ var
   TxtW, TxtH: Integer;
   s: String;
 begin
+  //Если уничтожение, то не рисовать
+  if FDestroying then
+    Exit;
+
   //Подготовить графику
   FGraphicInner.PushAttrib;
   FGraphicInner.Reset;
@@ -335,23 +356,6 @@ begin
 end;
 
 
-procedure TsgeExtensionGraphic.DrawFade;
-begin
-  //Подготовить графику
-  FGraphicInner.PushAttrib;
-  FGraphicInner.PoligonMode := gpmFill;
-  FGraphicInner.ColorBlend := True;
-
-  //Вывод
-  FGraphicInner.Color := FFade.GetColor;
-  FGraphicInner.doCoordinateType := gctClassic;
-  FGraphicInner.DrawRect(0, 0, FGraphic.Width, FGraphic.Height);
-
-  //Восстановить графику
-  FGraphicInner.PopAttrib;
-end;
-
-
 procedure TsgeExtensionGraphic.SetDrawControl(AMetod: TsgeExtensionGraphicDrawControl);
 begin
   if FDrawControl = AMetod then
@@ -380,7 +384,7 @@ end;
 
 procedure TsgeExtensionGraphic.FadeCallBackProc(Time: TsgePassedTime);
 begin
-  EventManager.Publish(TsgeEventGraphicFade.Create(Event_GraphicFade, Time));
+  EventManager.Publish(TsgeEventGraphicFade.Create(Event_GraphicFade, Time, FFadeID));
 end;
 
 
@@ -422,6 +426,7 @@ begin
     //Параметры
     FDrawControl := gdcSync;
     FAutoEraseBG := True;
+    FFadeID := -1;
     SetMaxFPS(120);
 
     //Получить ссылки на объекты
@@ -460,7 +465,9 @@ begin
     //Создать объекты
     FFPS := TsgeGraphicFPS.Create;
     FFPSCounter := TsgeCounter.Create(1000);
-    FFade := TsgeScreenFade.Create;
+
+    FFadeElement := TsgeGraphicElementFade.Create(cBlack, sfmNormalToColorToNormal, 1000, @FadeCallBackProc);
+    FLayerList.AddElement(FFadeElement, Graphic_Layer_System_Fade);
 
     //Установить метод отрисовки
     FThread.LoopProc := @SystemDraw;
@@ -473,11 +480,13 @@ end;
 
 destructor TsgeExtensionGraphic.Destroy;
 begin
+  FDestroying := True;
+
   //Прибить поток
   if FThread <> nil then
   begin
-    FThread.LoopProc := nil;              //Убрать метод отрисовки
-    FThread.RunProcAndWait(@DoneGraphic); //Деактивировать контекст
+    FThread.LoopProc := nil;                                        //Убрать метод отрисовки
+    FThread.RunProcAndWait(@DoneGraphic);                           //Деактивировать контекст
   end;
 
   //Удалить объекты
@@ -489,16 +498,18 @@ begin
   FLayerList.Free;
   FFPS.Free;
   FFPSCounter.Free;
-  FFade.Free;
   FTempWindow.Free;
 
   inherited Destroy;
 end;
 
-procedure TsgeExtensionGraphic.Fade(Mode: TsgeExtensionFadeMode; Color: TsgeColor; Time: Cardinal);
+procedure TsgeExtensionGraphic.Fade(Mode: TsgeExtensionFadeMode; Color: TsgeColor; Time: Cardinal; ID: Integer);
 begin
-  //Запустить затемнение
-  FFade.Start(TsgeScreenFadeMode(Mode), Color, Time, @FadeCallBackProc);
+  FFadeID := ID;
+  FFadeElement.Color := Color;
+  FFadeElement.Mode := TsgeScreenFadeMode(Mode);
+  FFadeElement.Time := Time;
+  FFadeElement.Update
 end;
 
 procedure TsgeExtensionGraphic.ScreenShot(Stream: TsgeMemoryStream);
