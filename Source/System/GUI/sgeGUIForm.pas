@@ -55,9 +55,6 @@ implementation
 uses
   sgeTypes, sgeVars;
 
-const
-  GUILayer = 'GUI';
-
 
 function TsgeGUIForm.GetBackground: TsgeGUIPropertyBackground;
 begin
@@ -155,13 +152,16 @@ end;
 
 destructor TsgeGUIForm.Destroy;
 begin
-  //Спрятать форму
-  SetVisible(False);
+  Include(FState, esLockUpdate);
+
+  //Удалить примитив
+  FGraphicElement.Visible := False;
+  FGraphicElement.Delete;
 
   //Удалить свойство фона
   FBackground.Free;
 
-  //Удалить себя из списока форм
+  //Удалить себя из списка форм
   SGE.ExtGUI.FormList.Delete(Self);
 
   inherited Destroy;
