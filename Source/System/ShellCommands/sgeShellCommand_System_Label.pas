@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeShellCommand_System_Label.pas
-Версия            1.0
+Версия            1.1
 Создан            26.08.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Команда оболочки
@@ -39,8 +39,6 @@ implementation
 constructor TsgeShellCommand_System_Label.Create(SGEObject: TObject);
 begin
   inherited Create(SGEObject, 'Label', Group_System);
-
-  //Добавить параметры
   FParameters.AddString('Name', True);
 end;
 

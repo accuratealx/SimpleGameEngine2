@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeShellCommand_System_Goto.pas
-Версия            1.0
+Версия            1.1
 Создан            27.08.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Команда оболочки
@@ -50,7 +50,6 @@ const
 constructor TsgeShellCommand_System_Goto.Create(SGEObject: TObject);
 begin
   inherited Create(SGEObject, 'Goto', Group_System);
-
   FParameters.AddString('Label', True);
 end;
 
@@ -102,8 +101,6 @@ end;
 
 
 
-
-
-
 end.
+
 

@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeShellCommand_Script_Delete.pas
-Версия            1.0
+Версия            1.1
 Создан            29.08.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Команда оболочки
@@ -48,7 +48,6 @@ const
 constructor TsgeShellCommand_Script_Delete.Create(SGEObject: TObject);
 begin
   inherited Create(SGEObject, 'Delete', Group_Script);
-
   FParameters.AddString('Name', True);
 end;
 
@@ -72,5 +71,6 @@ end;
 
 
 end.
+
 
 

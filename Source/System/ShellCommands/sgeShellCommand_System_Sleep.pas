@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeShellCommand_System_Sleep.pas
-Версия            1.0
+Версия            1.1
 Создан            12.08.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Команда оболочки
@@ -45,7 +45,6 @@ uses
 constructor TsgeShellCommand_System_Sleep.Create(SGEObject: TObject);
 begin
   inherited Create(SGEObject, 'Sleep', Group_System);
-
   FParameters.AddInteger('Time', True);
 end;
 

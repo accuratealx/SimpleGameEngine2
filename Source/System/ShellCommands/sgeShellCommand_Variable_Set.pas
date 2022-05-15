@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeShellCommand_Variable_Set.pas
-Версия            1.1
+Версия            1.2
 Создан            31.07.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Команда оболочки
@@ -51,7 +51,6 @@ const
 constructor TsgeShellCommand_Variable_Set.Create(SGEObject: TObject);
 begin
   inherited Create(SGEObject, 'Set', Group_Variables);
-
   FParameters.AddString('VariableName', True);
   FParameters.AddString('Value', True);
 end;

@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeShellCommand_Dialog_Message.pas
-Версия            1.0
+Версия            1.1
 Создан            31.07.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Команда оболочки
@@ -45,8 +45,6 @@ uses
 constructor TsgeShellCommand_Dialog_Message.Create(SGEObject: TObject);
 begin
   inherited Create(SGEObject, 'Message', Group_Dialog);
-
-  //Добавить параметры
   FParameters.AddString('Message', False);
 end;
 

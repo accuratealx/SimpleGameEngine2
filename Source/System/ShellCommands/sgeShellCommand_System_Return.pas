@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeShellCommand_System_Return.pas
-Версия            1.0
+Версия            1.1
 Создан            26.08.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Команда оболочки
@@ -45,7 +45,6 @@ uses
 constructor TsgeShellCommand_System_Return.Create(SGEObject: TObject);
 begin
   inherited Create(SGEObject, 'Return', Group_System);
-
   FParameters.AddString('Name', False);
 end;
 

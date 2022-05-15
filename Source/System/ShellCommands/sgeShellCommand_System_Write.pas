@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeShellCommand_System_Write.pas
-Версия            1.0
+Версия            1.1
 Создан            13.08.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Команда оболочки
@@ -44,7 +44,6 @@ uses
 constructor TsgeShellCommand_System_Write.Create(SGEObject: TObject);
 begin
   inherited Create(SGEObject, 'Write', Group_System);
-
   FParameters.AddString('Message', False);
 end;
 

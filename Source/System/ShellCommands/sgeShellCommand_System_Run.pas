@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeShellCommand_System_Run.pas
-Версия            1.0
+Версия            1.1
 Создан            27.08.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Команда оболочки
@@ -48,7 +48,6 @@ const
 constructor TsgeShellCommand_System_Run.Create(SGEObject: TObject);
 begin
   inherited Create(SGEObject, 'Run', Group_System);
-
   FParameters.AddString('Script', True);
 end;
 

@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeShellCommand_System_ReadLn.pas
-Версия            1.0
+Версия            1.1
 Создан            31.07.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Команда оболочки
@@ -47,7 +47,6 @@ type
 constructor TsgeShellCommand_System_ReadLn.Create(SGEObject: TObject);
 begin
   inherited Create(SGEObject, 'ReadLn', Group_System);
-
   FParameters.AddString('VariableName', False);
 end;
 

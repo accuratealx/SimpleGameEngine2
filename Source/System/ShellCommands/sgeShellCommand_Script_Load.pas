@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeShellCommand_Script_Load.pas
-Версия            1.1
+Версия            1.2
 Создан            26.08.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Команда оболочки
@@ -51,7 +51,6 @@ const
 constructor TsgeShellCommand_Script_Load.Create(SGEObject: TObject);
 begin
   inherited Create(SGEObject, 'Load', Group_Script);
-
   FParameters.AddString('FileName', True);
   FParameters.AddString('Name', False);
 end;
@@ -85,9 +84,6 @@ begin
   //Добавить скрипт в список
   SGE.ExtShell.ScriptList.Add(SName, FnLines);
 end;
-
-
-
 
 
 

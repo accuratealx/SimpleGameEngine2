@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeShellCommand_Music_Play.pas
-Версия            1.0
+Версия            1.1
 Создан            18.11.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Команда оболочки
@@ -47,7 +47,6 @@ const
 constructor TsgeShellCommand_Music_Play.Create(SGEObject: TObject);
 begin
   inherited Create(SGEObject, 'Play', Group_Music);
-
   FParameters.AddString('TrackName', False);
 end;
 

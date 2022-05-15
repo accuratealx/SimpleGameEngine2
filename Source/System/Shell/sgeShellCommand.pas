@@ -58,6 +58,7 @@ type
     FGroup: ShortString;
     FMinParamCount: Byte;
 
+    procedure CalculateMinParamCount;
     procedure RepaintShell;
   public
     constructor Create(SGEObject: TObject; Name: ShortString; Group: ShortString = '');
@@ -85,6 +86,17 @@ type
   TsgeExtensionShellExt = class(TsgeExtensionShell);
 
 
+procedure TsgeShellCommand.CalculateMinParamCount;
+var
+  i: Integer;
+begin
+  FMinParamCount := 0;
+  for i := 0 to FParameters.Count - 1 do
+    if FParameters.Item[i].Required then
+      Inc(FMinParamCount);
+end;
+
+
 procedure TsgeShellCommand.RepaintShell;
 begin
   TsgeExtensionShellExt(TSimpleGameEngine(FSGE).ExtShell).RepaintThread;
@@ -105,6 +117,9 @@ begin
   FName := Name;
   FGroup := Group;
 
+  //Посчитать минимальное количество параметров
+  CalculateMinParamCount;
+
   //Зарегестрировать команду
   SGE.ExtShell.CommandList.Add(Self);
 end;
@@ -116,14 +131,9 @@ begin
   FParameters.Free;
 end;
 
-
 procedure TsgeShellCommand.AfterConstruction;
-var
-  i: Integer;
 begin
-  //Посчитать минимальное количество параметров
-  for i := 0 to FParameters.Count - 1 do
-    if FParameters.Item[i].Required then Inc(FMinParamCount);
+  CalculateMinParamCount;
 end;
 
 

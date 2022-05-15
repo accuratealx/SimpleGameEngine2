@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeShellCommand_CommandHistory_Save.pas
-Версия            1.0
+Версия            1.1
 Создан            12.01.2022
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Команда оболочки
@@ -48,7 +48,6 @@ const
 constructor TsgeShellCommand_CommandHistory_Save.Create(SGEObject: TObject);
 begin
   inherited Create(SGEObject, 'Save', Group_CommandHistory);
-
   FParameters.AddString('FileName', True);
 end;
 

@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeShellCommand_Variable_Delete.pas
-Версия            1.0
+Версия            1.1
 Создан            31.07.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Команда оболочки
@@ -45,7 +45,6 @@ uses
 constructor TsgeShellCommand_Variable_Delete.Create(SGEObject: TObject);
 begin
   inherited Create(SGEObject, 'Delete', Group_Variables);
-
   FParameters.AddString('VariableName', True);
 end;
 
@@ -59,9 +58,6 @@ begin
 
   SGE.ExtVariables.Variables.Delete(Command.Part[1]);
 end;
-
-
-
 
 
 

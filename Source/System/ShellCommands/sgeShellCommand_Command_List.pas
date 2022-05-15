@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeShellCommand_Command_List.pas
-Версия            1.0
+Версия            1.1
 Создан            24.04.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Команда оболочки
@@ -45,6 +45,7 @@ uses
 constructor TsgeShellCommand_Command_List.Create(SGEObject: TObject);
 begin
   inherited Create(SGEObject, 'List', Group_Command);
+  FParameters.AddString('Mask', False);
 end;
 
 
@@ -80,6 +81,9 @@ begin
   //Итог
   SGE.ExtShell.LogMessage(SGE.ExtShell.GetLocalizedString(Const_Total) + ': ' + sgeIntToStr(c), smtNote);
   SGE.ExtShell.LogMessage('');
+
+  //Перерисовать оболочку
+  RepaintShell;
 end;
 
 

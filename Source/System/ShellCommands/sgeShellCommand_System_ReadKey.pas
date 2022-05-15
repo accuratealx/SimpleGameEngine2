@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeShellCommand_System_ReadKey.pas
-Версия            1.1
+Версия            1.2
 Создан            31.07.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Команда оболочки
@@ -49,7 +49,6 @@ type
 constructor TsgeShellCommand_System_ReadKey.Create(SGEObject: TObject);
 begin
   inherited Create(SGEObject, 'ReadKey', Group_System);
-
   FParameters.AddString('VariableName', True);
   FParameters.AddInteger('Timeout', False);
 end;
@@ -83,13 +82,13 @@ begin
     sewrEvent:
     begin
       VarName := Command.Part[1];                                     //Имя переменной
-      VarValue := TsgeExtensionShellExt(SGE.ExtShell).FreadKeyChar;  //Значение переменной
+      VarValue := TsgeExtensionShellExt(SGE.ExtShell).FreadKeyChar;   //Значение переменной
       SGE.ExtVariables.SetInteger(VarName, VarValue);                 //Изменить значение переменной
     end;
 
     //Не дождался нажатия
     sewrTimeOut:
-      TsgeExtensionShellExt(SGE.ExtShell).FReadKeyMode := False;     //Опустить флаг чтения символа
+      TsgeExtensionShellExt(SGE.ExtShell).FReadKeyMode := False;      //Опустить флаг чтения символа
   end;
 
   //Перерисовать оболочку

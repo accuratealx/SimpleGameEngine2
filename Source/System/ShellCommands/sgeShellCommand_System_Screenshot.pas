@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeShellCommand_System_Screenshot.pas
-Версия            1.1
+Версия            1.2
 Создан            14.08.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Команда оболочки
@@ -48,7 +48,6 @@ const
 constructor TsgeShellCommand_System_Screenshot.Create(SGEObject: TObject);
 begin
   inherited Create(SGEObject, 'Screenshot', Group_System);
-
   FParameters.AddString('Name', False);
 end;
 
