@@ -453,8 +453,11 @@ begin
     FGraphic.Init;
     FGraphic.Activate;
 
-    //Создать объекты
+    //Слои отрисовки
     FLayerList := TsgeGraphicElementLayerList.Create(True);
+    FLayerList.Add(Graphic_Layer_System_Fade, Graphic_LayerIndex_Fade, True);
+
+    //Создать объекты
     FFPS := TsgeGraphicFPS.Create;
     FFPSCounter := TsgeCounter.Create(1000);
     FFade := TsgeScreenFade.Create;

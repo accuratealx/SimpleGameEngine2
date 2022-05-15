@@ -1061,14 +1061,14 @@ begin
     FCanvas := TsgeGraphicSprite.Create(500, 300);
 
     //Создать слой отрисовки
-    FExtGraphic.LayerList.Add(Extension_Shell, Graphic_LayerIndex_Shell, True);
+    FExtGraphic.LayerList.Add(Graphic_Layer_System_Shell, Graphic_LayerIndex_Shell, True);
 
     //Создать элемент отрисовки
     FElementSprite := TsgeGraphicElementSpriteCashed.Create(0, 0, FCanvas.Width, FCanvas.Height, FCanvas);
     FElementSprite.Visible := False;
 
     //Добавить элемент в список отрисовки
-    FExtGraphic.LayerList.AddElement(FElementSprite, Extension_Shell);
+    FExtGraphic.LayerList.AddElement(FElementSprite, Graphic_Layer_System_Shell);
 
     //Перерисовать оболочку
     RepaintInner;

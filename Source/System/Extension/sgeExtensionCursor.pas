@@ -228,8 +228,6 @@ end;
 
 
 constructor TsgeExtensionCursor.Create(ObjectList: TObject);
-const
-  LayerName = 'Cursor';
 begin
   try
     inherited Create(ObjectList);
@@ -245,14 +243,14 @@ begin
     FLeftHand := False;
 
     //Создать слой для вывода курсора
-    FExtGraphic.LayerList.Add(LayerName, Graphic_LayerIndex_Cursor, True);
+    FExtGraphic.LayerList.Add(Graphic_Layer_System_Cursor, Graphic_LayerIndex_Cursor, True);
 
     //Создать примитив отрисовки
     FGUIElement := TsgeGraphicElementAnimation.Create(0, 0, 16, 16, FExtResList.Default.Frames);
     FGUIElement.Visible := False;
 
     //Добавить примитив в список отрисовки
-    FExtGraphic.LayerList.AddElement(FGUIElement, LayerName);
+    FExtGraphic.LayerList.AddElement(FGUIElement, Graphic_Layer_System_Cursor);
 
   except
     on E: EsgeException do

@@ -384,7 +384,7 @@ begin
     RegisterEventHandlers;
 
     //Создать слой отрисовки GUI
-    FGUILayer := FExtGraphic.LayerList.Add(Extension_GUI, Graphic_LayerIndex_GUI, True);
+    FGUILayer := FExtGraphic.LayerList.Add(Graphic_Layer_System_GUI, Graphic_LayerIndex_GUI, True);
 
     //Установить параметры
     FVisible := True;

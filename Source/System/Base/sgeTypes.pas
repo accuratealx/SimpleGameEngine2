@@ -16,10 +16,17 @@ interface
 
 
 const
-  //Приоритет слоев GUI
+  //Слои
+  Graphic_Layer_System_Cursor = 'System.Cursor';
+  Graphic_Layer_System_Shell = 'System.Shell';
+  Graphic_Layer_System_Fade = 'System.Fade';
+  Graphic_Layer_System_GUI = 'System.GUI';
+
+  //Приоритет элементов слоев GUI
   Graphic_LayerIndex_Cursor = $FFFF;
   Graphic_LayerIndex_Shell = $FFFE;
-  Graphic_LayerIndex_GUI = $FFFD;
+  Graphic_LayerIndex_Fade = $FFFD;
+  Graphic_LayerIndex_GUI = $FFFC;
 
 
 type

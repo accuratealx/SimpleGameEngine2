@@ -53,7 +53,7 @@ type
 implementation
 
 uses
-  sgeVars;
+  sgeTypes, sgeVars;
 
 const
   GUILayer = 'GUI';
@@ -125,7 +125,7 @@ begin
   SGE.ExtGUI.FormList.ToTopIndex(Self);
 
   //Поместить графический элемент в конец списка
-  SGE.ExtGraphic.LayerList.MoveElementToListEnd(FGraphicElement, GUILayer);
+  SGE.ExtGraphic.LayerList.MoveElementToListEnd(FGraphicElement, Graphic_Layer_System_GUI);
 end;
 
 
@@ -140,7 +140,7 @@ begin
   FGraphicElement := TsgeGraphicElementSpriteCashed.Create(Left, Top, Width, Height, FCanvas);
 
   //Добавить элемент в список отрисовки
-  SGE.ExtGraphic.LayerList.AddElement(FGraphicElement, GUILayer);
+  SGE.ExtGraphic.LayerList.AddElement(FGraphicElement, Graphic_Layer_System_GUI);
 
   //Создать свойство фона
   FBackground := TsgeGUIBackgroundExt.Create(Self);
