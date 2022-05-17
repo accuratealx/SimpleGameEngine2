@@ -445,7 +445,7 @@ begin
     FGraphicInner.ShareList(FGraphicShell.Context);
 
     //Создать поток
-    FThread := TsgeThread.Create(nil, True, False);
+    FThread := TsgeThread.Create(Extension_Graphic, nil, True, False);
 
     //Настроить основной контекст графики
     FThread.RunProcAndWait(@InitGraphic);

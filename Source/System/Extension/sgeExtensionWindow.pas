@@ -465,7 +465,7 @@ begin
     FMouseOut := False;
 
     //Создать поток
-    FThread := TsgeThread.Create(nil, True, False);
+    FThread := TsgeThread.Create(Extension_Window, nil, True, False);
 
     //Создать окно
     FThread.RunProcAndWait(@CreateWindow);

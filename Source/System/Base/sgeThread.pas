@@ -36,6 +36,7 @@ type
     FException: EsgeException;                    //Последнее исключение
 
     //Поля
+    FName: String;                                //Имя потока
     FHandle: THandle;                             //Указатель потока
     FID: DWORD;                                   //ID потока в системе
     FFreeOnTerminate: Boolean;                    //Удалять объект по завершении работы
@@ -55,7 +56,7 @@ type
     function  GetProcessorID: DWORD;
     procedure SetProcessorID(AValue: DWORD);
   public
-    constructor Create(Proc: TsgeThreadProc = nil; Suspended: Boolean = True; FreeOnTerminate: Boolean = False; StackSize: Integer = DefaultStackSize);
+    constructor Create(Name: String; Proc: TsgeThreadProc = nil; Suspended: Boolean = True; FreeOnTerminate: Boolean = False; StackSize: Integer = DefaultStackSize);
     destructor  Destroy; override;
 
     procedure RunProc(Proc: TsgeThreadProc; Modifier: TsgeThreadProcEndModifier = tpemNone);
@@ -65,6 +66,7 @@ type
     procedure Suspend;
     procedure Resume;
 
+    property Name: String read FName;
     property Handle: THandle read FHandle;
     property ID: DWORD read FID;
     property Priority: TsgeThreadPriority read GetPriority write SetPriority;
@@ -269,9 +271,10 @@ begin
 end;
 
 
-constructor TsgeThread.Create(Proc: TsgeThreadProc; Suspended: Boolean; FreeOnTerminate: Boolean; StackSize: Integer);
+constructor TsgeThread.Create(Name: String; Proc: TsgeThreadProc; Suspended: Boolean; FreeOnTerminate: Boolean; StackSize: Integer);
 begin
   //Поля
+  FName := Name;
   FFreeOnTerminate := FreeOnTerminate;
   FTerminated := False;
   FSuspended := True;

@@ -246,7 +246,7 @@ begin
     inherited Create(ObjectList);
 
     //Создать классы
-    FThread := TsgeThread.Create;
+    FThread := TsgeThread.Create(Extension_Music);
     FTrackList := TsgeMusicPlayerTrackList.Create(True);
     FTaskList := TsgeMusicPLayerTaskList.Create(True);
 

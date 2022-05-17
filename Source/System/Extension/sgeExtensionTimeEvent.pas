@@ -156,7 +156,7 @@ begin
     inherited Create(ObjectList);
 
     //Создать объекты
-    FThread := TsgeThread.Create(@ThreadProc, True, False);
+    FThread := TsgeThread.Create(Extension_TimeEvent, @ThreadProc, True, False);
     FTimeEventList := TsgeTimeEventList.Create(False);
 
     //Параметры

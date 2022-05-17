@@ -391,7 +391,7 @@ begin
     inherited Create(ObjectList);
 
     //Классы
-    FThread := TsgeThread.Create(nil, True, False);
+    FThread := TsgeThread.Create(Extension_Controllers, nil, True, False);
     FControllerList := TsgeControllerList.Create(True);
 
     //Параметры

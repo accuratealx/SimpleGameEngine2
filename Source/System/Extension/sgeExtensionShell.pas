@@ -1020,7 +1020,7 @@ begin
     //Создать объекты
     FEvent := TsgeSystemEvent.Create(True, False);
     FRepaintCS := sgeCriticalSection.TsgeCriticalSection.Create;
-    FThread := TsgeThread.Create;
+    FThread := TsgeThread.Create(Extension_Shell);
     FCommandQueue := TsgeShellCommandQueue.Create;
     FCommandHistory := TsgeCommandHistory.Create;
     FScriptList := TsgeShellScriptList.Create(True);
