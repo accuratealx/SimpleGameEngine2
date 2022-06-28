@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeExtensionList.pas
-Версия            1.2
+Версия            1.3
 Создан            24.04.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс: Список расширений
@@ -16,8 +16,7 @@ unit sgeExtensionList;
 interface
 
 uses
-  sgeCriticalSection,
-  sgeExtensionBase;
+  sgeExtensionBase, sgeTemplateCollection;
 
 
 const
@@ -27,27 +26,20 @@ const
 
 type
   //Список расширений
-  TsgeExtensionList = class
+  TsgeExtensionList = class(specialize TsgeTemplateCollection<TsgeExtensionBase>)
   private
-    FCS: TsgeCriticalSection;
-    FList: array of TsgeExtensionBase;
 
-    function GetCount: Integer;
-    function GetItem(Index: Integer): TsgeExtensionBase;
   public
     constructor Create;
-    destructor  Destroy; override;
 
     function  IndexOf(Name: String): Integer;
+    function  IndexOf(Extension: TsgeExtensionBase): Integer;
 
-    procedure Clear;
     procedure Add(Extension: TsgeExtensionBase);
-    procedure Delete(Name: String);
-    function  Exist(Name: String): Boolean;
-
+    procedure Delete(Extension: TsgeExtensionBase);
     function  Get(Name: String): TsgeExtensionBase;
 
-    property Count: Integer read GetCount;
+    property Count: Integer read FCount;
     property Item[Index: Integer]: TsgeExtensionBase read GetItem;
   end;
 
@@ -55,120 +47,55 @@ type
 implementation
 
 uses
-  sgeErrors, sgeSystemUtils;
+  sgeErrors;
 
 const
   _UNITNAME = 'ExtensionList';
 
-  Err_IndexOutOfBounds  = 'IndexOutOfBounds';
   Err_ObjectNotFound    = 'ObjectNotFound';
-
-
-
-function TsgeExtensionList.GetCount: Integer;
-begin
-  FCS.Enter;
-  try
-    Result := Length(FList);
-  finally
-    FCS.Leave;
-  end;
-end;
-
-
-function TsgeExtensionList.GetItem(Index: Integer): TsgeExtensionBase;
-begin
-  FCS.Enter;
-  try
-    if (Index < 0) or (Index > GetCount - 1) then
-      raise EsgeException.Create(_UNITNAME, Err_IndexOutOfBounds, sgeIntToStr(Index));
-
-    Result := FList[Index];
-  finally
-    FCS.Leave;
-  end;
-end;
 
 
 constructor TsgeExtensionList.Create;
 begin
-  FCS := TsgeCriticalSection.Create;
-end;
-
-
-destructor TsgeExtensionList.Destroy;
-begin
-  Clear;
-  FCS.Free;
+  inherited Create(True);
 end;
 
 
 function TsgeExtensionList.IndexOf(Name: String): Integer;
 var
-  i, c: Integer;
+  i: Integer;
 begin
   Result := -1;
-
   Name := LowerCase(Name);
-  c := Length(FList) - 1;
-  for i := 0 to c do
+  for i := 0 to FCount - 1 do
     if LowerCase(FList[i].Name) = Name then
       Exit(i);
 end;
 
 
-procedure TsgeExtensionList.Clear;
+function TsgeExtensionList.IndexOf(Extension: TsgeExtensionBase): Integer;
 var
-  i, c: Integer;
+  i: Integer;
 begin
-  FCS.Enter;
-  try
-    //Уничтожить расширения
-    c := GetCount - 1;
-    for i := c downto 0 do
-      FList[i].Free;
-  finally
-    FCS.Leave;
-  end;
+  Result := -1;
+  for i := 0 to FCount - 1 do
+    if FList[i] = Extension then
+      Exit(i);
 end;
-
 
 procedure TsgeExtensionList.Add(Extension: TsgeExtensionBase);
-var
-  c: Integer;
 begin
-  FCS.Enter;
-  try
-    c := GetCount;
-    SetLength(FList, c + 1);
-    FList[c] := Extension;
-  finally
-    FCS.Leave;
-  end;
+  inherited Add(Extension);
 end;
 
 
-procedure TsgeExtensionList.Delete(Name: String);
+procedure TsgeExtensionList.Delete(Extension: TsgeExtensionBase);
 var
-  Idx, c, i: Integer;
+  Idx: Integer;
 begin
-  //Найти индекс
-  Idx := IndexOf(Name);
+  Idx := IndexOf(Extension);
   if Idx = -1 then
-    raise EsgeException.Create(_UNITNAME, Err_ObjectNotFound, Name);
-
-  //Сдвинуть хвост
-  c := GetCount - 2;
-  for i := Idx to c do
-    FList[i] := FList[i + 1];
-
-  SetLength(FList, c + 1);
-end;
-
-
-function TsgeExtensionList.Exist(Name: String): Boolean;
-begin
-  Result := (IndexOf(Name) <> -1);
+    raise EsgeException.Create(_UNITNAME, Err_ObjectNotFound, Extension.Name);
 end;
 
 
@@ -182,6 +109,7 @@ begin
   if Idx <> -1 then
     Result := FList[Idx];
 end;
+
 
 
 end.

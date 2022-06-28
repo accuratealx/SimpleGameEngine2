@@ -78,7 +78,7 @@ var
 begin
   //Удалить память объектов
   if FFreeObjects then
-    for i := 0 to FCount - 1 do
+    for i := FCount - 1 downto 0 do
       TObject(FList[i]).Free;
 
   //Поправить параметры

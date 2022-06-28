@@ -52,7 +52,7 @@ type
 implementation
 
 uses
-  sgeVars,
+  sgeCorePointerUtils,
   sgeGraphicColorUtils;
 
 
@@ -135,7 +135,7 @@ end;
 
 procedure TsgeGUIPropertyColorExt.Draw;
 begin
-  with SGE.ExtGraphic.Graphic do
+  with sgeCorePointer_GetSGE.ExtGraphic.Graphic do
   begin
     BGColor := FColor;
     EraseBG;

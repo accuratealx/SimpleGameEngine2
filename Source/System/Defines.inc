@@ -2,7 +2,6 @@
 {$Define SGE_DEBUG}
 
 
-
 //Режим отладки
 {$IfDef SGE_DEBUG}
   {$Warnings On}

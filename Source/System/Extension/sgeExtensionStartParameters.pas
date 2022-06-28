@@ -28,10 +28,10 @@ type
     FParameters: TsgeStartParameters;
 
   protected
-    class function GetName: String; override;
+    function GetName: String; override;
 
   public
-    constructor Create(ObjectList: TObject); override;
+    constructor Create; override;
     destructor  Destroy; override;
 
     property Parameters: TsgeStartParameters read FParameters;
@@ -49,16 +49,16 @@ const
 
 
 
-class function TsgeExtensionStartParameters.GetName: String;
+function TsgeExtensionStartParameters.GetName: String;
 begin
   Result := Extension_StartParameters;
 end;
 
 
-constructor TsgeExtensionStartParameters.Create(ObjectList: TObject);
+constructor TsgeExtensionStartParameters.Create;
 begin
   try
-    inherited Create(ObjectList);
+    inherited Create;
 
     FParameters := TsgeStartParameters.Create;
   except

@@ -146,6 +146,7 @@ type
     procedure AddChild(Element: TsgeGUIElement);
     procedure DeleteChild(Element: TsgeGUIElement);
     procedure DeleteChild;
+    function  GetFormScale: Single; virtual;
   public
     constructor Create(Name: String; Left, Top, Width, Height: Integer; Parent: TsgeGUIElement = nil); virtual;
     destructor  Destroy; override;
@@ -215,7 +216,8 @@ type
 implementation
 
 uses
-  sgeVars, sgeGraphic, sgeGUIUtils;
+  sgeCorePointerUtils,
+  sgeGraphic, sgeGUIUtils;
 
 
 function TsgeGUIElementList.IndexOf(Element: TsgeGUIElement): Integer;
@@ -296,12 +298,11 @@ procedure TsgeGUIElement.SetEnable(AEnabled: Boolean);
 begin
   if FEnable = AEnabled then
     Exit;
-
   FEnable := AEnabled;
 
   //Если элемент неактивен, то убрать монопольный захват мыши
-  if not FEnable then
-    SGE.ExtGUI.ReleaseMouse(Self);
+  {if not FEnable then
+    SGE.ExtGUI.ReleaseMouse(Self);}
 
   Repaint;
 end;
@@ -358,6 +359,43 @@ end;
 function TsgeGUIElement.GetConstrains: TsgeGUIPropertyConstrains;
 begin
   Result := FConstrains;
+end;
+
+
+procedure TsgeGUIElement.AddChild(Element: TsgeGUIElement);
+begin
+  FChildList.Add(Element);
+  Repaint;
+end;
+
+
+procedure TsgeGUIElement.DeleteChild(Element: TsgeGUIElement);
+begin
+  FChildList.Delete(Element);
+  Repaint;
+end;
+
+
+procedure TsgeGUIElement.DeleteChild;
+begin
+  if FChildList.Count = 0 then
+    Exit;
+
+  //Удалить объекты
+  while FChildList.Count > 0 do
+    FChildList.Item[0].Free;
+
+  //Перерисовать
+  Repaint;
+end;
+
+
+function TsgeGUIElement.GetFormScale: Single;
+begin
+  Result := 1;
+
+  if FParent <> nil then
+    Result := FParent.GetFormScale;
 end;
 
 
@@ -548,7 +586,7 @@ begin
       Continue;
 
     //Вывод спрайтов детей
-    with SGE.ExtGraphic.Graphic do
+    with sgeCorePointer_GetSGE.ExtGraphic.Graphic do
     begin
       ResetDrawOptions;
       DrawSprite(El.Left, El.Top, El.Width, El.Height, El.Canvas);
@@ -633,7 +671,7 @@ end;
 
 procedure TsgeGUIElement.GraphicPrepare;
 begin
-  with SGE.ExtGraphic.Graphic do
+  with sgeCorePointer_GetSGE.ExtGraphic.Graphic do
   begin
     PushAttrib;
     Reset;
@@ -651,7 +689,7 @@ end;
 
 procedure TsgeGUIElement.GraphicRestore;
 begin
-  with SGE.ExtGraphic.Graphic do
+  with sgeCorePointer_GetSGE.ExtGraphic.Graphic do
   begin
     RenderSprite := nil;
     RenderPlace := grpScreen;
@@ -814,10 +852,10 @@ begin
   Include(FState, esLockUpdate);
 
   //Отключить захват мыши
-  SGE.ExtGUI.ReleaseMouse(Self);
+  sgeCorePointer_GetSGE.ExtGUI.ReleaseMouse(Self);
 
   //Убрать фокус с элемента
-  SGE.ExtGUI.LostFocus(Self);
+  sgeCorePointer_GetSGE.ExtGUI.LostFocus(Self);
 
   //Удалить детей
   DeleteChild;
@@ -833,34 +871,6 @@ begin
 
   //Убрать флаг уничтожения объекта
   Exclude(FState, esLockUpdate);
-end;
-
-
-procedure TsgeGUIElement.AddChild(Element: TsgeGUIElement);
-begin
-  FChildList.Add(Element);
-  Repaint;
-end;
-
-
-procedure TsgeGUIElement.DeleteChild(Element: TsgeGUIElement);
-begin
-  FChildList.Delete(Element);
-  Repaint;
-end;
-
-
-procedure TsgeGUIElement.DeleteChild;
-begin
-  if FChildList.Count = 0 then
-    Exit;
-
-  //Удалить объекты
-  while FChildList.Count > 0 do
-    FChildList.Item[0].Free;
-
-  //Перерисовать
-  Repaint;
 end;
 
 
@@ -886,14 +896,14 @@ begin
         if FClickButton in Mouse.MouseButtons then
         begin
           FPressed := True;
-          SGE.ExtGUI.MouseCapture(Self);
+          sgeCorePointer_GetSGE.ExtGUI.MouseCapture(Self);
         end;
 
         //Обработчик нажатия мыши
         Handler_MouseDown(Mouse);
 
         //Установить фокус ввода
-        SGE.ExtGUI.SetFocus(Self);
+        sgeCorePointer_GetSGE.ExtGUI.SetFocus(Self);
       end;
     end;
 
@@ -911,7 +921,7 @@ begin
 
       //Сбросить флаг нажатия
       FPressed := False;
-      SGE.ExtGUI.ReleaseMouse(Self);
+      sgeCorePointer_GetSGE.ExtGUI.ReleaseMouse(Self);
     end;
 
     emetMove:
@@ -991,7 +1001,7 @@ begin
 
   //Вывод рамки элемента
   {$IfDef SGE_GUI_Bounds}
-  with SGE.ExtGraphic.Graphic do
+  with sgeCorePointer_GetSGE.ExtGraphic.Graphic do
   begin
     ColorBlend := False;
     PoligonMode := gpmLine;
@@ -1038,10 +1048,10 @@ end;
 
 function TsgeGUIElement.GetTopParent: TsgeGUIElement;
 begin
-  Result := Self;
-
   if FParent <> nil then
-    Result := FParent.GetTopParent;
+    Result := FParent.GetTopParent
+  else
+    Result := Self;
 end;
 
 
@@ -1056,7 +1066,7 @@ begin
     Pt := FParent.GetGlobalPos;
     Result.X := Result.X + Pt.X;
     Result.Y := Result.Y + Pt.Y;
-  end;
+  end
 end;
 
 

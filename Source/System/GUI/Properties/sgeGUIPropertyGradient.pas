@@ -52,8 +52,9 @@ type
 implementation
 
 uses
+  sgeCorePointerUtils,
   sgeGraphic, sgeGraphicColor,
-  sgeGUIElement, sgeVars;
+  sgeGUIElement;
 
 type
   TsgeGUIElementExtended = class(TsgeGUIElement);
@@ -130,7 +131,7 @@ begin
   W := TsgeGUIElementExtended(FOwner).FWidth;
   H := TsgeGUIElementExtended(FOwner).FHeight;
 
-  with SGE.ExtGraphic.Graphic do
+  with sgeCorePointer_GetSGE.ExtGraphic.Graphic do
   begin
     doCoordinateType := gctNormal;
     DrawRectGradient(0, 0, W, H, Col);

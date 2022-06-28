@@ -53,14 +53,14 @@ type
 implementation
 
 uses
-  sgeVars;
+  sgeCorePointerUtils;
 
 
 
 procedure TsgeGUIPropertyFont.SetName(AName: String);
 begin
   //Найти шрифт с именем и установить
-  FFont := SGE.ExtResourceList.GetFont(AName);
+  FFont := sgeCorePointer_GetSGE.ExtResourceList.GetFont(AName);
 
   //Перерисовать родителя
   UpdateParent;
@@ -90,7 +90,7 @@ begin
   inherited Create(AOwner);
 
   //Шрифт по умолчанию
-  FFont := SGE.ExtResourceList.Default.Font;
+  FFont := sgeCorePointer_GetSGE.ExtResourceList.Default.Font;
 end;
 
 
@@ -114,7 +114,7 @@ begin
   if Parameters.Exist[ParamName] then
   begin
     s := Parameters.GetValue(ParamName, '');
-    FFont := SGE.ExtResourceList.GetFont(s);
+    FFont := sgeCorePointer_GetSGE.ExtResourceList.GetFont(s);
     FName := s;
   end;
 end;

@@ -39,10 +39,10 @@ type
 
     function GetNormalFileName(FileName: String): String;
   protected
-    class function GetName: String; override;
+    function GetName: String; override;
 
   public
-    constructor Create(ObjectList: TObject); override;
+    constructor Create; override;
 
     //Каталоги
     procedure ForceDirectories(Directory: String);
@@ -122,16 +122,16 @@ begin
 end;
 
 
-class function TsgeExtensionFileSystem.GetName: String;
+function TsgeExtensionFileSystem.GetName: String;
 begin
   Result := Extension_FileSystem;
 end;
 
 
-constructor TsgeExtensionFileSystem.Create(ObjectList: TObject);
+constructor TsgeExtensionFileSystem.Create;
 begin
   try
-    inherited Create(ObjectList);
+    inherited Create;
 
     //Параметры по умолчанию
     FMainDir := sgeGetApplicationDirectory;
@@ -139,7 +139,6 @@ begin
 
     //Получить ссылки на объекты
     FExtPackList := TsgeExtensionPackList(GetExtension(Extension_PackList));
-
   except
     on E: EsgeException do
       raise EsgeException.Create(_UNITNAME, Err_CantCreateExtension, '', E.Message);

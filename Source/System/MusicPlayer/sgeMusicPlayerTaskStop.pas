@@ -29,7 +29,7 @@ type
 implementation
 
 uses
-  sgeVars,
+  sgeCorePointerUtils,
   sgeEventBase, sgeEventMusicPlayer,
   sgeExtensionMusicPlayer;
 
@@ -42,7 +42,7 @@ var
   ExtMusic: TsgeExtMusicPlayerExt;
 begin
   //Ссылка на расширение
-  ExtMusic := TsgeExtMusicPlayerExt(SGE.ExtMusicPlayer);
+  ExtMusic := TsgeExtMusicPlayerExt(sgeCorePointer_GetSGE.ExtMusicPlayer);
 
   Result := CalculateDeltaTime(ExtMusic.FSource.Gain, 0, FTimes);
 end;
@@ -53,7 +53,7 @@ var
   ExtMusic: TsgeExtMusicPlayerExt;
 begin
   //Ссылка на расширение
-  ExtMusic := TsgeExtMusicPlayerExt(SGE.ExtMusicPlayer);
+  ExtMusic := TsgeExtMusicPlayerExt(sgeCorePointer_GetSGE.ExtMusicPlayer);
 
   //Остановить проигрывание
   ExtMusic.FSource.Stop;
@@ -65,7 +65,7 @@ begin
   ExtMusic.Fsource.Gain := 0;
 
   //Добавить событие останова
-  SGE.EventManager.Publish(TsgeEventBase.Create(Event_MusicPLayerStop));
+  sgeCorePointer_GetSGE.EventManager.Publish(TsgeEventBase.Create(Event_MusicPLayerStop));
 end;
 
 

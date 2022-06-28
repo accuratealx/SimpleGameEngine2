@@ -37,10 +37,10 @@ type
     //Вспомогательные функции
     procedure ClearEventList;                                       //Освободить память объектов
   protected
-    class function GetName: String; override;
+    function GetName: String; override;
 
   public
-    constructor Create(ObjectList: TObject); override;
+    constructor Create; override;
     destructor  Destroy; override;
 
     property TimeEventList: TsgeTimeEventList read FTimeEventList;
@@ -144,16 +144,16 @@ begin
 end;
 
 
-class function TsgeExtensionTimeEvent.GetName: String;
+function TsgeExtensionTimeEvent.GetName: String;
 begin
   Result := Extension_TimeEvent;
 end;
 
 
-constructor TsgeExtensionTimeEvent.Create(ObjectList: TObject);
+constructor TsgeExtensionTimeEvent.Create;
 begin
   try
-    inherited Create(ObjectList);
+    inherited Create;
 
     //Создать объекты
     FThread := TsgeThread.Create(Extension_TimeEvent, @ThreadProc, True, False);

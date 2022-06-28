@@ -63,7 +63,8 @@ type
 implementation
 
 uses
-  sgeErrors, sgeOSPlatform, sgeVars;
+  sgeCorePointerUtils,
+  sgeErrors, sgeOSPlatform;
 
 
 const
@@ -113,7 +114,7 @@ begin
   FTimesCount := 0;
 
   //Добавить себя в список
-  SGE.ExtTimeEvent.TimeEventList.Add(Self);
+  sgeCorePointer_GetSGE.ExtTimeEvent.TimeEventList.Add(Self);
 
   //Изменить активность
   SetEnable(Enable);
@@ -123,7 +124,7 @@ end;
 destructor TsgeTimeEventItem.Destroy;
 begin
   //Удалить себя из списка
-  SGE.ExtTimeEvent.TimeEventList.Delete(Self);
+  sgeCorePointer_GetSGE.ExtTimeEvent.TimeEventList.Delete(Self);
 end;
 
 

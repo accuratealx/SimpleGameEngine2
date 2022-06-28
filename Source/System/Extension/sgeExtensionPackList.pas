@@ -30,10 +30,10 @@ type
     FPackList: TsgePackFileList;
 
   protected
-    class function GetName: String; override;
+    function GetName: String; override;
 
   public
-    constructor Create(ObjectList: TObject); override;
+    constructor Create; override;
     destructor  Destroy; override;
 
     procedure LoadPackFromDirectory(Directory: String = ''; Ext: String = ExtPack);
@@ -55,16 +55,16 @@ const
 
 
 
-class function TsgeExtensionPackList.GetName: String;
+function TsgeExtensionPackList.GetName: String;
 begin
   Result := Extension_PackList;
 end;
 
 
-constructor TsgeExtensionPackList.Create(ObjectList: TObject);
+constructor TsgeExtensionPackList.Create;
 begin
   try
-    inherited Create(ObjectList);
+    inherited Create;
 
     //Создать список архивов
     FPackList := TsgePackFileList.Create;

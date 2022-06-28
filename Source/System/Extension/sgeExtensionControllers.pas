@@ -57,10 +57,10 @@ type
     procedure SetEnable(AEnable: Boolean);
     procedure SetScanDelay(ADelay: Cardinal);
   protected
-    class function GetName: String; override;
+    function GetName: String; override;
 
   public
-    constructor Create(ObjectList: TObject); override;
+    constructor Create; override;
     destructor  Destroy; override;
 
     procedure Change(Idx1, Idx2: Byte);
@@ -379,16 +379,16 @@ begin
 end;
 
 
-class function TsgeExtensionControllers.GetName: String;
+function TsgeExtensionControllers.GetName: String;
 begin
   Result := Extension_Controllers;
 end;
 
 
-constructor TsgeExtensionControllers.Create(ObjectList: TObject);
+constructor TsgeExtensionControllers.Create;
 begin
   try
-    inherited Create(ObjectList);
+    inherited Create;
 
     //Классы
     FThread := TsgeThread.Create(Extension_Controllers, nil, True, False);

@@ -28,9 +28,9 @@ type
     FSound: TsgeSound;
 
   protected
-    class function GetName: String; override;
+    function GetName: String; override;
   public
-    constructor Create(ObjectList: TObject); override;
+    constructor Create; override;
     destructor  Destroy; override;
 
     property Sound: TsgeSound read FSound;
@@ -46,19 +46,18 @@ const
   _UNITNAME = 'ExtensionSound';
 
 
-class function TsgeExtensionSound.GetName: String;
+function TsgeExtensionSound.GetName: String;
 begin
   Result := Extension_Sound;
 end;
 
 
-constructor TsgeExtensionSound.Create(ObjectList: TObject);
+constructor TsgeExtensionSound.Create;
 begin
   try
-    inherited Create(ObjectList);
+    inherited Create;
 
     FSound := TsgeSound.Create;
-
   except
     on E: EsgeException do
       raise EsgeException.Create(_UNITNAME, Err_CantCreateExtension, '', E.Message);

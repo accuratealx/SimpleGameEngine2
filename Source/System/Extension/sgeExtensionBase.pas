@@ -25,7 +25,6 @@ type
   TsgeExtensionBase = class
   private
     //Ссылки
-    FObjectList: TObject;                                           //Указатель на список объектов
     FExtensionList: TObject;                                        //Указатель на список расширений
     FEventManager: TsgeEventManager;                                //Менеджер событий
     FErrorManager: TsgeErrorManager;                                //Менеджер ошибок
@@ -33,24 +32,24 @@ type
   protected
     FDestroying: Boolean;                                           //Флаг разрушения объект
 
-    class function GetName: String; virtual; abstract;
+    function GetName: String; virtual; abstract;
 
     //Список объектов
-    function  GetObject(Name: String): TObject;
-    procedure AddObject(Name: String; Obj: TObject);
-    procedure DeleteObject(Name: String);
+    function  Core_GetObject(Name: String; ItemType: ShortString = ''): TObject;
+    procedure Core_AddObject(Name: String; Obj: TObject; ItemType: ShortString = '');
+    procedure Core_DeleteObject(Name: String; ItemType: ShortString = '');
 
     //Список расширений
     function  ExtensionExist(Name: String): Boolean;
     function  GetExtension(Name: String): TsgeExtensionBase;
     procedure AddExtension(Ext: TsgeExtensionBase);
-    procedure DeleteExtension(Name: String);
+    procedure DeleteExtension(Ext: TsgeExtensionBase);
 
     //События
     procedure RegisterEventHandlers; virtual;
     procedure UnregiterEventHandlers; virtual;
   public
-    constructor Create(ObjectList: TObject); virtual;
+    constructor Create; virtual;
     destructor  Destroy; override;
 
     property Name: String read GetName;
@@ -63,7 +62,7 @@ type
 implementation
 
 uses
-  sgeErrors, sgeNamedObjectList, sgeExtensionList;
+  sgeErrors, sgeCorePointerList, sgeExtensionList;
 
 const
   _UNITNAME = 'ExtensionBase';
@@ -73,25 +72,32 @@ const
 
 
 
-function TsgeExtensionBase.GetObject(Name: String): TObject;
+function TsgeExtensionBase.Core_GetObject(Name: String; ItemType: ShortString): TObject;
 begin
-  Result := TsgeNamedObjectList(FObjectList).Get(Name);
-
+  //Поиск объекта по имени
+  if ItemType = '' then
+    Result := CorePointerList.GetObject(Name)
+  else
+    Result := CorePointerList.GetObject(Name, ItemType);
   if Result = nil then
     raise EsgeException.Create(_UNITNAME, Err_ObjectNotFound, Name);
 end;
 
 
-procedure TsgeExtensionBase.AddObject(Name: String; Obj: TObject);
+procedure TsgeExtensionBase.Core_AddObject(Name: String; Obj: TObject; ItemType: ShortString);
 begin
-  TsgeNamedObjectList(FObjectList).Add(Name, Obj);
+  CorePointerList.AddObject(Name, Obj, ItemType);
 end;
 
 
-procedure TsgeExtensionBase.DeleteObject(Name: String);
+procedure TsgeExtensionBase.Core_DeleteObject(Name: String; ItemType: ShortString);
 begin
-  if TsgeNamedObjectList(FObjectList).Exist(Name) then
-    TsgeNamedObjectList(FObjectList).Delete(Name);
+  if ItemType = '' then
+    if CorePointerList.Exist(Name) then
+      CorePointerList.Delete(Name)
+  else
+    if CorePointerList.Exist(Name, ItemType) then
+      CorePointerList.Delete(Name, ItemType);
 end;
 
 
@@ -104,7 +110,6 @@ end;
 function TsgeExtensionBase.GetExtension(Name: String): TsgeExtensionBase;
 begin
   Result := TsgeExtensionList(FExtensionList).Get(Name);
-
   if Result = nil then
     raise EsgeException.Create(_UNITNAME, Err_ExtensionNotFound, Name);
 end;
@@ -116,10 +121,9 @@ begin
 end;
 
 
-procedure TsgeExtensionBase.DeleteExtension(Name: String);
+procedure TsgeExtensionBase.DeleteExtension(Ext: TsgeExtensionBase);
 begin
-  if TsgeExtensionList(FExtensionList).Exist(Name) then
-    TsgeExtensionList(FExtensionList).Delete(Name);
+  TsgeExtensionList(FExtensionList).Delete(Ext);
 end;
 
 
@@ -136,21 +140,21 @@ begin
 end;
 
 
-constructor TsgeExtensionBase.Create(ObjectList: TObject);
+constructor TsgeExtensionBase.Create;
 begin
-  //Запомнить список объектов
-  FObjectList := ObjectList;
-
   //Найти ссылки
-  FExtensionList := GetObject(Object_ExtensionList);
-  FEventManager := TsgeEventManager(GetObject(Object_EventManager));
-  FErrorManager := TsgeErrorManager(GetObject(Object_ErrorManager));
+  FExtensionList := Core_GetObject(Object_ExtensionList);
+  FEventManager := TsgeEventManager(Core_GetObject(Object_EventManager));
+  FErrorManager := TsgeErrorManager(Core_GetObject(Object_ErrorManager));
 
   //Подписаться на события
   RegisterEventHandlers;
 
   //Записать себя в список расширений
   AddExtension(Self);
+
+  //Добавить себя в CoreList
+  Core_AddObject(ItemType_SGEExtension + '.' + GetName, Self, ItemType_SGEExtension);
 end;
 
 
@@ -160,7 +164,7 @@ begin
   UnregiterEventHandlers;
 
   //Удалить себя из списка расширений
-  DeleteExtension(GetName);
+  DeleteExtension(Self);
 end;
 
 

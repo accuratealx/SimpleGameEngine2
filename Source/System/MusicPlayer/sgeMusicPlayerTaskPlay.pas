@@ -36,7 +36,8 @@ type
 implementation
 
 uses
-  sgeErrors, sgeVars, sgeMemoryStream,
+  sgeCorePointerUtils,
+  sgeErrors, sgeMemoryStream,
   sgeEventMusicPlayer,
   sgeExtensionMusicPlayer;
 
@@ -54,7 +55,7 @@ var
   ExtMusic: TsgeExtMusicPlayerExt;
 begin
   //Ссылка на расширение
-  ExtMusic := TsgeExtMusicPlayerExt(SGE.ExtMusicPlayer);
+  ExtMusic := TsgeExtMusicPlayerExt(sgeCorePointer_GetSGE.ExtMusicPlayer);
 
   Result := CalculateDeltaTime(ExtMusic.FSource.Gain, ExtMusic.FVolume, FTimes);
 end;
@@ -66,18 +67,18 @@ var
   ExtMusic: TsgeExtMusicPlayerExt;
 begin
   //Ссылка на расширение
-  ExtMusic := TsgeExtMusicPlayerExt(SGE.ExtMusicPlayer);
+  ExtMusic := TsgeExtMusicPlayerExt(sgeCorePointer_GetSGE.ExtMusicPlayer);
 
   try
     Ms := TsgeMemoryStream.Create;
 
     //Загрузить дорожку из файла
     try
-      SGE.ExtFileSystem.ReadFile(FTrack.FileName, Ms);
+      sgeCorePointer_GetSGE.ExtFileSystem.ReadFile(FTrack.FileName, Ms);
     except
       on E: EsgeException do
       begin
-        SGE.ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_CantPlay, '', E.Message));
+        sgeCorePointer_GetSGE.ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_CantPlay, '', E.Message));
         FDone := True;
         Exit;
       end;
@@ -93,7 +94,7 @@ begin
     ExtMusic.FSource.Play;
 
     //Добавить событие старта
-    SGE.EventManager.Publish(TsgeEventMusicPlayerStart.Create(Event_MusicPLayerStart, FTrack));
+    sgeCorePointer_GetSGE.EventManager.Publish(TsgeEventMusicPlayerStart.Create(Event_MusicPLayerStart, FTrack));
   finally
     Ms.Free;
   end;
@@ -105,7 +106,7 @@ var
   ExtMusic: TsgeExtMusicPlayerExt;
 begin
   //Ссылка на расширение
-  ExtMusic := TsgeExtMusicPlayerExt(SGE.ExtMusicPlayer);
+  ExtMusic := TsgeExtMusicPlayerExt(sgeCorePointer_GetSGE.ExtMusicPlayer);
 
   //Поправить громкость точно по свойству
   ExtMusic.Fsource.Gain := ExtMusic.FVolume;

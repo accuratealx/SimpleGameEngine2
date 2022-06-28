@@ -15,7 +15,7 @@ unit SimpleGameEngine;
 interface
 
 uses
-  sgeErrorManager, sgeNamedObjectList, sgeExtensionList, sgeEventManager, sgeEventBase,
+  sgeCorePointerList, sgeErrorManager, sgeExtensionList, sgeEventManager, sgeEventBase,
   sgeExtensionWindow, sgeExtensionGraphic, sgeExtensionPackList, sgeExtensionFileSystem, sgeExtensionShell,
   sgeExtensionResourceList, sgeExtensionStartParameters, sgeExtensionSound, sgeExtensionControllers,
   sgeExtensionVariables, sgeExtensionKeyCommand, sgeExtensionTimeEvent, sgeExtensionGUI, sgeExtensionMusicPlayer,
@@ -51,7 +51,6 @@ type
     FInitOptions: TsgeInitOptions;                                  //Режим инициализации
 
     //Классы
-    FObjectList: TsgeNamedObjectList;                               //Список объектов
     FErrorManager: TsgeErrorManager;                                //Обработчик ошибок
     FEventManager: TsgeEventManager;                                //Обработчик событий
     FExtensionList: TsgeExtensionList;                              //Список расширений
@@ -78,8 +77,8 @@ type
     procedure SetDebug(ADebug: Boolean);
 
     //Вспомогательные методы
-    procedure CheckStartParameter_Run;
-    procedure CheckStartParameter_Debug;                            //Обработать стартовые параметры
+    procedure CheckStartParameters;                                 //Обработать стартовые параметры
+    procedure CheckStartParameter_Debug;                            //Режим отладки
     procedure RunScript(ScriptName: String; Wait: Boolean = False); //Запустить скрипт
 
     //Обработчики событий
@@ -96,6 +95,7 @@ type
 
     procedure Init; virtual;                                        //Пользовательская инициализация
     procedure DeInit; virtual;                                      //Пользовательская финализация
+    procedure CheckParameters; virtual;                             //Пользовательская проверка стартовых параметров
     function  CloseWindow: Boolean; virtual;                        //Возможность закрытия окна
 
     procedure Run;                                                  //Запустить приложение
@@ -106,7 +106,6 @@ type
 
     //Объекты
     property ErrorManager: TsgeErrorManager read FErrorManager;
-    property ObjectList: TsgeNamedObjectList read FObjectList;
     property EventManager: TsgeEventManager read FEventManager;
     property ExtensionList: TsgeExtensionList read FExtensionList;
 
@@ -133,7 +132,7 @@ type
 implementation
 
 uses
-  sgeErrors, sgeKeys, sgeMemoryStream, sgeVars,
+  sgeErrors, sgeKeys, sgeMemoryStream,
   sgeOSPlatform, sgeDateUtils, sgeFileUtils, sgeShellCommands, sgeVariables,
   sgeEventWindow, sgeEventTimeEvent;
 
@@ -159,6 +158,7 @@ const
   spNoSound = 'NoSound';
 
 
+
 procedure TSimpleGameEngine.SetDebug(ADebug: Boolean);
 begin
   FDebug := ADebug;
@@ -168,10 +168,15 @@ begin
 end;
 
 
-procedure TSimpleGameEngine.CheckStartParameter_Run;
+procedure TSimpleGameEngine.CheckStartParameters;
 begin
-  if FExtensionStartParameters.Parameters.Exist[spRunCommand] then
-    FExtensionShell.DoCommand(FExtensionStartParameters.Parameters.Value[spRunCommand]);
+  //Run
+  if ioSupportRunCommand in FInitOptions then
+    if FExtensionStartParameters.Parameters.Exist[spRunCommand] then
+      FExtensionShell.DoCommand(FExtensionStartParameters.Parameters.Value[spRunCommand]);
+
+  //Пользовательская функция обработки параметров
+  CheckParameters;
 end;
 
 
@@ -235,15 +240,21 @@ end;
 
 procedure TSimpleGameEngine.Init;
 begin
-  //Код инициализации пользователя.
+  //Код инициализации пользователя
   //Метод вызывается в конструкторе
 end;
 
 
 procedure TSimpleGameEngine.DeInit;
 begin
-  //Код финализации пользователя.
+  //Код финализации пользователя
   //Метод вызывается в деструкторе
+end;
+
+procedure TSimpleGameEngine.CheckParameters;
+begin
+  //Код проверки стартовых параметров пользователя
+  //Метод вызывается в конструкторе
 end;
 
 
@@ -260,9 +271,6 @@ begin
   //Сохранить режим инициализации
   FInitOptions := Options;
 
-  //Записать себя в глобальную переменную
-  sgeVars.SGE := Self;
-
   //Параметры
   FWorking := True;
 
@@ -271,40 +279,38 @@ begin
 
   //Классы
   FErrorManager := TsgeErrorManager.Create(JFile);                  //Менеджер ошибок
-  FObjectList := TsgeNamedObjectList.Create;                        //Список объектов
   FExtensionList := TsgeExtensionList.Create;                       //Список расширений
   FEventManager := TsgeEventManager.Create;                         //Менеджер событий
-  FEventManager.ErrorHandler := @FErrorManager.ProcessError;
+  FEventManager.ErrorHandler := @FErrorManager.ProcessError;        //Настроить обработчик ошибок менеджера событий
 
   //Добавить классы в список объектов
-  FObjectList.Add(Object_SGE, Self);
-  FObjectList.Add(Object_ErrorManager, FErrorManager);
-  FObjectList.Add(Object_ObjecttList, FObjectList);
-  FObjectList.Add(Object_EventManager, FEventManager);
-  FObjectList.Add(Object_ExtensionList, FExtensionList);
+  CorePointerList.AddObject(Object_SGE, Self, ItemType_SGE);
+  CorePointerList.AddObject(Object_ErrorManager, FErrorManager, ItemType_SGEErrorManager);
+  CorePointerList.AddObject(Object_EventManager, FEventManager, ItemType_SGEEventManager);
+  CorePointerList.AddObject(Object_ExtensionList, FExtensionList, ItemType_SGEExtensionList);
 
   try
     //Создать расширения
-    FExtensionStartParameters := TsgeExtensionStartParameters.Create(FObjectList);  //Стартовые параметры
+    FExtensionStartParameters := TsgeExtensionStartParameters.Create;               //Стартовые параметры
     CheckStartParameter_Debug;                                                      //Проверить режим отладки
 
-    FExtensionVariables := TsgeExtensionVariables.Create(FObjectList);              //Переменные
-    FExtensionWindow := TsgeExtensionWindow.Create(FObjectList);                    //Окно
-    FExtensionGraphic := TsgeExtensionGraphic.Create(FObjectList);                  //Графика
-    FExtensionPackFiles :=   TsgeExtensionPackList.Create(FObjectList);             //Файловые архивы
-    FExtensionFileSystem := TsgeExtensionFileSystem.Create(FObjectList);            //Файловая система
-    FExtensionResourceList := TsgeExtensionResourceList.Create(FObjectList);        //Список ресурсов
-    FExtensionCursor := TsgeExtensionCursor.Create(FObjectList);                    //Курсоры
-    FExtensionControllers := TsgeExtensionControllers.Create(FObjectList);          //Контроллеры
-    FExtensionShell := TsgeExtensionShell.Create(FObjectList);                      //Оболочка
-    FExtensionKeyCommand := TsgeExtensionKeyCommand.Create(FObjectList);            //Команда на кнопках
-    FExtensionTimeEvent := TsgeExtensionTimeEvent.Create(FObjectList);              //Таймерные события
-    FExtensionGUI := TsgeExtensionGUI.Create(FObjectList);                          //GUI
+    FExtensionVariables := TsgeExtensionVariables.Create;                           //Переменные
+    FExtensionWindow := TsgeExtensionWindow.Create;                                 //Окно
+    FExtensionGraphic := TsgeExtensionGraphic.Create;                               //Графика
+    FExtensionPackFiles := TsgeExtensionPackList.Create;                            //Файловые архивы
+    FExtensionFileSystem := TsgeExtensionFileSystem.Create;                         //Файловая система
+    FExtensionResourceList := TsgeExtensionResourceList.Create;                     //Список ресурсов
+    FExtensionCursor := TsgeExtensionCursor.Create;                                 //Курсоры
+    FExtensionControllers := TsgeExtensionControllers.Create;                       //Контроллеры
+    FExtensionShell := TsgeExtensionShell.Create;                                   //Оболочка
+    FExtensionKeyCommand := TsgeExtensionKeyCommand.Create;                         //Команда на кнопках
+    FExtensionTimeEvent := TsgeExtensionTimeEvent.Create;                           //Таймерные события
+    FExtensionGUI := TsgeExtensionGUI.Create;                                       //GUI
 
     if (ioSound in FInitOptions) and (not FExtensionStartParameters.Parameters.Exist[spNoSound]) then
     begin
-      FExtensionSound := TsgeExtensionSound.Create(FObjectList);                    //Звуковая система
-      FExtensionMusicPlayer := TsgeExtensionMusicPlayer.Create(FObjectList);        //Музыкальный проигрыватель
+      FExtensionSound := TsgeExtensionSound.Create;                                 //Звуковая система
+      FExtensionMusicPlayer := TsgeExtensionMusicPlayer.Create;                     //Музыкальный проигрыватель
     end;
 
     //Зарегестрировать функции оболочки
@@ -332,8 +338,7 @@ begin
       RunScript(Script_AutoStartName);
 
     //Проверить команды оболочки в стартовых параметрах
-    if ioSupportRunCommand in FInitOptions then
-      CheckStartParameter_Run;
+    CheckStartParameters;
 
   except
     //Ошибка инициализации движка
@@ -362,7 +367,6 @@ begin
   //Классы
   FErrorManager.Free;
   FExtensionList.Free;
-  FObjectList.Free;
   FEventManager.Free;
 end;
 

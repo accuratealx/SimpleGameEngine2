@@ -70,12 +70,12 @@ type
     procedure ClearForms;
     function  ElementAtCursor(X, Y: Integer): TsgeGUIElement;
   protected
-    class function GetName: String; override;
+    function GetName: String; override;
 
     procedure RegisterEventHandlers; override;
 
   public
-    constructor Create(ObjectList: TObject); override;
+    constructor Create; override;
     destructor  Destroy; override;
 
     procedure RepaintForms;                                         //Перерисовать формы
@@ -346,7 +346,7 @@ begin
 end;
 
 
-class function TsgeExtensionGUI.GetName: String;
+function TsgeExtensionGUI.GetName: String;
 begin
   Result := Extension_GUI;
 end;
@@ -369,10 +369,10 @@ begin
 end;
 
 
-constructor TsgeExtensionGUI.Create(ObjectList: TObject);
+constructor TsgeExtensionGUI.Create;
 begin
   try
-    inherited Create(ObjectList);
+    inherited Create;
 
     //Поиск указателей
     FExtGraphic := TsgeExtensionGraphic(GetExtension(Extension_Graphic));
@@ -422,7 +422,8 @@ end;
 
 procedure TsgeExtensionGUI.MouseCapture(Element: TsgeGUIElement);
 begin
-  if FCapturedElement = Element then Exit;
+  if FCapturedElement = Element then
+    Exit;
 
   FCapturedElement := Element;
 end;
@@ -430,7 +431,8 @@ end;
 
 procedure TsgeExtensionGUI.ReleaseMouse(Element: TsgeGUIElement);
 begin
-  if FCapturedElement = Element then FCapturedElement := nil;
+  if FCapturedElement = Element then
+    FCapturedElement := nil;
 end;
 
 

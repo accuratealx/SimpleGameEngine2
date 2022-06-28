@@ -94,11 +94,11 @@ type
   protected
     FGraphicShell: TsgeGraphic;                                     //Класс графики для потока оболочки
 
-    class function GetName: String; override;
+    function GetName: String; override;
     procedure RegisterEventHandlers; override;
 
   public
-    constructor Create(ObjectList: TObject); override;
+    constructor Create; override;
     destructor  Destroy; override;
 
     //Методы
@@ -405,7 +405,7 @@ begin
 end;
 
 
-class function TsgeExtensionGraphic.GetName: String;
+function TsgeExtensionGraphic.GetName: String;
 begin
   Result := Extension_Graphic;
 end;
@@ -418,10 +418,10 @@ begin
 end;
 
 
-constructor TsgeExtensionGraphic.Create(ObjectList: TObject);
+constructor TsgeExtensionGraphic.Create;
 begin
   try
-    inherited Create(ObjectList);
+    inherited Create;
 
     //Параметры
     FDrawControl := gdcSync;

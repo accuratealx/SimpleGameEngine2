@@ -47,7 +47,8 @@ type
 implementation
 
 uses
-  sgeVars, sgeGraphicColor;
+  sgeCorePointerUtils,
+  sgeGraphicColor;
 
 
 function TsgeGUILabel.GetLabel: TsgeGUIPropertyLabel;
@@ -83,7 +84,7 @@ end;
 procedure TsgeGUILabel.DrawBefore;
 begin
   //Вывод фона
-  with SGE.ExtGraphic.Graphic do
+  with sgeCorePointer_GetSGE.ExtGraphic.Graphic do
   begin
     BGColor := FBGColor.Color;
     EraseBG;

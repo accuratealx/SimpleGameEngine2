@@ -57,10 +57,10 @@ type
 
     function  WndProc(hWnd: HWND; Msg: UINT; wParam: WPARAM; lParam: LPARAM): LRESULT;
   protected
-    class function GetName: String; override;
+    function GetName: String; override;
 
   public
-    constructor Create(ObjectList: TObject); override;
+    constructor Create; override;
     destructor  Destroy; override;
 
     property Window: TsgeWindow read FWindow;
@@ -152,7 +152,7 @@ begin
 end;
 
 
-class function TsgeExtensionWindow.GetName: String;
+function TsgeExtensionWindow.GetName: String;
 begin
   Result := Extension_Window;
 end;
@@ -455,10 +455,10 @@ begin
 end;
 
 
-constructor TsgeExtensionWindow.Create(ObjectList: TObject);
+constructor TsgeExtensionWindow.Create;
 begin
   try
-    inherited Create(ObjectList);
+    inherited Create;
 
       //Задать начальные параметры
     _Self := Self;

@@ -42,7 +42,7 @@ type
 implementation
 
 uses
-  sgeVars,
+  sgeCorePointerUtils,
   sgeGUIPropertyScaleXY;
 
 
@@ -81,7 +81,7 @@ begin
   FSprite.LockUpdate;
   FSprite.Scale.Mode := smStretch;
   FSprite.UnlockUpdate;
-  FSprite.Sprite := SGE.ExtResourceList.Default.Sprite;
+  FSprite.Sprite := sgeCorePointer_GetSGE.ExtResourceList.Default.Sprite;
 
   Repaint;
 end;

@@ -53,12 +53,11 @@ type
     procedure SetScale(AScale: Single);
     procedure SetLeftHanded(ALeft: Boolean);
   protected
-    class function GetName: String; override;
-
+    function  GetName: String; override;
     procedure RegisterEventHandlers; override;
 
   public
-    constructor Create(ObjectList: TObject); override;
+    constructor Create; override;
 
     property ShowCursor: Boolean read FShowCursor write SetShowCursor;
     property Cursor: TsgeCursor read FCursor write SetCursor;
@@ -213,7 +212,7 @@ begin
 end;
 
 
-class function TsgeExtensionCursor.GetName: String;
+function TsgeExtensionCursor.GetName: String;
 begin
   Result := Extension_Cursor;
 end;
@@ -227,10 +226,10 @@ begin
 end;
 
 
-constructor TsgeExtensionCursor.Create(ObjectList: TObject);
+constructor TsgeExtensionCursor.Create;
 begin
   try
-    inherited Create(ObjectList);
+    inherited Create;
 
     //Поиск указателей
     FExtWindow := TsgeExtensionWindow(GetExtension(Extension_Window));

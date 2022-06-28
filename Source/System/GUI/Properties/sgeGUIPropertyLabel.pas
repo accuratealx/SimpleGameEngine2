@@ -55,7 +55,7 @@ type
 implementation
 
 uses
-  sgeVars,
+  sgeCorePointerUtils,
   sgeGUIElement;
 
 type
@@ -160,7 +160,7 @@ begin
   Y1 := FVerticalAlign.GetOffset(BaseHeight, TextHeight);
 
   //Вывод
-  with SGE.ExtGraphic.Graphic do
+  with sgeCorePointer_GetSGE.ExtGraphic.Graphic do
   begin
     //Изменить цвет текста
     Color := FColor.Color;

@@ -35,7 +35,7 @@ type
 implementation
 
 uses
-  sgeVars,
+  sgeCorePointerUtils,
   sgeExtensionMusicPlayer;
 
 type
@@ -47,7 +47,7 @@ var
   ExtMusic: TsgeExtMusicPlayerExt;
 begin
   //Ссылка на расширение
-  ExtMusic := TsgeExtMusicPlayerExt(SGE.ExtMusicPlayer);
+  ExtMusic := TsgeExtMusicPlayerExt(sgeCorePointer_GetSGE.ExtMusicPlayer);
 
   //Изменить количество срабатываний, 2 секунды на смену громкости (по умолчанию)
   FTimes := VOLUME_TIMES div ExtMusic.FThreadDelay;
@@ -62,7 +62,7 @@ var
   ExtMusic: TsgeExtMusicPlayerExt;
 begin
   //Ссылка на расширение
-  ExtMusic := TsgeExtMusicPlayerExt(SGE.ExtMusicPlayer);
+  ExtMusic := TsgeExtMusicPlayerExt(sgeCorePointer_GetSGE.ExtMusicPlayer);
 
   //Поправить громкость точно по свойству
   ExtMusic.Fsource.Gain := FVolume;

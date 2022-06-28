@@ -70,10 +70,9 @@ type
     FFadeTime: Word;                                                //Время затухания и нарастания в мс
     FThreadDelay: Cardinal;                                         //Задержка вызовов между срабатываниями
 
-    class function GetName: String; override;
-
+    function GetName: String; override;
   public
-    constructor Create(ObjectList: TObject); override;
+    constructor Create; override;
     destructor  Destroy; override;
 
     procedure Play(Track: TsgeMusicPlayerTrack);
@@ -234,16 +233,16 @@ begin
 end;
 
 
-class function TsgeExtensionMusicPlayer.GetName: String;
+function TsgeExtensionMusicPlayer.GetName: String;
 begin
   Result := Extension_Music;
 end;
 
 
-constructor TsgeExtensionMusicPlayer.Create(ObjectList: TObject);
+constructor TsgeExtensionMusicPlayer.Create;
 begin
   try
-    inherited Create(ObjectList);
+    inherited Create;
 
     //Создать классы
     FThread := TsgeThread.Create(Extension_Music);

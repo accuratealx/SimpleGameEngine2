@@ -62,7 +62,7 @@ type
 implementation
 
 uses
-  sgeVars,
+  sgeCorePointerUtils,
   sgeGraphic, sgeGraphicUtils;
 
 
@@ -75,7 +75,7 @@ begin
 
   //Спрайт всегда должен быть
   if FSprite = nil then
-    FSprite := SGE.ExtResourceList.Default.Sprite;
+    FSprite := sgeCorePointer_GetSGE.ExtResourceList.Default.Sprite;
 
   Repaint;
 end;
@@ -108,7 +108,7 @@ begin
   //Sprite
   ParamName := 'Sprite.Name';
   if Data.Exist[ParamName] then
-    FSprite := SGE.ExtResourceList.GetSprite(Data.GetValue(ParamName, ''));
+    FSprite := sgeCorePointer_GetSGE.ExtResourceList.GetSprite(Data.GetValue(ParamName, ''));
 
   //Offset
   FOffset.LoadParameters(Data, 'Offset.');
@@ -136,7 +136,7 @@ begin
   DrawOpt.SpriteRect := sgeGetTextureTileRect(FColCount, 4, GetColSpriteIndex, Ord(FButtonState));
 
   //Вывод спрайта
-  SGE.ExtGraphic.Graphic.DrawSpriteSegment(DrawOpt, FOffset.Rect);
+  sgeCorePointer_GetSGE.ExtGraphic.Graphic.DrawSpriteSegment(DrawOpt, FOffset.Rect);
 end;
 
 
@@ -197,7 +197,7 @@ begin
 
   FOffset := TsgeGUIPropertySegmentOffsetExt.Create(Self);
 
-  FSprite := SGE.ExtResourceList.Default.Sprite;
+  FSprite := sgeCorePointer_GetSGE.ExtResourceList.Default.Sprite;
 
   FButtonState := bsNormal;
   FColCount := 1;

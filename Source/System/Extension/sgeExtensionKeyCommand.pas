@@ -59,12 +59,12 @@ type
     function  Handler_JoystickAxisUp(EventObj: TsgeEventControllerAxis): Boolean;
 
   protected
-    class function GetName: String; override;
+    function GetName: String; override;
 
     procedure RegisterEventHandlers; override;
 
   public
-    constructor Create(ObjectList: TObject); override;
+    constructor Create; override;
     destructor  Destroy; override;
 
     property Keyboard: TsgeKeyCommandKeyboard read FKeyboard;
@@ -262,7 +262,7 @@ begin
 end;
 
 
-class function TsgeExtensionKeyCommand.GetName: String;
+function TsgeExtensionKeyCommand.GetName: String;
 begin
   Result := Extension_KeyCommand;
 end;
@@ -291,10 +291,10 @@ begin
 end;
 
 
-constructor TsgeExtensionKeyCommand.Create(ObjectList: TObject);
+constructor TsgeExtensionKeyCommand.Create;
 begin
   try
-    inherited Create(ObjectList);
+    inherited Create;
 
     //Поиск указателей
     FExtShell := TsgeExtensionShell(GetExtension(Extension_Shell));

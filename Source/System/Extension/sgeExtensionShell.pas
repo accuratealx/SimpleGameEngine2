@@ -18,7 +18,7 @@ uses
   sgeTypes, sgeThread, sgeSystemEvent, sgeSimpleCommand, sgeSimpleParameters, sgeGraphic, sgeGraphicColor,
   sgeGraphicFont, sgeExtensionBase, sgeEventWindow, sgeEventKeyboard, sgeEventMouse, sgeEventSubscriber,
   sgeShellCommandQueue, sgeShellScriptList, sgeShellCommandList, sgeLineEditor, sgeCommandHistory,
-  sgeShellLineList, sgeExtensionGraphic, sgeShellCallStack, sgeExtensionResourceList, sgeExtensionVariables,
+  sgeShellLineList, sgeExtensionGraphic, sgeShellCallStack, sgeExtensionVariables,
   sgeGraphicSprite, sgeGraphicElementSpriteCashed, sgeCriticalSection;
 
 
@@ -36,9 +36,8 @@ type
     MAX_SUB_COUNT = 7;
   private
     //Ссылки
-    FExtGraphic: TsgeExtensionGraphic;
-    FExtResList: TsgeExtensionResourceList;
-    FExtVariables: TsgeExtensionVariables;
+    FExtGraphic: TsgeExtensionGraphic;                              //Указатель на графику
+    FExtVariables: TsgeExtensionVariables;                          //Указатель на системные переменные
     FElementSprite: TsgeGraphicElementSpriteCashed;                 //Указатель на элемент отрисовки
 
     //Классы
@@ -129,11 +128,11 @@ type
     FEvent: TsgeSystemEvent;                                        //События для Read, ReadLn
     procedure RepaintThread;                                        //Перерисовать из потока оболочки
 
-    class function GetName: String; override;
+    function GetName: String; override;
 
     procedure RegisterEventHandlers; override;
   public
-    constructor Create(ObjectList: TObject); override;
+    constructor Create; override;
     destructor  Destroy; override;
 
     //Добавить строку в журнал
@@ -982,7 +981,7 @@ begin
 end;
 
 
-class function TsgeExtensionShell.GetName: String;
+function TsgeExtensionShell.GetName: String;
 begin
   Result := Extension_Shell;
 end;
@@ -1007,15 +1006,14 @@ begin
 end;
 
 
-constructor TsgeExtensionShell.Create(ObjectList: TObject);
+constructor TsgeExtensionShell.Create;
 begin
   try
-    inherited Create(ObjectList);
+    inherited Create;
 
     //Поиск указателей
     FExtGraphic := TsgeExtensionGraphic(GetExtension(Extension_Graphic));
     FExtVariables := TsgeExtensionVariables(GetExtension(Extension_Variables));
-    FExtResList := TsgeExtensionResourceList(GetExtension(Extension_ResourceList));
 
     //Создать объекты
     FEvent := TsgeSystemEvent.Create(True, False);

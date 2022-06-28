@@ -63,7 +63,8 @@ type
 implementation
 
 uses
-  sgeTypes, sgeGraphic, sgeVars,
+  sgeCorePointerUtils,
+  sgeTypes, sgeGraphic,
   sgeGUIElement;
 
 type
@@ -145,7 +146,7 @@ begin
   //Sprite
   ParamName := Prefix + 'Name';
   if Parameters.Exist[ParamName] then
-    FSprite := SGE.ExtResourceList.GetSprite(Parameters.GetValue(ParamName, 'Sprite'));
+    FSprite := sgeCorePointer_GetSGE.ExtResourceList.GetSprite(Parameters.GetValue(ParamName, 'Sprite'));
 
   //Scale
   FScale.LoadParameters(Parameters, Prefix + 'Scale.');
@@ -199,10 +200,10 @@ begin
   //Вывод в зависимости от метода
   case FDrawMethod.Mode of
     dmmNormal:
-      SGE.ExtGraphic.Graphic.DrawSprite(DrawOpt);
+      sgeCorePointer_GetSGE.ExtGraphic.Graphic.DrawSprite(DrawOpt);
 
     dmmSegment:
-      SGE.ExtGraphic.Graphic.DrawSpriteSegment(DrawOpt, FDrawMethod.Offset.Rect);
+      sgeCorePointer_GetSGE.ExtGraphic.Graphic.DrawSpriteSegment(DrawOpt, FDrawMethod.Offset.Rect);
   end;
 end;
 

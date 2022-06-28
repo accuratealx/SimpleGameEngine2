@@ -78,10 +78,10 @@ type
     procedure Command_LoadTable(Cmd: TsgeSimpleCommand; BaseDirectory: String = '');
 
   protected
-    class function GetName: String; override;
+    function GetName: String; override;
 
   public
-    constructor Create(ObjectList: TObject); override;
+    constructor Create; override;
     destructor  Destroy; override;
 
     function  GetFont(Name: String): TsgeGraphicFont;
@@ -459,16 +459,16 @@ begin
 end;
 
 
-class function TsgeExtensionResourceList.GetName: String;
+function TsgeExtensionResourceList.GetName: String;
 begin
   Result := Extension_ResourceList;
 end;
 
 
-constructor TsgeExtensionResourceList.Create(ObjectList: TObject);
+constructor TsgeExtensionResourceList.Create;
 begin
   try
-    inherited Create(ObjectList);
+    inherited Create;
 
     //Получить указатели на классы
     FExtFileSystem := TsgeExtensionFileSystem(GetExtension(Extension_FileSystem));

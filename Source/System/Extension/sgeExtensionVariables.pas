@@ -36,10 +36,10 @@ type
 
     procedure CheckVariableExist(VarName: ShortString);
   protected
-    class function GetName: String; override;
+    function GetName: String; override;
 
   public
-    constructor Create(ObjectList: TObject); override;
+    constructor Create; override;
     destructor  Destroy; override;
 
     //Добавление новых переменных
@@ -108,19 +108,18 @@ begin
 end;
 
 
-class function TsgeExtensionVariables.GetName: String;
+function TsgeExtensionVariables.GetName: String;
 begin
   Result := Extension_Variables;
 end;
 
 
-constructor TsgeExtensionVariables.Create(ObjectList: TObject);
+constructor TsgeExtensionVariables.Create;
 begin
   try
-    inherited Create(ObjectList);
+    inherited Create;
 
     FVariableList := TsgeVariableList.Create(True);
-
   except
     on E: EsgeException do
       raise EsgeException.Create(_UNITNAME, Err_CantCreateExtension, '', E.Message);
