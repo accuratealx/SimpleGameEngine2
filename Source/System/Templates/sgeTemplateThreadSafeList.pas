@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeTemplateList.pas
-Версия            1.0
+Версия            1.1
 Создан            21.10.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс-шаблон: Потокобезопасный связный список
@@ -37,7 +37,7 @@ type
 
     //Вспомогательные методы
     function  GetItemByIndex(Index: Integer): PListItem;            //Найти указатель на элемент по индексу
-    procedure DeleteItemByPointer(Item: PListItem);
+    procedure DeleteItemByPointer(Item: PListItem; FreeObject: Boolean);
 
     //Свойства
     function GetItem(Index: Integer): T;
@@ -49,6 +49,8 @@ type
     procedure Add(Item: T);
     procedure Delete(Index: Integer);
     procedure Delete(Item: T);
+    procedure Remove(Index: Integer);
+    procedure Remove(Item: T);
     procedure Insert(Index: Integer; Item: T);
 
     property Count: Integer read FCount;
@@ -126,7 +128,7 @@ begin
 end;
 
 
-procedure TsgeTemplateThreadSafeList.DeleteItemByPointer(Item: PListItem);
+procedure TsgeTemplateThreadSafeList.DeleteItemByPointer(Item: PListItem; FreeObject: Boolean);
 begin
   //Поправить ссылки
   if Item^.Next <> nil then
@@ -140,7 +142,7 @@ begin
     FFirst := Item^.Next;
 
   //Удалить память объекта
-  if FFreeObjects then
+  if FreeObject then
     TObject(Item^.Item).Free;
 
   //Удалить память текущей записи
@@ -268,7 +270,7 @@ begin
     P := GetItemByIndex(Index);
 
     //Удалить элемент
-    DeleteItemByPointer(P);
+    DeleteItemByPointer(P, FFreeObjects);
   finally
     FCS.Leave;
   end;
@@ -289,7 +291,59 @@ begin
       if P^.Item = Item then
       begin
         //Удалить элемент
-        DeleteItemByPointer(P);
+        DeleteItemByPointer(P, FFreeObjects);
+
+        //Выход
+        Exit;
+      end;
+
+      Inc(Idx);
+      P := P^.Next;
+    end;
+
+    //Ошибка если не найдено совпадение
+    raise EsgeException.Create(_UNITNAME, Err_ItemNotFund);
+  finally
+    FCS.Leave;
+  end;
+end;
+
+
+procedure TsgeTemplateThreadSafeList.Remove(Index: Integer);
+var
+  P: PListItem;
+begin
+  FCS.Enter;
+  try
+    if (Index < 0) or (Index > FCount - 1) then
+      raise EsgeException.Create(_UNITNAME, Err_IndexOutOfBounds, sgeIntToStr(Index));
+
+    //Найти указатель на элемент
+    P := GetItemByIndex(Index);
+
+    //Удалить элемент
+    DeleteItemByPointer(P, False);
+  finally
+    FCS.Leave;
+  end;
+end;
+
+
+procedure TsgeTemplateThreadSafeList.Remove(Item: T);
+var
+  Idx: Integer;
+  P: PListItem;
+begin
+  FCS.Enter;
+  try
+    Idx := 0;
+    P := FFirst;
+    while P <> nil do
+    begin
+      if P^.Item = Item then
+      begin
+        //Удалить элемент
+        DeleteItemByPointer(P, False);
 
         //Выход
         Exit;
