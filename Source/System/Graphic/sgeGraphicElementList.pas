@@ -131,7 +131,7 @@ begin
   FIterator := FIterator^.Next;
 
   //Удалить текущий элемент
-  DeleteItemByPointer(P);
+  DeleteItemByPointer(P, FFreeObjects);
 end;
 
 

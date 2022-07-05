@@ -44,9 +44,9 @@ type
     procedure CorrectCoordinate;                                    //Поправить координаты
     procedure CorrectVisible(Visible: Boolean);                     //Поправить видимость курсора
 
-    function Handler_MouseMove(EventObj: TsgeEventMouse): Boolean;
-    function Handler_MouseEnter(EventObj: TsgeEventMouse): Boolean;
-    function Handler_MouseLeave(EventObj: TsgeEventMouse): Boolean;
+    function Handler_MouseMove(EventObj: TsgeEventMouse): TsgeEventHandlerResult;
+    function Handler_MouseEnter(EventObj: TsgeEventMouse): TsgeEventHandlerResult;
+    function Handler_MouseLeave(EventObj: TsgeEventMouse): TsgeEventHandlerResult;
 
     procedure SetCursor(ACursor: TsgeCursor);
     procedure SetShowCursor(AShow: Boolean);
@@ -133,9 +133,9 @@ begin
 end;
 
 
-function TsgeExtensionCursor.Handler_MouseMove(EventObj: TsgeEventMouse): Boolean;
+function TsgeExtensionCursor.Handler_MouseMove(EventObj: TsgeEventMouse): TsgeEventHandlerResult;
 begin
-  Result := False;
+  Result := ehrDefault;
 
   //Запомнить последние координаты курсора
   FCursorPos := EventObj.Pos;
@@ -145,18 +145,18 @@ begin
 end;
 
 
-function TsgeExtensionCursor.Handler_MouseEnter(EventObj: TsgeEventMouse): Boolean;
+function TsgeExtensionCursor.Handler_MouseEnter(EventObj: TsgeEventMouse): TsgeEventHandlerResult;
 begin
-  Result := False;
+  Result := ehrDefault;
 
   //Восстановить курсор
   CorrectVisible(FShowCursor);
 end;
 
 
-function TsgeExtensionCursor.Handler_MouseLeave(EventObj: TsgeEventMouse): Boolean;
+function TsgeExtensionCursor.Handler_MouseLeave(EventObj: TsgeEventMouse): TsgeEventHandlerResult;
 begin
-  Result := False;
+  Result := ehrDefault;
 
   //Спрятать курсоры
   CorrectVisible(False);

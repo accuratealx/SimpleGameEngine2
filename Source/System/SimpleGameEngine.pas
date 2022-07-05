@@ -84,8 +84,8 @@ type
     //Обработчики событий
     procedure RegisterEventHandlers;                                //Подписать системные обработчики событий
     procedure UnregisterEventHandlers;                              //Отписать системные обработчики событий
-    function  EventWindowClose(Obj: TsgeEventBase): Boolean;        //Закрытие окна
-    function  EventTime(Obj: TsgeEventBase): Boolean;               //Таймерное событие
+    function  EventWindowClose(Obj: TsgeEventBase): TsgeEventHandlerResult; //Закрытие окна
+    function  EventTime(Obj: TsgeEventBase): TsgeEventHandlerResult;  //Таймерное событие
   public
     constructor Create(Options: TsgeInitOptions = InitOptionsAll); virtual;
     destructor  Destroy; override;
@@ -210,21 +210,27 @@ begin
 end;
 
 
-function TSimpleGameEngine.EventWindowClose(Obj: TsgeEventBase): Boolean;
+function TSimpleGameEngine.EventWindowClose(Obj: TsgeEventBase): TsgeEventHandlerResult;
+var
+  b: Boolean;
 begin
-  Result := CloseWindow;
+  Result := ehrDefault;
 
-  if Result then
+  b := CloseWindow;
+  if b then
+  begin
+    Result := ehrStopSend;
     Stop;
+  end;
 end;
 
 
-function TSimpleGameEngine.EventTime(Obj: TsgeEventBase): Boolean;
+function TSimpleGameEngine.EventTime(Obj: TsgeEventBase): TsgeEventHandlerResult;
 var
   Proc: TsgeTimeEventProc;
 begin
   //Не передавать дальше событие
-  Result := True;
+  Result := ehrStopSend;
 
   //Ссылка на метод
   Proc := TsgeEventTimeEvent(Obj).Proc;

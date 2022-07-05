@@ -99,6 +99,7 @@ var
   Idx, i: Integer;
   EventObj: TsgeEventBase;
   SubscriberList: TsgeEventSubscriberList;
+  HandlerResult: TsgeEventHandlerResult;
 begin
   //Ждём событие поднятия флага
   FEvent.Wait;
@@ -129,23 +130,36 @@ begin
 
         //Вызвать обработчик
         try
-          if SubscriberList.Item[i].Handler(EventObj) then
-            Break;
+          HandlerResult := SubscriberList.Item[i].Handler(EventObj);
+
+          case HandlerResult of
+            ehrDefault: ;
+            ehrStopSend, ehrBreak:
+              Break;
+            else
+              Break;
+          end;
         except
           on E: EsgeException do
             if Assigned(FErrorHandler)
               then FErrorHandler(sgeCreateErrorString(_UNITNAME, Err_DispatchError, '', E.Message));
         end;
-
       end;
-
     end;
 
     //Разблокировать подписчиков
     FSubscriberGroupList.Unlock;
 
-    //Удалить объект события
-    FEventList.Delete(0);
+    //Обработать объект события
+    case HandlerResult of
+      ehrDefault, ehrStopSend:                                      //Удалить объект из очереди и освободить память
+        FEventList.Delete(0);
+      ehrBreak:                                                     //Удалить объект из очереди
+        FEventList.Remove(EventObj);
+      else
+        FEventList.Delete(0);                                       //Непонятный ответ
+    end;
+
   end;
 end;
 

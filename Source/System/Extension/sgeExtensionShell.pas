@@ -16,7 +16,7 @@ interface
 
 uses
   sgeTypes, sgeThread, sgeSystemEvent, sgeSimpleCommand, sgeSimpleParameters, sgeGraphic, sgeGraphicColor,
-  sgeGraphicFont, sgeExtensionBase, sgeEventWindow, sgeEventKeyboard, sgeEventMouse, sgeEventSubscriber,
+  sgeGraphicFont, sgeExtensionBase, sgeEventBase, sgeEventWindow, sgeEventKeyboard, sgeEventMouse, sgeEventSubscriber,
   sgeShellCommandQueue, sgeShellScriptList, sgeShellCommandList, sgeLineEditor, sgeCommandHistory,
   sgeShellLineList, sgeExtensionGraphic, sgeShellCallStack, sgeExtensionVariables,
   sgeGraphicSprite, sgeGraphicElementSpriteCashed, sgeCriticalSection;
@@ -83,17 +83,17 @@ type
     FCommandIsRunning: Boolean;                                     //Флаг выполнения команды
 
     //Обработчики событий
-    function  Event_WindowResize(Obj: TsgeEventWindowSize): Boolean;
+    function  Event_WindowResize(Obj: TsgeEventWindowSize): TsgeEventHandlerResult;
 
-    function  Handler_KeyDown(EventObj: TsgeEventKeyboard): Boolean;
-    function  Handler_KeyUp(EventObj: TsgeEventKeyboard): Boolean;
-    function  Handler_KeyChar(EventObj: TsgeEventKeyboardChar): Boolean;
+    function  Handler_KeyDown(EventObj: TsgeEventKeyboard): TsgeEventHandlerResult;
+    function  Handler_KeyUp(EventObj: TsgeEventKeyboard): TsgeEventHandlerResult;
+    function  Handler_KeyChar(EventObj: TsgeEventKeyboardChar): TsgeEventHandlerResult;
 
-    function  Handler_MouseMove(EventObj: TsgeEventMouse): Boolean;
-    function  Handler_MouseDown(EventObj: TsgeEventMouse): Boolean;
-    function  Handler_MouseUp(EventObj: TsgeEventMouse): Boolean;
-    function  Handler_MouseWheel(EventObj: TsgeEventMouse): Boolean;
-    function  Handler_MouseDblClick(EventObj: TsgeEventMouse): Boolean;
+    function  Handler_MouseMove(EventObj: TsgeEventMouse): TsgeEventHandlerResult;
+    function  Handler_MouseDown(EventObj: TsgeEventMouse): TsgeEventHandlerResult;
+    function  Handler_MouseUp(EventObj: TsgeEventMouse): TsgeEventHandlerResult;
+    function  Handler_MouseWheel(EventObj: TsgeEventMouse): TsgeEventHandlerResult;
+    function  Handler_MouseDblClick(EventObj: TsgeEventMouse): TsgeEventHandlerResult;
 
 
     //Вспомогательные методы
@@ -175,7 +175,7 @@ type
 implementation
 
 uses
-  sgeErrors, sgeStringList, sgeEventBase, sgeOSPlatform, sgeSystemUtils, sgeStringUtils, sgeMathUtils,
+  sgeErrors, sgeStringList, sgeOSPlatform, sgeSystemUtils, sgeStringUtils, sgeMathUtils,
   sgeVariableBase, sgeShellCommand, sgeKeys, sgeShellLine, sgeShellLineItem, sgeShellScript, sgeShellCallStackItem;
 
 const
@@ -198,9 +198,9 @@ type
 
 
 
-function TsgeExtensionShell.Event_WindowResize(Obj: TsgeEventWindowSize): Boolean;
+function TsgeExtensionShell.Event_WindowResize(Obj: TsgeEventWindowSize): TsgeEventHandlerResult;
 begin
-  Result := False;
+  Result := ehrDefault;
 
   RepaintInner;
 
@@ -211,11 +211,11 @@ begin
 end;
 
 
-function TsgeExtensionShell.Handler_KeyDown(EventObj: TsgeEventKeyboard): Boolean;
+function TsgeExtensionShell.Handler_KeyDown(EventObj: TsgeEventKeyboard): TsgeEventHandlerResult;
 var
   s: String;
 begin
-  Result := True;
+  Result := ehrStopSend;
 
   //Проверить на аварийный останов
   if (EventObj.Key = keyX) and (kbCtrl in EventObj.KeyboardButtons) and (kbAlt in EventObj.KeyboardButtons) then
@@ -315,15 +315,15 @@ begin
 end;
 
 
-function TsgeExtensionShell.Handler_KeyUp(EventObj: TsgeEventKeyboard): Boolean;
+function TsgeExtensionShell.Handler_KeyUp(EventObj: TsgeEventKeyboard): TsgeEventHandlerResult;
 begin
-  Result := True;
+  Result := ehrStopSend;
 end;
 
 
-function TsgeExtensionShell.Handler_KeyChar(EventObj: TsgeEventKeyboardChar): Boolean;
+function TsgeExtensionShell.Handler_KeyChar(EventObj: TsgeEventKeyboardChar): TsgeEventHandlerResult;
 begin
-  Result := True;
+  Result := ehrStopSend;
 
   //Проверить на пропуск ввода
   if FSkipChar then
@@ -341,29 +341,29 @@ begin
 end;
 
 
-function TsgeExtensionShell.Handler_MouseMove(EventObj: TsgeEventMouse): Boolean;
+function TsgeExtensionShell.Handler_MouseMove(EventObj: TsgeEventMouse): TsgeEventHandlerResult;
 begin
-  Result := True;
+  Result := ehrStopSend;
 end;
 
 
-function TsgeExtensionShell.Handler_MouseDown(EventObj: TsgeEventMouse): Boolean;
+function TsgeExtensionShell.Handler_MouseDown(EventObj: TsgeEventMouse): TsgeEventHandlerResult;
 begin
-  Result := True;
+  Result := ehrStopSend;
 end;
 
 
-function TsgeExtensionShell.Handler_MouseUp(EventObj: TsgeEventMouse): Boolean;
+function TsgeExtensionShell.Handler_MouseUp(EventObj: TsgeEventMouse): TsgeEventHandlerResult;
 begin
-  Result := True;
+  Result := ehrStopSend;
 end;
 
 
-function TsgeExtensionShell.Handler_MouseWheel(EventObj: TsgeEventMouse): Boolean;
+function TsgeExtensionShell.Handler_MouseWheel(EventObj: TsgeEventMouse): TsgeEventHandlerResult;
 var
   Page: Boolean;
 begin
-  Result := True;
+  Result := ehrStopSend;
 
   Page := (kbCtrl in EventObj.KeyboardButtons);
   if EventObj.Delta > 0 then
@@ -373,9 +373,9 @@ begin
 end;
 
 
-function TsgeExtensionShell.Handler_MouseDblClick(EventObj: TsgeEventMouse): Boolean;
+function TsgeExtensionShell.Handler_MouseDblClick(EventObj: TsgeEventMouse): TsgeEventHandlerResult;
 begin
-  Result := True;
+  Result := ehrStopSend;
 end;
 
 

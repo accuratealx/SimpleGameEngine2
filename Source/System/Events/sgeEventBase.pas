@@ -24,6 +24,14 @@ const
 
 
 type
+  //Результат вызова подписчика события
+  TsgeEventHandlerResult = (
+    ehrDefault,                                                     //Посылать объект подписчикам дальше и удалить
+    ehrStopSend,                                                    //Не посылать объект подписчикам дальше и удалить
+    ehrBreak                                                        //Не посылать объект подписчикам дальше и не удалять
+  );
+
+
   //Базовый класс события
   TsgeEventBase = class
   protected
@@ -37,7 +45,7 @@ type
 
 
   //Обработчик события
-  TsgeEventHandler = function(EventObj: TsgeEventBase): Boolean of object;
+  TsgeEventHandler = function(EventObj: TsgeEventBase): TsgeEventHandlerResult of object;
 
 
 implementation

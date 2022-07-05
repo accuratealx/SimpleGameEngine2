@@ -19,7 +19,7 @@ uses
   sgeGraphicColor, sgeGraphic,
   sgeCounter, sgeWindow,
   sgeExtensionBase, sgeGraphicElementLayerList, sgeGraphicElementBase, sgeGraphicElementFade, sgeGraphicFPS,
-  sgeScreenFade, sgeEventBase, sgeEventWindow,
+  sgeEventReceiver, sgeScreenFade, sgeEventBase, sgeEventWindow,
   sgeExtensionWindow;
 
 
@@ -89,7 +89,7 @@ type
     procedure FadeCallBackProc(Time: TsgePassedTime);
 
     //Подписка на события
-    function Event_WindowResize(Obj: TsgeEventWindowSize): Boolean;
+    function Event_WindowResize(Obj: TsgeEventWindowSize): TsgeEventHandlerResult;
 
   protected
     FGraphicShell: TsgeGraphic;                                     //Класс графики для потока оболочки
@@ -388,9 +388,9 @@ begin
 end;
 
 
-function TsgeExtensionGraphic.Event_WindowResize(Obj: TsgeEventWindowSize): Boolean;
+function TsgeExtensionGraphic.Event_WindowResize(Obj: TsgeEventWindowSize): TsgeEventHandlerResult;
 begin
-  Result := False;
+  Result := ehrDefault;
 
   //Сохранить новые размеры
   FNewWidth := Obj.Width;
