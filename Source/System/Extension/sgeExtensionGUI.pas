@@ -67,7 +67,7 @@ type
     function  ButtonHandler(EventType: TsgeGUIElementButtonEventType; Keyboard: TsgeEventBase): TsgeEventHandlerResult;
 
     //Вспомогательные функции
-    procedure ClearForms;
+    procedure DestroyForms;
     function  ElementAtCursor(X, Y: Integer): TsgeGUIElement;
   protected
     function GetName: String; override;
@@ -191,13 +191,9 @@ function TsgeExtensionGUI.MouseHandler(EventType: TsgeGUIElementMouseEventType; 
 var
   Form: TsgeGUIForm;
   Element: TsgeGUIElement;
-  MousePoint, Pt: TsgeIntPoint;
 begin
   //Передавать событие
   Result := ehrDefault;
-
-  //Сохранить координаты мыши
-  MousePoint := Mouse.Pos;
 
   //Узнать элемент под курсором
   Element := ElementAtCursor(Mouse.X, Mouse.Y);
@@ -209,26 +205,18 @@ begin
     begin
       //Уход мыши
       if FLastElementAtCursor <> nil then
-      begin
-        Pt := FLastElementAtCursor.GetGlobalPos;
-        Mouse.ChangeXY(MousePoint.X - Pt.X, MousePoint.Y - Pt.Y);
         FLastElementAtCursor.MouseHandler(emetLeave, Mouse);
-      end;
 
       //Заход мыши
       if Element <> nil then
-      begin
-        Pt := Element.GetGlobalPos;
-        Mouse.ChangeXY(MousePoint.X - Pt.X, MousePoint.Y - Pt.Y);
         Element.MouseHandler(emetEnter, Mouse);
-      end;
     end;
 
     //Запомнить последний элемент под курсором
     FLastElementAtCursor := Element;
   end;
 
-  //Если монопольный захват событи мыши, то поправить
+  //Если монопольный захват событий мыши, то поправить
   if FCapturedElement <> nil then
     Element := FCapturedElement;
 
@@ -243,10 +231,6 @@ begin
 
   //Если элемент найден, то подавить событие
   Result := ehrStopSend;
-
-  //Поправить координаты относительно текущего элемента
-  Pt := Element.GetGlobalPos;
-  Mouse.ChangeXY(MousePoint.X - Pt.X, MousePoint.Y - Pt.Y);
 
   //Передать событие элементу
   case EventType of
@@ -278,7 +262,7 @@ begin
 end;
 
 
-procedure TsgeExtensionGUI.ClearForms;
+procedure TsgeExtensionGUI.DestroyForms;
 begin
   if FFormList.Count = 0 then
     Exit;
@@ -291,17 +275,9 @@ end;
 
 function TsgeExtensionGUI.ElementAtCursor(X, Y: Integer): TsgeGUIElement;
 
-  function CursorInElement(Element: TsgeGUIElement; X, Y: Integer): Boolean;
-  begin
-    Result := (X >= Element.Left) and
-              (X <= Element.Left + Element.Width) and
-              (Y >= Element.Top) and
-              (Y <= Element.Top + Element.Height);
-  end;
-
-  function ProcessElement(Element: TsgeGUIElement; X, Y: Integer): TsgeGUIElement;
+  function ProcessElement(Element: TsgeGUIElement): TsgeGUIElement;
   var
-    Xl, Yl, i: Integer;
+    i: Integer;
     E: TsgeGUIElement;
   begin
     Result := nil;
@@ -310,20 +286,16 @@ function TsgeExtensionGUI.ElementAtCursor(X, Y: Integer): TsgeGUIElement;
     if not Element.Visible or not Element.Enable then
       Exit;
 
-    //Проверить нахождение координат в текущем объекте
-    if CursorInElement(Element, X, Y) then
+    //Проверить нахождение координат в текущем элементе
+    if Element.PointInElement(X, Y) then
     begin
       //Результат по умолчанию
       Result := Element;
 
-      //Поправить координаты относительно текущего элемента
-      Xl := X - Element.Left;
-      Yl := Y - Element.Top;
-
       //Проверить детей
       for i := 0 to Element.ChildList.Count - 1 do
       begin
-        E := ProcessElement(Element.ChildList.Item[i], Xl, Yl);
+        E := ProcessElement(Element.ChildList.Item[i]);
         if E <> nil then
           Exit(E);
       end;
@@ -339,7 +311,7 @@ begin
   //Перебрать формы
   for i := FFormList.Count - 1 downto 0 do
   begin
-    E := ProcessElement(FFormList.Item[i], X, Y);
+    E := ProcessElement(FFormList.Item[i]);
     if E <> nil then
       Exit(E);
   end;
@@ -402,7 +374,7 @@ end;
 destructor TsgeExtensionGUI.Destroy;
 begin
   //Удалить формы
-  ClearForms;
+  DestroyForms;
 
   //Удалить объекты
   FFormList.Free;

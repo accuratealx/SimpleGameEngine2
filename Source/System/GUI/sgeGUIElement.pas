@@ -15,6 +15,7 @@ unit sgeGUIElement;
 interface
 
 uses
+  sgeSystemUtils,
   sgeTypes, sgeSimpleParameters, sgeSimpleContainer, sgeTemplateCollection,
   sgeGraphicSprite, sgeGraphicColor,
   sgeEventBase, sgeEventKeyboard, sgeEventMouse,
@@ -65,6 +66,7 @@ type
     FWidth: Integer;                                                //Ширина
     FHeight: Integer;                                               //Высота
     FAutoSize: Boolean;                                             //Авторазмер
+    FScale: Single;                                                 //Масштаб элемента
     FClickButton: TsgeMouseButton;                                  //Кнопка мыши для Click
     FConstrains: TsgeGUIPropertyConstrainsExt;                      //Ограничение размеров
     FStyle: ShortString;                                            //Имя стиля
@@ -139,14 +141,17 @@ type
     procedure SetFocused(AFocused: Boolean); virtual;
     procedure SetAutoSize(AAutoSize: Boolean); virtual;
     procedure SetStyle(AStyle: ShortString); virtual;
+    function  GetScaleWidth: Integer; virtual;
+    function  GetScaleHeight: Integer; virtual;
+    procedure SetScale(AScale: Single); virtual;
+    function  GetScale: Single; virtual;
 
     function  GetConstrains: TsgeGUIPropertyConstrains;
 
     //Методы Parent
     procedure AddChild(Element: TsgeGUIElement);
     procedure DeleteChild(Element: TsgeGUIElement);
-    procedure DeleteChild;
-    function  GetFormScale: Single; virtual;
+    procedure DestroyChild;
   public
     constructor Create(Name: String; Left, Top, Width, Height: Integer; Parent: TsgeGUIElement = nil); virtual;
     destructor  Destroy; override;
@@ -161,6 +166,7 @@ type
     procedure LoadParameters(Params: TsgeSimpleContainer);          //Загрузить параметры
 
     //Вспомогательные методы
+    function  PointInElement(X, Y: Integer): Boolean;               //Проверить нахождение точки внутри элемента
     function  GetTopParent: TsgeGUIElement;                         //Вернуть родителя верхнего уровня
     function  GetGlobalPos: TsgeIntPoint;                           //Узнать глобальные координаты элемента
 
@@ -181,6 +187,8 @@ type
     property ClickButton: TsgeMouseButton read FClickButton write FClickButton;
     property ChildList: TsgeGUIElementList read FChildList;
     property Style: ShortString read FStyle write SetStyle;
+    property ScaleWidth: Integer read GetScaleWidth;
+    property ScaleHeight: Integer read GetScaleHeight;
 
     //Обработчики
     property OnDrawBefore: TsgeGUIProcEvent read FOnDrawBefore write SetDrawBefore;
@@ -356,6 +364,35 @@ begin
 end;
 
 
+function TsgeGUIElement.GetScaleWidth: Integer;
+begin
+  Result := Round(FWidth * GetScale);
+end;
+
+
+function TsgeGUIElement.GetScaleHeight: Integer;
+begin
+  Result := Round(FHeight * GetScale);
+end;
+
+
+procedure TsgeGUIElement.SetScale(AScale: Single);
+begin
+  FScale := AScale;
+end;
+
+
+function TsgeGUIElement.GetScale: Single;
+begin
+  //Масштаб по умолчанию
+  Result := FScale;
+
+  //Масштаб можно менять только у формы
+  if FParent <> nil then
+    Result := FParent.FScale;
+end;
+
+
 function TsgeGUIElement.GetConstrains: TsgeGUIPropertyConstrains;
 begin
   Result := FConstrains;
@@ -376,7 +413,7 @@ begin
 end;
 
 
-procedure TsgeGUIElement.DeleteChild;
+procedure TsgeGUIElement.DestroyChild;
 begin
   if FChildList.Count = 0 then
     Exit;
@@ -387,15 +424,6 @@ begin
 
   //Перерисовать
   Repaint;
-end;
-
-
-function TsgeGUIElement.GetFormScale: Single;
-begin
-  Result := 1;
-
-  if FParent <> nil then
-    Result := FParent.GetFormScale;
 end;
 
 
@@ -827,6 +855,7 @@ begin
   FEnable := True;
   FFocused := False;
   FAutoSize := False;
+  FScale := 1;
   FClickButton := mbLeft;
   FStyle := '';
 
@@ -858,7 +887,7 @@ begin
   sgeCorePointer_GetSGE.ExtGUI.LostFocus(Self);
 
   //Удалить детей
-  DeleteChild;
+  DestroyChild;
 
   //Удалить объекты
   FConstrains.Free;
@@ -875,70 +904,76 @@ end;
 
 
 procedure TsgeGUIElement.MouseHandler(EventType: TsgeGUIElementMouseEventType; Mouse: TsgeEventMouse);
-
-  function PointInElement(Pt: TsgeIntPoint): Boolean;
-  begin
-    Result := (Pt.X >= 0) and (Pt.X <= FWidth) and (Pt.Y >= 0) and (Pt.Y <= FHeight);
-  end;
-
+var
+  LocalMouse: TsgeEventMouse;
+  Pt: TsgeIntPoint;
 begin
   //Если неактивен, то выход
   if not FVisible or not FEnable then
     Exit;
 
-  //Обработать событие
-  case EventType of
-    emetDown:
-    begin
-      if PointInElement(Mouse.Pos) then
+  //Поправить координаты относительно текущего элемента
+  Pt := GetGlobalPos;
+  LocalMouse := TsgeEventMouse.Create(Mouse.Name, Mouse.X - Pt.X, Mouse.Y - Pt.Y, Mouse.MouseButtons, Mouse.KeyboardButtons, Mouse.Delta);
+
+  try
+    //Обработать событие
+    case EventType of
+      emetDown:
       begin
-        //Запомнить флаг нажатия, если нужная кнопка
-        if FClickButton in Mouse.MouseButtons then
+        if PointInElement(Mouse.X, Mouse.Y) then
         begin
-          FPressed := True;
-          sgeCorePointer_GetSGE.ExtGUI.MouseCapture(Self);
+          //Запомнить флаг нажатия, если нужная кнопка
+          if FClickButton in Mouse.MouseButtons then
+          begin
+            FPressed := True;
+            sgeCorePointer_GetSGE.ExtGUI.MouseCapture(Self);
+          end;
+
+          //Обработчик нажатия мыши
+          Handler_MouseDown(LocalMouse);
+
+          //Установить фокус ввода
+          sgeCorePointer_GetSGE.ExtGUI.SetFocus(Self);
+        end;
+      end;
+
+      emetUp:
+      begin
+        if PointInElement(Mouse.X, Mouse.Y) then
+        begin
+          //Событие OnClick
+          if FPressed then
+            Handler_MouseClick(LocalMouse);
+
+          //Обработчик отпускания мыши
+          Handler_MouseUp(LocalMouse);
         end;
 
-        //Обработчик нажатия мыши
-        Handler_MouseDown(Mouse);
-
-        //Установить фокус ввода
-        sgeCorePointer_GetSGE.ExtGUI.SetFocus(Self);
-      end;
-    end;
-
-    emetUp:
-    begin
-      if PointInElement(Mouse.Pos) then
-      begin
-        //Событие OnClick
-        if FPressed then
-          Handler_MouseClick(Mouse);
-
-        //Обработчик отпускания мыши
-        Handler_MouseUp(Mouse);
+        //Сбросить флаг нажатия
+        FPressed := False;
+        sgeCorePointer_GetSGE.ExtGUI.ReleaseMouse(Self);
       end;
 
-      //Сбросить флаг нажатия
-      FPressed := False;
-      sgeCorePointer_GetSGE.ExtGUI.ReleaseMouse(Self);
+      emetMove:
+         Handler_MouseMove(LocalMouse);
+
+      emetScroll:
+        Handler_MouseScroll(LocalMouse);
+
+      emetDblClick:
+        if PointInElement(Mouse.X, Mouse.Y) then
+          Handler_MouseDoubleClick(LocalMouse);
+
+      emetLeave:
+        Handler_MouseLeave(LocalMouse);
+
+      emetEnter:
+        Handler_MouseEnter(LocalMouse);
     end;
 
-    emetMove:
-       Handler_MouseMove(Mouse);
-
-    emetScroll:
-      Handler_MouseScroll(Mouse);
-
-    emetDblClick:
-      if PointInElement(Mouse.Pos) then
-        Handler_MouseDoubleClick(Mouse);
-
-    emetLeave:
-      Handler_MouseLeave(Mouse);
-
-    emetEnter:
-      Handler_MouseEnter(Mouse);
+  finally
+    LocalMouse.Free;
   end;
 end;
 
@@ -1046,29 +1081,43 @@ begin
 end;
 
 
+function TsgeGUIElement.PointInElement(X, Y: Integer): Boolean;
+var
+  Pt: TsgeIntPoint;
+begin
+  //Глобальные координаты c учётом масштаба
+  Pt := GetGlobalPos;
+
+  //Проверить попадание
+  Result := (X >= Pt.X) and (X <= Pt.X + GetScaleWidth) and (Y >= Pt.Y) and (Y <= Pt.Y + GetScaleHeight);
+end;
+
+
 function TsgeGUIElement.GetTopParent: TsgeGUIElement;
 begin
+  Result := Self;
   if FParent <> nil then
-    Result := FParent.GetTopParent
-  else
-    Result := Self;
+    Result := FParent.GetTopParent;
 end;
 
 
 function TsgeGUIElement.GetGlobalPos: TsgeIntPoint;
 var
   Pt: TsgeIntPoint;
+  Scale: Single;
 begin
+  //Значение по умолчанию
   Result := sgeGetIntPoint(FLeft, FTop);
 
+  //Проверить родителя
   if FParent <> nil then
   begin
     Pt := FParent.GetGlobalPos;
-    Result.X := Result.X + Pt.X;
-    Result.Y := Result.Y + Pt.Y;
-  end
+    Scale := GetScale;
+    Result.X := Round(FLeft * Scale) + Pt.X;
+    Result.Y := Round(FTop * Scale) + Pt.Y;
+  end;
 end;
-
 
 
 

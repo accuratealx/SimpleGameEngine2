@@ -24,7 +24,6 @@ type
   TsgeGUIForm = class(TsgeGUIElement)
   private
     FAlpha: Single;                                                 //Прозрачность элемента
-    FScale: Single;                                                 //Масштаб на экране
 
     FGraphicElement: TsgeGraphicElementSpriteCashed;                //Элемент отрисовки
 
@@ -35,12 +34,13 @@ type
     class function GetParameterSectionName: String; override;       //Имя секции
     procedure LoadData(Data: TsgeSimpleParameters); override;       //Загрузить параметры
     procedure DrawBefore; override;                                 //Отрисовать перед выводом детей
-    function  GetFormScale: Single; override;                       //Вернуть масштаб формы
 
     procedure SetVisible(AVisible: Boolean); override;
     procedure SetAlpha(AAlpha: Single);
     procedure SetFocused(AFocused: Boolean); override;
-    procedure SetScale(AScale: Single);
+    procedure SetScale(AScale: Single); override;
+    procedure SetTop(ATop: Integer); override;
+    procedure SetLeft(ALeft: Integer); override;
   public
     constructor Create(AName: String; ALeft, ATop, AWidth, AHeight: Integer; AParent: TsgeGUIElement = nil); override;
     destructor  Destroy; override;
@@ -48,7 +48,7 @@ type
     procedure Draw; override;
 
     property Alpha: Single read FAlpha write SetAlpha;
-    property Scale: Single read FScale write SetScale;
+    property Scale: Single read GetScale write SetScale;
 
     property Background: TsgeGUIPropertyBackground read GetBackground;
   end;
@@ -62,8 +62,30 @@ uses
 
 procedure TsgeGUIForm.SetScale(AScale: Single);
 begin
-  FScale := AScale;
+  inherited SetScale(AScale);
+
+  //Поправить элемент отрисовки
   FGraphicElement.Scale := sgeGetFloatPoint(FScale, FScale);
+  FGraphicElement.Update;
+end;
+
+
+procedure TsgeGUIForm.SetTop(ATop: Integer);
+begin
+  inherited SetTop(ATop);
+
+  //Поправить элемент отрисовки
+  FGraphicElement.Y := ATop;
+  FGraphicElement.Update;
+end;
+
+
+procedure TsgeGUIForm.SetLeft(ALeft: Integer);
+begin
+  inherited SetLeft(ALeft);
+
+  //Поправить элемент отрисовки
+  FGraphicElement.X := ALeft;
   FGraphicElement.Update;
 end;
 
@@ -99,12 +121,6 @@ end;
 procedure TsgeGUIForm.DrawBefore;
 begin
   FBackground.Draw;
-end;
-
-
-function TsgeGUIForm.GetFormScale: Single;
-begin
-  Result := FScale;
 end;
 
 
@@ -171,15 +187,15 @@ destructor TsgeGUIForm.Destroy;
 begin
   Include(FState, esLockUpdate);
 
+  //Удалить себя из списка форм
+  sgeCorePointer_GetSGE.ExtGUI.FormList.Delete(Self);
+
   //Удалить примитив
   FGraphicElement.Visible := False;
   FGraphicElement.Delete;
 
   //Удалить свойство фона
   FBackground.Free;
-
-  //Удалить себя из списка форм
-  sgeCorePointer_GetSGE.ExtGUI.FormList.Delete(Self);
 
   inherited Destroy;
 end;
