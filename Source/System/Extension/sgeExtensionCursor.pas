@@ -135,7 +135,7 @@ end;
 
 function TsgeExtensionCursor.Handler_MouseMove(EventObj: TsgeEventMouse): TsgeEventHandlerResult;
 begin
-  Result := ehrDefault;
+  Result := ehrNormal;
 
   //Запомнить последние координаты курсора
   FCursorPos := EventObj.Pos;
@@ -147,7 +147,7 @@ end;
 
 function TsgeExtensionCursor.Handler_MouseEnter(EventObj: TsgeEventMouse): TsgeEventHandlerResult;
 begin
-  Result := ehrDefault;
+  Result := ehrNormal;
 
   //Восстановить курсор
   CorrectVisible(FShowCursor);
@@ -156,7 +156,7 @@ end;
 
 function TsgeExtensionCursor.Handler_MouseLeave(EventObj: TsgeEventMouse): TsgeEventHandlerResult;
 begin
-  Result := ehrDefault;
+  Result := ehrNormal;
 
   //Спрятать курсоры
   CorrectVisible(False);

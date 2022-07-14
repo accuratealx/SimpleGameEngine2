@@ -130,15 +130,10 @@ begin
 
         //Вызвать обработчик
         try
-          HandlerResult := SubscriberList.Item[i].Handler(EventObj);
 
-          case HandlerResult of
-            ehrDefault: ;
-            ehrStopSend, ehrBreak:
-              Break;
-            else
-              Break;
-          end;
+          if SubscriberList.Item[i].Handler(EventObj) = ehrBreak then
+            Break;
+
         except
           on E: EsgeException do
             if Assigned(FErrorHandler)
@@ -150,19 +145,11 @@ begin
     //Разблокировать подписчиков
     FSubscriberGroupList.Unlock;
 
-    //Обработать объект события
-    case HandlerResult of
-      ehrDefault, ehrStopSend:                                      //Удалить объект из очереди и освободить память
-        FEventList.Delete(0);
-      ehrBreak:                                                     //Удалить объект из очереди
-        FEventList.Remove(EventObj);
-      else
-        FEventList.Delete(0);                                       //Непонятный ответ
-    end;
-
+    //Удалить объект события
+    FEventList.Delete(0);
   end;
 end;
 
 
-end.
 
+end.

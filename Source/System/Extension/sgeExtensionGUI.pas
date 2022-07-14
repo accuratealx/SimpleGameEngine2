@@ -193,7 +193,7 @@ var
   Element: TsgeGUIElement;
 begin
   //Передавать событие
-  Result := ehrDefault;
+  Result := ehrNormal;
 
   //Узнать элемент под курсором
   Element := ElementAtCursor(Mouse.X, Mouse.Y);
@@ -230,7 +230,7 @@ begin
   end;
 
   //Если элемент найден, то подавить событие
-  Result := ehrStopSend;
+  Result := ehrBreak;
 
   //Передать событие элементу
   case EventType of
@@ -254,11 +254,11 @@ end;
 
 function TsgeExtensionGUI.ButtonHandler(EventType: TsgeGUIElementButtonEventType; Keyboard: TsgeEventBase): TsgeEventHandlerResult;
 begin
-  Result := ehrDefault;
+  Result := ehrNormal;
 
   if FFocusedElement <> nil then
     if FFocusedElement.ButtonHandler(EventType, Keyboard) then
-      Result := ehrStopSend;
+      Result := ehrBreak;
 end;
 
 

@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeEventWindow.pas
-Версия            1.5
+Версия            1.6
 Создан            02.05.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Классы событий: Окно
@@ -43,6 +43,8 @@ type
   public
     constructor Create(Name: ShortString; Width, Height: Integer);
 
+    function Copy: TsgeEventBase; override;
+
     property Width: Integer read FWidth;
     property Height: Integer read FHeight;
   end;
@@ -59,6 +61,11 @@ begin
   FHeight := Height;
 end;
 
+
+function TsgeEventWindowSize.Copy: TsgeEventBase;
+begin
+  Result := TsgeEventWindowSize.Create(FName, FWidth, FHeight);
+end;
 
 
 

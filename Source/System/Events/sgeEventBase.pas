@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine
 Файл              sgeEventBase.pas
-Версия            1.2
+Версия            1.3
 Создан            22.03.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс события: Базовое. Все события наследуются от этого класса
@@ -26,9 +26,8 @@ const
 type
   //Результат вызова подписчика события
   TsgeEventHandlerResult = (
-    ehrDefault,                                                     //Посылать объект подписчикам дальше и удалить
-    ehrStopSend,                                                    //Не посылать объект подписчикам дальше и удалить
-    ehrBreak                                                        //Не посылать объект подписчикам дальше и не удалять
+    ehrNormal,                                                      //Посылать объект подписчикам дальше
+    ehrBreak                                                        //Не посылать объект подписчикам дальше
   );
 
 
@@ -39,6 +38,8 @@ type
 
   public
     constructor Create(Name: ShortString);
+
+    function Copy: TsgeEventBase; virtual;
 
     property Name: ShortString read FName;
   end;
@@ -55,6 +56,13 @@ constructor TsgeEventBase.Create(Name: ShortString);
 begin
   FName := Name;
 end;
+
+
+function TsgeEventBase.Copy: TsgeEventBase;
+begin
+  Result := TsgeEventBase.Create(FName);
+end;
+
 
 
 end.

@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeEventMouse.pas
-Версия            1.1
+Версия            1.2
 Создан            14.09.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Классы событий: Мышь
@@ -44,7 +44,7 @@ type
   public
     constructor Create(Name: ShortString; X, Y: Integer; MouseButtons: TsgeMouseButtons; KeyboardButtons: TsgeKeyboardButtons; Delta: Integer = 0);
 
-    procedure ChangeXY(X, Y: Integer);
+    function Copy: TsgeEventBase; override;
 
     property Pos: TsgeIntPoint read GetPos;
     property FloatPos: TsgeFloatPoint read GetFloatPos;
@@ -87,10 +87,9 @@ begin
 end;
 
 
-procedure TsgeEventMouse.ChangeXY(X, Y: Integer);
+function TsgeEventMouse.Copy: TsgeEventBase;
 begin
-  FX := X;
-  FY := Y;
+  Result := TsgeEventMouse.Create(FName, FX, FY, FMouseButtons, FKeyboardButtons, FDelta);
 end;
 
 

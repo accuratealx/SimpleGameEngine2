@@ -214,12 +214,12 @@ function TSimpleGameEngine.EventWindowClose(Obj: TsgeEventBase): TsgeEventHandle
 var
   b: Boolean;
 begin
-  Result := ehrDefault;
+  Result := ehrNormal;
 
   b := CloseWindow;
   if b then
   begin
-    Result := ehrStopSend;
+    Result := ehrBreak;
     Stop;
   end;
 end;
@@ -230,7 +230,7 @@ var
   Proc: TsgeTimeEventProc;
 begin
   //Не передавать дальше событие
-  Result := ehrStopSend;
+  Result := ehrBreak;
 
   //Ссылка на метод
   Proc := TsgeEventTimeEvent(Obj).Proc;

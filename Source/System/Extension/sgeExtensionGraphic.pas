@@ -19,7 +19,7 @@ uses
   sgeGraphicColor, sgeGraphic,
   sgeCounter, sgeWindow,
   sgeExtensionBase, sgeGraphicElementLayerList, sgeGraphicElementBase, sgeGraphicElementFade, sgeGraphicFPS,
-  sgeEventReceiver, sgeScreenFade, sgeEventBase, sgeEventWindow,
+  sgeScreenFade, sgeEventBase, sgeEventWindow,
   sgeExtensionWindow;
 
 
@@ -390,7 +390,7 @@ end;
 
 function TsgeExtensionGraphic.Event_WindowResize(Obj: TsgeEventWindowSize): TsgeEventHandlerResult;
 begin
-  Result := ehrDefault;
+  Result := ehrNormal;
 
   //Сохранить новые размеры
   FNewWidth := Obj.Width;

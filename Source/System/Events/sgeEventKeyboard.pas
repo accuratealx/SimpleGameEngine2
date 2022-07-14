@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeEventKeyboard.pas
-Версия            1.1
+Версия            1.2
 Создан            14.09.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Классы событий: Клавиатура
@@ -25,6 +25,7 @@ const
   Event_KeyboardDown  = 'Keyboard.KeyDown';
   Event_KeyboardUp    = 'Keyboard.KeyUp';
 
+
 type
   //Ввод символа
   TsgeEventKeyboardChar = class(TsgeEventBase)
@@ -33,6 +34,8 @@ type
     FKeyboardButtons: TsgeKeyboardButtons;
   public
     constructor Create(Name: ShortString; Char: Char; KeyboardButtons: TsgeKeyboardButtons);
+
+    function Copy: TsgeEventBase; override;
 
     property Char: Char read FChar;
     property KeyboardButtons: TsgeKeyboardButtons read FKeyboardButtons;
@@ -48,6 +51,8 @@ type
     FFirstDown: Boolean;
   public
     constructor Create(Name: ShortString; Key: Byte; KeyboardButtons: TsgeKeyboardButtons; FirstDown: Boolean);
+
+    function Copy: TsgeEventBase; override;
 
     property Key: Byte read FKey;
     property KeyboardButtons: TsgeKeyboardButtons read FKeyboardButtons;
@@ -67,6 +72,12 @@ begin
 end;
 
 
+function TsgeEventKeyboardChar.Copy: TsgeEventBase;
+begin
+  Result := TsgeEventKeyboardChar.Create(FName, FChar, FKeyboardButtons);
+end;
+
+
 constructor TsgeEventKeyboard.Create(Name: ShortString; Key: Byte; KeyboardButtons: TsgeKeyboardButtons; FirstDown: Boolean);
 begin
   inherited Create(Name);
@@ -76,6 +87,11 @@ begin
   FFirstDown := FirstDown;
 end;
 
+
+function TsgeEventKeyboard.Copy: TsgeEventBase;
+begin
+  Result := TsgeEventKeyboard.Create(FName, FKey, FKeyboardButtons, FFirstDown);
+end;
 
 
 

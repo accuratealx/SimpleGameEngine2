@@ -102,13 +102,13 @@ end;
 function TsgeExtensionKeyCommand.CommandHandler(const Command: String): TsgeEventHandlerResult;
 begin
   //Результат по умолчанию
-  Result := ehrDefault;
+  Result := ehrNormal;
 
   //Проверить команду
   if Command <> '' then
   begin
     //Дальше не передавать этот объект
-    Result := ehrStopSend;
+    Result := ehrBreak;
 
     //Выполнить команду
     FExtShell.DoCommand(Command);
@@ -122,14 +122,14 @@ var
   Command: String;
 begin
   //По умолчанию
-  Result := ehrDefault;
+  Result := ehrNormal;
 
   //Проверить команду на кнопке
   KeyboardShifts := sgeGetKeyboardShiftsFromKeboardButtons(EventObj.KeyboardButtons);
   Command := FKeyboard.Key[EventObj.Key].GetActionDown(KeyboardShifts);
   if Command <> '' then
   begin
-    Result := ehrStopSend;                                          //Дальше не передавать этот объект
+    Result := ehrBreak;                                             //Дальше не передавать этот объект
     FBlockCharEvent := True;                                        //Заблокировать следующее событие WM_CHAR
     if EventObj.FirstDown then                                      //Выполнить команду
       FExtShell.DoCommand(Command);
@@ -150,13 +150,13 @@ end;
 
 function TsgeExtensionKeyCommand.Handler_KeyChar(EventObj: TsgeEventKeyboardChar): TsgeEventHandlerResult;
 begin
-  Result := ehrDefault;
+  Result := ehrNormal;
 
   //Проверить подавление события WM_CHAR
   if FBlockCharEvent then
   begin
     FBlockCharEvent := False;
-    Result := ehrStopSend;
+    Result := ehrBreak;
   end;
 end;
 

@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeEventMusicPlayer.pas
-Версия            1.1
+Версия            1.2
 Создан            03.11.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Классы событий: Музыкальный проигрыватель
@@ -32,6 +32,8 @@ type
   public
     constructor Create(Name: ShortString; Track: TsgeMusicPlayerTrack);
 
+    function Copy: TsgeEventBase; override;
+
     property Track: TsgeMusicPlayerTrack read FTrack;
   end;
 
@@ -46,6 +48,13 @@ begin
 
   FTrack := Track;
 end;
+
+
+function TsgeEventMusicPlayerStart.Copy: TsgeEventBase;
+begin
+  Result := TsgeEventMusicPlayerStart.Create(FName, FTrack);
+end;
+
 
 
 end.

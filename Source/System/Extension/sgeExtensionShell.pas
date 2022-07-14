@@ -200,7 +200,7 @@ type
 
 function TsgeExtensionShell.Event_WindowResize(Obj: TsgeEventWindowSize): TsgeEventHandlerResult;
 begin
-  Result := ehrDefault;
+  Result := ehrNormal;
 
   RepaintInner;
 
@@ -215,7 +215,7 @@ function TsgeExtensionShell.Handler_KeyDown(EventObj: TsgeEventKeyboard): TsgeEv
 var
   s: String;
 begin
-  Result := ehrStopSend;
+  Result := ehrBreak;
 
   //Проверить на аварийный останов
   if (EventObj.Key = keyX) and (kbCtrl in EventObj.KeyboardButtons) and (kbAlt in EventObj.KeyboardButtons) then
@@ -317,13 +317,13 @@ end;
 
 function TsgeExtensionShell.Handler_KeyUp(EventObj: TsgeEventKeyboard): TsgeEventHandlerResult;
 begin
-  Result := ehrStopSend;
+  Result := ehrBreak;
 end;
 
 
 function TsgeExtensionShell.Handler_KeyChar(EventObj: TsgeEventKeyboardChar): TsgeEventHandlerResult;
 begin
-  Result := ehrStopSend;
+  Result := ehrBreak;
 
   //Проверить на пропуск ввода
   if FSkipChar then
@@ -343,19 +343,19 @@ end;
 
 function TsgeExtensionShell.Handler_MouseMove(EventObj: TsgeEventMouse): TsgeEventHandlerResult;
 begin
-  Result := ehrStopSend;
+  Result := ehrBreak;
 end;
 
 
 function TsgeExtensionShell.Handler_MouseDown(EventObj: TsgeEventMouse): TsgeEventHandlerResult;
 begin
-  Result := ehrStopSend;
+  Result := ehrBreak;
 end;
 
 
 function TsgeExtensionShell.Handler_MouseUp(EventObj: TsgeEventMouse): TsgeEventHandlerResult;
 begin
-  Result := ehrStopSend;
+  Result := ehrBreak;
 end;
 
 
@@ -363,7 +363,7 @@ function TsgeExtensionShell.Handler_MouseWheel(EventObj: TsgeEventMouse): TsgeEv
 var
   Page: Boolean;
 begin
-  Result := ehrStopSend;
+  Result := ehrBreak;
 
   Page := (kbCtrl in EventObj.KeyboardButtons);
   if EventObj.Delta > 0 then
@@ -375,7 +375,7 @@ end;
 
 function TsgeExtensionShell.Handler_MouseDblClick(EventObj: TsgeEventMouse): TsgeEventHandlerResult;
 begin
-  Result := ehrStopSend;
+  Result := ehrBreak;
 end;
 
 

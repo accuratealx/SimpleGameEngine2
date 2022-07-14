@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeEventControllers.pas
-Версия            1.3
+Версия            1.4
 Создан            22.05.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Классы событий: Контроллеры
@@ -66,6 +66,8 @@ type
   public
     constructor Create(Name: ShortString; ID: Byte; ButtonID: Byte); reintroduce;
 
+    function Copy: TsgeEventBase; override;
+
     property ButtonID: Byte read FButtonID;
   end;
 
@@ -76,6 +78,8 @@ type
     FDirection: TsgeControllerPovDirection;
   public
     constructor Create(Name: ShortString; ID: Byte; Direction: TsgeControllerPovDirection); reintroduce;
+
+    function Copy: TsgeEventBase; override;
 
     property Direction: TsgeControllerPovDirection read FDirection;
   end;
@@ -88,6 +92,8 @@ type
     FTilt: TsgeControllerAxisTilt;
   public
     constructor Create(Name: ShortString; ID: Byte; Axis: TsgeControllerAxisType; Tilt: TsgeControllerAxisTilt); reintroduce;
+
+    function Copy: TsgeEventBase; override;
 
     property Axis: TsgeControllerAxisType read FAxis;
     property Tilt: TsgeControllerAxisTilt read FTilt;
@@ -104,16 +110,15 @@ type
   public
     constructor Create(Name: ShortString; ID: Byte; Axis: TsgeControllerAxisType; Value, PrevValue: Integer); reintroduce;
 
+    function Copy: TsgeEventBase; override;
+
     property Axis: TsgeControllerAxisType read FAxis;
     property Value: Integer read FValue;
     property PrevValue: Integer read FPrevValue;
   end;
 
 
-
-
 implementation
-
 
 
 constructor TsgeEventController.Create(Name: ShortString; ID: Byte);
@@ -124,7 +129,6 @@ begin
 end;
 
 
-
 constructor TsgeEventControllerButton.Create(Name: ShortString; ID: Byte; ButtonID: Byte);
 begin
   inherited Create(Name, ID);
@@ -132,6 +136,11 @@ begin
   FButtonID := ButtonID;
 end;
 
+
+function TsgeEventControllerButton.Copy: TsgeEventBase;
+begin
+  Result := TsgeEventControllerButton.Create(FName, FID, FButtonID);
+end;
 
 
 constructor TsgeEventControllerPOV.Create(Name: ShortString; ID: Byte; Direction: TsgeControllerPovDirection);
@@ -141,6 +150,11 @@ begin
   FDirection := Direction;
 end;
 
+
+function TsgeEventControllerPOV.Copy: TsgeEventBase;
+begin
+  Result := TsgeEventControllerPOV.Create(FName, FID, FDirection);
+end;
 
 
 constructor TsgeEventControllerAxis.Create(Name: ShortString; ID: Byte; Axis: TsgeControllerAxisType; Tilt: TsgeControllerAxisTilt);
@@ -152,6 +166,11 @@ begin
 end;
 
 
+function TsgeEventControllerAxis.Copy: TsgeEventBase;
+begin
+  Result := TsgeEventControllerAxis.Create(FName, FID, FAxis, FTilt);
+end;
+
 
 constructor TsgeEventControllerAxisValue.Create(Name: ShortString; ID: Byte; Axis: TsgeControllerAxisType; Value, PrevValue: Integer);
 begin
@@ -162,6 +181,11 @@ begin
   FPrevValue := PrevValue;
 end;
 
+
+function TsgeEventControllerAxisValue.Copy: TsgeEventBase;
+begin
+  Result := TsgeEventControllerAxisValue.Create(FName, FID, FAxis, FValue, FPrevValue);
+end;
 
 
 
