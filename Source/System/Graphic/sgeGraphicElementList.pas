@@ -107,6 +107,10 @@ begin
   //Результат по умолчанию
   Result := nil;
 
+  //Проверить итератор на пустой указатель
+  if FIterator = nil then
+    Exit;
+
   //Сместить на следующий элемент
   FIterator := FIterator^.Next;
 

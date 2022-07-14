@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeTemplateList.pas
-Версия            1.3
+Версия            1.4
 Создан            13.06.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс-шаблон: Связный список
@@ -184,6 +184,11 @@ begin
   if FCount = 0 then
     Exit;
 
+  //Поправить параметры
+  FCount := 0;
+  FFirst := nil;
+  FLast := nil;
+
   //Пробежать по элементам
   P := FFirst;
   while P <> nil do
@@ -197,11 +202,6 @@ begin
     P := P^.Next;
     Dispose(D);
   end;
-
-  //Поправить параметры
-  FCount := 0;
-  FFirst := nil;
-  FLast := nil;
 end;
 
 

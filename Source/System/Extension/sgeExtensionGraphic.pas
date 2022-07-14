@@ -235,65 +235,69 @@ var
 begin
   //Заблокировать список
   FLayerList.Lock;
+  try
 
-  //Вывод слоёв
-  for I := 0 to FLayerList.Count - 1 do
-  begin
-    //Если уничтожение, то не рисовать
-    if FDestroying then
-      Exit;
-
-    //Ссылка на слой
-    Layer := FLayerList.Item[I];
-
-    //Проверить видимость слоя
-    if not Layer.Visible then
-      Continue;
-
-    //Настроить графику графики
-    FGraphicInner.PushAttrib;
-    FGraphicInner.Reset;
-    FGraphicInner.ResetDrawOptions;
-
-    //Поправить смещение
-    FGraphicInner.SetPos(Layer.Offset);
-
-    //Поправить масштаб
-    FGraphicInner.SetScale(Layer.Scale, Layer.Scale);
-
-    //Обработать элементы в слое
-    El := Layer.Elements.GetFirst;
-    while El <> nil do
+    //Вывод слоёв
+    for I := 0 to FLayerList.Count - 1 do
     begin
-      //Удалить элемент
-      if El.NeedDelete then
-      begin
-        Layer.Elements.DeleteCurrentElement;
-        El := Layer.Elements.GetNext;
+      //Если уничтожение, то не рисовать
+      if FDestroying then
+        Exit;
+
+      //Ссылка на слой
+      Layer := FLayerList.Item[I];
+
+      //Проверить видимость слоя
+      if not Layer.Visible then
         Continue;
-      end;
 
-      //Вывести элемент
-      if El.Visible then
+      //Настроить графику графики
+      FGraphicInner.PushAttrib;
+      FGraphicInner.Reset;
+      FGraphicInner.ResetDrawOptions;
+
+      //Поправить смещение
+      FGraphicInner.SetPos(Layer.Offset);
+
+      //Поправить масштаб
+      FGraphicInner.SetScale(Layer.Scale, Layer.Scale);
+
+      //Обработать элементы в слое
+      El := Layer.Elements.GetFirst;
+      while El <> nil do
       begin
-        //Обновить данные
-        if El.NeedUpdate then
-          TsgeGraphicElementBaseExt(El).ApplySettings;
+        //Удалить элемент
+        if El.NeedDelete then
+        begin
+          Layer.Elements.DeleteCurrentElement;
+          El := Layer.Elements.GetNext;
+          Continue;
+        end;
 
-        //Нарисовать элемент
-        El.Draw(FGraphicInner);
+        //Вывести элемент
+        if El.Visible then
+        begin
+          //Обновить данные
+          if El.NeedUpdate then
+            TsgeGraphicElementBaseExt(El).ApplySettings;
+
+          //Нарисовать элемент
+          El.Draw(FGraphicInner);
+        end;
+
+        //Следующий элемент
+        El := Layer.Elements.GetNext;
       end;
 
-      //Следующий элемент
-      El := Layer.Elements.GetNext;
+      //Восстановить параметры графики
+      FGraphicInner.PopAttrib;
     end;
 
-    //Восстановить параметры графики
-    FGraphicInner.PopAttrib;
-  end;
 
-  //Разблокировать список
-  FLayerList.UnLock;
+  finally
+    //Разблокировать список
+    FLayerList.UnLock;
+  end;
 end;
 
 
