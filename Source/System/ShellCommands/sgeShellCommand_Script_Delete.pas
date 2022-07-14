@@ -41,7 +41,7 @@ uses
   SimpleGameEngine, sgeErrors;
 
 const
-  _UNITNAME = 'sgeShellCommand_Script_Delete';
+  _UNITNAME = 'ShellCommand_Script_Delete';
 
 
 
