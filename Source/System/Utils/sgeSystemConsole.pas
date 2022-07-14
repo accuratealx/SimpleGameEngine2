@@ -78,6 +78,10 @@ type
   end;
 
 
+var
+  SystemConsole: TsgeSystemConsole;
+
+
 implementation
 
 uses
@@ -363,6 +367,18 @@ begin
   Self.Write(Msg + LineEnding);
 end;
 
+
+
+initialization
+begin
+  SystemConsole := TsgeSystemConsole.Create;
+end;
+
+
+finalization
+begin
+  SystemConsole.Free;
+end;
 
 
 end.
