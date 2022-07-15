@@ -124,7 +124,6 @@ begin
     case s of
       'color':
         FType := pbtColor;
-
       'gradient':
         FType := pbtGradient;
       'sprite':

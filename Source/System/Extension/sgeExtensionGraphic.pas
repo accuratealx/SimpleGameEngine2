@@ -19,7 +19,7 @@ uses
   sgeGraphicColor, sgeGraphic,
   sgeCounter, sgeWindow,
   sgeExtensionBase, sgeGraphicElementLayerList, sgeGraphicElementBase, sgeGraphicElementFade, sgeGraphicFPS,
-  sgeScreenFade, sgeEventBase, sgeEventWindow,
+  sgeScreenFade, sgeEventList, sgeEventBase, sgeEventWindow,
   sgeExtensionWindow;
 
 
@@ -46,6 +46,7 @@ type
     FGraphicInner: TsgeGraphic;                                     //Класс графики для потока рендера сцены
     FGraphic: TsgeGraphic;                                          //Класс графики для основного потока
     FThread: TsgeThread;                                            //Поток основного класса графики
+    FEventList: TsgeEventList;                                      //Список объектов событий
     FFPS: TsgeGraphicFPS;                                           //Настройки вывода FPS
     FFPSCounter: TsgeCounter;                                       //Счётчик FPS
 
@@ -64,14 +65,10 @@ type
     FTempWindow: TsgeWindow;                                        //Временное окно для не основных контекстов
     FScreenshotStream: TsgeMemoryStream;                            //Ссылка на память
 
-    //FChangeViewArea: Boolean;
-    FNewWidth: Integer;
-    FNewHeight: Integer;
-
     //Методы потока
     procedure InitGraphic;
     procedure DoneGraphic;
-    procedure ChangeSize;
+    procedure ProcessEvents;
     procedure ChangeDrawControl;
     procedure GetScreenshot;
     procedure SystemDraw;
@@ -147,9 +144,24 @@ begin
 end;
 
 
-procedure TsgeExtensionGraphic.ChangeSize;
+procedure TsgeExtensionGraphic.ProcessEvents;
+var
+  Event: TsgeEventBase;
 begin
-  FGraphicInner.ChangeViewArea(FNewWidth, FNewHeight);
+  while FEventList.Count > 0 do
+  begin
+    //Указатель на объект события
+    Event := FEventList.Item[0];
+
+    //Обработать событие
+    case Event.Name of
+      Event_WindowSize:
+        FGraphicInner.ChangeViewArea(TsgeEventWindowSize(Event).Width, TsgeEventWindowSize(Event).Height);
+    end;
+
+    //Удалить первый элемент
+    FEventList.Delete(0);
+  end;
 end;
 
 
@@ -170,6 +182,10 @@ begin
   //Если уничтожение, то не рисовать
   if FDestroying then
     Exit;
+
+  //Выборка событий если есть
+  if FEventList.Count > 0 then
+    ProcessEvents;
 
   //Отрисовка
   case FDrawControl of
@@ -396,16 +412,11 @@ function TsgeExtensionGraphic.Event_WindowResize(Obj: TsgeEventWindowSize): Tsge
 begin
   Result := ehrNormal;
 
-  //Сохранить новые размеры
-  FNewWidth := Obj.Width;
-  FNewHeight := Obj.Height;
+  //Изменить размер контекста основног потока
+  FGraphic.ChangeViewArea(Obj.Width, Obj.Height);
 
-  //Изменить размер контекста основного потока
-  FGraphic.ChangeViewArea(FNewWidth, FNewHeight);
-
-  //Изменить размер контекста внутреннего потока
-  if FGraphicInner <> nil then
-    FThread.RunProc(@ChangeSize);
+  //Добавить событие в очередь
+  FEventList.Add(Obj.Copy);
 end;
 
 
@@ -435,6 +446,9 @@ begin
 
     //Получить ссылки на объекты
     FExtWindow := TsgeExtensionWindow(GetExtension(Extension_Window));
+
+    //Список объктов событий
+    FEventList := TsgeEventList.Create(True);
 
     //Скрытое окно
     FTempWindow := TsgeWindow.Create('SGETempWindowClass', '', 0, 0, 0, 0);
@@ -496,6 +510,7 @@ begin
   //Удалить объекты
   FThread.Free;
   FGraphicShell.Free;
+  FEventList.Free;
   FGraphic.Done;
   FGraphic.Free;
   FGraphicInner.Free;

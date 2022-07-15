@@ -432,9 +432,6 @@ begin
   //Изменить флаг работы
   FWorking := False;
 
-  //Очистить список элементов графики
-  FExtensionGraphic.LayerList.Clear;
-
   //Разбудить основной поток
   FEventManager.Publish(TsgeEventBase.Create(''));
 end;
