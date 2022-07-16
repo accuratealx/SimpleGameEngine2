@@ -111,7 +111,12 @@ begin
   //Alpha
   ParamName := 'Alpha';
   if Data.Exist[ParamName] then
-    SetAlpha(Data.GetValue(ParamName, 1.0));
+    SetAlpha(Data.GetValue(ParamName, FAlpha));
+
+  //Scale
+  ParamName := 'Scale';
+  if Data.Exist[ParamName] then
+    SetScale(Data.GetValue(ParamName, FScale));
 
   //Background
   FBackground.LoadParameters(Data, 'Background.');
