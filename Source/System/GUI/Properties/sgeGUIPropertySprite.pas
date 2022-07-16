@@ -178,7 +178,7 @@ begin
   BaseWidth := TsgeGUIElementHack(FOwner).FWidth;
   BaseHeight := TsgeGUIElementHack(FOwner).FHeight;
 
-  //Подготовить стандартныйе настройки вывода
+  //Подготовить стандартные настройки вывода
   DrawOpt := DefaultDrawOptions;
 
   //Установить спрайт

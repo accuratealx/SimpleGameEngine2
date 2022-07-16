@@ -65,15 +65,15 @@ type
 
   //Опции вывода
   TsgeGraphicDrawOptions = record
-    Rect: TsgeFloatRect;                          //Координаты вывода примитива
-  	CoordinateType: TsgeGraphicCoordinateType;    //Тип координат
-  	Angle: Single;                                //Угол поворота
-  	AnglePoint: TsgeFloatPoint;                   //Точка поворота
-    Scale: TsgeFloatPoint;                        //Масштаб вывода
-    TransparentColor: TsgeColor;                  //Цвет прозрачности
-  	Reflect: TsgeGraphicReflectTypes;             //Режим отражения
-  	SpriteRect: TsgeFloatRect;                    //Координаты спрайта
-    Sprite: TsgeGraphicSprite;                    //Указатель на спрайт
+    Rect: TsgeFloatRect;                                            //Координаты вывода примитива
+  	CoordinateType: TsgeGraphicCoordinateType;                      //Тип координат
+  	Angle: Single;                                                  //Угол поворота
+  	AnglePoint: TsgeFloatPoint;                                     //Точка поворота
+    Scale: TsgeFloatPoint;                                          //Масштаб вывода
+    TransparentColor: TsgeColor;                                    //Цвет прозрачности
+  	Reflect: TsgeGraphicReflectTypes;                               //Режим отражения
+  	SpriteRect: TsgeFloatRect;                                      //Координаты спрайта
+    Sprite: TsgeGraphicSprite;                                      //Указатель на спрайт
   end;
 
 
