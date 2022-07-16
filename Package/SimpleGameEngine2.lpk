@@ -15,7 +15,7 @@
     </CompilerOptions>
     <Description Value="Simple Game Engine 2"/>
     <Version Major="1"/>
-    <Files Count="244">
+    <Files Count="246">
       <Item1>
         <Filename Value="..\Source\ThirdParty\GDIPlus\GDIPAPI.pas"/>
         <UnitName Value="GDIPAPI"/>
@@ -930,73 +930,81 @@
         <UnitName Value="sgeGUIScrollBar"/>
       </Item227>
       <Item228>
-        <Filename Value="..\Source\System\GUI\sgeGUITypes.pas"/>
-        <UnitName Value="sgeGUITypes"/>
-      </Item228>
-      <Item229>
         <Filename Value="..\Source\System\sgeCursor.pas"/>
         <UnitName Value="sgeCursor"/>
-      </Item229>
-      <Item230>
+      </Item228>
+      <Item229>
         <Filename Value="..\Source\System\Extension\sgeExtensionCursor.pas"/>
         <UnitName Value="sgeExtensionCursor"/>
-      </Item230>
-      <Item231>
+      </Item229>
+      <Item230>
         <Filename Value="..\Source\System\ShellCommands\sgeShellCommand_CommandHistory_Clear.pas"/>
         <UnitName Value="sgeShellCommand_CommandHistory_Clear"/>
-      </Item231>
-      <Item232>
+      </Item230>
+      <Item231>
         <Filename Value="..\Source\System\ShellCommands\sgeShellCommand_CommandHistory_Save.pas"/>
         <UnitName Value="sgeShellCommand_CommandHistory_Save"/>
-      </Item232>
-      <Item233>
+      </Item231>
+      <Item232>
         <Filename Value="..\Source\System\ShellCommands\sgeShellCommand_Music_Stop.pas"/>
         <UnitName Value="sgeShellCommand_Music_Stop"/>
-      </Item233>
-      <Item234>
+      </Item232>
+      <Item233>
         <Filename Value="..\Source\System\ShellCommands\sgeShellCommand_Script_Load.pas"/>
         <UnitName Value="sgeShellCommand_Script_Load"/>
-      </Item234>
-      <Item235>
+      </Item233>
+      <Item234>
         <Filename Value="..\Source\System\KeyCommand\sgeKeyCommandMouseAction.pas"/>
         <UnitName Value="sgeKeyCommandMouseAction"/>
-      </Item235>
-      <Item236>
+      </Item234>
+      <Item235>
         <Filename Value="..\Source\System\KeyCommand\sgeKeyCommandMouseActionList.pas"/>
         <UnitName Value="sgeKeyCommandMouseActionList"/>
-      </Item236>
-      <Item237>
+      </Item235>
+      <Item236>
         <Filename Value="..\Source\System\KeyCommand\sgeKeyCommandKeyboardAction.pas"/>
         <UnitName Value="sgeKeyCommandKeyboardAction"/>
-      </Item237>
-      <Item238>
+      </Item236>
+      <Item237>
         <Filename Value="..\Source\System\KeyCommand\sgeKeyCommandKeyboardActionList.pas"/>
         <UnitName Value="sgeKeyCommandKeyboardActionList"/>
-      </Item238>
-      <Item239>
+      </Item237>
+      <Item238>
         <Filename Value="..\Source\System\Utils\sgeWindowsVersion.pas"/>
         <UnitName Value="sgeWindowsVersion"/>
-      </Item239>
-      <Item240>
+      </Item238>
+      <Item239>
         <Filename Value="..\Source\System\Base\sgeMatch.pas"/>
         <UnitName Value="sgeMatch"/>
-      </Item240>
-      <Item241>
+      </Item239>
+      <Item240>
         <Filename Value="..\Source\System\Base\sgeMatchMask.pas"/>
         <UnitName Value="sgeMatchMask"/>
-      </Item241>
-      <Item242>
+      </Item240>
+      <Item241>
         <Filename Value="..\Source\System\ShellCommands\sgeShellCommand_System_Stop.pas"/>
         <UnitName Value="sgeShellCommand_System_Stop"/>
-      </Item242>
-      <Item243>
+      </Item241>
+      <Item242>
         <Filename Value="..\Source\System\Graphic\sgeGraphicElementFade.pas"/>
         <UnitName Value="sgeGraphicElementFade"/>
-      </Item243>
-      <Item244>
+      </Item242>
+      <Item243>
         <Filename Value="..\Source\System\sgeCorePointerUtils.pas"/>
         <UnitName Value="sgeCorePointerUtils"/>
+      </Item243>
+      <Item244>
+        <Filename Value="..\Source\System\GUI\Properties\sgeGUIPropertyStipple.pas"/>
+        <UnitName Value="sgeGUIPropertyStipple"/>
       </Item244>
+      <Item245>
+        <Filename Value="..\Source\System\GUI\Properties\sgeGUIPropertyBorder.pas"/>
+        <UnitName Value="sgeGUIPropertyBorder"/>
+      </Item245>
+      <Item246>
+        <Filename Value="..\Source\System\GUI\Components\sgeGUIRect.pas"/>
+        <UnitName Value="sgeGUIRect"/>
+      </Item246>
     </Files>
     <CompatibilityMode Value="True"/>
     <UsageOptions>

@@ -79,13 +79,13 @@ uses
   sgeShellCommand_Music_Play, sgeShellCommand_Music_Prev, 
   sgeShellCommand_CommandHistory_Load, sgeShellCommand_Command_List, 
   sgeGUIPropertyFont, sgeGUILabel, sgeGUIPropertyLabel, sgeGUIScrollBar, 
-  sgeGUITypes, sgeCursor, sgeExtensionCursor, 
-  sgeShellCommand_CommandHistory_Clear, sgeShellCommand_CommandHistory_Save, 
-  sgeShellCommand_Music_Stop, sgeShellCommand_Script_Load, 
-  sgeKeyCommandMouseAction, sgeKeyCommandMouseActionList, 
-  sgeKeyCommandKeyboardAction, sgeKeyCommandKeyboardActionList, 
-  sgeWindowsVersion, sgeMatch, sgeMatchMask, sgeShellCommand_System_Stop, 
-  sgeGraphicElementFade, sgeCorePointerUtils;
+  sgeCursor, sgeExtensionCursor, sgeShellCommand_CommandHistory_Clear, 
+  sgeShellCommand_CommandHistory_Save, sgeShellCommand_Music_Stop, 
+  sgeShellCommand_Script_Load, sgeKeyCommandMouseAction, 
+  sgeKeyCommandMouseActionList, sgeKeyCommandKeyboardAction, 
+  sgeKeyCommandKeyboardActionList, sgeWindowsVersion, sgeMatch, sgeMatchMask, 
+  sgeShellCommand_System_Stop, sgeGraphicElementFade, sgeCorePointerUtils, 
+  sgeGUIPropertyStipple, sgeGUIPropertyBorder, sgeGUIRect;
 
 implementation
 
