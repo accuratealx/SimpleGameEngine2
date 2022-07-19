@@ -135,6 +135,7 @@ procedure TsgeExtensionGraphic.InitGraphic;
 begin
   FGraphicInner.Init;
   FGraphicInner.Activate;
+  FGraphic.ChangeViewArea(100, 100);
 end;
 
 
