@@ -16,7 +16,7 @@ unit sgeGUIRect;
 interface
 
 uses
-  sgeSimpleParameters, sgeGraphicColor,
+  sgeSimpleParameters,
   sgeGUIElement, sgeGUIPropertyColor, sgeGUIPropertyBorder;
 
 
