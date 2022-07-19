@@ -15,7 +15,7 @@ unit sgeGUIElement;
 interface
 
 uses
-  sgeSystemUtils,
+  sgeSystemUtils, sgeSystemConsole,
   sgeTypes, sgeSimpleParameters, sgeSimpleContainer, sgeTemplateCollection,
   sgeGraphicSprite, sgeGraphicColor,
   sgeEventBase, sgeEventKeyboard, sgeEventMouse,
@@ -389,7 +389,7 @@ begin
 
   //Масштаб можно менять только у формы
   if FParent <> nil then
-    Result := FParent.FScale;
+    Result := FParent.GetScale;
 end;
 
 
@@ -912,9 +912,25 @@ begin
   if not FVisible or not FEnable then
     Exit;
 
-  //Поправить координаты относительно текущего элемента
-  Pt := GetGlobalPos;
-  LocalMouse := TsgeEventMouse.Create(Mouse.Name, Mouse.X - Pt.X, Mouse.Y - Pt.Y, Mouse.MouseButtons, Mouse.KeyboardButtons, Mouse.Delta);
+  //Изменить координаты мыши под текущий элемент
+  if FParent = nil then
+  begin
+    Pt := GetGlobalPos;
+    LocalMouse := TsgeEventMouse.Create(Mouse.Name, Mouse.X - Pt.X, Mouse.Y - Pt.Y, Mouse.MouseButtons, Mouse.KeyboardButtons, Mouse.Delta);
+  end
+  else
+  begin
+    //Отмасштабировать координаты по внутренним элементам
+    Pt := GetGlobalPos;
+    LocalMouse := TsgeEventMouse.Create(Mouse.Name, Mouse.X - Pt.X, Mouse.Y - Pt.Y, Mouse.MouseButtons, Mouse.KeyboardButtons, Mouse.Delta);
+  end;
+
+
+  SystemConsole.WriteLn('Name=' + FName);
+  SystemConsole.WriteLn('  GlobalPos=[' + sgeIntToStr(Pt.X) + ', ' + sgeIntToStr(Pt.Y) + ']');
+  SystemConsole.WriteLn('  MousePos =[' + sgeIntToStr(Mouse.X) + ', ' + sgeIntToStr(Mouse.Y) + ']');
+  SystemConsole.WriteLn('  LocalPos =[' + sgeIntToStr(LocalMouse.X) + ', ' + sgeIntToStr(LocalMouse.Y) + ']');
+  SystemConsole.WriteLn('  Scale    = ' + sgeFloatToStr(GetScale));
 
   try
     //Обработать событие
@@ -1084,12 +1100,21 @@ end;
 function TsgeGUIElement.PointInElement(X, Y: Integer): Boolean;
 var
   Pt: TsgeIntPoint;
+  Scale: Single;
+  W, H: Integer;
 begin
   //Глобальные координаты c учётом масштаба
   Pt := GetGlobalPos;
 
+  //Масштаб
+  Scale := GetScale;
+
+  //Размеры элементы
+  W := Round(FWidth * Scale);
+  H := Round(FHeight * Scale);
+
   //Проверить попадание
-  Result := (X >= Pt.X) and (X <= Pt.X + GetScaleWidth) and (Y >= Pt.Y) and (Y <= Pt.Y + GetScaleHeight);
+  Result := (X >= Pt.X) and (X <= Pt.X + W) and (Y >= Pt.Y) and (Y <= Pt.Y + H);
 end;
 
 
@@ -1105,8 +1130,41 @@ function TsgeGUIElement.GetGlobalPos: TsgeIntPoint;
 var
   Pt: TsgeIntPoint;
   Scale: Single;
+  E, P: TsgeGUIElement;
 begin
+  if FParent = nil then
+    Result := sgeGetIntPoint(FLeft, FTop)
+  else
+  begin
+    //Координаты текущего элемента
+    Pt := sgeGetIntPoint(FLeft, FTop);
+
+    //Ссылка на родителя
+    E := FParent;
+    while E <> nil do
+    begin
+      //Прибавить смещение родителя
+      Pt.X := Pt.X + E.Left;
+      Pt.Y := Pt.Y + E.Top;
+
+      //Следующий родитель
+      E := E.FParent;
+    end;
+
+    //Отнять смещение формы
+    P := GetTopParent;
+    Pt.X := Pt.X - P.Left;
+    Pt.Y := Pt.Y - P.Top;
+
+    Scale := GetScale;
+    Result.X := P.Left + Round(Pt.X * Scale);
+    Result.Y := P.Top + Round(Pt.Y * Scale);
+  end;
+
+
+
   //Значение по умолчанию
+  {
   Result := sgeGetIntPoint(FLeft, FTop);
 
   //Проверить родителя
@@ -1114,9 +1172,11 @@ begin
   begin
     Pt := FParent.GetGlobalPos;
     Scale := GetScale;
+    Scale := 1;
     Result.X := Round(FLeft * Scale) + Pt.X;
     Result.Y := Round(FTop * Scale) + Pt.Y;
   end;
+  }
 end;
 
 
