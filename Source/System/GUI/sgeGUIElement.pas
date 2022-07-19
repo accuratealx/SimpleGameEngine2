@@ -1160,23 +1160,6 @@ begin
     Result.X := P.Left + Round(Pt.X * Scale);
     Result.Y := P.Top + Round(Pt.Y * Scale);
   end;
-
-
-
-  //Значение по умолчанию
-  {
-  Result := sgeGetIntPoint(FLeft, FTop);
-
-  //Проверить родителя
-  if FParent <> nil then
-  begin
-    Pt := FParent.GetGlobalPos;
-    Scale := GetScale;
-    Scale := 1;
-    Result.X := Round(FLeft * Scale) + Pt.X;
-    Result.Y := Round(FTop * Scale) + Pt.Y;
-  end;
-  }
 end;
 
 
