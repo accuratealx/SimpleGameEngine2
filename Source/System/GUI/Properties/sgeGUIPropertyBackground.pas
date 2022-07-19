@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGUIPropertyBackground.pas
-Версия            1.1
+Версия            1.2
 Создан            22.09.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          GUI: Свойство: Фон элемента
@@ -15,7 +15,7 @@ unit sgeGUIPropertyBackground;
 interface
 
 uses
-  sgeSimpleParameters,
+  sgeTypes, sgeSimpleParameters,
   sgeGUIProperty, sgeGUIPropertyColor, sgeGUIPropertyGradient, sgeGUIPropertySprite;
 
 
@@ -50,10 +50,10 @@ type
   end;
 
 
-  TsgeGUIBackgroundExt = class(TsgeGUIPropertyBackground)
+  TsgeGUIPropertyBackgroundExt = class(TsgeGUIPropertyBackground)
   public
     procedure LoadParameters(Parameters: TsgeSimpleParameters; Prefix: String = '');
-    procedure Draw;
+    procedure Draw(Rect: TsgeFloatRect);
   end;
 
 
@@ -112,7 +112,7 @@ begin
 end;
 
 
-procedure TsgeGUIBackgroundExt.LoadParameters(Parameters: TsgeSimpleParameters; Prefix: String);
+procedure TsgeGUIPropertyBackgroundExt.LoadParameters(Parameters: TsgeSimpleParameters; Prefix: String);
 var
   ParamName, s: String;
 begin
@@ -142,19 +142,19 @@ begin
 end;
 
 
-procedure TsgeGUIBackgroundExt.Draw;
+procedure TsgeGUIPropertyBackgroundExt.Draw(Rect: TsgeFloatRect);
 begin
   if FOwner = nil then Exit;
 
   case FType of
     pbtColor:
-      FColor.Draw;
+      FColor.Draw(Rect);
 
     pbtGradient:
-      FGradient.Draw;
+      FGradient.Draw(Rect);
 
     pbtSprite:
-      FSprite.Draw;
+      FSprite.Draw(Rect);
   end;
 end;
 

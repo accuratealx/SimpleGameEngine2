@@ -15,7 +15,7 @@ unit sgeGUIPropertySprite;
 interface
 
 uses
-  sgeSimpleParameters,
+  sgeTypes, sgeSimpleParameters,
   sgeGraphicSprite,
   sgeGUIProperty, sgeGUIPropertyScaleXY, sgeGUIPropertyHorizontalAlign, sgeGUIPropertyVerticalAlign,
   sgeGUIPropertySpriteRect, sgeGUIPropertyDrawMethod;
@@ -56,7 +56,7 @@ type
   TsgeGUIPropertySpriteExt = class(TsgeGUIPropertySprite)
   public
     procedure LoadParameters(Parameters: TsgeSimpleParameters; Prefix: String = '');
-    procedure Draw;
+    procedure Draw(Rect: TsgeFloatRect);
   end;
 
 
@@ -64,11 +64,8 @@ implementation
 
 uses
   sgeCorePointerUtils,
-  sgeTypes, sgeGraphic,
+  sgeGraphic,
   sgeGUIElement;
-
-type
-  TsgeGUIElementHack = class(TsgeGUIElement);
 
 
 procedure TsgeGUIPropertySprite.SetSprite(ASprite: TsgeGraphicSprite);
@@ -165,7 +162,7 @@ begin
 end;
 
 
-procedure TsgeGUIPropertySpriteExt.Draw;
+procedure TsgeGUIPropertySpriteExt.Draw(Rect: TsgeFloatRect);
 var
   DrawOpt: TsgeGraphicDrawOptions;
   BaseWidth, BaseHeight: Integer;
@@ -175,8 +172,8 @@ begin
     Exit;
 
   //Определить размеры элемента
-  BaseWidth := TsgeGUIElementHack(FOwner).FWidth;
-  BaseHeight := TsgeGUIElementHack(FOwner).FHeight;
+  BaseWidth := Round(Rect.X2 - Rect.X1);
+  BaseHeight := Round(Rect.Y2 - Rect.Y1);
 
   //Подготовить стандартные настройки вывода
   DrawOpt := DefaultDrawOptions;
@@ -189,8 +186,8 @@ begin
   Size := FScale.GetSize(BaseWidth, BaseHeight, FSprite.Width, FSprite.Height);
 
   //Поправить область вывода
-  DrawOpt.Rect.X1 := FHorizontalAlign.GetOffset(BaseWidth, Size.X);
-  DrawOpt.Rect.Y1 := FVerticalAlign.GetOffset(BaseHeight, Size.Y);
+  DrawOpt.Rect.X1 := Rect.X1 + FHorizontalAlign.GetOffset(BaseWidth, Size.X);
+  DrawOpt.Rect.Y1 := Rect.Y1 + FVerticalAlign.GetOffset(BaseHeight, Size.Y);
   DrawOpt.Rect.X2 := DrawOpt.Rect.X1 + Size.X;
   DrawOpt.Rect.Y2 := DrawOpt.Rect.Y1 + Size.Y;
 

@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGUIPropertyColor.pas
-Версия            1.0
+Версия            1.1
 Создан            30.09.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          GUI: Свойство: Цвет
@@ -15,7 +15,7 @@ unit sgeGUIPropertyColor;
 interface
 
 uses
-  sgeSimpleParameters,
+  sgeTypes, sgeSimpleParameters,
   sgeGraphicColor,
   sgeGUIProperty;
 
@@ -45,7 +45,7 @@ type
   TsgeGUIPropertyColorExt = class(TsgeGUIPropertyColor)
   public
     procedure LoadParameters(Parameters: TsgeSimpleParameters; Prefix: String = '');
-    procedure Draw;
+    procedure Draw(Rect: TsgeFloatRect);
   end;
 
 
@@ -53,7 +53,7 @@ implementation
 
 uses
   sgeCorePointerUtils,
-  sgeGraphicColorUtils;
+  sgeGraphic, sgeGraphicColorUtils;
 
 
 procedure TsgeGUIPropertyColor.CheckValue(var Value: Single);
@@ -133,12 +133,14 @@ begin
 end;
 
 
-procedure TsgeGUIPropertyColorExt.Draw;
+procedure TsgeGUIPropertyColorExt.Draw(Rect: TsgeFloatRect);
 begin
-  with sgeCorePointer_GetSGE.ExtGraphic.Graphic do
+  with sgeCorePointer_GetSGE.ExtGraphic do
   begin
-    BGColor := FColor;
-    EraseBG;
+    Graphic.Color := FColor;
+    Graphic.PoligonMode := gpmFill;
+    Graphic.doCoordinateType := gctClassic;
+    Graphic.DrawRect(Rect);
   end;
 end;
 

@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGUIPropertyGradient.pas
-Версия            1.1
+Версия            1.2
 Создан            22.09.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          GUI: Свойство: Градиентная заливка
@@ -15,7 +15,7 @@ unit sgeGUIPropertyGradient;
 interface
 
 uses
-  sgeSimpleParameters,
+  sgeTypes, sgeSimpleParameters,
   sgeGUIProperty, sgeGUIPropertyColor;
 
 
@@ -45,7 +45,7 @@ type
   TsgeGUIPropertyGradientExt = class(TsgeGUIPropertyGradient)
   public
     procedure LoadParameters(Parameters: TsgeSimpleParameters; Prefix: String = '');
-    procedure Draw;
+    procedure Draw(Rect: TsgeFloatRect);
   end;
 
 
@@ -53,11 +53,7 @@ implementation
 
 uses
   sgeCorePointerUtils,
-  sgeGraphic, sgeGraphicColor,
-  sgeGUIElement;
-
-type
-  TsgeGUIElementExtended = class(TsgeGUIElement);
+  sgeGraphic, sgeGraphicColor;
 
 
 function TsgeGUIPropertyGradient.GetTopLeft: TsgeGUIPropertyColor;
@@ -122,20 +118,17 @@ begin
 end;
 
 
-procedure TsgeGUIPropertyGradientExt.Draw;
+procedure TsgeGUIPropertyGradientExt.Draw(Rect: TsgeFloatRect);
 var
   Col: TsgeQuadColor;
-  W, H: Single;
 begin
   Col := sgeGetQuadColor(FTopLeft.Color, FBottomLeft.Color, FBottomRight.Color, FTopRight.Color);
-  W := TsgeGUIElementExtended(FOwner).FWidth;
-  H := TsgeGUIElementExtended(FOwner).FHeight;
 
   with sgeCorePointer_GetSGE.ExtGraphic.Graphic do
   begin
-    doCoordinateType := gctNormal;
-    DrawRectGradient(0, 0, W, H, Col);
-  end;
+    doCoordinateType := gctClassic;
+    DrawRectGradient(Rect, Col);
+  end
 end;
 
 
