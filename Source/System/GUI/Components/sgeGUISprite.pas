@@ -16,7 +16,7 @@ unit sgeGUISprite;
 interface
 
 uses
-  sgeSimpleParameters,
+  sgeTypes, sgeSimpleParameters,
   sgeGUIElement, sgeGUIPropertySprite;
 
 
@@ -69,7 +69,7 @@ end;
 
 procedure TsgeGUISprite.DrawBefore;
 begin
-  FSprite.Draw;
+  FSprite.Draw(sgeGetFloatRect(0, 0, FWidth, FHeight));
 end;
 
 
