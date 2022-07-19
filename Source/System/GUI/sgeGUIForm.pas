@@ -23,11 +23,10 @@ uses
 type
   TsgeGUIForm = class(TsgeGUIElement)
   private
-    FAlpha: Single;                                                 //Прозрачность элемента
-
     FGraphicElement: TsgeGraphicElementSpriteCashed;                //Элемент отрисовки
 
-    FBackground: TsgeGUIBackgroundExt;                              //Фон
+    FAlpha: Single;                                                 //Прозрачность элемента
+    FBackground: TsgeGUIPropertyBackgroundExt;                      //Фон
 
     function  GetBackground: TsgeGUIPropertyBackground;
   protected
@@ -41,16 +40,17 @@ type
     procedure SetScale(AScale: Single); override;
     procedure SetTop(ATop: Integer); override;
     procedure SetLeft(ALeft: Integer); override;
+
   public
     constructor Create(AName: String; ALeft, ATop, AWidth, AHeight: Integer; AParent: TsgeGUIElement = nil); override;
     destructor  Destroy; override;
 
     procedure Draw; override;
-
-    property Alpha: Single read FAlpha write SetAlpha;
-    property Scale: Single read GetScale write SetScale;
+    procedure BringToFront;
 
     property Background: TsgeGUIPropertyBackground read GetBackground;
+    property Alpha: Single read FAlpha write SetAlpha;
+    property Scale: Single read GetScale write SetScale;
   end;
 
 
@@ -125,7 +125,7 @@ end;
 
 procedure TsgeGUIForm.DrawBefore;
 begin
-  FBackground.Draw;
+  FBackground.Draw(sgeGetFloatRect(0, 0, FWidth, FHeight));
 end;
 
 
@@ -155,11 +155,7 @@ procedure TsgeGUIForm.SetFocused(AFocused: Boolean);
 begin
   inherited SetFocused(AFocused);
 
-  //Изменить Z-Index в списке форм
-  sgeCorePointer_GetSGE.ExtGUI.FormList.ToTopIndex(Self);
-
-  //Поместить графический элемент в конец списка
-  sgeCorePointer_GetSGE.ExtGraphic.LayerList.MoveElementToListEnd(FGraphicElement, Graphic_Layer_System_GUI);
+  BringToFront;
 end;
 
 
@@ -178,7 +174,7 @@ begin
   sgeCorePointer_GetSGE.ExtGraphic.LayerList.AddElement(FGraphicElement, Graphic_Layer_System_GUI);
 
   //Создать свойство фона
-  FBackground := TsgeGUIBackgroundExt.Create(Self);
+  FBackground := TsgeGUIPropertyBackgroundExt.Create(Self);
 
   //Перерисовать форму
   Repaint;
@@ -218,6 +214,16 @@ begin
     FGraphicElement.H := FHeight;
     FGraphicElement.Update;
   end;
+end;
+
+
+procedure TsgeGUIForm.BringToFront;
+begin
+  //Изменить Z-Index в списке форм
+  sgeCorePointer_GetSGE.ExtGUI.FormList.ToTopIndex(Self);
+
+  //Поместить графический элемент в конец списка
+  sgeCorePointer_GetSGE.ExtGraphic.LayerList.MoveElementToListEnd(FGraphicElement, Graphic_Layer_System_GUI);
 end;
 
 
