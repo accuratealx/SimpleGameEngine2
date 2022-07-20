@@ -64,8 +64,7 @@ implementation
 
 uses
   sgeCorePointerUtils,
-  sgeGraphic,
-  sgeGUIElement;
+  sgeGraphic;
 
 
 procedure TsgeGUIPropertySprite.SetSprite(ASprite: TsgeGraphicSprite);

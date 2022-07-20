@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGUIElement.pas
-Версия            1.0
+Версия            1.1
 Создан            04.09.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          GUI: Базовый элемент
@@ -15,7 +15,7 @@ unit sgeGUIElement;
 interface
 
 uses
-  sgeSystemUtils, sgeSystemConsole,
+  sgeSystemUtils,
   sgeTypes, sgeSimpleParameters, sgeSimpleContainer, sgeTemplateCollection,
   sgeGraphicSprite, sgeGraphicColor,
   sgeEventBase, sgeEventKeyboard, sgeEventMouse,
@@ -309,8 +309,8 @@ begin
   FEnable := AEnabled;
 
   //Если элемент неактивен, то убрать монопольный захват мыши
-  {if not FEnable then
-    SGE.ExtGUI.ReleaseMouse(Self);}
+  if not FEnable then
+    sgeCorePointer_GetSGE.ExtGUI.ReleaseMouse(Self);
 
   Repaint;
 end;
@@ -907,30 +907,31 @@ procedure TsgeGUIElement.MouseHandler(EventType: TsgeGUIElementMouseEventType; M
 var
   LocalMouse: TsgeEventMouse;
   Pt: TsgeIntPoint;
+  X, Y: Integer;
+  Scale: Single;
 begin
   //Если неактивен, то выход
   if not FVisible or not FEnable then
     Exit;
 
+  //Реальное положение на экране
+  Pt := GetGlobalPos;
+
   //Изменить координаты мыши под текущий элемент
   if FParent = nil then
   begin
-    Pt := GetGlobalPos;
-    LocalMouse := TsgeEventMouse.Create(Mouse.Name, Mouse.X - Pt.X, Mouse.Y - Pt.Y, Mouse.MouseButtons, Mouse.KeyboardButtons, Mouse.Delta);
+    X := Mouse.X - Pt.X;
+    Y := Mouse.Y - Pt.Y;
   end
   else
   begin
-    //Отмасштабировать координаты по внутренним элементам
-    Pt := GetGlobalPos;
-    LocalMouse := TsgeEventMouse.Create(Mouse.Name, Mouse.X - Pt.X, Mouse.Y - Pt.Y, Mouse.MouseButtons, Mouse.KeyboardButtons, Mouse.Delta);
+    Scale := GetScale;
+    X := Round((Mouse.X - Pt.X) / Scale);
+    Y := Round((Mouse.Y - Pt.Y) / Scale);
   end;
 
-
-  SystemConsole.WriteLn('Name=' + FName);
-  SystemConsole.WriteLn('  GlobalPos=[' + sgeIntToStr(Pt.X) + ', ' + sgeIntToStr(Pt.Y) + ']');
-  SystemConsole.WriteLn('  MousePos =[' + sgeIntToStr(Mouse.X) + ', ' + sgeIntToStr(Mouse.Y) + ']');
-  SystemConsole.WriteLn('  LocalPos =[' + sgeIntToStr(LocalMouse.X) + ', ' + sgeIntToStr(LocalMouse.Y) + ']');
-  SystemConsole.WriteLn('  Scale    = ' + sgeFloatToStr(GetScale));
+  //Локальный объект события мыши
+  LocalMouse := TsgeEventMouse.Create(Mouse.Name, X, Y, Mouse.MouseButtons, Mouse.KeyboardButtons, Mouse.Delta);
 
   try
     //Обработать событие
@@ -1156,7 +1157,10 @@ begin
     Pt.X := Pt.X - P.Left;
     Pt.Y := Pt.Y - P.Top;
 
+    //Масштаб
     Scale := GetScale;
+
+    //Результат
     Result.X := P.Left + Round(Pt.X * Scale);
     Result.Y := P.Top + Round(Pt.Y * Scale);
   end;
