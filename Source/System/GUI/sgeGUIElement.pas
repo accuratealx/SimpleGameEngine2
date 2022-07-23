@@ -962,10 +962,10 @@ begin
           //Событие OnClick
           if FPressed then
             Handler_MouseClick(LocalMouse);
-
-          //Обработчик отпускания мыши
-          Handler_MouseUp(LocalMouse);
         end;
+
+        //Обработчик отпускания мыши
+        Handler_MouseUp(LocalMouse);
 
         //Сбросить флаг нажатия
         FPressed := False;
