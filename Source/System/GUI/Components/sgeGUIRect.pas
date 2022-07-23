@@ -47,7 +47,8 @@ type
 implementation
 
 uses
-  sgeCorePointerUtils;
+  sgeCorePointerUtils,
+  sgeGraphic;
 
 
 function TsgeGUIRect.GetBGColor: TsgeGUIPropertyColor;
@@ -93,6 +94,8 @@ begin
     Graphic.LineStipple := True;
     Graphic.LineWidth := FBorder.Width;
     Graphic.SetLineStipple(FBorder.Stipple.Scale, FBorder.Stipple.Mode);
+    Graphic.PoligonMode := gpmLine;
+    Graphic.DrawRect(0, 0, FWidth, FHeight);
   end;
 end;
 
