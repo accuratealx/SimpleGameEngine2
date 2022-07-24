@@ -19,8 +19,7 @@ uses
 
 
 type
-  TsgeEventList = class(specialize TsgeTemplateThreadSafeList<TsgeEventBase>)
-  end;
+  TsgeEventList = class(specialize TsgeTemplateThreadSafeList<TsgeEventBase>);
 
 
 implementation

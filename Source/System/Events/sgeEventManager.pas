@@ -99,7 +99,6 @@ var
   Idx, i: Integer;
   EventObj: TsgeEventBase;
   SubscriberList: TsgeEventSubscriberList;
-  HandlerResult: TsgeEventHandlerResult;
 begin
   //Ждём событие поднятия флага
   FEvent.Wait;
@@ -130,7 +129,6 @@ begin
 
         //Вызвать обработчик
         try
-
           if SubscriberList.Item[i].Handler(EventObj) = ehrBreak then
             Break;
 
