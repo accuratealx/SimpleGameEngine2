@@ -176,6 +176,7 @@ procedure TsgeGUISpriteButton.Handler_MouseDown(Mouse: TsgeEventMouse);
 begin
   if FPressed then
     FButtonState := bsPressed;
+
   Repaint;
 
   inherited Handler_MouseDown(Mouse);
@@ -199,6 +200,7 @@ begin
 
   FSprite := sgeCorePointer_GetSGE.ExtResourceList.Default.Sprite;
 
+  FEnableDoubleClick := False;
   FButtonState := bsNormal;
   FColCount := 1;
 

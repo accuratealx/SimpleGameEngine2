@@ -70,6 +70,7 @@ type
     FClickButton: TsgeMouseButton;                                  //Кнопка мыши для Click
     FConstrains: TsgeGUIPropertyConstrainsExt;                      //Ограничение размеров
     FStyle: ShortString;                                            //Имя стиля
+    FEnableDoubleClick: Boolean;                                    //Доступность двойного клика
 
     //Вспомогательные параметры
     FPressed: Boolean;                                              //Флаг нажатия для Click
@@ -858,6 +859,7 @@ begin
   FScale := 1;
   FClickButton := mbLeft;
   FStyle := '';
+  FEnableDoubleClick := True;
 
   //Создать объекты
   FCanvas := TsgeGraphicSprite.Create(Width, Height, cTransparentWhite);
@@ -980,7 +982,12 @@ begin
 
       emetDblClick:
         if PointInElement(Mouse.X, Mouse.Y) then
-          Handler_MouseDoubleClick(LocalMouse);
+        begin
+          if FEnableDoubleClick then
+            Handler_MouseDoubleClick(LocalMouse)
+          else
+            MouseHandler(emetDown, Mouse);
+        end;
 
       emetLeave:
         Handler_MouseLeave(LocalMouse);

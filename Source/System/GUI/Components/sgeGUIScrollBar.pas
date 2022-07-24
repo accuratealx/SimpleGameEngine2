@@ -51,11 +51,13 @@ type
 
     //Обработчики
     FOnScroll: TsgeGUIProcScrollbarScroll;
-    //FOnStartDrag
-    //FOnStopDrag
+    FOnStartScroll: TsgeGUIProcEvent;
+    FOnStopScroll: TsgeGUIProcEvent;
 
     //Обёртки дополнительных обработчиков
     procedure Handler_OnScroll(OldValue, NewValue: Integer);
+    procedure Handler_OnStartScroll;
+    procedure Handler_OnStopScroll;
 
     //Вспомогательные методы
     function GetValueRange: Integer;                                //Получить общий диапазон изменений
@@ -68,8 +70,6 @@ type
     function IsMouseInRightBySlider(X, Y: Integer): Boolean;        //Проверить нахождение мыши справа от ползунка
 
     //Свойства
-    //procedure SetWidth(AWidth: Integer); override;
-    //procedure SetHeight(AHeight: Integer); override;
     procedure Handler_MouseDown(Mouse: TsgeEventMouse); override;
     procedure Handler_MouseUp(Mouse: TsgeEventMouse); override;
     procedure Handler_MouseMove(Mouse: TsgeEventMouse); override;
@@ -77,16 +77,16 @@ type
     procedure Handler_ButtonDown(Keyboard: TsgeEventKeyboard); override;
 
     procedure SetOrientation(AOrientation: TsgeGUIOrientation);
-    procedure SetPosition(APosition: Integer);                      //Изменить положение
-    procedure SetMin(AMin: Integer);                                //Изменить нижний порог
-    procedure SetMax(AMax: Integer);                                //Изменить верхний порог
-    procedure SetStep(AStep: Integer);                              //Изменить шаг по кнопке
-    procedure SetPageStep(ASize: Integer);                          //Изменить шаг страницы
+    procedure SetPosition(APosition: Integer);
+    procedure SetMin(AMin: Integer);
+    procedure SetMax(AMax: Integer);
+    procedure SetStep(AStep: Integer);
+    procedure SetPageStep(ASize: Integer);
     procedure SetSliderSize(ASize: Integer);
     procedure SetSliderMinSize(AMinSize: Integer);
     function  GetBackground: TsgeGUIPropertyBackground;
     function  GetSlider: TsgeGUIPropertyBackground;
-  protected
+
     class function GetParameterSectionName: String; override;
     procedure LoadData(Data: TsgeSimpleParameters); override;
     procedure DrawBefore; override;
@@ -107,6 +107,8 @@ type
     property SliderMinSize: Integer read FSliderMinSize write SetSliderMinSize;
 
     property OnScroll: TsgeGUIProcScrollbarScroll read FOnScroll write FOnScroll;
+    property OnStartScroll: TsgeGUIProcEvent read FOnStartScroll write FOnStartScroll;
+    property OnStopScroll: TsgeGUIProcEvent read FOnStopScroll write FOnStopScroll;
   end;
 
 
@@ -120,6 +122,20 @@ procedure TsgeGUIScrollBar.Handler_OnScroll(OldValue, NewValue: Integer);
 begin
   if Assigned(FOnScroll) then
     FOnScroll(Self, OldValue, NewValue);
+end;
+
+
+procedure TsgeGUIScrollBar.Handler_OnStartScroll;
+begin
+  if Assigned(FOnStartScroll) then
+    FOnStartScroll(Self);
+end;
+
+
+procedure TsgeGUIScrollBar.Handler_OnStopScroll;
+begin
+  if Assigned(FOnStopScroll) then
+    FOnStopScroll(Self);
 end;
 
 
@@ -235,10 +251,14 @@ begin
     //Проверить на Попадание в элемент
     if IsMouseInSliderRect(Mouse.X, Mouse.Y) then
     begin
+      //Сохранить параметры
       FMovePos := Mouse.Pos;
       FMoving := True;
       FMoveOffset := GetSliderPos;
       sgeCorePointer_GetSGE.ExtGUI.MouseCapture(Self);
+
+      //Пользовательский обработчик
+      Handler_OnStartScroll;
     end;
 
     //Слева от ползунка
@@ -256,7 +276,14 @@ end;
 
 procedure TsgeGUIScrollBar.Handler_MouseUp(Mouse: TsgeEventMouse);
 begin
-  FMoving := False;
+  if FMoving then
+  begin
+    FMoving := False;
+
+    //Пользовательский обработчик
+    Handler_OnStopScroll;
+  end;
+
   sgeCorePointer_GetSGE.ExtGUI.ReleaseMouse(Self);
 
   inherited Handler_MouseUp(Mouse);
@@ -541,6 +568,7 @@ begin
   FSlider := TsgeGUIPropertyBackgroundExt.Create(Self);
 
   //Свойства
+  FEnableDoubleClick := False;
   FOrientation := oHorizontal;
   FPosition := 0;
   FMin := 0;
