@@ -199,11 +199,6 @@ begin
     if FCount = 0 then
       Exit;
 
-    //Поправить параметры
-    FCount := 0;
-    FFirst := nil;
-    FLast := nil;
-
     //Пробежать по элементам
     P := FFirst;
     while P <> nil do
@@ -217,6 +212,11 @@ begin
       P := P^.Next;
       Dispose(D);
     end;
+
+    //Поправить параметры
+    FCount := 0;
+    FFirst := nil;
+    FLast := nil;
   finally
     FCS.Leave;
   end;
