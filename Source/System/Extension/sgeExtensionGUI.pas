@@ -103,6 +103,9 @@ implementation
 uses
   sgeErrors, sgeOSPlatform, sgeGUIForm;
 
+type
+  TsgeGUIElementExt = class(TsgeGUIElement);
+
 const
   _UNITNAME = 'ExtensionGSUI';
 
@@ -293,9 +296,9 @@ function TsgeExtensionGUI.ElementAtCursor(X, Y: Integer): TsgeGUIElement;
       Result := Element;
 
       //Проверить детей
-      for i := 0 to Element.ChildList.Count - 1 do
+      for i := 0 to TsgeGUIElementExt(Element).FChildList.Count - 1 do
       begin
-        E := ProcessElement(Element.ChildList.Item[i]);
+        E := ProcessElement(TsgeGUIElementExt(Element).FChildList.Item[i]);
         if E <> nil then
           Exit(E);
       end;

@@ -186,7 +186,7 @@ type
     property Height: Integer read FHeight write SetHeight;
     property Constrains: TsgeGUIPropertyConstrains read GetConstrains;
     property ClickButton: TsgeMouseButton read FClickButton write FClickButton;
-    property ChildList: TsgeGUIElementList read FChildList;
+    //property ChildList: TsgeGUIElementList read FChildList;
     property Style: ShortString read FStyle write SetStyle;
     property ScaleWidth: Integer read GetScaleWidth;
     property ScaleHeight: Integer read GetScaleHeight;
