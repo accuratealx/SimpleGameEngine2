@@ -247,7 +247,7 @@ procedure TsgeGUIScrollBar.Handler_MouseDown(Mouse: TsgeEventMouse);
 begin
   if (mbLeft in Mouse.MouseButtons) then
   begin
-    //Проверить на Попадание в элемент
+    //Проверить на попадание в элемент
     if IsMouseInSliderRect(Mouse.X, Mouse.Y) then
     begin
       //Сохранить параметры
@@ -279,11 +279,12 @@ begin
   begin
     FMoving := False;
 
+    //Освободить захват мыши
+    sgeCorePointer_GetSGE.ExtGUI.ReleaseMouse(Self);
+
     //Пользовательский обработчик
     Handler_OnStopScroll;
   end;
-
-  sgeCorePointer_GetSGE.ExtGUI.ReleaseMouse(Self);
 
   inherited Handler_MouseUp(Mouse);
 end;
