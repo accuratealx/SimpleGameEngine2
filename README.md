@@ -1,4 +1,6 @@
 # SimpleGameEngine2
-Simple 2D Game Engine
 
+## Многопоточный спрайтовый 2D игровой движок
+
+## Общее устройство
 ![Схема](https://github.com/accuratealx/SimpleGameEngine2/raw/master/Doc/Схема.svg)
