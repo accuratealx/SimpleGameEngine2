@@ -15,7 +15,7 @@
     </CompilerOptions>
     <Description Value="Simple Game Engine 2"/>
     <Version Major="1"/>
-    <Files Count="246">
+    <Files Count="247">
       <Item1>
         <Filename Value="..\Source\ThirdParty\GDIPlus\GDIPAPI.pas"/>
         <UnitName Value="GDIPAPI"/>
@@ -1005,6 +1005,10 @@
         <Filename Value="..\Source\System\GUI\Components\sgeGUIRect.pas"/>
         <UnitName Value="sgeGUIRect"/>
       </Item246>
+      <Item247>
+        <Filename Value="..\Source\System\GUI\Components\sgeGUISpriteView.pas"/>
+        <UnitName Value="sgeGUISpriteView"/>
+      </Item247>
     </Files>
     <CompatibilityMode Value="True"/>
     <UsageOptions>

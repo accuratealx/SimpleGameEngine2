@@ -85,7 +85,7 @@ uses
   sgeKeyCommandMouseActionList, sgeKeyCommandKeyboardAction, 
   sgeKeyCommandKeyboardActionList, sgeWindowsVersion, sgeMatch, sgeMatchMask, 
   sgeShellCommand_System_Stop, sgeGraphicElementFade, sgeCorePointerUtils, 
-  sgeGUIPropertyStipple, sgeGUIPropertyBorder, sgeGUIRect;
+  sgeGUIPropertyStipple, sgeGUIPropertyBorder, sgeGUIRect, sgeGUISpriteView;
 
 implementation
 
