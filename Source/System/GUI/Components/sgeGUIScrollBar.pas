@@ -450,8 +450,16 @@ procedure TsgeGUIScrollBar.SetSliderSize(ASize: Integer);
 begin
   if ASize < FSliderMinSize then
     ASize := FSliderMinSize;
-  if ASize > FWidth then
-    ASize := FWidth;
+  case FOrientation of
+    oHorizontal:
+      if ASize > FWidth then
+        ASize := FWidth;
+
+    oVertical:
+      if ASize > FHeight then
+        ASize := FHeight;
+  end;
+
   if FSliderSize = ASize then
     Exit;
 
