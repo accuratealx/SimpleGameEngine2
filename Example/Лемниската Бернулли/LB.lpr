@@ -17,7 +17,7 @@ type
     procedure ThreadProc;
 
   public
-    constructor Create(Options: TsgeInitOptions = InitOptionsAll); virtual;
+    constructor Create(Options: TsgeInitOptions = InitOptionsAll); override;
     destructor  Destroy; override;
   end;
 
@@ -112,12 +112,12 @@ begin
     end;
 
   //Поток изменения координат
-  THRD := TsgeThread.Create(@ThreadProc, False, False);
+  THRD := TsgeThread.Create('', @ThreadProc, False, False);
 
   //Настройка
   ExtGraphic.FPS.Enable := True;
   ExtGraphic.MaxFPS := 10000;
-  ExtWindow.Window.Caption := Utf8ToAnsi('Лемниската Бернули');
+  ExtWindow.Window.Caption := Utf8ToAnsi('Лемниската Бернулли');
   ExtWindow.Window.Center;
   ExtWindow.Window.Show;
 end;
