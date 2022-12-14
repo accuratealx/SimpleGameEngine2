@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeExtensionVariables.pas
-Версия            1.7
+Версия            1.8
 Создан            20.07.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс расширения: Переменные
@@ -16,6 +16,7 @@ unit sgeExtensionVariables;
 interface
 
 uses
+  sgeExtensionFileSystem,
   sgeExtensionBase, sgeVariableList, sgeGraphicColor,
   sgeVariableIntegerNormal, sgeVariableIntegerClass, sgeVariableIntegerProc,
   sgeVariableSingleNormal, sgeVariableSingleClass, sgeVariableSingleProc,
@@ -32,6 +33,8 @@ const
 type
   TsgeExtensionVariables = class(TsgeExtensionBase)
   private
+    FExtFileSystem: TsgeExtensionFileSystem;                  //Расширение: Файловая система
+
     FVariableList: TsgeVariableList;
 
     procedure CheckVariableExist(VarName: ShortString);
@@ -81,6 +84,9 @@ type
     procedure SetColor(Name: ShortString; Value: TsgeRGBA);
     procedure SetEnum(Name: ShortString; Value: String);
 
+    //Перечитать значения переменных из файла
+    procedure UpdateVariablesFromFile(FileName: String);
+
     //Классы
     property Variables: TsgeVariableList read FVariableList;
   end;
@@ -89,7 +95,7 @@ type
 implementation
 
 uses
-  sgeErrors, sgeSystemUtils, sgeGraphicColorUtils;
+  sgeErrors, sgeSimpleParameters, sgeSystemUtils, sgeGraphicColorUtils;
 
 
 const
@@ -118,6 +124,9 @@ constructor TsgeExtensionVariables.Create;
 begin
   try
     inherited Create;
+
+    //Получить ссылки на объекты
+    FExtFileSystem := TsgeExtensionFileSystem(GetExtension(Extension_FileSystem));
 
     FVariableList := TsgeVariableList.Create(True);
   except
@@ -398,10 +407,41 @@ var
   Idx: Integer;
 begin
   Idx := FVariableList.IndexOf(Name);
-  if Idx = -1 then                                                  //Если Enum с именем "Name" нет, то создать c одним значением
+  if Idx = -1 then
     AddEnum(Name, Value, Value, '', 0, False)
   else
     FVariableList.Item[Idx].StrValue := Value;
+end;
+
+
+procedure TsgeExtensionVariables.UpdateVariablesFromFile(FileName: String);
+var
+  Params: TsgeSimpleParameters;
+  i, Idx: Integer;
+  s: String;
+begin
+  //Читаем содержимое файла
+  s := '';
+  if FExtFileSystem.FileExists(FileName) then
+    s := FExtFileSystem.ReadFile(FileName);
+
+  //Разбираем на параметры
+  Params := TsgeSimpleParameters.Create('');
+  Params.FromString(s);
+
+  //Ищем совпадения
+  for i := 0 to Params.Count - 1 do
+  begin
+    //Ищем переменную в списке
+    Idx := FVariableList.IndexOf(Params.Parameter[i].Name);
+
+    //Если нашли совпадение, то обновить значение
+    if Idx <> - 1 then
+      FVariableList.Item[Idx].StrValue := Params.Parameter[i].Value;
+
+  end;
+
+  Params.Free;
 end;
 
 

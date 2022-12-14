@@ -57,7 +57,6 @@ type
 
     //Расширения
     FExtensionStartParameters: TsgeExtensionStartParameters;        //Расширение: Стартовые параметры
-    FExtensionVariables: TsgeExtensionVariables;                    //Расширение: Переменные
     FExtensionWindow: TsgeExtensionWindow;                          //Расширение: Окно
     FExtensionGraphic: TsgeExtensionGraphic;                        //Расширение: Графика
     FExtensionPackFiles: TsgeExtensionPackList;                     //Расширение: Файловые архивы
@@ -71,6 +70,7 @@ type
     FExtensionGUI: TsgeExtensionGUI;                                //Расширение: GUI
     FExtensionSound: TsgeExtensionSound;                            //Расширение: Звуковая система
     FExtensionMusicPlayer: TsgeExtensionMusicPlayer;                //Расширение: Музыкальный проигрыватель
+    FExtensionVariables: TsgeExtensionVariables;                    //Расширение: Переменные
 
 
     //Свойства
@@ -111,7 +111,6 @@ type
 
     //Расширения
     property ExtStartParameters: TsgeExtensionStartParameters read FExtensionStartParameters;
-    property ExtVariables: TsgeExtensionVariables read FExtensionVariables;
     property ExtWindow: TsgeExtensionWindow read FExtensionWindow;
     property ExtGraphic: TsgeExtensionGraphic read FExtensionGraphic;
     property ExtPackFiles: TsgeExtensionPackList read FExtensionPackFiles;
@@ -125,6 +124,7 @@ type
     property ExtSound: TsgeExtensionSound read FExtensionSound;
     property ExtMusicPlayer: TsgeExtensionMusicPlayer read FExtensionMusicPlayer;
     property ExtCursor: TsgeExtensionCursor read FExtensionCursor;
+    property ExtVariables: TsgeExtensionVariables read FExtensionVariables;
   end;
 
 
@@ -300,7 +300,6 @@ begin
     FExtensionStartParameters := TsgeExtensionStartParameters.Create;               //Стартовые параметры
     CheckStartParameter_Debug;                                                      //Проверить режим отладки
 
-    FExtensionVariables := TsgeExtensionVariables.Create;                           //Переменные
     FExtensionWindow := TsgeExtensionWindow.Create;                                 //Окно
     FExtensionGraphic := TsgeExtensionGraphic.Create;                               //Графика
     FExtensionPackFiles := TsgeExtensionPackList.Create;                            //Файловые архивы
@@ -308,10 +307,11 @@ begin
     FExtensionResourceList := TsgeExtensionResourceList.Create;                     //Список ресурсов
     FExtensionCursor := TsgeExtensionCursor.Create;                                 //Курсоры
     FExtensionControllers := TsgeExtensionControllers.Create;                       //Контроллеры
-    FExtensionShell := TsgeExtensionShell.Create;                                   //Оболочка
-    FExtensionKeyCommand := TsgeExtensionKeyCommand.Create;                         //Команда на кнопках
     FExtensionTimeEvent := TsgeExtensionTimeEvent.Create;                           //Таймерные события
     FExtensionGUI := TsgeExtensionGUI.Create;                                       //GUI
+    FExtensionVariables := TsgeExtensionVariables.Create;                           //Переменные
+    FExtensionShell := TsgeExtensionShell.Create;                                   //Оболочка
+    FExtensionKeyCommand := TsgeExtensionKeyCommand.Create;                         //Команда на кнопках
 
     if (ioSound in FInitOptions) and (not FExtensionStartParameters.Parameters.Exist[spNoSound]) then
     begin
