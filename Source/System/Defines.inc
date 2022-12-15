@@ -1,5 +1,6 @@
 //Определения
-{$Define SGE_DEBUG}
+{$Define SGE_DEBUG}       //Режим отладки
+//{$Define SGE_GUI_Bounds}  //Вывод рамки GUI елементов
 
 
 //Режим отладки
@@ -11,6 +12,3 @@
   {$Hints Off}
 {$EndIf}
 
-
-//Вывод рамки GUI елементов
-{$Define SGE_GUI_Bounds}

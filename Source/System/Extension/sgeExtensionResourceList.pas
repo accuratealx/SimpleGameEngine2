@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeExtensionResourceList.pas
-Версия            1.7
+Версия            1.8
 Создан            14.05.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс расширения: Список ресурсов
@@ -77,6 +77,7 @@ type
     procedure Command_LoadResource(Cmd: TsgeSimpleCommand; BaseDirectory: String = '');
     procedure Command_LoadTable(Cmd: TsgeSimpleCommand; BaseDirectory: String = '');
 
+    procedure GetMetaStringAndFileName(FileName: String; var Name, Meta: String);
   protected
     function GetName: String; override;
 
@@ -94,6 +95,8 @@ type
     function  GetContainer(Name: String): TsgeSimpleContainer;
     function  GetCursor(Name: String): TsgeCursor;
 
+    procedure LoadResourceFromFile(ResType: TsgeResourceType; FileName: String);  //Загрузка ресурса из файла с разбором метаинформации
+
     procedure FromString(Str: String; BaseDirectory: String = '');
     procedure FromMemoryStream(Stream: TsgeMemoryStream; BaseDirectory: String = '');
     procedure LoadFromFile(FileName: String);
@@ -101,7 +104,6 @@ type
     property ResourceList: TsgeResourceList read FResourceList;
     property Default: TsgeExtensionResourceDefault read FDefault;
   end;
-
 
 
 
@@ -312,7 +314,8 @@ begin
     raise EsgeException.Create(_UNITNAME, Err_DuplicateResource, nm);
 
   //Поправить базовый каталог
-  if BaseDirectory <> '' then BaseDirectory := sgeCheckPathDelimiter(BaseDirectory);
+  if BaseDirectory <> '' then
+    BaseDirectory := sgeCheckPathDelimiter(BaseDirectory);
 
   //Подготовить переменные
   ResObj := nil;
@@ -428,7 +431,6 @@ begin
       if ResObj <> nil then
         FResourceList.AddItem(nm, rt, ResObj, MetaObj, Group);
 
-
     except
       on E: EsgeException do
       begin
@@ -436,7 +438,6 @@ begin
         raise EsgeException.Create(E.Message);
       end;
     end;
-
 
   finally
     Stream.Free;
@@ -456,6 +457,32 @@ begin
 
   //Загрузить таблицу
   LoadFromFile(BaseDirectory + Cmd.Part[1]);
+end;
+
+
+procedure TsgeExtensionResourceList.GetMetaStringAndFileName(FileName: String; var Name, Meta: String);
+var
+  sName: String;
+  Idx1, Idx2: Integer;
+begin
+  //Имя файла без расширения
+  sName := sgeChangeFileExt(sgeExtractFileName(FileName), '');
+
+  //Значения по умолчанию
+  Name := sName;
+  Meta := '';
+
+  //Поиск метастроки
+  Idx1 := Pos('[', sName);
+  Idx2 := Pos(']', sName);
+
+  if (Idx1 <> 0) and (Idx2 <> 0) and (Idx1 < Idx2) then
+  begin
+    Meta := Copy(sName, Idx1 + 1, Idx2 - Idx1 - 1);                 //Выделить метастроку
+
+    Delete(Name, Idx1, Length(Name) - Idx1 + 1);                    //Удалить метастроку из имени
+    Name := sgeTrim(Name);                                          //Обрезать лишнее
+  end;
 end;
 
 
@@ -615,6 +642,35 @@ begin
 end;
 
 
+procedure TsgeExtensionResourceList.LoadResourceFromFile(ResType: TsgeResourceType; FileName: String);
+var
+  Cmd: TsgeSimpleCommand;
+  s, aName, aBasePath, aMetaStr, aResType: String;
+begin
+  //Тип ресурса
+  aResType := sgeResourceNames[ResType];
+
+  //Путь
+  aBasePath := sgeExtractFilePath(FileName);
+
+  //Разделить имя и метастроку
+  aName := '';
+  aMetaStr := '';
+  GetMetaStringAndFileName(FileName, aName, aMetaStr);
+
+  //Подготовить команду
+  s := rcLoadResource + #32 + aResType + #32#39 + aName + #39#32#39 + sgeExtractFileName(FileName) + #39#32'[' + aMetaStr + ']';
+
+  //Загрузить ресурс
+  Cmd := TsgeSimpleCommand.Create(s);
+  try
+    Command_LoadResource(Cmd, aBasePath);
+  finally
+    Cmd.Free;
+  end;
+end;
+
+
 procedure TsgeExtensionResourceList.FromString(Str: String; BaseDirectory: String);
 var
   Params: TsgeSimpleParameters;
@@ -666,7 +722,7 @@ begin
         end;
       except
         on E: EsgeException do
-          raise EsgeException.Create(_UNITNAME, Err_LoadResourceError, Cmd.Part[2] + ' [' + sgeIntToStr(i + 1) + ']', E.Message);
+          raise EsgeException.Create(_UNITNAME, Err_LoadResourceError, 'Line ' + sgeIntToStr(i + 1), E.Message);
       end;
 
     end;
