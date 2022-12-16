@@ -39,8 +39,6 @@ type
 implementation
 
 
-
-
 procedure TsgeEventSubscriberGroupList.Lock;
 begin
   FCS.Enter;
@@ -59,7 +57,6 @@ var
 begin
   FCS.Enter;
   try
-
     Result := -1;
 
     //Поиск совпадения по имени
@@ -80,7 +77,6 @@ var
 begin
   FCS.Enter;
   try
-
     //Найти индекс группы
     Idx := IndexOf(EventName);
 
@@ -106,7 +102,6 @@ var
 begin
   FCS.Enter;
   try
-
     //Поиск группы
     Idx := IndexOf(EventName);
 
@@ -133,7 +128,6 @@ var
 begin
   FCS.Enter;
   try
-
     //Поиск группы
     Idx := IndexOf(EventName);
 
@@ -160,7 +154,6 @@ var
 begin
   FCS.Enter;
   try
-
     i := -1;
     while i < FCount - 1 do
     begin
@@ -189,7 +182,6 @@ var
 begin
   FCS.Enter;
   try
-
     i := -1;
     while i < FCount - 1 do
     begin

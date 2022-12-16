@@ -15,15 +15,18 @@ unit sgeEventSubscriberList;
 interface
 
 uses
-  sgeTemplateCollection, sgeEventBase, sgeEventSubscriber;
+  sgeTemplateThreadSafeCollection, sgeEventBase, sgeEventSubscriber;
 
 
 type
-  TsgeEventSubscriberList = class(specialize TsgeTemplateCollection<TsgeEventSubscriber>)
+  TsgeEventSubscriberList = class(specialize TsgeTemplateThreadSafeCollection<TsgeEventSubscriber>)
   private
     procedure Sort;
 
   public
+    procedure Lock;
+    procedure Unlock;
+
     function IndexOfHandler(Handler: TsgeEventHandler): Integer;
 
     procedure Add(Subscriber: TsgeEventSubscriber);
@@ -42,16 +45,33 @@ var
   i, j, ci, cj: Integer;
   El: TsgeEventSubscriber;
 begin
-  ci := Fcount - 1;
-  cj := ci - 1;
-  for i := 0 to ci do
-    for j := 0 to cj - i do
-      if FList[j].Priority < FList[j + 1].Priority then
-      begin
-        El := FList[j];
-        FList[j] := FList[j + 1];
-        FList[j + 1] := El;
-      end;
+  FCS.Enter;
+  try
+    ci := Fcount - 1;
+    cj := ci - 1;
+    for i := 0 to ci do
+      for j := 0 to cj - i do
+        if FList[j].Priority < FList[j + 1].Priority then
+        begin
+          El := FList[j];
+          FList[j] := FList[j + 1];
+          FList[j + 1] := El;
+        end;
+  finally
+    FCS.Leave;
+  end;
+end;
+
+
+procedure TsgeEventSubscriberList.Lock;
+begin
+  FCS.Enter;
+end;
+
+
+procedure TsgeEventSubscriberList.Unlock;
+begin
+  FCS.Leave;
 end;
 
 
@@ -59,54 +79,83 @@ function TsgeEventSubscriberList.IndexOfHandler(Handler: TsgeEventHandler): Inte
 var
   i: Integer;
 begin
-  Result := -1;
+  FCS.Enter;
+  try
+    Result := -1;
 
-  for i := 0 to FCount - 1 do
-    if FList[i].Handler = Handler then
-      Exit(i);
+    for i := 0 to FCount - 1 do
+      if FList[i].Handler = Handler then
+        Exit(i);
+  finally
+    FCS.Leave;
+  end;
 end;
 
 
 procedure TsgeEventSubscriberList.Add(Subscriber: TsgeEventSubscriber);
 begin
-  //Проверить есть ли уже подписчик
-  if IndexOfHandler(Subscriber.Handler) <> -1 then
-    Exit;
+  FCS.Enter;
+  try
+    //Проверить есть ли уже подписчик
+    if IndexOfHandler(Subscriber.Handler) <> -1 then
+      Exit;
 
-  //Добавить элемент
-  inherited Add(Subscriber);
+    //Добавить элемент
+    inherited Add(Subscriber);
 
-  //Упорядочить
-  Sort;
+    //Упорядочить
+    Sort;
+
+  finally
+    FCS.Leave;
+  end;
 end;
 
 
 function TsgeEventSubscriberList.Add(Handler: TsgeEventHandler; Priority: Word; Enable: Boolean): TsgeEventSubscriber;
 begin
-  //Проверить есть ли уже подписчик
-  if IndexOfHandler(Handler) <> -1 then
-    Exit;
+  FCS.Enter;
+  try
+    //Проверить есть ли уже подписчик
+    if IndexOfHandler(Handler) <> -1 then
+      Exit;
 
-  //Создать подписчика
-  Result := TsgeEventSubscriber.Create(Handler, Priority, Enable);
+    //Создать подписчика
+    Result := TsgeEventSubscriber.Create(Handler, Priority, Enable);
 
-  //Добавить элемент
-  Add(Result);
+    //Добавить элемент
+    Add(Result);
 
-  //Упорядочить
-  Sort;
+    //Упорядочить
+    Sort;
+
+  finally
+    FCS.Leave;
+  end;
 end;
 
 
 procedure TsgeEventSubscriberList.Delete(Index: Integer);
 begin
-  inherited Delete(Index);
+  FCS.Enter;
+  try
+    inherited Delete(Index);
+
+  finally
+    FCS.Leave;
+  end;
 end;
 
 
 procedure TsgeEventSubscriberList.Delete(Handler: TsgeEventHandler);
 begin
-  Delete(IndexOfHandler(Handler));
+  FCS.Enter;
+  try
+    Delete(IndexOfHandler(Handler));
+
+  finally
+    FCS.Leave;
+  end;
 end;
 
 
@@ -114,16 +163,22 @@ procedure TsgeEventSubscriberList.Delete(Obj: TObject);
 var
   i: Integer;
 begin
-  i := -1;
-  while i < FCount - 1 do
-  begin
-    Inc(i);
-
-    if TObject(TMethod(FList[i].Handler).Data) = Obj then
+  FCS.Enter;
+  try
+    i := -1;
+    while i < FCount - 1 do
     begin
-      Delete(i);
-      Dec(i)
+      Inc(i);
+
+      if TObject(TMethod(FList[i].Handler).Data) = Obj then
+      begin
+        Delete(i);
+        Dec(i)
+      end;
     end;
+
+  finally
+    FCS.Leave;
   end;
 end;
 

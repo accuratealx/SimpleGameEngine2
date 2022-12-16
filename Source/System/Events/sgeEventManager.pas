@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeEventManager.pas
-Версия            1.3
+Версия            1.4
 Создан            22.03.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс системы событий
@@ -16,7 +16,7 @@ interface
 
 uses
   sgeErrors, sgeCriticalSection, sgeSystemEvent,
-  sgeEventBase, sgeEventList, sgeEventSubscriberGroupList;
+  sgeEventBase, sgeEventList, sgeEventSubscriberGroupList, sgeEventSubscriberList;
 
 
 const
@@ -33,6 +33,7 @@ type
 
     FEventList: TsgeEventList;                                              //Список событий
     FSubscriberGroupList: TsgeEventSubscriberGroupList;                     //Список подписчиков
+    FSubscriberForAll: TsgeEventSubscriberList;                             //Подписчики на все события
 
     FErrorHandler: TsgeErrorHandler;                                        //Внешний обрабочик ошибок
   public
@@ -44,6 +45,7 @@ type
 
     property EventList: TsgeEventList read FEventList;
     property SubscriberGroupList: TsgeEventSubscriberGroupList read FSubscriberGroupList;
+    property SubscriberForAll: TsgeEventSubscriberList read FSubscriberForAll;
 
     property ErrorHandler: TsgeErrorHandler read FErrorHandler write FErrorHandler;
   end;
@@ -51,10 +53,6 @@ type
 
 
 implementation
-
-uses
-  sgeEventSubscriberList;
-
 
 const
   _UNITNAME = 'EventManager';
@@ -69,6 +67,7 @@ begin
 
   FEventList := TsgeEventList.Create(True);
   FSubscriberGroupList := TsgeEventSubscriberGroupList.Create(True);
+  FSubscriberForAll := TsgeEventSubscriberList.Create(True);
 end;
 
 
@@ -77,6 +76,7 @@ begin
   //Поднять флаг изменения списка, если потоки что-то пишут
   FCS.Enter;
 
+  FSubscriberForAll.Free;
   FSubscriberGroupList.Free;
   FEventList.Free;
   FEvent.Free;
@@ -109,6 +109,35 @@ begin
     //Получить событие
     EventObj := FEventList.Item[0];
 
+
+    //Подписчики на все подряд
+    //Заблокировать подписчиков
+    FSubscriberForAll.Lock;
+
+    for i := 0 to FSubscriberForAll.Count - 1 do
+    begin
+      //Пропуск неактивных
+      if not FSubscriberForAll.Item[i].Enable then
+        Continue;
+
+      //Вызвать обработчик
+      try
+        if FSubscriberForAll.Item[i].Handler(EventObj) = ehrBreak then
+          Break;
+
+      except
+        on E: EsgeException do
+          if Assigned(FErrorHandler)
+            then FErrorHandler(sgeCreateErrorString(_UNITNAME, Err_DispatchError, '', E.Message));
+      end;
+    end;
+
+    //Разблокировать подписчиков
+    FSubscriberForAll.Unlock;
+
+
+
+    //Подписчики по имени
     //Заблокировать подписчиков
     FSubscriberGroupList.Lock;
 
