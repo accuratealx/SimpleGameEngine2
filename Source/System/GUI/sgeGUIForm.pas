@@ -166,9 +166,11 @@ begin
   //Задать параметры
   FAlpha := 1;
   FScale := 1;
+  FVisible := False;
 
   //Создать графический элемент
   FGraphicElement := TsgeGraphicElementSpriteCashed.Create(Left, Top, Width, Height, FCanvas);
+  FGraphicElement.Visible := False;
 
   //Добавить элемент в список отрисовки
   sgeCorePointer_GetSGE.ExtGraphic.LayerList.AddElement(FGraphicElement, Graphic_Layer_System_GUI);
