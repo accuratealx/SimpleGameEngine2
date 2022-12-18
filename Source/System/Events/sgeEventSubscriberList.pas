@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeEventSubscriberList.pas
-Версия            1.3
+Версия            1.4
 Создан            25.03.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс списка подписчиков
@@ -148,10 +148,14 @@ end;
 
 
 procedure TsgeEventSubscriberList.Delete(Handler: TsgeEventHandler);
+var
+  Idx: Integer;
 begin
   FCS.Enter;
   try
-    Delete(IndexOfHandler(Handler));
+    Idx := IndexOfHandler(Handler);
+    if Idx <> -1 then
+      Delete(Idx);
 
   finally
     FCS.Leave;
