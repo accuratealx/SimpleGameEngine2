@@ -19,7 +19,7 @@ uses
   sgeExtensionWindow, sgeExtensionGraphic, sgeExtensionPackList, sgeExtensionFileSystem, sgeExtensionShell,
   sgeExtensionResourceList, sgeExtensionStartParameters, sgeExtensionSound, sgeExtensionControllers,
   sgeExtensionVariables, sgeExtensionKeyCommand, sgeExtensionTimeEvent, sgeExtensionGUI, sgeExtensionMusicPlayer,
-  sgeExtensionCursor;
+  sgeExtensionCursor, sgeExtensionScenes;
 
 
 const
@@ -64,6 +64,7 @@ type
     FExtensionResourceList: TsgeExtensionResourceList;              //Расширение: Список ресурсов
     FExtensionCursor: TsgeExtensionCursor;                          //Расширение: Курсоры
     FExtensionControllers: TsgeExtensionControllers;                //Расширение: Контроллеры
+    FExtensionScenes: TsgeExtensionScenes;                          //Расширение: Сцены
     FExtensionShell: TsgeExtensionShell;                            //Расширение: Оболочка
     FExtensionKeyCommand: TsgeExtensionKeyCommand;                  //Расширение: Команды на клавишах
     FExtensionTimeEvent: TsgeExtensionTimeEvent;                    //Расширение: Таймерные события
@@ -117,6 +118,7 @@ type
     property ExtFileSystem: TsgeExtensionFileSystem read FExtensionFileSystem;
     property ExtResourceList: TsgeExtensionResourceList read FExtensionResourceList;
     property ExtControllers: TsgeExtensionControllers read FExtensionControllers;
+    property ExtScenes: TsgeExtensionScenes read FExtensionScenes;
     property ExtShell: TsgeExtensionShell read FExtensionShell;
     property ExtKeyCommand: TsgeExtensionKeyCommand read FExtensionKeyCommand;
     property ExtTimeEvent: TsgeExtensionTimeEvent read FExtensionTimeEvent;
@@ -307,6 +309,7 @@ begin
     FExtensionResourceList := TsgeExtensionResourceList.Create;                     //Список ресурсов
     FExtensionCursor := TsgeExtensionCursor.Create;                                 //Курсоры
     FExtensionControllers := TsgeExtensionControllers.Create;                       //Контроллеры
+    FExtensionScenes := TsgeExtensionScenes.Create;                                 //Сцены
     FExtensionTimeEvent := TsgeExtensionTimeEvent.Create;                           //Таймерные события
     FExtensionGUI := TsgeExtensionGUI.Create;                                       //GUI
     FExtensionVariables := TsgeExtensionVariables.Create;                           //Переменные

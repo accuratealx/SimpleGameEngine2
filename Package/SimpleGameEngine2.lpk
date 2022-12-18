@@ -9,13 +9,13 @@
       <PathDelim Value="\"/>
       <SearchPaths>
         <IncludeFiles Value="..\Source\System"/>
-        <OtherUnitFiles Value="..\Source\ThirdParty\GDIPlus;..\Source\ThirdParty\OpenAL;..\Source\ThirdParty\OpenGL;..\Source\System;..\Source\System\Base;..\Source\System\Controllers;..\Source\System\Events;..\Source\System\Extension;..\Source\System\Graphic;..\Source\System\PackFiles;..\Source\System\Shell;..\Source\System\Sound;..\Source\System\Templates;..\Source\System\Utils;..\Source\System\Variables;..\Source\System\KeyCommand;..\Source\System\ShellCommands;..\Source\System\TimeEvent;..\Source\System\GUI;..\Source\System\GUI\Properties;..\Source\System\GUI\Components;..\Source\System\MusicPlayer"/>
+        <OtherUnitFiles Value="..\Source\ThirdParty\GDIPlus;..\Source\ThirdParty\OpenAL;..\Source\ThirdParty\OpenGL;..\Source\System;..\Source\System\Base;..\Source\System\Controllers;..\Source\System\Events;..\Source\System\Extension;..\Source\System\Graphic;..\Source\System\PackFiles;..\Source\System\Shell;..\Source\System\Sound;..\Source\System\Templates;..\Source\System\Utils;..\Source\System\Variables;..\Source\System\KeyCommand;..\Source\System\ShellCommands;..\Source\System\TimeEvent;..\Source\System\GUI;..\Source\System\GUI\Properties;..\Source\System\GUI\Components;..\Source\System\MusicPlayer;..\Source\System\Scenes"/>
         <UnitOutputDirectory Value="..\~Tmp\Package\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
     </CompilerOptions>
     <Description Value="Simple Game Engine 2"/>
     <Version Major="1"/>
-    <Files Count="247">
+    <Files Count="250">
       <Item1>
         <Filename Value="..\Source\ThirdParty\GDIPlus\GDIPAPI.pas"/>
         <UnitName Value="GDIPAPI"/>
@@ -1009,6 +1009,18 @@
         <Filename Value="..\Source\System\GUI\Components\sgeGUISpriteView.pas"/>
         <UnitName Value="sgeGUISpriteView"/>
       </Item247>
+      <Item248>
+        <Filename Value="..\Source\System\Extension\sgeExtensionScenes.pas"/>
+        <UnitName Value="sgeExtensionScenes"/>
+      </Item248>
+      <Item249>
+        <Filename Value="..\Source\System\Scenes\sgeSceneBase.pas"/>
+        <UnitName Value="sgeSceneBase"/>
+      </Item249>
+      <Item250>
+        <Filename Value="..\Source\System\Scenes\sgeSceneList.pas"/>
+        <UnitName Value="sgeSceneList"/>
+      </Item250>
     </Files>
     <CompatibilityMode Value="True"/>
     <UsageOptions>
