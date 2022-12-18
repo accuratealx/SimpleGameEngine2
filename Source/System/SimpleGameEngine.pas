@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              SimpleGameEngine.pas
-Версия            1.1
+Версия            1.2
 Создан            28.03.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Ядро движка
@@ -15,7 +15,7 @@ unit SimpleGameEngine;
 interface
 
 uses
-  sgeCorePointerList, sgeErrorManager, sgeExtensionList, sgeEventManager, sgeEventBase,
+  sgeCorePointerList, sgeErrorManager, sgeExtensionList, sgeEventManager, sgeEventBase, sgeSystemIcon,
   sgeExtensionWindow, sgeExtensionGraphic, sgeExtensionPackList, sgeExtensionFileSystem, sgeExtensionShell,
   sgeExtensionResourceList, sgeExtensionStartParameters, sgeExtensionSound, sgeExtensionControllers,
   sgeExtensionVariables, sgeExtensionKeyCommand, sgeExtensionTimeEvent, sgeExtensionGUI, sgeExtensionMusicPlayer,
@@ -45,6 +45,8 @@ const
 type
   TSimpleGameEngine = class
   private
+    FAppIcon: TsgeSystemIcon;                                       //Иконка приложения
+
     //Параметры
     FWorking: Boolean;                                              //Флаг работы
     FDebug: Boolean;                                                //Режим отладки
@@ -93,6 +95,7 @@ type
 
     procedure AttachDefaultKeys;                                    //Привязать на кнопки стандартные действия
     procedure ScreenShot(FileName: String = '');                    //Сохранить снимок окна в BMP
+    procedure LoadAppIcon(ResName: String);                         //Загрузка иконки приложения из ресурсов exe
 
     procedure Init; virtual;                                        //Пользовательская инициализация
     procedure DeInit; virtual;                                      //Пользовательская финализация
@@ -377,6 +380,10 @@ begin
   FErrorManager.Free;
   FExtensionList.Free;
   FEventManager.Free;
+
+  //Удалить иконку приложения
+  if FAppIcon <> nil then
+    FAppIcon.Free;
 end;
 
 
@@ -419,6 +426,27 @@ begin
 
   finally
     MS.Free;
+  end;
+end;
+
+
+procedure TSimpleGameEngine.LoadAppIcon(ResName: String);
+begin
+  //Прибить старую иконку
+  if FAppIcon <> nil then
+  begin
+    FAppIcon.Free;
+    FAppIcon := nil;
+  end;
+
+  //Загрузить новую
+  FAppIcon := TsgeSystemIcon.CreateFromHinstance(ResName);
+
+  //Установить
+  with FExtensionWindow.Window do
+  begin
+    Icon := FAppIcon.Handle;
+    StatusBarIcon := FAppIcon.Handle;
   end;
 end;
 
