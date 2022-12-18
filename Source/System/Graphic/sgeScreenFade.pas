@@ -99,7 +99,8 @@ begin
   begin
     X1 := I / (N - 1);
     X2 := (I + 1) / (N - 1);
-    if (Pos >= X1) and (Pos <= X2) then Break;
+    if (Pos >= X1) and (Pos <= X2) then
+      Break;
     Inc(I);
   end;
 

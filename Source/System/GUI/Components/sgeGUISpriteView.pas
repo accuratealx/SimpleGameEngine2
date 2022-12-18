@@ -116,7 +116,7 @@ type
 implementation
 
 uses
-  sgeCorePointerUtils, sgeGUIUtils, sgeGraphicColor, sgeGraphic, Math;
+  sgeCorePointerUtils, sgeGraphicColor, sgeGraphic, Math;
 
 
 procedure TsgeGUISpriteViewItem.SetSprite(ASprite: TsgeGraphicSprite);
