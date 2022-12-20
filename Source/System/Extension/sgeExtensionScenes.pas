@@ -61,6 +61,7 @@ uses
 
 const
   _UNITNAME = 'ExtensionScenes';
+
   FADEID_START = MaxInt - 1;
   FADEID_PUSH = MaxInt - 2;
   FADEID_POP = MaxInt - 3;
@@ -94,11 +95,6 @@ begin
           Pop;
       end;
     end;
-  end;
-
-  //Переходы для смены сцен
-  if EventObj.PassedTime = ptMiddle then
-  begin
   end;
 end;
 
