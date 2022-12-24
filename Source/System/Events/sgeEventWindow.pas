@@ -36,7 +36,7 @@ const
 
 
 type
-  TsgeEventWindowSize = class(TsgeEventBase)
+  TsgeEventWindow = class(TsgeEventBase)
   private
     FWidth: Integer;
     FHeight: Integer;
@@ -53,7 +53,7 @@ type
 implementation
 
 
-constructor TsgeEventWindowSize.Create(Name: ShortString; Width, Height: Integer);
+constructor TsgeEventWindow.Create(Name: ShortString; Width, Height: Integer);
 begin
   inherited Create(Name);
 
@@ -62,9 +62,9 @@ begin
 end;
 
 
-function TsgeEventWindowSize.Copy: TsgeEventBase;
+function TsgeEventWindow.Copy: TsgeEventBase;
 begin
-  Result := TsgeEventWindowSize.Create(FName, FWidth, FHeight);
+  Result := TsgeEventWindow.Create(FName, FWidth, FHeight);
 end;
 
 

@@ -86,7 +86,7 @@ type
     procedure FadeCallBackProc(Time: TsgePassedTime);
 
     //Подписка на события
-    function Event_WindowResize(Obj: TsgeEventWindowSize): TsgeEventHandlerResult;
+    function Event_WindowResize(Obj: TsgeEventWindow): TsgeEventHandlerResult;
 
   protected
     FGraphicShell: TsgeGraphic;                                     //Класс графики для потока оболочки
@@ -157,7 +157,7 @@ begin
     //Обработать событие
     case Event.Name of
       Event_WindowSize:
-        FGraphicInner.ChangeViewArea(TsgeEventWindowSize(Event).Width, TsgeEventWindowSize(Event).Height);
+        FGraphicInner.ChangeViewArea(TsgeEventWindow(Event).Width, TsgeEventWindow(Event).Height);
     end;
 
     //Удалить первый элемент
@@ -409,7 +409,7 @@ begin
 end;
 
 
-function TsgeExtensionGraphic.Event_WindowResize(Obj: TsgeEventWindowSize): TsgeEventHandlerResult;
+function TsgeExtensionGraphic.Event_WindowResize(Obj: TsgeEventWindow): TsgeEventHandlerResult;
 begin
   Result := ehrNormal;
 

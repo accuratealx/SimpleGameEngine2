@@ -83,7 +83,7 @@ type
     FCommandIsRunning: Boolean;                                     //Флаг выполнения команды
 
     //Обработчики событий
-    function  Event_WindowResize(Obj: TsgeEventWindowSize): TsgeEventHandlerResult;
+    function  Event_WindowResize(Obj: TsgeEventWindow): TsgeEventHandlerResult;
 
     function  Handler_KeyDown(EventObj: TsgeEventKeyboard): TsgeEventHandlerResult;
     function  Handler_KeyUp(EventObj: TsgeEventKeyboard): TsgeEventHandlerResult;
@@ -198,7 +198,7 @@ type
 
 
 
-function TsgeExtensionShell.Event_WindowResize(Obj: TsgeEventWindowSize): TsgeEventHandlerResult;
+function TsgeExtensionShell.Event_WindowResize(Obj: TsgeEventWindow): TsgeEventHandlerResult;
 begin
   Result := ehrNormal;
 

@@ -425,7 +425,7 @@ begin
 
     WM_SIZE:
     begin
-      EventManager.Publish(TsgeEventWindowSize.Create(Event_WindowSize, LOWORD(lParam), HIWORD(lParam)));
+      EventManager.Publish(TsgeEventWindow.Create(Event_WindowSize, LOWORD(lParam), HIWORD(lParam)));
 
       case wParam of
         SIZE_RESTORED : EventManager.Publish(TsgeEventBase.Create(Event_WindowRestore));
