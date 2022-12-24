@@ -15,7 +15,7 @@
     </CompilerOptions>
     <Description Value="Simple Game Engine 2"/>
     <Version Major="1"/>
-    <Files Count="250">
+    <Files Count="251">
       <Item1>
         <Filename Value="..\Source\ThirdParty\GDIPlus\GDIPAPI.pas"/>
         <UnitName Value="GDIPAPI"/>
@@ -1021,6 +1021,10 @@
         <Filename Value="..\Source\System\Scenes\sgeSceneList.pas"/>
         <UnitName Value="sgeSceneList"/>
       </Item250>
+      <Item251>
+        <Filename Value="..\Source\System\sgeViewBox.pas"/>
+        <UnitName Value="sgeViewBox"/>
+      </Item251>
     </Files>
     <CompatibilityMode Value="True"/>
     <UsageOptions>

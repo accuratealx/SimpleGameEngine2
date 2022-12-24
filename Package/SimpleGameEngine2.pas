@@ -86,7 +86,7 @@ uses
   sgeKeyCommandKeyboardActionList, sgeWindowsVersion, sgeMatch, sgeMatchMask, 
   sgeShellCommand_System_Stop, sgeGraphicElementFade, sgeCorePointerUtils, 
   sgeGUIPropertyStipple, sgeGUIPropertyBorder, sgeGUIRect, sgeGUISpriteView, 
-  sgeExtensionScenes, sgeSceneBase, sgeSceneList;
+  sgeExtensionScenes, sgeSceneBase, sgeSceneList, sgeViewBox;
 
 implementation
 
