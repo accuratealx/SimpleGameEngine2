@@ -87,6 +87,7 @@ type
     //Активный элемент
     procedure SetFocus(Element: TsgeGUIElement);                    //Установить фокус ввода на элемент
     procedure LostFocus(Element: TsgeGUIElement);                   //Убрать фокус с элемента
+    procedure ClearFocus;                                           //Очистить фокус
 
     //Свойства
     property Enable: Boolean read FEnable write SetEnable;
@@ -433,6 +434,12 @@ procedure TsgeExtensionGUI.LostFocus(Element: TsgeGUIElement);
 begin
   if FFocusedElement = Element then
     FFocusedElement := nil;
+end;
+
+
+procedure TsgeExtensionGUI.ClearFocus;
+begin
+  FFocusedElement := nil;
 end;
 
 
