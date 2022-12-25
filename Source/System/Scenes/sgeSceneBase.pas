@@ -20,18 +20,23 @@ uses
 type
   TsgeSceneBase = class
   private
-    FErrorManager: TsgeErrorManager;
-    FEventManager: TsgeEventManager;
+    FErrorManager: TsgeErrorManager;                                //Ссылка на обработчик ошибок
+    FEventManager: TsgeEventManager;                                //Ссылка на менеджер событий
 
-    FSubscribe: TsgeEventSubscriber;
+    FVisible: Boolean;                                              //Флаг видимости
+    FEnableSubscribers: Boolean;                                    //Флаг активности подписчиков на события
+    FSubscribeAll: TsgeEventSubscriber;                             //Общий подписчик
 
-    procedure SetEnableSubscriber(AEnable: Boolean);
-    function  GetEnableSubscriber: Boolean;
   protected
     procedure Prepare; virtual;
     procedure Done; virtual;
 
-    function EventSubscriber(EventObj: TsgeEventBase): TsgeEventHandlerResult; virtual;
+    procedure SetVisible(AVisible: Boolean); virtual;
+    procedure SetEnableSubscribers(AEnable: Boolean); virtual;
+
+    procedure SubscribeEvents; virtual;
+    procedure UnSubscribeEvents; virtual;
+    function  EventSubscriber(EventObj: TsgeEventBase): TsgeEventHandlerResult; virtual;
   public
     procedure Activate; virtual;
     procedure Deactivate; virtual;
@@ -41,7 +46,8 @@ type
 
     property ErrorManager: TsgeErrorManager read FErrorManager;
     property EventManager: TsgeEventManager read FEventManager;
-    property EnableSubscribe: Boolean read GetEnableSubscriber write SetEnableSubscriber;
+    property Visible: Boolean read FVisible write SetVisible;
+    property EnableSubscribes: Boolean read FEnableSubscribers write SetEnableSubscribers;
   end;
 
 
@@ -56,15 +62,13 @@ const
   Err_CantCreateScene = 'CantCreateScene';
 
 
-procedure TsgeSceneBase.SetEnableSubscriber(AEnable: Boolean);
+procedure TsgeSceneBase.SetEnableSubscribers(AEnable: Boolean);
 begin
-  FSubscribe.Enable := AEnable;
-end;
+  //Сохранить новое значение
+  FEnableSubscribers := AEnable;
 
-
-function TsgeSceneBase.GetEnableSubscriber: Boolean;
-begin
-  Result := FSubscribe.Enable;
+  //Изменить активность подписчика
+  FSubscribeAll.Enable := AEnable;
 end;
 
 
@@ -77,6 +81,24 @@ end;
 procedure TsgeSceneBase.Done;
 begin
   //Пользовательский деструктор
+end;
+
+
+procedure TsgeSceneBase.SetVisible(AVisible: Boolean);
+begin
+  FVisible := AVisible;
+end;
+
+
+procedure TsgeSceneBase.SubscribeEvents;
+begin
+  //Пользовательская подписка на события
+end;
+
+
+procedure TsgeSceneBase.UnSubscribeEvents;
+begin
+  //Пользовательская отписка на событий
 end;
 
 
@@ -106,11 +128,18 @@ begin
     FErrorManager := sgeCorePointer_GetErrorManager;
     FEventManager := sgeCorePointer_GetEventManager;
 
+    //Параметры
+    FVisible := False;
+    FEnableSubscribers := False;
+
     //Пользовательская инициализация
     Prepare;
 
+    //Пользовательская подписка
+    SubscribeEvents;
+
     //Подписка на все события
-    FSubscribe := FEventManager.SubscriberForAll.Add(@EventSubscriber);
+    FSubscribeAll := FEventManager.SubscriberForAll.Add(@EventSubscriber, 0, False);
 
   except
     on E: EsgeException do
@@ -121,6 +150,9 @@ end;
 
 destructor TsgeSceneBase.Destroy;
 begin
+  //Пользовательская отписка
+  UnSubscribeEvents;
+
   //Отписка от всех событий
   FEventManager.SubscriberForAll.Delete(@EventSubscriber);
 
