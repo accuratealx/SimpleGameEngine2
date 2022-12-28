@@ -64,7 +64,7 @@ type
   public
     constructor Create(MapWidth, MapHeight, ScreenWidth, ScreenHeight: Single; ScaleType: TsgeViewBoxScaleType = vbstFree; Scale: Single = 1; MinScale: Single = 0; MaxScale: Single = 2);
 
-    //procedure SetScaledCenterPos(Scale: Single; X, Y: Single);
+    procedure SetScaledCenterPos(Scale: Single; X, Y: Single);
     function  GetMapPosByScreenPoint(X, Y: Single; Safe: Boolean = True): TsgeFloatPoint;
     function  GetMapBounds: TsgeFloatRect;
 
@@ -283,8 +283,8 @@ begin
   end;
 
   //Высчитать новые координаты центра через пропроцию
-  Xc := (FMapSize.X * AScale) * Xc / (FMapSize.X * FScale);
-  Yc := (FMapSize.Y * AScale) * Yc / (FMapSize.Y * FScale);
+  Xc := Xc * AScale / FScale;
+  Yc := Yc * AScale / FScale;
 
   //Запомнить масштаб
   FScale := AScale;
@@ -393,23 +393,29 @@ begin
 end;
 
 
-{procedure TsgeViewBox.SetScaledCenterPos(Scale: Single; X, Y: Single);
+procedure TsgeViewBox.SetScaledCenterPos(Scale: Single; X, Y: Single);
 var
-  Xc, Yc, X1, Y1, X2, Y2, dX, dY: Single;
+  Xc, Yc: Single;
+  Sc: Single;
 begin
-  X1 := FScreenOffset.X + X;
-  X2 := X1 * Scale / FScale;
-  dX := X2 - X1;
-  Xc := FScreenCenter.X + X2 - dX;
+  //Данный алгоритм сломал мне голову не один раз, в попытках написать
+  //масштабирование к точке. Если бы не светлый ум моего друга
+  //Cheery Programmer, то игроки в Дюну испытывали недоумение при
+  //приближении карты и некоторое раздражение. За решение столь сложной
+  //для меня задачи, ник Веслый программист будет вшито в саму игру с
+  //некоторыми бонусами и отличительными характеристиками. Возможно
+  //я введу специальную персональную ачивку.
 
+  //Коэффициент изменения маштаба
+  Sc := 1 - FScale / Scale;
 
-  Y1 := FScreenOffset.Y + Y;
-  Y2 := Y1 * Scale / FScale;
-  dY := Y2 - Y1;
-  Yc := FScreenCenter.Y + Y2 - dY;
+  //Смещение центра относительно нового масштаба
+  Xc := (X - FScreenSize.X / 2) * Sc;
+  Yc := (Y - FScreenSize.Y / 2) * Sc;
 
-  ChangeScale(Scale, Xc, Yc);
-end;}
+  //Изменить масштаб
+  ChangeScale(Scale, FScreenCenter.X + Xc, FScreenCenter.Y + Yc);
+end;
 
 
 function TsgeViewBox.GetMapPosByScreenPoint(X, Y: Single; Safe: Boolean): TsgeFloatPoint;
