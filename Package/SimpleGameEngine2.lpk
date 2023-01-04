@@ -15,7 +15,7 @@
     </CompilerOptions>
     <Description Value="Simple Game Engine 2"/>
     <Version Major="1"/>
-    <Files Count="251">
+    <Files Count="253">
       <Item1>
         <Filename Value="..\Source\ThirdParty\GDIPlus\GDIPAPI.pas"/>
         <UnitName Value="GDIPAPI"/>
@@ -277,8 +277,8 @@
         <UnitName Value="sgeGraphicElementList"/>
       </Item65>
       <Item66>
-        <Filename Value="..\Source\System\Graphic\sgeGraphicElementRectangle.pas"/>
-        <UnitName Value="sgeGraphicElementRectangle"/>
+        <Filename Value="..\Source\System\Graphic\sgeGraphicElementLine.pas"/>
+        <UnitName Value="sgeGraphicElementLine"/>
       </Item66>
       <Item67>
         <Filename Value="..\Source\System\Graphic\sgeGraphicElementRectangleGradient.pas"/>
@@ -1025,6 +1025,14 @@
         <Filename Value="..\Source\System\sgeViewBox.pas"/>
         <UnitName Value="sgeViewBox"/>
       </Item251>
+      <Item252>
+        <Filename Value="..\Source\System\Graphic\sgeGraphicColorUtils.pas"/>
+        <UnitName Value="sgeGraphicColorUtils"/>
+      </Item252>
+      <Item253>
+        <Filename Value="..\Source\System\Graphic\sgeGraphicElementRectangle.pas"/>
+        <UnitName Value="sgeGraphicElementRectangle"/>
+      </Item253>
     </Files>
     <CompatibilityMode Value="True"/>
     <UsageOptions>
