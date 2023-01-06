@@ -15,7 +15,8 @@ unit sgeSprite;
 interface
 
 uses
-  sgeMemoryStream;
+  sgeMemoryStream,
+  sgeGraphicColor;
 
 
 type
@@ -25,9 +26,7 @@ type
     FSize: Int64;
     FWidth: Integer;                                                //Ширина спрайта в пикселях
     FHeight: Integer;                                               //Высота спрайта в пикселях
-
     FFileName: String;                                              //Имя файла
-
     FTileCols: Word;                                                //Плиток по X
     FTileRows: Word;                                                //Плиток по Y
     FTileWidth: Word;                                               //Ширина одной плитки в пикселях
@@ -37,6 +36,7 @@ type
     procedure Data_Free;                                            //Освободить память
 
     procedure CalcTiles;                                            //Пересчитать ширину и высоту плиток
+    procedure SetTiles(ATileCols, ATileRows: Word);
 
     procedure SetTileCols(ACols: Word);
     procedure SetTileRows(ARows: Word);
@@ -45,25 +45,26 @@ type
   public
     constructor Create(FileName: String; TileCols: Word = 1; TileRows: Word = 1);
     constructor Create(Stream: TsgeMemoryStream; TileCols: Word = 1; TileRows: Word = 1);
+    constructor Create(Width: Integer = 0; Height: Integer = 0; TileCols: Word = 1; TileRows: Word = 1);
     destructor  Destroy; override;
+
+    procedure FillColor(Color: TsgeColor);
+    procedure FillChessBoard(CellSize: Integer);
 
     procedure LoadFromFile(FileName: String);
     procedure FromMemoryStream(Stream: TsgeMemoryStream);
 
-
-
+    property FileName: String read FFileName write FFileName;
     property Data: Pointer read FData;
     property Size: Int64 read FSize;
     property Width: Integer read FWidth write SetWidth;
     property Height: Integer read FHeight write SetHeight;
-
-    property FileName: String read FFileName write FFileName;
-
     property TileCols: Word read FTileCols write SetTileCols;
     property TileRows: Word read FTileRows write SetTileRows;
     property TileWidth: Word read FTileWidth;
     property TileHeight: Word read FTileHeight;
   end;
+
 
 implementation
 
@@ -74,7 +75,6 @@ const
   _UNITNAME = 'Sprite';
 
   Err_CantReadFile        = 'CantReadFile';
-  //Err_CantWriteFile       = 'CantWriteFile';
   Err_CantLoadFromStream  = 'CantLoadFromStream';
 
 
@@ -107,6 +107,20 @@ begin
   //Размеры одной плитки
   FTileWidth := FWidth div FTileCols;
   FTileHeight := FHeight div FTileRows;
+end;
+
+
+procedure TsgeSprite.SetTiles(ATileCols, ATileRows: Word);
+begin
+  //Обработать информацию о плитках
+  if ATileCols < 1 then
+    ATileCols := 1;
+  if ATileRows < 1 then
+    ATileRows := 1;
+
+  //Сохранить размерность плиток
+  FTileCols := ATileCols;
+  FTileRows := ATileRows;
 end;
 
 
@@ -167,14 +181,7 @@ end;
 constructor TsgeSprite.Create(FileName: String; TileCols: Word; TileRows: Word);
 begin
   //Обработать информацию о плитках
-  if TileCols < 1 then
-    TileCols := 1;
-  if TileRows < 1 then
-    TileRows := 1;
-
-  //Сохранить размерность плиток
-  FTileCols := TileCols;
-  FTileRows := TileRows;
+  SetTiles(TileCols, TileRows);
 
   //Попробовать загрузить данные из файла
   LoadFromFile(FileName);
@@ -187,23 +194,99 @@ end;
 constructor TsgeSprite.Create(Stream: TsgeMemoryStream; TileCols: Word; TileRows: Word);
 begin
   //Обработать информацию о плитках
-  if TileCols < 1 then
-    TileCols := 1;
-  if TileRows < 1 then
-    TileRows := 1;
-
-  //Сохранить размерность плиток
-  FTileCols := TileCols;
-  FTileRows := TileRows;
+  SetTiles(TileCols, TileRows);
 
   //Загрузить из памяти
   FromMemoryStream(Stream);
 end;
 
 
+constructor TsgeSprite.Create(Width: Integer; Height: Integer; TileCols: Word; TileRows: Word);
+begin
+  //Обработать информацию о плитках
+  SetTiles(TileCols, TileRows);
+
+  //Проверить размеры
+  if Width < 0 then
+    Width := 0;
+  if Height < 0 then
+    Height := 0;
+
+  //Запомнить размеры
+  FWidth := Width;
+  FHeight := Height;
+
+  //Выделить память;
+  Data_ChangeSize(FWidth, FHeight);
+
+  //Пересчитать размеры плиток
+  CalcTiles;
+end;
+
+
 destructor TsgeSprite.Destroy;
 begin
   Data_Free;
+end;
+
+
+procedure TsgeSprite.FillColor(Color: TsgeColor);
+var
+  i, c: Integer;
+  cl: TsgeRGBA;
+  Quad: ^TsgeRGBA;
+begin
+  //Преобразовать цвет
+  cl := sgeColorToRGBA(Color);
+
+  //Подготовить массив точек с прозрачностью
+  c := (FSize div 4) - 1;
+  for i := 0 to c do
+  begin
+    //Адрес RGBQuad
+    Quad := Pointer(FData + i * 4);
+
+    //Заполнить цвет
+    Quad^.Red := cl.Red;
+    Quad^.Green := cl.Green;
+    Quad^.Blue := cl.Blue;
+    Quad^.Alpha := cl.Alpha;
+  end;
+end;
+
+
+procedure TsgeSprite.FillChessBoard(CellSize: Integer);
+var
+  X, Y, i, c: Integer;
+  a: Byte;
+  Quad: ^TsgeRGBA;
+begin
+  //Поправить размер клетки
+  if CellSize < 1 then
+    CellSize := 1;
+
+  //Подготовить массив точек с прозрачностью
+  c := (FSize div 4) - 1;
+  for i := 0 to c do
+  begin
+    X := i div FWidth div CellSize;                                 //Номер столбца с учётом ширины клетки
+    Y := (i mod FWidth) div CellSize;                               //Номер строки с учётом ширины клетки
+
+    //Адрес RGBQuad
+    Quad := Pointer(FData + i * 4);
+
+    //Определить цвет для долей
+    if Odd(X + Y) then
+      a := 255
+    else
+      a := 0;
+
+    //Заполнить цвет
+    Quad^.Red := a;
+    Quad^.Green := a;
+    Quad^.Blue := a;
+    Quad^.Alpha := 255;
+  end;
 end;
 
 
@@ -249,7 +332,7 @@ begin
       Data_ChangeSize(FWidth, FHeight);
 
       //Скопировать данные
-      Move(Loader.Data, FData, FSize);
+      Move(Loader.Data^, FData^, FSize);
 
       //Пересчитать размеры
       CalcTiles;
