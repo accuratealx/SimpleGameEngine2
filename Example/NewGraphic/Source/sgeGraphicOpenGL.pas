@@ -16,7 +16,7 @@ interface
 
 uses
   dglOpenGL, Windows,
-  sgeTypes, sgeGraphicColor, sgeGraphic;
+  sgeTypes, sgeSprite, sgeGraphicColor, sgeGraphic, sgeGraphicOpenGLSprite;
 
 
 type
@@ -68,6 +68,10 @@ type
     procedure SaveState;
     procedure LoadState;
     procedure SetColor(Color: TsgeColor);
+    procedure DrawSprite(X, Y: Single; Sprite: TsgeSprite);
+
+
+    procedure DrawTriangle(X1, Y1, X2, Y2, X3, Y3: Single; Color: TsgeColor);
 
 
     //Свойства
@@ -159,9 +163,6 @@ begin
   if not Assigned(GL_LibHandle) then
     raise EsgeException.Create(_UNITNAME, Err_CantLoadOpenGLLib);
 
-  //Прочитать адреса функций
-  ReadOpenGLCore;
-
   //Заполнить Pixel format
   ZeroMemory(@PFDescriptor, SizeOf(PFDescriptor));
   with PFDescriptor do
@@ -195,6 +196,9 @@ begin
   //Активировать контекст
   wglMakeCurrent(FDC, LegacyRC);
 
+  //Прочитать адреса функций
+  ReadOpenGLCore;
+
   //Ищем функция создания версионного контекста
   Pointer(wglCreateContextAttribsARB) := wglGetProcAddress('wglCreateContextAttribsARB');
 
@@ -212,6 +216,8 @@ begin
   Attribs[1] := MajorVersion;
   Attribs[2] := WGL_CONTEXT_MINOR_VERSION_ARB;
   Attribs[3] := MinorVersion;
+  //Attribs[4] := WGL_CONTEXT_FLAGS_ARB;
+  //Attribs[5] := WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB;
   Attribs[4] := 0;                                                  //Конец структуры - 0
 
   //Создать версионный контекст
@@ -224,6 +230,9 @@ begin
     raise EsgeException.Create(_UNITNAME, Err_CantCreateContext, sgeIntToStr(MajorVersion) + '.' + sgeIntToStr(MinorVersion));
   end;
 
+  //Активировать новый контекст
+  wglMakeCurrent(FDC, FGLContext);
+
   //Почистить временный контекст
   wglDeleteContext(LegacyRC);
 end;
@@ -231,6 +240,7 @@ end;
 
 destructor TsgeGraphicOpenGL.Destroy;
 begin
+  wglMakeCurrent(0, 0);
   wglDeleteContext(FGLContext);
 end;
 
@@ -367,6 +377,185 @@ end;
 procedure TsgeGraphicOpenGL.SetColor(Color: TsgeColor);
 begin
   glColor4fv(@Color);
+end;
+
+
+procedure TsgeGraphicOpenGL.DrawSprite(X, Y: Single; Sprite: TsgeSprite);
+var
+  Spr: TsgeGraphicOpenGLSprite;
+
+  VBOHandle: GLuint;
+  VBO: array of TsgeFloatPoint;
+begin
+  Spr := TsgeGraphicOpenGLSprite.Create(Sprite);
+
+  glBindTexture(GL_TEXTURE_2D, Spr.GLHandle);
+
+  glGenBuffers(1, @VBOHandle);
+
+
+
+
+
+
+  //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+  //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+  //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+
+
+
+
+  glBindTexture(GL_TEXTURE_2D, 0);
+
+  glDisable(GL_TEXTURE_2D);
+
+  glDeleteBuffers(1, @VBOHandle);
+
+  Spr.Free;
+end;
+
+
+procedure TsgeGraphicOpenGL.DrawTriangle(X1, Y1, X2, Y2, X3, Y3: Single; Color: TsgeColor);
+const
+  VertexShaderSource: String =
+  '#version 400 core' + LineEnding +
+  'layout (location = 0) in vec2 aPos;' + LineEnding +
+
+  'void main()' + LineEnding +
+  '{'  + LineEnding +
+  '  gl_Position = vec4(aPos.x / 1000, -aPos.y / 1000, 0, 1.0);'  + LineEnding +
+  '}'#0;
+
+  FragmentShaderSource: String =
+  '#version 400 core' + LineEnding +
+  'out vec4 FragColor;' + LineEnding +
+
+  'void main()' + LineEnding +
+  '{' + LineEnding +
+  '  FragColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);' + LineEnding +
+  '}'#0;
+
+var
+  Vertex: array of GLfloat;
+
+  VBO: GLuint;
+
+  VAO: GLuint;
+
+  ShaderProgram, ShaderProgramStatus: GLuint;
+  ShaderProgramError: array[0..1024] of Char;
+
+  VertexShader, VertexShaderStatus: GLuint;
+  VertexShaderError: array[0..1024] of Char;
+
+  FragmentShader, FragmentShaderStatus: GLuint;
+  FragmentShaderError: array[0..1024] of Char;
+begin
+  //Выделить память под шейдер
+  VertexShader := glCreateShader(GL_VERTEX_SHADER);
+  //Установить исходник шейдера
+  glShaderSource(VertexShader, 1, @VertexShaderSource, Nil);
+  //Собрать шейдер
+  glCompileShader(vertexShader);
+  //Проверить на ошибки
+  glGetShaderiv(VertexShader, GL_COMPILE_STATUS, @VertexShaderStatus);
+  if VertexShaderStatus = 0 then
+  begin
+    glGetShaderInfoLog(VertexShader, Length(VertexShaderError), nil, @VertexShaderError);
+    raise EsgeException.Create(_UNITNAME, 'Vertex shader error', VertexShaderError);
+  end;
+
+
+  //Выделить память под шейдер
+  FragmentShader := glCreateShader(GL_FRAGMENT_SHADER);
+  //Установить исходник шейдера
+  glShaderSource(FragmentShader, 1, @FragmentShaderSource, Nil);
+  //Собрать шейдер
+  glCompileShader(FragmentShader);
+  //Проверить на ошибки
+  glGetShaderiv(FragmentShader, GL_COMPILE_STATUS, @FragmentShaderStatus);
+  if FragmentShaderStatus = 0 then
+  begin
+    glGetShaderInfoLog(FragmentShader, Length(FragmentShaderError), nil, @FragmentShaderError);
+    raise EsgeException.Create(_UNITNAME, 'Fragment shader error', FragmentShaderError);
+  end;
+
+
+  //Выделить память под программу
+  ShaderProgram := glCreateProgram();
+  //Привязать вершинный шейдер
+  glAttachShader(ShaderProgram, VertexShader);
+  //Привязать фрагментный шейдер
+  glAttachShader(ShaderProgram, FragmentShader);
+
+  //Собрать все до кучи
+  glLinkProgram(ShaderProgram);
+
+  //Проверить на ошибки
+  glGetProgramiv(ShaderProgram, GL_LINK_STATUS, @ShaderProgramStatus);
+  if ShaderProgramStatus = 0 then
+  begin
+    glGetProgramInfoLog(ShaderProgram, Length(ShaderProgramError), nil, @ShaderProgramError);
+    raise EsgeException.Create(_UNITNAME, 'Shader program error', ShaderProgramError);
+  end;
+
+  //Удалить ненужные шейдеры
+  glDeleteShader(vertexShader);
+  glDeleteShader(fragmentShader);
+
+
+
+
+
+  SetLength(Vertex, 6);
+  Vertex[0] := X1;
+  Vertex[1] := Y1;
+  Vertex[2] := X2;
+  Vertex[3] := Y2;
+  Vertex[4] := X3;
+  Vertex[5] := Y3;
+
+  //Выделить память под VAO
+  glGenVertexArrays(1, @VAO);
+  //Выбрать VAO для работы
+  glBindVertexArray(VAO);
+
+
+  //Выделить память под массив вершин
+  glGenBuffers(1, @VBO);
+  //Выбрать буфер для работы
+  glBindBuffer(GL_ARRAY_BUFFER, VBO);
+  //Залить массив вершин
+  glBufferData(GL_ARRAY_BUFFER, 6 * SizeOf(GLfloat), @Vertex[0], GL_STATIC_DRAW);
+
+
+  //Указать параметры данных вершин
+  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), nil);
+  //Разрешить использовать 0 набор данных в шейдере
+  glEnableVertexAttribArray(0);
+
+
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+  glBindVertexArray(0);
+
+
+
+  //Использовать текущую программу
+  glUseProgram(ShaderProgram);
+  //Выбрать настроенный объект
+  glBindVertexArray(VAO);
+  //Отрисовать вершины
+  glDrawArrays(GL_TRIANGLES, 0, 3);
+  //Отключить объект
+  glBindVertexArray(0);
+
+
+
+  glDeleteVertexArrays(1, @VAO);
+  glDeleteProgram(ShaderProgram);
+  glDeleteBuffers(1, @VBO);
 end;
 
 

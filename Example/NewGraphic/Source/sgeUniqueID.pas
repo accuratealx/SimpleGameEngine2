@@ -24,6 +24,10 @@ type
   end;
 
 
+var
+  UniqueID: TsgeUniqueID;
+
+
 implementation
 
 
@@ -37,6 +41,18 @@ begin
 
   //Результат
   Result := FCurrentID;
+end;
+
+
+initialization
+begin
+  UniqueID := TsgeUniqueID.Create;
+end;
+
+
+finalization
+begin
+  UniqueID.Free;
 end;
 
 

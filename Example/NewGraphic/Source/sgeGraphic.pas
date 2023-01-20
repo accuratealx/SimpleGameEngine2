@@ -15,12 +15,15 @@ unit sgeGraphic;
 interface
 
 uses
-  sgeTypes, sgeGraphicColor;
+  sgeTypes,
+  sgeSprite, sgeGraphicColor;
+
 
 type
   IsgeGraphic = interface ['{B88F5A15-CFA6-491F-8025-00DB31844C86}']
     function  GetWidth: Integer;
     function  GetHeight: Integer;
+
     procedure SetScale(X, Y: Single);
     procedure SetScale(Pos: TsgeFloatPoint);
     procedure SetRotate(Angle: Single);
@@ -29,7 +32,10 @@ type
     procedure SaveState;
     procedure LoadState;
     procedure SetColor(Color: TsgeColor);
+
+    procedure DrawSprite(X, Y: Single; Sprite: TsgeSprite);
   end;
+
 
 
 implementation
