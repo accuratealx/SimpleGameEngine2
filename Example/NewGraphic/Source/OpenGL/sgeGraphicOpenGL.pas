@@ -16,7 +16,7 @@ interface
 
 uses
   dglOpenGL, Windows,
-  sgeTypes, sgeSprite, sgeGraphicColor, sgeGraphic, sgeGraphicOpenGLSprite;
+  sgeGraphicColor;
 
 
 type
@@ -29,9 +29,16 @@ type
     giShading             //Версия шейдеров
   );
 
+  //Возможности
+  TsgeGraphicCapabilities = (
+    gcVerticalSync,       //Вертикальная синхронизация
+    gcColorBlend,         //Смешивание цветов
+    gcTexturing,          //Текстурирование
+    gcLineStipple         //Штриховка линий
+  );
 
   //Рендерер OpenGL
-  TsgeGraphicOpenGL = class(TInterfacedObject, IsgeGraphic)
+  TsgeGraphicOpenGL = class
   private
     FDC: HDC;                                                       //Хэндл окна
     FGLContext: HGLRC;                                              //Контекст OpenGL
@@ -56,22 +63,14 @@ type
     procedure SetBGColor(Color: TsgeColor);
     procedure EraseBG;
 
-
-    //IsgeGraphic
-    function  GetWidth: Integer;
-    function  GetHeight: Integer;
-    procedure SetScale(X, Y: Single);
-    procedure SetScale(Pos: TsgeFloatPoint);
-    procedure SetRotate(Angle: Single);
-    procedure SetPos(X, Y: Single);
-    procedure SetPos(Pos: TsgeFloatPoint);
     procedure SaveState;
     procedure LoadState;
-    procedure SetColor(Color: TsgeColor);
-    procedure DrawSprite(X, Y: Single; Sprite: TsgeSprite);
+
+    procedure Enable(Option: TsgeGraphicCapabilities);
+    procedure Disable(Option: TsgeGraphicCapabilities);
 
 
-    procedure DrawTriangle(X1, Y1, X2, Y2, X3, Y3: Single; Color: TsgeColor);
+    //procedure DrawTriangle(X1, Y1, X2, Y2, X3, Y3: Single; Color: TsgeColor; Layer: TsgeLayerInfo);
 
 
     //Свойства
@@ -88,8 +87,7 @@ type
 implementation
 
 uses
-  sgeErrors, sgeSystemUtils, sgeMemoryStream, sgeGraphicBuffer,
-  sgeGraphicOpenGLShader, sgeGraphicOpenGLShaderProgram, sgeGraphicOpenGLBuffer;
+  sgeErrors, sgeSystemUtils;
 
 const
   _UNITNAME = 'GraphicOpenGL';
@@ -199,6 +197,7 @@ begin
 
   //Прочитать адреса функций
   ReadOpenGLCore;
+  ReadExtensions;
 
   //Ищем функция создания версионного контекста
   Pointer(wglCreateContextAttribsARB) := wglGetProcAddress('wglCreateContextAttribsARB');
@@ -217,8 +216,6 @@ begin
   Attribs[1] := MajorVersion;
   Attribs[2] := WGL_CONTEXT_MINOR_VERSION_ARB;
   Attribs[3] := MinorVersion;
-  //Attribs[4] := WGL_CONTEXT_FLAGS_ARB;
-  //Attribs[5] := WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB;
   Attribs[4] := 0;                                                  //Конец структуры - 0
 
   //Создать версионный контекст
@@ -236,6 +233,14 @@ begin
 
   //Почистить временный контекст
   wglDeleteContext(LegacyRC);
+
+  //Установить параметры по умолчанию
+  Enable(gcVerticalSync);
+  Enable(gcColorBlend);
+  Enable(gcTexturing);
+
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 end;
 
 
@@ -258,13 +263,8 @@ begin
   FWidth := AWidth;
   FHeight := AHeight;
 
-  //Колдунство
-  glViewport(0, 0, FWidth, FHeight);                                //Задать область вывода
-  //glMatrixMode(GL_PROJECTION);                                      //Выбрать матрицу проекций
-  //glLoadIdentity;                                                   //Изменить проекцию на эталонную
-  //glOrtho(0, AWidth, AHeight, 0, -1, 1);                            //Изменить проекцию на ортографическую
-  //glMatrixMode(GL_MODELVIEW);                                       //Выбрать матрицу модели
-  //glLoadIdentity;                                                   //Изменить проекцию на эталонную
+  //Задать область вывода
+  glViewport(0, 0, FWidth, FHeight);
 end;
 
 
@@ -311,48 +311,6 @@ begin
 end;
 
 
-function TsgeGraphicOpenGL.GetWidth: Integer;
-begin
-  Result := FWidth;
-end;
-
-
-function TsgeGraphicOpenGL.GetHeight: Integer;
-begin
-  Result := FHeight;
-end;
-
-
-procedure TsgeGraphicOpenGL.SetScale(X, Y: Single);
-begin
-  glScalef(X, Y, 0);
-end;
-
-
-procedure TsgeGraphicOpenGL.SetScale(Pos: TsgeFloatPoint);
-begin
-  SetScale(Pos.X, Pos.Y);
-end;
-
-
-procedure TsgeGraphicOpenGL.SetRotate(Angle: Single);
-begin
-  glRotatef(Angle, 0, 0, 1);
-end;
-
-
-procedure TsgeGraphicOpenGL.SetPos(X, Y: Single);
-begin
-  glTranslatef(X, Y, 0);
-end;
-
-
-procedure TsgeGraphicOpenGL.SetPos(Pos: TsgeFloatPoint);
-begin
-  SetPos(Pos.X, Pos.Y);
-end;
-
-
 procedure TsgeGraphicOpenGL.SaveState;
 begin
   //Сохранить матрицу модели
@@ -375,49 +333,53 @@ begin
 end;
 
 
-procedure TsgeGraphicOpenGL.SetColor(Color: TsgeColor);
+procedure TsgeGraphicOpenGL.Enable(Option: TsgeGraphicCapabilities);
 begin
-  glColor4fv(@Color);
+  case Option of
+    gcVerticalSync:
+      wglSwapIntervalEXT(1);
+
+    gcColorBlend:
+      glEnable(GL_BLEND);
+
+    gcTexturing:
+      glEnable(GL_TEXTURE_2D);
+
+    gcLineStipple:
+      glEnable(GL_LINE_STIPPLE);
+  end;
 end;
 
 
-procedure TsgeGraphicOpenGL.DrawSprite(X, Y: Single; Sprite: TsgeSprite);
-var
-  Spr: TsgeGraphicOpenGLSprite;
-
-  VBOHandle: GLuint;
-  //VBO: array of TsgeFloatPoint;
+procedure TsgeGraphicOpenGL.Disable(Option: TsgeGraphicCapabilities);
 begin
-  Spr := TsgeGraphicOpenGLSprite.Create(Sprite);
+  case Option of
+    gcVerticalSync:
+      wglSwapIntervalEXT(0);
 
-  glBindTexture(GL_TEXTURE_2D, Spr.GLHandle);
+    gcColorBlend:
+      glDisable(GL_BLEND);
 
-  glGenBuffers(1, @VBOHandle);
+    gcTexturing:
+      glDisable(GL_TEXTURE_2D);
 
-
-  glBindTexture(GL_TEXTURE_2D, 0);
-
-  glDisable(GL_TEXTURE_2D);
-
-  glDeleteBuffers(1, @VBOHandle);
-
-  Spr.Free;
+    gcLineStipple:
+      glDisable(GL_LINE_STIPPLE);
+  end;
 end;
 
 
-procedure TsgeGraphicOpenGL.DrawTriangle(X1, Y1, X2, Y2, X3, Y3: Single; Color: TsgeColor);
-var
-  //Vertex: array of GLfloat;
-  //VBO: GLuint;
-  VAO: GLuint;
+//procedure TsgeGraphicOpenGL.DrawTriangle(X1, Y1, X2, Y2, X3, Y3: Single; Color: TsgeColor; Layer: TsgeLayerInfo);
+{var
+  VAO: TsgeGraphicOpenGLVertexArrayObject;
 
   MsV, MsF: TsgeMemoryStream;
   Prg: TsgeGraphicOpenGLShaderProgram;
 
   Buffer: TsgeGraphicBuffer;
-  GLBuffer: TsgeGraphicOpenGLBuffer;
-begin
-  MsV := TsgeMemoryStream.Create;
+  GLBuffer: TsgeGraphicOpenGLBuffer;}
+//begin
+  {MsV := TsgeMemoryStream.Create;
   MsV.LoadFromFile('Shaders\Triangle.Vertex.glsl');
   MsF := TsgeMemoryStream.Create;
   MsF.LoadFromFile('Shaders\Triangle.Fragment.glsl');
@@ -434,38 +396,24 @@ begin
 
   GLBuffer := TsgeGraphicOpenGLBuffer.Create(Buffer);
 
-  //Выделить память под VAO
-  glGenVertexArrays(1, @VAO);
-  //Выбрать VAO для работы
-  glBindVertexArray(VAO);
-
-
-  GLBuffer.Attach;
-  //Указать параметры данных вершин
-  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(GLfloat), nil);
-  //Разрешить использовать 0 набор данных в шейдере
-  glEnableVertexAttribArray(0);
-
+  VAO := TsgeGraphicOpenGLVertexArrayObject.Create;
+  VAO.Attach;
+  VAO.BindPosition(GLBuffer);
 
   //Использовать текущую программу
   Prg.Attach;
-  Prg.SetColor('Color', Color);
+  Prg.SetScreenSize(FWidth, FHeight);
+  Prg.SetColor(Color);
+  Prg.SetLayer(Layer);
 
-
-  //Выбрать настроенный объект
-  glBindVertexArray(VAO);
-  //Отрисовать вершины
-  glDrawArrays(GL_TRIANGLES, 0, 3);
-  //Отключить объект
-  glBindVertexArray(0);
-
-
+  VAO.DrawArray;
+  VAO.Detach;
 
   Prg.Free;
   Buffer.Free;
   GLBuffer.Free;
-  glDeleteVertexArrays(1, @VAO);
-end;
+  VAO.Free;}
+//end;
 
 
 

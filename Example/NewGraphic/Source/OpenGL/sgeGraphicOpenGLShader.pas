@@ -45,20 +45,20 @@ type
 implementation
 
 uses
-  Strings,
   sgeErrors;
 
 const
   _UNITNAME = 'GraphicOpenGLShader';
 
-  Err_CompileError = 'CompileError';
+  Err_CompileVertexError = 'CompileVertexError';
+  Err_CompileFragmentError = 'CompileFragmentError';
 
 
 procedure TsgeGraphicOpenGLShader.Prepare(AType: TsgeGraphicOpenGLShaderType; ASource: String);
 var
-  T: GLint;
+  T, Len: GLint;
   Src: PChar;
-  S: string;
+  S, ErrStr: string;
 begin
   //Определить тип
   case AType of
@@ -74,10 +74,9 @@ begin
     FHandle := glCreateShader(T);
 
   //Установить исходник шейдера
-  Src := stralloc(Length(ASource) + 1);
-  strpcopy(Src, ASource);
-  glShaderSource(FHandle, 1, @Src, nil);
-  strdispose(Src);
+  Len := Length(ASource);
+  Src := PChar(FSource);
+  glShaderSource(FHandle, 1, @Src, @Len);
 
   //Собрать шейдер
   glCompileShader(FHandle);
@@ -94,7 +93,15 @@ begin
     SetLength(S, T - 1);
     glGetShaderInfoLog(FHandle, T - 1, nil, @s[1]);
 
-    raise EsgeException.Create(_UNITNAME, Err_CompileError, S);
+    case FShaderType of
+      stVertex:
+        ErrStr := Err_CompileVertexError;
+
+      stFragment:
+        ErrStr := Err_CompileFragmentError;
+    end;
+
+    raise EsgeException.Create(_UNITNAME, ErrStr, S);
   end;
 end;
 

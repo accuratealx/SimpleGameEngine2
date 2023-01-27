@@ -1,0 +1,109 @@
+{
+Пакет             Simple Game Engine 2
+Файл              sgeGraphicOpenGLVertexArrayObject.pas
+Версия            1.0
+Создан            27.01.2023
+Автор             Творческий человек  (accuratealx@gmail.com)
+Описание          OpenGL:
+}
+{$Include Defines.inc}
+
+unit sgeGraphicOpenGLVertexArrayObject;
+
+{$mode ObjFPC}{$H+}
+
+interface
+
+uses
+  dglOpenGL,
+  sgeGraphicOpenGLBuffer;
+
+type
+  TsgeGraphicOpenGLVertexArrayObject = class
+  private
+    FHandle: GLUInt;
+
+    FVertexCount: GLuint;
+  public
+    constructor Create;
+    destructor  Destroy; override;
+
+    procedure BindPosition(Buffer: TsgeGraphicOpenGLBuffer);
+
+    procedure DrawArray;
+
+    procedure Attach;
+    procedure Detach;
+
+    property Handle: GLuint read FHandle;
+  end;
+
+
+implementation
+
+uses
+  sgeErrors;
+
+const
+  _UNITNAME = 'GraphicOpenGLVertexArrayObject';
+
+  Err_EmptyBuffer = 'EmptyBuffer';
+
+
+constructor TsgeGraphicOpenGLVertexArrayObject.Create;
+begin
+  if FHandle = 0 then
+    glGenVertexArrays(1, @FHandle);
+end;
+
+
+destructor TsgeGraphicOpenGLVertexArrayObject.Destroy;
+begin
+  if FHandle <> 0 then
+    glDeleteVertexArrays(1, @FHandle);
+end;
+
+
+procedure TsgeGraphicOpenGLVertexArrayObject.BindPosition(Buffer: TsgeGraphicOpenGLBuffer);
+const
+  STRIDE = 2 * sizeof(GLfloat);
+begin
+  if Buffer = nil then
+    raise EsgeException.Create(_UNITNAME, Err_EmptyBuffer);
+
+  //Привязать буфер вершин
+  Buffer.Attach;
+
+  //Разрешить 0 расположение в шейдере
+  glEnableVertexAttribArray(0);
+
+  //Указать параметры данных вершин
+  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, STRIDE, nil);
+
+  //Посчитать количество вершин
+  FVertexCount := Buffer.Size div STRIDE;
+end;
+
+
+procedure TsgeGraphicOpenGLVertexArrayObject.DrawArray;
+begin
+  //Вывести массив вершин
+  glDrawArrays(GL_TRIANGLES, 0, 6);
+end;
+
+
+procedure TsgeGraphicOpenGLVertexArrayObject.Attach;
+begin
+  glBindVertexArray(FHandle);
+end;
+
+
+procedure TsgeGraphicOpenGLVertexArrayObject.Detach;
+begin
+  glBindVertexArray(0);
+end;
+
+
+
+end.
+

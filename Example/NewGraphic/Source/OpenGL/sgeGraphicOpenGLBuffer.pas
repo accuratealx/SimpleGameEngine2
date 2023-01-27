@@ -29,17 +29,22 @@ type
   private
     FHandle: GLUint;
     FUsage: TsgeGraphicOpenGLBufferUsage;
+    FSize: Int64;
 
     function GetGLUsageByBufferUsage(Usage: TsgeGraphicOpenGLBufferUsage): GLenum;
   public
+    constructor Create;
     constructor Create(Buffer: TsgeGraphicBuffer; Usage: TsgeGraphicOpenGLBufferUsage = buStaticDraw);
     destructor  Destroy; override;
+
+    procedure SetData(Buffer: TsgeGraphicBuffer; Usage: TsgeGraphicOpenGLBufferUsage = buStaticDraw);
 
     procedure Attach;
     procedure Detach;
 
     property Handle: GLUInt read FHandle;
     property Usage: TsgeGraphicOpenGLBufferUsage read FUsage;
+    property Size: Int64 read FSize;
   end;
 
 
@@ -70,6 +75,14 @@ begin
 end;
 
 
+constructor TsgeGraphicOpenGLBuffer.Create;
+begin
+  //Запросить память
+  if FHandle = 0 then
+    glGenBuffers(1, @FHandle);
+end;
+
+
 constructor TsgeGraphicOpenGLBuffer.Create(Buffer: TsgeGraphicBuffer; Usage: TsgeGraphicOpenGLBufferUsage);
 begin
   if Buffer = nil then
@@ -77,10 +90,28 @@ begin
 
   //Записать параметры
   FUsage := Usage;
+  FSize := Buffer.Size;
 
   //Запросить память
   if FHandle = 0 then
     glGenBuffers(1, @FHandle);
+
+  //Залить данные
+  SetData(Buffer, Usage);
+end;
+
+
+destructor TsgeGraphicOpenGLBuffer.Destroy;
+begin
+  if FHandle <> 0 then
+    glDeleteBuffers(1, @FHandle);
+end;
+
+
+procedure TsgeGraphicOpenGLBuffer.SetData(Buffer: TsgeGraphicBuffer; Usage: TsgeGraphicOpenGLBufferUsage);
+begin
+  if Buffer = nil then
+    raise EsgeException.Create(_UNITNAME, Err_EmptyBuffer);
 
   //Выбрать буфер для работы
   Attach;
@@ -90,13 +121,6 @@ begin
 
   //Отвязать буфер
   Detach;
-end;
-
-
-destructor TsgeGraphicOpenGLBuffer.Destroy;
-begin
-  if FHandle <> 0 then
-    glDeleteBuffers(1, @FHandle);
 end;
 
 

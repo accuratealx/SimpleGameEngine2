@@ -22,7 +22,7 @@ uses
 type
   TsgeGraphicOpenGLSprite = class
   private
-    FGLHandle: GLuint;                                              //Номер OpenGL
+    FHandle: GLuint;                                                //Номер OpenGL
     FGLTileWidth: Single;                                           //Ширина одной плитки в координатах OpenGL
     FGLTileHeight: Single;                                          //Высота одной плитки в координатах OpenGL
     FGLPixelWidth: Single;                                          //Ширина одного пикселя в координатах OpenGL
@@ -32,9 +32,12 @@ type
     constructor Create(Sprite: TsgeSprite);
     destructor Destroy; override;
 
+    procedure Attach;
+    procedure Detach;
+
     procedure LoadFromSprite(Sprite: TsgeSprite);
 
-    property GLHandle: GLuint read FGLHandle;
+    property Handle: GLuint read FHandle;
     property GLTileWidth: Single read FGLTileWidth;
     property GLTileHeight: Single read FGLTileHeight;
     property GLPixelWidth: Single read FGLPixelWidth;
@@ -57,7 +60,8 @@ const
 constructor TsgeGraphicOpenGLSprite.Create(Sprite: TsgeSprite);
 begin
   //Выделить память для текстуры
-  glGenTextures(1, @FGLHandle);
+  if FHandle = 0 then
+    glGenTextures(1, @FHandle);
 
   //Загрузить из спрайта
   LoadFromSprite(Sprite);
@@ -66,7 +70,19 @@ end;
 
 destructor TsgeGraphicOpenGLSprite.Destroy;
 begin
-  glDeleteTextures(1, @FGLHandle);
+  glDeleteTextures(1, @FHandle);
+end;
+
+
+procedure TsgeGraphicOpenGLSprite.Attach;
+begin
+  glBindTexture(GL_TEXTURE_2D, FHandle);
+end;
+
+
+procedure TsgeGraphicOpenGLSprite.Detach;
+begin
+  glBindTexture(GL_TEXTURE_2D, 0);
 end;
 
 
@@ -75,10 +91,14 @@ begin
   if not Assigned(Sprite) then
     raise EsgeException.Create(_UNITNAME, Err_EptySprite);
 
+  //Привязать текстуру
+  Attach;
+
   //Залить текстуру
-  glBindTexture(GL_TEXTURE_2D, FGLHandle);
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, Sprite.Width, Sprite.Height, 0, GL_BGRA, GL_UNSIGNED_BYTE, Sprite.Data);
-  glBindTexture(GL_TEXTURE_2D, 0);
+
+  //отвязать текстуру
+  Detach;
 
   //Размеры плитки в координатах OpenGL
   FGLTileWidth := 1 / Sprite.TileCols;

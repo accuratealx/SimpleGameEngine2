@@ -11,6 +11,7 @@
 unit sgeDisplayElementItemSprite;
 
 {$mode ObjFPC}{$H+}
+{$ModeSwitch duplicatelocals}
 
 interface
 
@@ -21,19 +22,11 @@ uses
 type
   TsgeDisplayElementItemSprite = class(TsgeDisplayElementItemBase)
   private
-    FSprite: TsgeSprite;                                            //Ссылка на спрайт
-    FX: Single;                                                     //X
-    FY: Single;                                                     //Y
-    FWidth: Single;                                                 //Ширина
-    FHeight: Single;                                                //Высота
+    FSprite: TsgeSprite;
   public
-    constructor Create(X, Y, Width, Height: Single; Sprite: TsgeSprite);
+    constructor Create(X, Y, Width, Height: Single; Sprite: TsgeSprite; Transparent: Boolean = True);
 
     property Sprite: TsgeSprite read FSprite;
-    property X: Single read FX;
-    property Y: Single read FY;
-    property Width: Single read FWidth;
-    property Height: Single read FHeight;
   end;
 
 
@@ -43,22 +36,20 @@ uses
   sgeErrors;
 
 const
-  _UNITNAME = '';
+  _UNITNAME = 'DisplayElementItemSprite';
 
   Err_EmptySprite = 'EmptySprite';
 
 
-constructor TsgeDisplayElementItemSprite.Create(X, Y, Width, Height: Single; Sprite: TsgeSprite);
+constructor TsgeDisplayElementItemSprite.Create(X, Y, Width, Height: Single; Sprite: TsgeSprite; Transparent: Boolean);
 begin
+  inherited Create(X, Y, Width, Height, Transparent);
+
   //Проверить спрайт
   if Sprite = nil then
     raise EsgeException.Create(_UNITNAME, Err_EmptySprite);
 
-  //Сохранить параметры
-  FX := X;
-  FY := Y;
-  FWidth := Width;
-  FHeight := Height;
+  //Сохранить спрайт
   FSprite := Sprite;
 end;
 
