@@ -29,6 +29,7 @@ type
     giShading             //Версия шейдеров
   );
 
+
   //Возможности
   TsgeGraphicCapabilities = (
     gcVerticalSync,       //Вертикальная синхронизация
@@ -36,6 +37,40 @@ type
     gcTexturing,          //Текстурирование
     gcLineStipple         //Штриховка линий
   );
+
+
+  //Режим смешивания для цветов
+  TsgeGraphicBlendFunction = (
+    gbfTransparent        //Альфасмешивание
+  );
+
+
+  //Режим затенения
+  TsgeGraphicShadeModel = (
+    gsmFlat,              //Один цвет
+    gsmSmooth             //Градиент
+  );
+
+
+  //Режим вывода полигонов
+  TsgeGraphicPolygonMode = (
+    gpmFill,              //Заливка
+    gpmLine,              //Контуры
+    gpmDot                //Вершинные точки
+  );
+
+
+  //Штриховка линий
+  TsgeGraphicLineStipple = (
+    glsSolid,             //Сплошная
+    glsDash,              //Тире
+    glsNarrowDash,        //Узкое тире
+    glsWideDash,          //Широкое тире
+    glsDot,               //Точки
+    glsDashDot,           //Тире-точка
+    glsDashDotDot         //Тире-точка-точка
+  );
+
 
   //Рендерер OpenGL
   TsgeGraphicOpenGL = class
@@ -69,8 +104,12 @@ type
     procedure Enable(Option: TsgeGraphicCapabilities);
     procedure Disable(Option: TsgeGraphicCapabilities);
 
+    procedure SetBlendFunction(BlendFunction: TsgeGraphicBlendFunction);
+    procedure SetShadeModel(Model: TsgeGraphicShadeModel);
+    procedure SetPoligonMode(Mode: TsgeGraphicPolygonMode);
 
-    //procedure DrawTriangle(X1, Y1, X2, Y2, X3, Y3: Single; Color: TsgeColor; Layer: TsgeLayerInfo);
+    procedure SetLineStipple(Scale: Integer; Pattern: Word);
+    procedure SetLineStipple(Scale: Integer; Mode: TsgeGraphicLineStipple);
 
 
     //Свойства
@@ -239,6 +278,7 @@ begin
   Enable(gcColorBlend);
   Enable(gcTexturing);
 
+
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 end;
@@ -369,51 +409,63 @@ begin
 end;
 
 
-//procedure TsgeGraphicOpenGL.DrawTriangle(X1, Y1, X2, Y2, X3, Y3: Single; Color: TsgeColor; Layer: TsgeLayerInfo);
-{var
-  VAO: TsgeGraphicOpenGLVertexArrayObject;
+procedure TsgeGraphicOpenGL.SetBlendFunction(BlendFunction: TsgeGraphicBlendFunction);
+begin
+  case BlendFunction of
+    gbfTransparent:
+      glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  end;
+end;
 
-  MsV, MsF: TsgeMemoryStream;
-  Prg: TsgeGraphicOpenGLShaderProgram;
 
-  Buffer: TsgeGraphicBuffer;
-  GLBuffer: TsgeGraphicOpenGLBuffer;}
-//begin
-  {MsV := TsgeMemoryStream.Create;
-  MsV.LoadFromFile('Shaders\Triangle.Vertex.glsl');
-  MsF := TsgeMemoryStream.Create;
-  MsF.LoadFromFile('Shaders\Triangle.Fragment.glsl');
+procedure TsgeGraphicOpenGL.SetShadeModel(Model: TsgeGraphicShadeModel);
+begin
+  case Model of
+    gsmFlat:
+      glShadeModel(GL_FLAT);
 
-  Prg := TsgeGraphicOpenGLShaderProgram.Create('Triangle', msV, MsF);
+    gsmSmooth:
+      glShadeModel(GL_SMOOTH);
+  end;
+end;
 
-  MsV.Free;
-  MsF.Free;
 
-  Buffer := TsgeGraphicBuffer.Create;
-  Buffer.AddPoint(X1, Y1);
-  Buffer.AddPoint(X2, Y2);
-  Buffer.AddPoint(X3, Y3);
+procedure TsgeGraphicOpenGL.SetPoligonMode(Mode: TsgeGraphicPolygonMode);
+begin
+  case Mode of
+    gpmDot:
+      glPolygonMode(GL_FRONT_AND_BACK, GL_POINT);
 
-  GLBuffer := TsgeGraphicOpenGLBuffer.Create(Buffer);
+    gpmLine:
+      glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-  VAO := TsgeGraphicOpenGLVertexArrayObject.Create;
-  VAO.Attach;
-  VAO.BindPosition(GLBuffer);
+    gpmFill:
+      glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+  end;
+end;
 
-  //Использовать текущую программу
-  Prg.Attach;
-  Prg.SetScreenSize(FWidth, FHeight);
-  Prg.SetColor(Color);
-  Prg.SetLayer(Layer);
 
-  VAO.DrawArray;
-  VAO.Detach;
+procedure TsgeGraphicOpenGL.SetLineStipple(Scale: Integer; Pattern: Word);
+begin
+  glLineStipple(Scale, Pattern);
+end;
 
-  Prg.Free;
-  Buffer.Free;
-  GLBuffer.Free;
-  VAO.Free;}
-//end;
+
+procedure TsgeGraphicOpenGL.SetLineStipple(Scale: Integer; Mode: TsgeGraphicLineStipple);
+var
+  W: GLushort;
+begin
+  case Mode of
+    glsSolid      : W := $FFFF; //****************
+    glsDash       : W := $0F0F; //----****----****
+    glsNarrowDash : W := $7777; //-***-***-***-***
+    glsWideDash   : W := $3F3F; //--******--******
+    glsDot        : W := $5555; //-*-*-*-*-*-*-*-*
+    glsDashDot    : W := $2727; //--*--***--*--***
+    glsDashDotDot : W := $5757; //-*-*-***-*-*-***
+  end;
+  glLineStipple(Scale, W);
+end;
 
 
 

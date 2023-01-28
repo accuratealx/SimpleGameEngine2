@@ -24,7 +24,7 @@ type
   private
     FSprite: TsgeSprite;
   public
-    constructor Create(X, Y, Width, Height: Single; Sprite: TsgeSprite; Transparent: Boolean = True);
+    constructor Create(X, Y, Width, Height: Single; Sprite: TsgeSprite);
 
     property Sprite: TsgeSprite read FSprite;
   end;
@@ -41,9 +41,9 @@ const
   Err_EmptySprite = 'EmptySprite';
 
 
-constructor TsgeDisplayElementItemSprite.Create(X, Y, Width, Height: Single; Sprite: TsgeSprite; Transparent: Boolean);
+constructor TsgeDisplayElementItemSprite.Create(X, Y, Width, Height: Single; Sprite: TsgeSprite);
 begin
-  inherited Create(X, Y, Width, Height, Transparent);
+  inherited Create(X, Y, Width, Height);
 
   //Проверить спрайт
   if Sprite = nil then

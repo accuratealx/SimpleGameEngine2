@@ -22,29 +22,42 @@ type
     FWidth: Single;                                                 //Ширина
     FHeight: Single;                                                //Высота
     FTransparent: Boolean;                                          //Прозрачность
+    FCentered: Boolean;                                             //Вывод по центру
+
+    procedure SetDefaultParameter;
   public
-    constructor Create(X, Y, Width, Height: Single; Transparent: Boolean = True);
+    constructor Create(X, Y, Width, Height: Single);
 
     property X: Single read FX;
     property Y: Single read FY;
     property Width: Single read FWidth;
     property Height: Single read FHeight;
+
     property Transparent: Boolean read FTransparent write FTransparent;
+    property Centered: Boolean read FCentered write FCentered;
   end;
 
 
 implementation
 
 
-
-constructor TsgeDisplayElementItemBase.Create(X, Y, Width, Height: Single; Transparent: Boolean);
+procedure TsgeDisplayElementItemBase.SetDefaultParameter;
 begin
+  FTransparent := Transparent;
+  FCentered := False;
+end;
+
+
+constructor TsgeDisplayElementItemBase.Create(X, Y, Width, Height: Single);
+begin
+  //Установить параметры по умолчанию
+  SetDefaultParameter;
+
   //Сохранить параметры
   FX := X;
   FY := Y;
   FWidth := Width;
   FHeight := Height;
-  FTransparent := Transparent;
 end;
 
 

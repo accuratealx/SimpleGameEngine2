@@ -36,13 +36,10 @@ type
     procedure SetValue(Name: String; Value: Single);
     procedure SetValue(Name: String; Value: Integer);
 
-    procedure SetColor(Color: TsgeColor);
-    procedure SetPos(X, Y: Single);
-    procedure SetPos(Pos: TsgeFloatPoint);
     procedure SetScreenSize(Size: TsgeFloatPoint);
     procedure SetLayer(Layer: TsgeLayerInfo);
-    procedure SetLayer(X, Y: Single; Scale: Single);
-
+    procedure SetPos(Pos: TsgeFloatPoint);
+    procedure SetColor(Color: TsgeColor);
 
     procedure Attach;
     procedure Detach;
@@ -185,28 +182,6 @@ begin
 end;
 
 
-procedure TsgeGraphicOpenGLShaderProgram.SetColor(Color: TsgeColor);
-begin
-  glUniform4fv(GetParamIndex('Color'), 1, @Color);
-end;
-
-
-procedure TsgeGraphicOpenGLShaderProgram.SetPos(X, Y: Single);
-var
-  Pos: TsgeFloatPoint;
-begin
-  Pos.X := X;
-  Pos.Y := Y;
-  glUniform2fv(GetParamIndex('Pos'), 1, @Pos);
-end;
-
-
-procedure TsgeGraphicOpenGLShaderProgram.SetPos(Pos: TsgeFloatPoint);
-begin
-  glUniform2fv(GetParamIndex('Pos'), 1, @Pos);
-end;
-
-
 procedure TsgeGraphicOpenGLShaderProgram.SetScreenSize(Size: TsgeFloatPoint);
 begin
   glUniform2fv(GetParamIndex('ScreenSize'), 1, @Size);
@@ -219,14 +194,15 @@ begin
 end;
 
 
-procedure TsgeGraphicOpenGLShaderProgram.SetLayer(X, Y: Single; Scale: Single);
-var
-  Layer: TsgeLayerInfo;
+procedure TsgeGraphicOpenGLShaderProgram.SetPos(Pos: TsgeFloatPoint);
 begin
-  Layer.X := X;
-  Layer.Y := Y;
-  Layer.Scale := Scale;
-  glUniform3fv(GetParamIndex('Layer'), 1, @Layer);
+  glUniform2fv(GetParamIndex('Pos'), 1, @Pos);
+end;
+
+
+procedure TsgeGraphicOpenGLShaderProgram.SetColor(Color: TsgeColor);
+begin
+  glUniform4fv(GetParamIndex('Color'), 1, @Color);
 end;
 
 

@@ -36,6 +36,7 @@ type
 implementation
 
 uses
+  dglOpenGL,
   sgeErrors,
   sgeGraphicBuffer;
 
@@ -48,6 +49,7 @@ const
 constructor TsgeGraphicOpenGLDrawObjectItemRect.Create(ShaderProgram: TsgeGraphicOpenGLShaderProgram; Rect: TsgeDisplayElementItemRect);
 var
   Buff: TsgeGraphicBuffer;
+  w, h: GLfloat;
 begin
   if Rect = nil then
     raise EsgeException.Create(_UNITNAME, Err_EmptyRect);
@@ -58,12 +60,19 @@ begin
   inherited Create(ShaderProgram);
 
   //Сохранить положение
-  FPosition.X := Rect.X;
-  FPosition.Y := Rect.Y;
+  FPosition.X := FRect.X;
+  FPosition.Y := FRect.Y;
 
   //Создать буфер c координатами
   Buff := TsgeGraphicBuffer.Create;
-  Buff.AddQuad(0, 0, Rect.Width, Rect.Height);
+  if FRect.Centered then
+  begin
+    w := FRect.Width / 2;
+    h := FRect.Height / 2;
+    Buff.AddQuad(-w, -h, w, h);
+  end
+  else
+    Buff.AddQuad(0, 0, FRect.Width, FRect.Height);
 
   //Залить данные в видеокарту
   FVertexBuffer.SetData(Buff);

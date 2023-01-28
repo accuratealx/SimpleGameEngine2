@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGraphicOpenGLSprite.pas
-Версия            1.0
+Версия            1.1
 Создан            09.01.2023
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          OpenGL: Спрайт
@@ -28,6 +28,9 @@ type
     FGLPixelWidth: Single;                                          //Ширина одного пикселя в координатах OpenGL
     FGLPixelHeight: Single;                                         //Высота одного пикселя в координатах OpenGL
 
+    function GetMagFilter(AFilter: TsgeSpriteMagFilter): GLint;
+    function GetMinFilter(AFilter: TsgeSpriteMinFilter): GLint;
+    function GetWrapMode(AMode: TsgeSpriteWrapMode): GLint;
   public
     constructor Create(Sprite: TsgeSprite);
     destructor Destroy; override;
@@ -55,6 +58,62 @@ const
 
   Err_EptySprite = 'EptySprite';
 
+
+function TsgeGraphicOpenGLSprite.GetMagFilter(AFilter: TsgeSpriteMagFilter): GLint;
+begin
+  case AFilter of
+    smagfNearest:
+      Result := GL_NEAREST;
+
+    smagfLinear:
+      Result := GL_LINEAR;
+  end;
+end;
+
+
+function TsgeGraphicOpenGLSprite.GetMinFilter(AFilter: TsgeSpriteMinFilter): GLint;
+begin
+  case AFilter of
+    sminfNearest:
+      Result := GL_NEAREST;
+
+    sminfLinear:
+      Result := GL_LINEAR;
+
+    sminfNearestMipmapNearest:
+      Result := GL_NEAREST_MIPMAP_NEAREST;
+
+    sminfLinearMipmapNearest:
+      Result := GL_LINEAR_MIPMAP_NEAREST;
+
+    sminfNearestMipmapLinear:
+      Result := GL_NEAREST_MIPMAP_LINEAR;
+
+    sminfLinearMipmapLinear:
+      Result := GL_LINEAR_MIPMAP_LINEAR;
+  end;
+end;
+
+
+function TsgeGraphicOpenGLSprite.GetWrapMode(AMode: TsgeSpriteWrapMode): GLint;
+begin
+  case AMode of
+    swmRepeat:
+      Result := GL_REPEAT;
+
+    swmMirroredRepeat:
+      Result :=  GL_MIRRORED_REPEAT;
+
+    swmClampToEdge:
+      Result := GL_CLAMP_TO_EDGE;
+
+    swmClampToBorder:
+      Result := GL_CLAMP_TO_BORDER;
+
+    swmMirrorClampToEdge:
+      Result :=  GL_MIRROR_CLAMP_TO_EDGE;
+  end;
+end;
 
 
 constructor TsgeGraphicOpenGLSprite.Create(Sprite: TsgeSprite);
@@ -97,7 +156,19 @@ begin
   //Залить текстуру
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, Sprite.Width, Sprite.Height, 0, GL_BGRA, GL_UNSIGNED_BYTE, Sprite.Data);
 
-  //отвязать текстуру
+  //Создание MipMap
+  glGenerateMipmap(GL_TEXTURE_2D);
+
+  //Установить режим фильтрации
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GetMagFilter(Sprite.MagFilter));
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GetMinFilter(Sprite.MinFilter));
+
+  //Установить режим оборачивания
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GetWrapMode(Sprite.WrapModeHorizontal));
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GetWrapMode(Sprite.WrapModeVertical));
+  glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, @Sprite.WrapModeColor);
+
+  //Отвязать текстуру
   Detach;
 
   //Размеры плитки в координатах OpenGL

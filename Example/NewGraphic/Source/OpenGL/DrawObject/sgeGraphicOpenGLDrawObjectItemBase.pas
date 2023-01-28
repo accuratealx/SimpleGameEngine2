@@ -60,10 +60,10 @@ begin
   //Создать VAO
   FVAO := TsgeGraphicOpenGLVertexArrayObject.Create;
 
-
+  //Привязать буфер вершин к VAO
   FVAO.Attach;
   FVertexBuffer.Attach;
-  FVAO.BindPosition(FVertexBuffer);
+  FVAO.BindVertexCoord(FVertexBuffer);
 end;
 
 

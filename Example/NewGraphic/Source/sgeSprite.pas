@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeSprite.pas
-Версия            1.0
+Версия            1.1
 Создан            05.01.2023
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Спрайт в памяти
@@ -20,13 +20,46 @@ uses
 
 
 type
+  //Фильтрация текстуры при увеличении
+  TsgeSpriteMagFilter = (
+    smagfNearest,               //По соседним (По умолчанию)
+    smagfLinear                 //Линейная
+  );
+
+
+  //Фильтрация текстуры при уменьшении
+  TsgeSpriteMinFilter = (
+    sminfNearest,               //По соседним
+    sminfLinear,                //Линейная
+    sminfNearestMipmapNearest,
+    sminfLinearMipmapNearest,
+    sminfNearestMipmapLinear,   //(По умолчанию)
+    sminfLinearMipmapLinear
+  );
+
+
+  //Заворачивание текстуры
+  TsgeSpriteWrapMode = (
+     swmRepeat,                 //Повтор
+     swmMirroredRepeat,         //Повтор через отражение
+     swmClampToEdge,            //Координаты от 0..1, за пределами цвет границы текстуры (По умолчанию)
+     swmClampToBorder,          //Координаты от 0..1, за пределами заранее определенный цвет
+     swmMirrorClampToEdge       //Отражается один раз, при выходе за пределы цвет границы текстуры
+  );
+
+
+  //Класс спрайта
   TsgeSprite = class
   private
     FData: Pointer;
     FSize: Int64;
     FWidth: Integer;                                                //Ширина спрайта в пикселях
     FHeight: Integer;                                               //Высота спрайта в пикселях
-    FFileName: String;                                              //Имя файла
+    FMagFilter: TsgeSpriteMagFilter;                                //Фильтрация увеличения
+    FMinFilter: TsgeSpriteMinFilter;                                //Фильтрация уменьшения
+    FWrapModeHorizontal: TsgeSpriteWrapMode;                        //Горизонтальное заворачивание
+    FWrapModeVertical: TsgeSpriteWrapMode;                          //Вертикальное заворачивание
+    FWrapModeColor: TsgeColor;                                      //Цвет границы заворачивания текстуры
     FTileCols: Word;                                                //Плиток по X
     FTileRows: Word;                                                //Плиток по Y
     FTileWidth: Word;                                               //Ширина одной плитки в пикселях
@@ -42,8 +75,9 @@ type
     procedure SetTileRows(ARows: Word);
     procedure SetWidth(AWidth: Integer);
     procedure SetHeight(AHeight: Integer);
+
+    procedure SetDefaultParameters;
   public
-    constructor Create(FileName: String; TileCols: Word = 1; TileRows: Word = 1);
     constructor Create(Stream: TsgeMemoryStream; TileCols: Word = 1; TileRows: Word = 1);
     constructor Create(Width: Integer = 0; Height: Integer = 0; TileCols: Word = 1; TileRows: Word = 1);
     destructor  Destroy; override;
@@ -51,14 +85,17 @@ type
     procedure FillColor(Color: TsgeColor);
     procedure FillChessBoard(CellSize: Integer);
 
-    procedure LoadFromFile(FileName: String);
     procedure FromMemoryStream(Stream: TsgeMemoryStream);
 
-    property FileName: String read FFileName write FFileName;
     property Data: Pointer read FData;
     property Size: Int64 read FSize;
     property Width: Integer read FWidth write SetWidth;
     property Height: Integer read FHeight write SetHeight;
+    property MagFilter: TsgeSpriteMagFilter read FMagFilter write FMagFilter;
+    property MinFilter: TsgeSpriteMinFilter read FMinFilter write FMinFilter;
+    property WrapModeHorizontal: TsgeSpriteWrapMode read FWrapModeHorizontal write FWrapModeHorizontal;
+    property WrapModeVertical: TsgeSpriteWrapMode read FWrapModeVertical write FWrapModeVertical;
+    property WrapModeColor: TsgeColor read FWrapModeColor write FWrapModeColor;
     property TileCols: Word read FTileCols write SetTileCols;
     property TileRows: Word read FTileRows write SetTileRows;
     property TileWidth: Word read FTileWidth;
@@ -74,7 +111,6 @@ uses
 const
   _UNITNAME = 'Sprite';
 
-  Err_CantReadFile        = 'CantReadFile';
   Err_CantLoadFromStream  = 'CantLoadFromStream';
 
 
@@ -178,21 +214,24 @@ begin
 end;
 
 
-constructor TsgeSprite.Create(FileName: String; TileCols: Word; TileRows: Word);
+procedure TsgeSprite.SetDefaultParameters;
 begin
-  //Обработать информацию о плитках
-  SetTiles(TileCols, TileRows);
+  //Фильтрация
+  FMagFilter := smagfNearest;
+  FMinFilter := sminfNearestMipmapLinear;
 
-  //Попробовать загрузить данные из файла
-  LoadFromFile(FileName);
-
-  //Запомнить имя файла
-  FFileName := FileName;
+  //Заворачивание текстуры
+  FWrapModeHorizontal := swmClampToEdge;
+  FWrapModeVertical := swmClampToEdge;
+  FWrapModeColor := cBlack;
 end;
 
 
 constructor TsgeSprite.Create(Stream: TsgeMemoryStream; TileCols: Word; TileRows: Word);
 begin
+  //Установить параметры по умолчанию
+  SetDefaultParameters;
+
   //Обработать информацию о плитках
   SetTiles(TileCols, TileRows);
 
@@ -203,6 +242,9 @@ end;
 
 constructor TsgeSprite.Create(Width: Integer; Height: Integer; TileCols: Word; TileRows: Word);
 begin
+  //Установить параметры по умолчанию
+  SetDefaultParameters;
+
   //Обработать информацию о плитках
   SetTiles(TileCols, TileRows);
 
@@ -286,30 +328,6 @@ begin
     Quad^.Green := a;
     Quad^.Blue := a;
     Quad^.Alpha := 255;
-  end;
-end;
-
-
-procedure TsgeSprite.LoadFromFile(FileName: String);
-var
-  Ms: TsgeMemoryStream;
-begin
-  try
-    Ms := TsgeMemoryStream.Create;
-
-    try
-      //Загрузить из файла
-      Ms.LoadFromFile(FileName);
-
-      //Загрузить из потока
-      FromMemoryStream(Ms);
-    except
-      on E: EsgeException do
-        raise EsgeException.Create(_UNITNAME, Err_CantReadFile, FileName, E.Message);
-    end;
-
-  finally
-    Ms.Free;
   end;
 end;
 

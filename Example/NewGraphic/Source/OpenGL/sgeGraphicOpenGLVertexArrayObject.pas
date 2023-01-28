@@ -28,7 +28,8 @@ type
     constructor Create;
     destructor  Destroy; override;
 
-    procedure BindPosition(Buffer: TsgeGraphicOpenGLBuffer);
+    procedure BindVertexCoord(Buffer: TsgeGraphicOpenGLBuffer);
+    procedure BindTextureCoord(Buffer: TsgeGraphicOpenGLBuffer);
 
     procedure DrawArray;
 
@@ -45,6 +46,8 @@ uses
   sgeErrors;
 
 const
+  STRIDE = 2 * sizeof(GLfloat);
+
   _UNITNAME = 'GraphicOpenGLVertexArrayObject';
 
   Err_EmptyBuffer = 'EmptyBuffer';
@@ -64,9 +67,7 @@ begin
 end;
 
 
-procedure TsgeGraphicOpenGLVertexArrayObject.BindPosition(Buffer: TsgeGraphicOpenGLBuffer);
-const
-  STRIDE = 2 * sizeof(GLfloat);
+procedure TsgeGraphicOpenGLVertexArrayObject.BindVertexCoord(Buffer: TsgeGraphicOpenGLBuffer);
 begin
   if Buffer = nil then
     raise EsgeException.Create(_UNITNAME, Err_EmptyBuffer);
@@ -82,6 +83,22 @@ begin
 
   //Посчитать количество вершин
   FVertexCount := Buffer.Size div STRIDE;
+end;
+
+
+procedure TsgeGraphicOpenGLVertexArrayObject.BindTextureCoord(Buffer: TsgeGraphicOpenGLBuffer);
+begin
+  if Buffer = nil then
+    raise EsgeException.Create(_UNITNAME, Err_EmptyBuffer);
+
+  //Привязать буфер вершин
+  Buffer.Attach;
+
+  //Разрешить 0 расположение в шейдере
+  glEnableVertexAttribArray(1);
+
+  //Указать параметры данных вершин
+  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, STRIDE, nil);
 end;
 
 
