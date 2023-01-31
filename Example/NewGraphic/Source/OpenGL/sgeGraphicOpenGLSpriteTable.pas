@@ -22,6 +22,8 @@ type
   TsgeGraphicOpenGLSpriteTable = class
   private
     FTable: TFPHashObjectList;
+
+    function SpriteToStringName(Sprite: TsgeSprite): ShortString;
   public
     constructor Create;
     destructor  Destroy; override;
@@ -33,14 +35,32 @@ type
   end;
 
 
+var
+  OpenGLSpriteTable: TsgeGraphicOpenGLSpriteTable;
+
+
 implementation
+
+uses
+  sgeSystemUtils;
 
 type
   TSpriteTableItem = class
   public
-    Count: Word;
+    Count: Integer;
     Sprite: TsgeGraphicOpenGLSprite;
   end;
+
+
+function TsgeGraphicOpenGLSpriteTable.SpriteToStringName(Sprite: TsgeSprite): ShortString;
+var
+  Addr: Pointer;
+  I: Cardinal;
+begin
+  Addr := @Sprite;
+  I := UIntPtr(Addr);
+  Result := sgeIntToHEX(I, 16);
+end;
 
 
 constructor TsgeGraphicOpenGLSpriteTable.Create;
@@ -51,27 +71,85 @@ end;
 
 destructor TsgeGraphicOpenGLSpriteTable.Destroy;
 begin
+
   FTable.Free;
 end;
 
 
 procedure TsgeGraphicOpenGLSpriteTable.Clear;
+var
+  i: Integer;
 begin
+  for i := FTable.Count - 1 downto 0 do
+    TSpriteTableItem(FTable.Items[i]).Sprite.Free;
 
+  FTable.Clear;
 end;
 
 
 function TsgeGraphicOpenGLSpriteTable.Add(Sprite: TsgeSprite): TsgeGraphicOpenGLSprite;
+var
+  SpriteName: ShortString;
+  Data: TSpriteTableItem;
 begin
+  //Имя спрайта
+  SpriteName := SpriteToStringName(Sprite);
 
+  //Проверить существование спрайта в таблице
+  Data := TSpriteTableItem(FTable.Find(SpriteName));
+
+  //Если нет спрайта, то загрузить
+  if Data = nil then
+  begin
+    Data := TSpriteTableItem.Create;
+    Data.Count := 1;
+    Data.Sprite := TsgeGraphicOpenGLSprite.Create(Sprite);
+    FTable.Add(SpriteName, Data);
+  end
+  else
+    Data.Count := Data.Count + 1;
+
+  Result := Data.Sprite;
 end;
 
 
 procedure TsgeGraphicOpenGLSpriteTable.Delete(Sprite: TsgeSprite);
+var
+  SpriteName: ShortString;
+  Data: TSpriteTableItem;
 begin
+  //Имя спрайта
+  SpriteName := SpriteToStringName(Sprite);
 
+  //Проверить существование спрайта в таблице
+  Data := TSpriteTableItem(FTable.Find(SpriteName));
+
+  //Если спрайт есть, то удалить
+  if Data <> nil then
+  begin
+    //Уменьшить Count
+    Data.Count := Data.Count - 1;
+
+    //Удалить если больше не используется
+    if Data.Count <= 0 then
+    begin
+      Data.Sprite.Free;
+      FTable.Delete(FTable.IndexOf(Data));
+    end;
+  end;
 end;
 
+
+initialization
+begin
+  OpenGLSpriteTable := TsgeGraphicOpenGLSpriteTable.Create;
+end;
+
+
+finalization
+begin
+  OpenGLSpriteTable.Free;
+end;
 
 
 end.

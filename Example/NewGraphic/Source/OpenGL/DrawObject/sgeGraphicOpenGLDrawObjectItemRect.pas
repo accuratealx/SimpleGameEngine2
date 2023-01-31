@@ -38,7 +38,7 @@ implementation
 uses
   dglOpenGL,
   sgeErrors,
-  sgeGraphicBuffer;
+  sgeGraphicOpenGLCoordBuffer;
 
 const
   _UNITNAME = 'GraphicOpenGLDrawObjectItemRect';
@@ -48,7 +48,7 @@ const
 
 constructor TsgeGraphicOpenGLDrawObjectItemRect.Create(ShaderProgram: TsgeGraphicOpenGLShaderProgram; Rect: TsgeDisplayElementItemRect);
 var
-  Buff: TsgeGraphicBuffer;
+  Buff: TsgeGraphicOpenGLCoordBuffer;
   w, h: GLfloat;
 begin
   if Rect = nil then
@@ -64,7 +64,7 @@ begin
   FPosition.Y := FRect.Y;
 
   //Создать буфер c координатами
-  Buff := TsgeGraphicBuffer.Create;
+  Buff := TsgeGraphicOpenGLCoordBuffer.Create;
   if FRect.Centered then
   begin
     w := FRect.Width / 2;

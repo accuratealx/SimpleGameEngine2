@@ -41,7 +41,7 @@ implementation
 uses
   dglOpenGL,
   sgeErrors,
-  sgeGraphicBuffer;
+  sgeGraphicOpenGLSpriteTable, sgeGraphicOpenGLCoordBuffer;
 
 const
   _UNITNAME = 'GraphicOpenGLDrawObjectItemSprite';
@@ -51,7 +51,7 @@ const
 
 constructor TsgeGraphicOpenGLDrawObjectItemSprite.Create(ShaderProgram: TsgeGraphicOpenGLShaderProgram; Sprite: TsgeDisplayElementItemSprite);
 var
-  Buff: TsgeGraphicBuffer;
+  Buff: TsgeGraphicOpenGLCoordBuffer;
   w, h: GLfloat;
 begin
   if Sprite = nil then
@@ -67,7 +67,7 @@ begin
   FPosition.Y := FSprite.Y;
 
   //Создать промежуточный буфер
-  Buff := TsgeGraphicBuffer.Create;
+  Buff := TsgeGraphicOpenGLCoordBuffer.Create;
 
   //Проверить вывод по центру
   if FSprite.Centered then
@@ -97,14 +97,15 @@ begin
   //Удалить промежуточный буфер
   Buff.Free;
 
-
   //Найти спрайт в таблице
-  FGLSprite := nil;
+  FGLSprite := OpenGLSpriteTable.Add(FSprite.Sprite);
 end;
 
 
 destructor TsgeGraphicOpenGLDrawObjectItemSprite.Destroy;
 begin
+  OpenGLSpriteTable.Delete(FSprite.Sprite);
+
   FTextureBuffer.Free;
 
   inherited Destroy;

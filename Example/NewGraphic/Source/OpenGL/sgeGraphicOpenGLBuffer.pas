@@ -16,7 +16,7 @@ interface
 
 uses
   dglOpenGL,
-  sgeGraphicBuffer;
+  sgeGraphicOpenGLCoordBuffer;
 
 type
   //Шаблон использованных данных
@@ -30,14 +30,15 @@ type
     FHandle: GLUint;
     FUsage: TsgeGraphicOpenGLBufferUsage;
     FSize: Int64;
+    FCoordCount: Int64;
 
     function GetGLUsageByBufferUsage(Usage: TsgeGraphicOpenGLBufferUsage): GLenum;
   public
     constructor Create;
-    constructor Create(Buffer: TsgeGraphicBuffer; Usage: TsgeGraphicOpenGLBufferUsage = buStaticDraw);
+    constructor Create(Buffer: TsgeGraphicOpenGLCoordBuffer; Usage: TsgeGraphicOpenGLBufferUsage = buStaticDraw);
     destructor  Destroy; override;
 
-    procedure SetData(Buffer: TsgeGraphicBuffer; Usage: TsgeGraphicOpenGLBufferUsage = buStaticDraw);
+    procedure SetData(Buffer: TsgeGraphicOpenGLCoordBuffer; Usage: TsgeGraphicOpenGLBufferUsage = buStaticDraw);
 
     procedure Attach;
     procedure Detach;
@@ -45,6 +46,7 @@ type
     property Handle: GLUInt read FHandle;
     property Usage: TsgeGraphicOpenGLBufferUsage read FUsage;
     property Size: Int64 read FSize;
+    property CoordCount: Int64 read FCoordCount;
   end;
 
 
@@ -83,7 +85,7 @@ begin
 end;
 
 
-constructor TsgeGraphicOpenGLBuffer.Create(Buffer: TsgeGraphicBuffer; Usage: TsgeGraphicOpenGLBufferUsage);
+constructor TsgeGraphicOpenGLBuffer.Create(Buffer: TsgeGraphicOpenGLCoordBuffer; Usage: TsgeGraphicOpenGLBufferUsage);
 begin
   if Buffer = nil then
     raise EsgeException.Create(_UNITNAME, Err_EmptyBuffer);
@@ -108,7 +110,7 @@ begin
 end;
 
 
-procedure TsgeGraphicOpenGLBuffer.SetData(Buffer: TsgeGraphicBuffer; Usage: TsgeGraphicOpenGLBufferUsage);
+procedure TsgeGraphicOpenGLBuffer.SetData(Buffer: TsgeGraphicOpenGLCoordBuffer; Usage: TsgeGraphicOpenGLBufferUsage);
 begin
   if Buffer = nil then
     raise EsgeException.Create(_UNITNAME, Err_EmptyBuffer);
@@ -121,6 +123,9 @@ begin
 
   //Отвязать буфер
   Detach;
+
+  //Запомнить количество вершин
+  FCoordCount := Buffer.Size div (2 * SizeOf(GLfloat));
 end;
 
 

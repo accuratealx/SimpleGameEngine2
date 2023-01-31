@@ -255,7 +255,7 @@ begin
   Attribs[1] := MajorVersion;
   Attribs[2] := WGL_CONTEXT_MINOR_VERSION_ARB;
   Attribs[3] := MinorVersion;
-  Attribs[4] := 0;                                                  //Конец структуры - 0
+  Attribs[4] := 0;
 
   //Создать версионный контекст
   FGLContext := wglCreateContextAttribsARB(FDC, 0, @Attribs[0]);
@@ -273,14 +273,17 @@ begin
   //Почистить временный контекст
   wglDeleteContext(LegacyRC);
 
+  //Включить отсечение задних граней
+  glCullFace(GL_BACK);
+  glEnable(GL_CULL_FACE);
+
   //Установить параметры по умолчанию
   Enable(gcVerticalSync);
   Enable(gcColorBlend);
   Enable(gcTexturing);
-
-
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+  SetBlendFunction(gbfTransparent);
+  SetShadeModel(gsmSmooth);
+  SetPoligonMode(gpmFill);
 end;
 
 

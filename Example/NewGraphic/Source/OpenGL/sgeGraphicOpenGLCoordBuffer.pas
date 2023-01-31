@@ -1,14 +1,14 @@
 {
 Пакет             Simple Game Engine 2
-Файл              sgeGraphicBuffer.pas
-Версия            1.0
+Файл              sgeGraphicOpenGLCoordBuffer.pas
+Версия            1.1
 Создан            09.01.2023
 Автор             Творческий человек  (accuratealx@gmail.com)
-Описание          Класс буфера
+Описание          OpenGL: Буфер координат
 }
 {$Include Defines.inc}
 
-unit sgeGraphicBuffer;
+unit sgeGraphicOpenGLCoordBuffer;
 
 {$mode ObjFPC}{$H+}
 
@@ -18,7 +18,7 @@ uses
   sgeTypes;
 
 type
-  TsgeGraphicBuffer = class
+  TsgeGraphicOpenGLCoordBuffer = class
   private
     FData: Pointer;
     FSize: Int64;
@@ -42,13 +42,13 @@ const
   DATA_SIZE = SizeOf(Single);
 
 
-destructor TsgeGraphicBuffer.Destroy;
+destructor TsgeGraphicOpenGLCoordBuffer.Destroy;
 begin
   Clear;
 end;
 
 
-procedure TsgeGraphicBuffer.Clear;
+procedure TsgeGraphicOpenGLCoordBuffer.Clear;
 begin
   //Освободить память
   Freemem(FData, FSize);
@@ -57,7 +57,7 @@ begin
 end;
 
 
-procedure TsgeGraphicBuffer.AddPoint(X, Y: Single);
+procedure TsgeGraphicOpenGLCoordBuffer.AddPoint(X, Y: Single);
 begin
   //Новый размер
   FSize := FSize + 2 * DATA_SIZE;
@@ -71,13 +71,13 @@ begin
 end;
 
 
-procedure TsgeGraphicBuffer.AddPoint(Point: TsgeFloatPoint);
+procedure TsgeGraphicOpenGLCoordBuffer.AddPoint(Point: TsgeFloatPoint);
 begin
   AddPoint(Point.X, Point.Y);
 end;
 
 
-procedure TsgeGraphicBuffer.AddQuad(X1, Y1, X2, Y2: Single);
+procedure TsgeGraphicOpenGLCoordBuffer.AddQuad(X1, Y1, X2, Y2: Single);
 begin
   //Новый размер
   FSize := FSize + 12 * DATA_SIZE;

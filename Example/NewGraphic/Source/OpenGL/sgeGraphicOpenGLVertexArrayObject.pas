@@ -4,7 +4,7 @@
 Версия            1.0
 Создан            27.01.2023
 Автор             Творческий человек  (accuratealx@gmail.com)
-Описание          OpenGL:
+Описание          OpenGL: Класс вертексного объекта
 }
 {$Include Defines.inc}
 
@@ -22,8 +22,9 @@ type
   TsgeGraphicOpenGLVertexArrayObject = class
   private
     FHandle: GLUInt;
+    FVertexBuffer: TsgeGraphicOpenGLBuffer;
+    FTextureBuffer: TsgeGraphicOpenGLBuffer;
 
-    FVertexCount: GLuint;
   public
     constructor Create;
     destructor  Destroy; override;
@@ -81,8 +82,8 @@ begin
   //Указать параметры данных вершин
   glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, STRIDE, nil);
 
-  //Посчитать количество вершин
-  FVertexCount := Buffer.Size div STRIDE;
+  //Сохранить указатель на буфер вершин
+  FVertexBuffer := Buffer;
 end;
 
 
@@ -99,13 +100,16 @@ begin
 
   //Указать параметры данных вершин
   glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, STRIDE, nil);
+
+  //Сохранить указатель на буфер текстурных координат
+  FTextureBuffer := Buffer;
 end;
 
 
 procedure TsgeGraphicOpenGLVertexArrayObject.DrawArray;
 begin
   //Вывести массив вершин
-  glDrawArrays(GL_TRIANGLES, 0, 6);
+  glDrawArrays(GL_TRIANGLES, 0, FVertexBuffer.CoordCount);
 end;
 
 

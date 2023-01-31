@@ -43,7 +43,7 @@ implementation
 
 procedure TsgeDisplayElementItemBase.SetDefaultParameter;
 begin
-  FTransparent := Transparent;
+  FTransparent := True;
   FCentered := False;
 end;
 

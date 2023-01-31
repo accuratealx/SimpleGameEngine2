@@ -1,10 +1,10 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGraphicOpenGLShaderProgram.pas
-Версия            1.0
+Версия            1.1
 Создан            21.01.2023
 Автор             Творческий человек  (accuratealx@gmail.com)
-Описание          OpenGL: Шедерная программа
+Описание          OpenGL: Шейдерная программа
 }
 {$Include Defines.inc}
 
@@ -30,6 +30,9 @@ type
   public
     constructor Create(Name: String; VertexShader, FragmentShader: TsgeGraphicOpenGLShader);
     constructor Create(Name: String; VertexShader, FragmentShader: TsgeMemoryStream);
+    constructor Create(Name: String; VertexShader, FragmentShader: String);
+    constructor Create(Name: String; Source: TsgeMemoryStream);
+    constructor Create(Name: String; Source: String);
     destructor  Destroy; override;
 
     procedure SetValue(Name: String; Value: Boolean);
@@ -57,10 +60,12 @@ uses
 const
   _UNITNAME = 'GraphicOpenGLShaderProgram';
 
+  Err_EmptySource = 'EmptySource';
   Err_EmptyVertexShader = 'EmptyVertexShader';
   Err_EmptyFragmentShader = 'EmptyFragmentShader';
   Err_LinkError = 'LinkError';
   Err_ParamNotFound = 'ParamNotFound';
+  Err_ProgramSeparatorNotFound = 'ProgramSeparatorNotFound';
 
 
 function TsgeGraphicOpenGLShaderProgram.GetParamIndex(Name: String): Integer;
@@ -154,6 +159,67 @@ begin
     VertexS.Free;
     FragmentS.Free;
   end;
+end;
+
+
+constructor TsgeGraphicOpenGLShaderProgram.Create(Name: String; VertexShader, FragmentShader: String);
+var
+  VertexS, FragmentS: TsgeGraphicOpenGLShader;
+begin
+  VertexS := nil;
+  FragmentS := nil;
+  try
+
+    try
+      //Создать объекты
+      VertexS := TsgeGraphicOpenGLShader.Create(stVertex, VertexShader);
+      FragmentS := TsgeGraphicOpenGLShader.Create(stFragment, FragmentShader);
+
+      //Слинковать
+      Prepare(VertexS.Handle, FragmentS.Handle);
+    except
+      on E: EsgeException do
+        raise EsgeException.Create(_UNITNAME, Err_LinkError, FName, E.Message);
+    end;
+
+  finally
+    VertexS.Free;
+    FragmentS.Free;
+  end;
+end;
+
+
+constructor TsgeGraphicOpenGLShaderProgram.Create(Name: String; Source: TsgeMemoryStream);
+begin
+  //Проверить на существование объектов
+  if Source = nil then
+    raise EsgeException.Create(_UNITNAME, Err_EmptySource);
+
+  //Создать из строки
+  Create(Name, Source.ToString);
+end;
+
+
+constructor TsgeGraphicOpenGLShaderProgram.Create(Name: String; Source: String);
+const
+  PROGRAM_SEPARATOR = 'PROGRAM_SEPARATOR';
+var
+  Vertex, Fragment: String;
+  Idx: Integer;
+begin
+  //Найти расположение разделителя
+  Idx := sgePos(PROGRAM_SEPARATOR, Source);
+  if Idx = 0 then
+    raise EsgeException.Create(_UNITNAME, Err_ProgramSeparatorNotFound, PROGRAM_SEPARATOR);
+
+  //Выделить вертексную программу
+  Vertex := sgeTrim(Copy(Source, 1, Idx - 1));
+
+  //Выделить вершинную программу
+  Fragment := sgeTrim(Copy(Source, Idx + SizeOf(PROGRAM_SEPARATOR), Length(Source) - Idx + SizeOf(PROGRAM_SEPARATOR)));
+
+  //Создать из строк
+  Create(Name, Vertex, Fragment);
 end;
 
 
