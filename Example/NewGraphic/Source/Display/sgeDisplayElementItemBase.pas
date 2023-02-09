@@ -14,6 +14,9 @@ unit sgeDisplayElementItemBase;
 
 interface
 
+uses
+  sgeTypes;
+
 type
   TsgeDisplayElementItemBase = class
   private
@@ -23,18 +26,23 @@ type
     FHeight: Single;                                                //Высота
     FTransparent: Boolean;                                          //Прозрачность
     FCentered: Boolean;                                             //Вывод по центру
+    FScale: Single;                                                 //Масштаб
+    FAngle: Single;                                                 //Угол поворота
+    FAlpha: Single;                                                 //Прозрачность
 
     procedure SetDefaultParameter;
   public
     constructor Create(X, Y, Width, Height: Single);
 
-    property X: Single read FX;
-    property Y: Single read FY;
-    property Width: Single read FWidth;
-    property Height: Single read FHeight;
-
+    property X: Single read FX write FX;
+    property Y: Single read FY write FX;
+    property Width: Single read FWidth write FWidth;
+    property Height: Single read FHeight write FHeight;
     property Transparent: Boolean read FTransparent write FTransparent;
     property Centered: Boolean read FCentered write FCentered;
+    property Scale: Single read FScale write FScale;
+    property Angle: Single read FAngle write FAngle;
+    property Alpha: Single read FAlpha write FAlpha;
   end;
 
 
@@ -45,6 +53,9 @@ procedure TsgeDisplayElementItemBase.SetDefaultParameter;
 begin
   FTransparent := True;
   FCentered := False;
+  FScale := 1;
+  FAngle := 0;
+  FAlpha := 1;
 end;
 
 

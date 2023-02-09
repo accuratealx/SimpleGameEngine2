@@ -17,7 +17,7 @@ interface
 uses
   dglOpenGL,
   sgeTypes, sgeMemoryStream,
-  sgeGraphicOpenGLTypes, sgeGraphicColor, sgeGraphicOpenGLShader;
+  sgeGraphicColor, sgeGraphicOpenGLShader;
 
 type
   TsgeGraphicOpenGLShaderProgram = class
@@ -39,10 +39,11 @@ type
     procedure SetValue(Name: String; Value: Single);
     procedure SetValue(Name: String; Value: Integer);
 
-    procedure SetScreenSize(Size: TsgeFloatPoint);
-    procedure SetLayer(Layer: TsgeLayerInfo);
-    procedure SetPos(Pos: TsgeFloatPoint);
-    procedure SetColor(Color: TsgeColor);
+    procedure SetScreenSize(Value: TsgeFloatPoint);
+    procedure SetLayer(Value: TsgeFloatTriple);
+    procedure SetPos(Value: TsgeFloatPoint);
+    procedure SetScaleAngleAlpha(Value: TsgeFloatTriple);
+    procedure SetColor(Value: TsgeColor);
 
     procedure Attach;
     procedure Detach;
@@ -123,6 +124,9 @@ begin
   if FragmentShader = nil then
     raise EsgeException.Create(_UNITNAME, Err_EmptyFragmentShader);
 
+  //Запомнить имя
+  FName := Name;
+
   //Слинковать
   Prepare(VertexShader.Handle, FragmentShader.Handle);
 end;
@@ -138,6 +142,9 @@ begin
 
   if FragmentShader = nil then
     raise EsgeException.Create(_UNITNAME, Err_EmptyFragmentShader);
+
+  //Запомнить имя
+  FName := Name;
 
   VertexS := nil;
   FragmentS := nil;
@@ -166,6 +173,9 @@ constructor TsgeGraphicOpenGLShaderProgram.Create(Name: String; VertexShader, Fr
 var
   VertexS, FragmentS: TsgeGraphicOpenGLShader;
 begin
+  //Запомнить имя
+  FName := Name;
+
   VertexS := nil;
   FragmentS := nil;
   try
@@ -248,27 +258,33 @@ begin
 end;
 
 
-procedure TsgeGraphicOpenGLShaderProgram.SetScreenSize(Size: TsgeFloatPoint);
+procedure TsgeGraphicOpenGLShaderProgram.SetScreenSize(Value: TsgeFloatPoint);
 begin
-  glUniform2fv(GetParamIndex('ScreenSize'), 1, @Size);
+  glUniform2fv(GetParamIndex('ScreenSize'), 1, @Value);
 end;
 
 
-procedure TsgeGraphicOpenGLShaderProgram.SetLayer(Layer: TsgeLayerInfo);
+procedure TsgeGraphicOpenGLShaderProgram.SetLayer(Value: TsgeFloatTriple);
 begin
-  glUniform3fv(GetParamIndex('Layer'), 1, @Layer);
+  glUniform3fv(GetParamIndex('Layer'), 1, @Value);
 end;
 
 
-procedure TsgeGraphicOpenGLShaderProgram.SetPos(Pos: TsgeFloatPoint);
+procedure TsgeGraphicOpenGLShaderProgram.SetPos(Value: TsgeFloatPoint);
 begin
-  glUniform2fv(GetParamIndex('Pos'), 1, @Pos);
+  glUniform2fv(GetParamIndex('Pos'), 1, @Value);
 end;
 
 
-procedure TsgeGraphicOpenGLShaderProgram.SetColor(Color: TsgeColor);
+procedure TsgeGraphicOpenGLShaderProgram.SetScaleAngleAlpha(Value: TsgeFloatTriple);
 begin
-  glUniform4fv(GetParamIndex('Color'), 1, @Color);
+  glUniform3fv(GetParamIndex('ScaleAngleAlpha'), 1, @Value);
+end;
+
+
+procedure TsgeGraphicOpenGLShaderProgram.SetColor(Value: TsgeColor);
+begin
+  glUniform4fv(GetParamIndex('Color'), 1, @Value);
 end;
 
 

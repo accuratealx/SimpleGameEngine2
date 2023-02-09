@@ -23,11 +23,13 @@ type
   TsgeDisplayElementItemRect = class(TsgeDisplayElementItemBase)
   private
     FColor: TsgeColor;
+
   public
     constructor Create(X, Y, Width, Height: Single; Color: TsgeColor);
 
-    property Color: TsgeColor read FColor;
+    property Color: TsgeColor read FColor write FColor;
   end;
+
 
 implementation
 

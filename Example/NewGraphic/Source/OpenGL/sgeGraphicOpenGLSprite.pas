@@ -147,6 +147,7 @@ end;
 
 procedure TsgeGraphicOpenGLSprite.LoadFromSprite(Sprite: TsgeSprite);
 begin
+  //Проверить объект
   if not Assigned(Sprite) then
     raise EsgeException.Create(_UNITNAME, Err_EptySprite);
 

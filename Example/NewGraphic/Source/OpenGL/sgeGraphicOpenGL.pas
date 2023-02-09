@@ -45,13 +45,6 @@ type
   );
 
 
-  //Режим затенения
-  TsgeGraphicShadeModel = (
-    gsmFlat,              //Один цвет
-    gsmSmooth             //Градиент
-  );
-
-
   //Режим вывода полигонов
   TsgeGraphicPolygonMode = (
     gpmFill,              //Заливка
@@ -105,7 +98,6 @@ type
     procedure Disable(Option: TsgeGraphicCapabilities);
 
     procedure SetBlendFunction(BlendFunction: TsgeGraphicBlendFunction);
-    procedure SetShadeModel(Model: TsgeGraphicShadeModel);
     procedure SetPoligonMode(Mode: TsgeGraphicPolygonMode);
 
     procedure SetLineStipple(Scale: Integer; Pattern: Word);
@@ -282,7 +274,6 @@ begin
   Enable(gcColorBlend);
   Enable(gcTexturing);
   SetBlendFunction(gbfTransparent);
-  SetShadeModel(gsmSmooth);
   SetPoligonMode(gpmFill);
 end;
 
@@ -417,18 +408,6 @@ begin
   case BlendFunction of
     gbfTransparent:
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  end;
-end;
-
-
-procedure TsgeGraphicOpenGL.SetShadeModel(Model: TsgeGraphicShadeModel);
-begin
-  case Model of
-    gsmFlat:
-      glShadeModel(GL_FLAT);
-
-    gsmSmooth:
-      glShadeModel(GL_SMOOTH);
   end;
 end;
 

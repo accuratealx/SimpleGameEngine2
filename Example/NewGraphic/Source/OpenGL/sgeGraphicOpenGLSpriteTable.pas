@@ -42,7 +42,12 @@ var
 implementation
 
 uses
-  sgeSystemUtils;
+  sgeErrors, sgeSystemUtils;
+
+const
+  _UNITNAME = 'GraphicOpenGLSpriteTable';
+
+  Err_EmptySprite = 'EmptySprite';
 
 type
   TSpriteTableItem = class
@@ -57,7 +62,7 @@ var
   Addr: Pointer;
   I: Cardinal;
 begin
-  Addr := @Sprite;
+  Addr := Pointer(Sprite);
   I := UIntPtr(Addr);
   Result := sgeIntToHEX(I, 16);
 end;
@@ -71,7 +76,6 @@ end;
 
 destructor TsgeGraphicOpenGLSpriteTable.Destroy;
 begin
-
   FTable.Free;
 end;
 
@@ -92,6 +96,10 @@ var
   SpriteName: ShortString;
   Data: TSpriteTableItem;
 begin
+  //Проверить объект
+  if Sprite = nil then
+    raise EsgeException.Create(_UNITNAME, Err_EmptySprite);
+
   //Имя спрайта
   SpriteName := SpriteToStringName(Sprite);
 
@@ -118,6 +126,10 @@ var
   SpriteName: ShortString;
   Data: TSpriteTableItem;
 begin
+  //Защита от дурака
+  if Sprite = nil then
+    Exit;
+
   //Имя спрайта
   SpriteName := SpriteToStringName(Sprite);
 

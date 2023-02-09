@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGraphicOpenGLVertexArrayObject.pas
-Версия            1.0
+Версия            1.1
 Создан            27.01.2023
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          OpenGL: Класс вертексного объекта
@@ -19,14 +19,23 @@ uses
   sgeGraphicOpenGLBuffer;
 
 type
+  //Тип вершин
+  TsgeGraphicOpenGLVertexType = (
+    vtPoint,    //Отдельные Точки
+    vtLine,     //Отдельные Линии
+    vtTriangle  //Отдельные треугольники
+  );
+
+
   TsgeGraphicOpenGLVertexArrayObject = class
   private
     FHandle: GLUInt;
+    FVertexType: TsgeGraphicOpenGLVertexType;
     FVertexBuffer: TsgeGraphicOpenGLBuffer;
     FTextureBuffer: TsgeGraphicOpenGLBuffer;
 
   public
-    constructor Create;
+    constructor Create(VertexType: TsgeGraphicOpenGLVertexType = vtTriangle);
     destructor  Destroy; override;
 
     procedure BindVertexCoord(Buffer: TsgeGraphicOpenGLBuffer);
@@ -38,6 +47,7 @@ type
     procedure Detach;
 
     property Handle: GLuint read FHandle;
+    property VertexType: TsgeGraphicOpenGLVertexType read FVertexType;
   end;
 
 
@@ -54,10 +64,14 @@ const
   Err_EmptyBuffer = 'EmptyBuffer';
 
 
-constructor TsgeGraphicOpenGLVertexArrayObject.Create;
+constructor TsgeGraphicOpenGLVertexArrayObject.Create(VertexType: TsgeGraphicOpenGLVertexType);
 begin
+  //Выделить память в видеокарте
   if FHandle = 0 then
     glGenVertexArrays(1, @FHandle);
+
+  //Запомнить тип вершин
+  FVertexType := VertexType;
 end;
 
 
@@ -107,9 +121,23 @@ end;
 
 
 procedure TsgeGraphicOpenGLVertexArrayObject.DrawArray;
+var
+  Mode: GLenum;
 begin
+  //Определить тип вывода
+  case FVertexType of
+    vtPoint:
+      Mode :=  GL_POINTS;
+
+    vtLine:
+      Mode :=  GL_LINES;
+
+    vtTriangle:
+      Mode := GL_TRIANGLES;
+  end;
+
   //Вывести массив вершин
-  glDrawArrays(GL_TRIANGLES, 0, FVertexBuffer.CoordCount);
+  glDrawArrays(Mode, 0, FVertexBuffer.CoordCount);
 end;
 
 

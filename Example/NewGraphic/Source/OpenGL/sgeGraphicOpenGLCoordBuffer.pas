@@ -50,10 +50,10 @@ end;
 
 procedure TsgeGraphicOpenGLCoordBuffer.Clear;
 begin
-  //Освободить память
-  Freemem(FData, FSize);
-
   FSize := 0;
+
+  //Освободить память
+  FData := ReAllocMem(FData, 0)
 end;
 
 

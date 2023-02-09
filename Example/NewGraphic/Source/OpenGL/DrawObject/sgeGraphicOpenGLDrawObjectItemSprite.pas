@@ -15,106 +15,115 @@ unit sgeGraphicOpenGLDrawObjectItemSprite;
 interface
 
 uses
-  sgeTypes,
-  sgeDisplayElementItemSprite,
-  sgeGraphicOpenGL, sgeGraphicOpenGLBuffer, sgeGraphicOpenGLTypes, sgeGraphicOpenGLSprite,
-  sgeGraphicOpenGLShaderProgram, sgeGraphicOpenGLDrawObjectItemBase;
+  sgeDisplayElementItemBase,
+  sgeGraphicOpenGLBuffer, sgeGraphicOpenGLSprite,
+  sgeGraphicOpenGLDrawObjectItemBase;
 
 
 type
   TsgeGraphicOpenGLDrawObjectItemSprite = class(TsgeGraphicOpenGLDrawObjectItemBase)
-  private
-    FSprite: TsgeDisplayElementItemSprite;
+  protected
     FGLSprite: TsgeGraphicOpenGLSprite;
     FTextureBuffer: TsgeGraphicOpenGLBuffer;
 
-  public
-    constructor Create(ShaderProgram: TsgeGraphicOpenGLShaderProgram; Sprite: TsgeDisplayElementItemSprite);
-    destructor  Destroy; override;
+    procedure SetTexBuffer; virtual;
 
-    procedure Draw(Graphic: TsgeGraphicOpenGL; ScreenSize: TsgeFloatPoint; LayerInfo: TsgeLayerInfo); override;
+    function  GetShaderProgramName: String; override;
+    procedure UserInit; override;
+    procedure UserDone; override;
+    procedure UserDrawBegin; override;
+    procedure UserDrawEnd; override;
+
+    procedure UpdateTextureBuffer(X1, Y1, X2, Y2: Single);
+  public
+    procedure Update(Element: TsgeDisplayElementItemBase); override;
+
   end;
 
 
 implementation
 
 uses
-  dglOpenGL,
-  sgeErrors,
+  sgeDisplayElementItemSprite,
   sgeGraphicOpenGLSpriteTable, sgeGraphicOpenGLCoordBuffer;
 
-const
-  _UNITNAME = 'GraphicOpenGLDrawObjectItemSprite';
 
-  Err_EmptySprite = 'EmptySprite';
+procedure TsgeGraphicOpenGLDrawObjectItemSprite.SetTexBuffer;
+begin
+  UpdateTextureBuffer(0, 1, 1, 0);
+end;
 
 
-constructor TsgeGraphicOpenGLDrawObjectItemSprite.Create(ShaderProgram: TsgeGraphicOpenGLShaderProgram; Sprite: TsgeDisplayElementItemSprite);
+function TsgeGraphicOpenGLDrawObjectItemSprite.GetShaderProgramName: String;
+begin
+  Result := 'Sprite';
+end;
+
+
+procedure TsgeGraphicOpenGLDrawObjectItemSprite.UserInit;
+begin
+  //Подготовить буфер с текстурными координатами
+  FTextureBuffer := TsgeGraphicOpenGLBuffer.Create;
+
+  //Привязать буфер координат
+  FTextureBuffer.Attach;
+  FVAO.BindTextureCoord(FTextureBuffer);
+end;
+
+
+procedure TsgeGraphicOpenGLDrawObjectItemSprite.UserDone;
+begin
+  //Удалить координатный буфер
+  FTextureBuffer.Free;
+
+  //Удалить спрайт из таблицы
+  OpenGLSpriteTable.Delete(TsgeDisplayElementItemSprite(FElement).Sprite);
+end;
+
+
+procedure TsgeGraphicOpenGLDrawObjectItemSprite.UserDrawBegin;
+begin
+  //Привязать спрайт
+  FGLSprite.Attach;
+end;
+
+
+procedure TsgeGraphicOpenGLDrawObjectItemSprite.UserDrawEnd;
+begin
+  //Отвязать спрайт
+  FGLSprite.Detach;
+end;
+
+
+procedure TsgeGraphicOpenGLDrawObjectItemSprite.UpdateTextureBuffer(X1, Y1, X2, Y2: Single);
 var
   Buff: TsgeGraphicOpenGLCoordBuffer;
-  w, h: GLfloat;
 begin
-  if Sprite = nil then
-    raise EsgeException.Create(_UNITNAME, Err_EmptySprite);
-
-  //Запомнить объект
-  FSprite := Sprite;
-
-  inherited Create(ShaderProgram);
-
-  //Сохранить положение
-  FPosition.X := FSprite.X;
-  FPosition.Y := FSprite.Y;
-
   //Создать промежуточный буфер
   Buff := TsgeGraphicOpenGLCoordBuffer.Create;
 
-  //Проверить вывод по центру
-  if FSprite.Centered then
-  begin
-    w := FSprite.Width / 2;
-    h := FSprite.Height / 2;
-    Buff.AddQuad(-w, -h, w, h);
-  end
-  else
-    Buff.AddQuad(0, 0, FSprite.Width, FSprite.Height);
-
-  //Залить данные координат в видеокарту
-  FVertexBuffer.SetData(Buff);
-
-  //Подготовить буфер с текстурными координатами
-  FTextureBuffer := TsgeGraphicOpenGLBuffer.Create;
-  FTextureBuffer.Attach;
-  FVAO.BindTextureCoord(FTextureBuffer);
-
   //Задать текстурные координаты
   Buff.Clear;
-  Buff.AddQuad(0, 1, 1, 0);
+  Buff.AddQuad(X1, Y1, X2, Y2);
 
   //Залить данные текстурных координат в видеокарту
   FTextureBuffer.SetData(Buff);
 
   //Удалить промежуточный буфер
   Buff.Free;
+end;
+
+
+procedure TsgeGraphicOpenGLDrawObjectItemSprite.Update(Element: TsgeDisplayElementItemBase);
+begin
+  //Метод предка
+  inherited Update(Element);
 
   //Найти спрайт в таблице
-  FGLSprite := OpenGLSpriteTable.Add(FSprite.Sprite);
-end;
+  FGLSprite := OpenGLSpriteTable.Add(TsgeDisplayElementItemSprite(Element).Sprite);
 
-
-destructor TsgeGraphicOpenGLDrawObjectItemSprite.Destroy;
-begin
-  OpenGLSpriteTable.Delete(FSprite.Sprite);
-
-  FTextureBuffer.Free;
-
-  inherited Destroy;
-end;
-
-
-procedure TsgeGraphicOpenGLDrawObjectItemSprite.Draw(Graphic: TsgeGraphicOpenGL; ScreenSize: TsgeFloatPoint; LayerInfo: TsgeLayerInfo);
-begin
-
+  //Обновить текстурный буфер
+  SetTexBuffer;
 end;
 
 

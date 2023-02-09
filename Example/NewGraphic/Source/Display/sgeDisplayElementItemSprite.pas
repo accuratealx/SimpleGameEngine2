@@ -26,7 +26,7 @@ type
   public
     constructor Create(X, Y, Width, Height: Single; Sprite: TsgeSprite);
 
-    property Sprite: TsgeSprite read FSprite;
+    property Sprite: TsgeSprite read FSprite write FSprite;
   end;
 
 

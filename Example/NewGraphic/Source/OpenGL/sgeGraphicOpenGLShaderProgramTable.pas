@@ -22,6 +22,7 @@ type
   TsgeGraphicOpenGLShaderProgramTable = class
   private
     FTable: TFPHashObjectList;
+
   public
     constructor Create;
     destructor  Destroy; override;
