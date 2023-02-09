@@ -1,3 +1,4 @@
+//MrShoor edited
 #version 400 core
 
 layout (location = 0) in vec2 aPos;
@@ -11,23 +12,18 @@ uniform vec3 ScaleAngleAlpha;   //Масштаб, Угол поворота, п�
 vec2 ScreenPointToGLPoint(vec2 ScreenPoint)
 {
     //Коэффициенты
-    float kw = (2.0 / ScreenSize.x);
-    float kh = (2.0 / ScreenSize.y);
-    float x = ScreenPoint.x * kw - 1.0;
-    float y = (ScreenSize.y - ScreenPoint.y) * kh - 1.0;
-    return vec2(x, y);
+	vec2 kwh = 2.0 / ScreenSize;
+    return vec2(ScreenPoint.x, ScreenSize.y - ScreenPoint.y) * kwh - 1.0;
 }
 
 void main()
 {
     //Поправить координаты относительно слоя
-    vec2 RealPoint;
-    RealPoint.x = (aPos.x * Layer.z * ScaleAngleAlpha.x) + Layer.x + Pos.x;
-    RealPoint.y = (aPos.y * Layer.z * ScaleAngleAlpha.x) + Layer.y + Pos.y;
+    vec2 RealPoint = aPos * Layer.z * ScaleAngleAlpha.x + Layer.xy + Pos;
 
     //Нормальзовать координаты
     vec2 GLPoint = ScreenPointToGLPoint(RealPoint);
-    gl_Position = vec4(GLPoint.x, GLPoint.y, 0.0, 1.0);
+    gl_Position = vec4(GLPoint, 0.0, 1.0);
 }
 
 
