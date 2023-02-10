@@ -16,7 +16,7 @@ interface
 
 uses
   sgeDisplayElementItemBase,
-  sgeGraphicOpenGLBuffer, sgeGraphicOpenGLSprite,
+  sgeGraphicOpenGL, sgeGraphicOpenGLBuffer, sgeGraphicOpenGLSprite,
   sgeGraphicOpenGLDrawObjectItemBase;
 
 
@@ -31,8 +31,8 @@ type
     function  GetShaderProgramName: String; override;
     procedure UserInit; override;
     procedure UserDone; override;
-    procedure UserDrawBegin; override;
-    procedure UserDrawEnd; override;
+    procedure UserDrawBegin(Graphic: TsgeGraphicOpenGL); override;
+    procedure UserDrawEnd(Graphic: TsgeGraphicOpenGL); override;
 
     procedure UpdateTextureBuffer(X1, Y1, X2, Y2: Single);
   public
@@ -72,23 +72,28 @@ end;
 
 
 procedure TsgeGraphicOpenGLDrawObjectItemSprite.UserDone;
+var
+  ElementSprite: TsgeDisplayElementItemSprite;
 begin
+  //Ссылка на елемент
+  ElementSprite := FElement as TsgeDisplayElementItemSprite;
+
   //Удалить координатный буфер
   FTextureBuffer.Free;
 
   //Удалить спрайт из таблицы
-  OpenGLSpriteTable.Delete(TsgeDisplayElementItemSprite(FElement).Sprite);
+  OpenGLSpriteTable.Delete(ElementSprite.Sprite);
 end;
 
 
-procedure TsgeGraphicOpenGLDrawObjectItemSprite.UserDrawBegin;
+procedure TsgeGraphicOpenGLDrawObjectItemSprite.UserDrawBegin(Graphic: TsgeGraphicOpenGL);
 begin
   //Привязать спрайт
   FGLSprite.Attach;
 end;
 
 
-procedure TsgeGraphicOpenGLDrawObjectItemSprite.UserDrawEnd;
+procedure TsgeGraphicOpenGLDrawObjectItemSprite.UserDrawEnd(Graphic: TsgeGraphicOpenGL);
 begin
   //Отвязать спрайт
   FGLSprite.Detach;
@@ -115,12 +120,17 @@ end;
 
 
 procedure TsgeGraphicOpenGLDrawObjectItemSprite.Update(Element: TsgeDisplayElementItemBase);
+var
+  ElementSprite: TsgeDisplayElementItemSprite;
 begin
   //Метод предка
   inherited Update(Element);
 
+  //Ссылка на елемент
+  ElementSprite := FElement as TsgeDisplayElementItemSprite;
+
   //Найти спрайт в таблице
-  FGLSprite := OpenGLSpriteTable.Add(TsgeDisplayElementItemSprite(Element).Sprite);
+  FGLSprite := OpenGLSpriteTable.Add(ElementSprite.Sprite);
 
   //Обновить текстурный буфер
   SetTexBuffer;

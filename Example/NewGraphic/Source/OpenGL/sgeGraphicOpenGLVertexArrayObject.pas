@@ -23,6 +23,7 @@ type
   TsgeGraphicOpenGLVertexType = (
     vtPoint,    //Отдельные Точки
     vtLine,     //Отдельные Линии
+    vtLineLoop, //Соединенные линии
     vtTriangle  //Отдельные треугольники
   );
 
@@ -131,6 +132,9 @@ begin
 
     vtLine:
       Mode :=  GL_LINES;
+
+    vtLineLoop:
+      Mode := GL_LINE_LOOP;
 
     vtTriangle:
       Mode := GL_TRIANGLES;

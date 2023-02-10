@@ -41,9 +41,8 @@ begin
 
   //Подготовить координаты
   X1 := SpritePart.SpriteX1 * FGLSprite.GLPixelWidth;
-  X2 := SpritePart.SpriteX2 * FGLSprite.GLPixelWidth;
-
   Y1 := 1 - SpritePart.SpriteY1 * FGLSprite.GLPixelHeight;
+  X2 := SpritePart.SpriteX2 * FGLSprite.GLPixelWidth;
   Y2 := 1 - SpritePart.SpriteY2 * FGLSprite.GLPixelHeight;
 
   //Обновить текстурный буфер

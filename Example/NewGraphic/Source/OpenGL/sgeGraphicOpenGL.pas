@@ -16,6 +16,7 @@ interface
 
 uses
   dglOpenGL, Windows,
+  sgeTypes,
   sgeGraphicColor;
 
 
@@ -53,18 +54,6 @@ type
   );
 
 
-  //Штриховка линий
-  TsgeGraphicLineStipple = (
-    glsSolid,             //Сплошная
-    glsDash,              //Тире
-    glsNarrowDash,        //Узкое тире
-    glsWideDash,          //Широкое тире
-    glsDot,               //Точки
-    glsDashDot,           //Тире-точка
-    glsDashDotDot         //Тире-точка-точка
-  );
-
-
   //Рендерер OpenGL
   TsgeGraphicOpenGL = class
   private
@@ -99,9 +88,10 @@ type
 
     procedure SetBlendFunction(BlendFunction: TsgeGraphicBlendFunction);
     procedure SetPoligonMode(Mode: TsgeGraphicPolygonMode);
+    procedure SetLineWidth(Width: Single);
 
     procedure SetLineStipple(Scale: Integer; Pattern: Word);
-    procedure SetLineStipple(Scale: Integer; Mode: TsgeGraphicLineStipple);
+    procedure SetLineStipple(Scale: Integer; Mode: TsgeLineStipple);
 
 
     //Свойства
@@ -427,24 +417,30 @@ begin
 end;
 
 
+procedure TsgeGraphicOpenGL.SetLineWidth(Width: Single);
+begin
+  glLineWidth(Width);
+end;
+
+
 procedure TsgeGraphicOpenGL.SetLineStipple(Scale: Integer; Pattern: Word);
 begin
   glLineStipple(Scale, Pattern);
 end;
 
 
-procedure TsgeGraphicOpenGL.SetLineStipple(Scale: Integer; Mode: TsgeGraphicLineStipple);
+procedure TsgeGraphicOpenGL.SetLineStipple(Scale: Integer; Mode: TsgeLineStipple);
 var
   W: GLushort;
 begin
   case Mode of
-    glsSolid      : W := $FFFF; //****************
-    glsDash       : W := $0F0F; //----****----****
-    glsNarrowDash : W := $7777; //-***-***-***-***
-    glsWideDash   : W := $3F3F; //--******--******
-    glsDot        : W := $5555; //-*-*-*-*-*-*-*-*
-    glsDashDot    : W := $2727; //--*--***--*--***
-    glsDashDotDot : W := $5757; //-*-*-***-*-*-***
+    lsSolid     : W := $FFFF; //****************
+    lsDash      : W := $0F0F; //----****----****
+    lsNarrowDash: W := $7777; //-***-***-***-***
+    lsWideDash  : W := $3F3F; //--******--******
+    lsDot       : W := $5555; //-*-*-*-*-*-*-*-*
+    lsDashDot   : W := $2727; //--*--***--*--***
+    lsDashDotDot: W := $5757; //-*-*-***-*-*-***
   end;
   glLineStipple(Scale, W);
 end;

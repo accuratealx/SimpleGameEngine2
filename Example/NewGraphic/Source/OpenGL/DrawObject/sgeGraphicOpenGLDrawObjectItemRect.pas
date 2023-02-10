@@ -15,33 +15,21 @@ unit sgeGraphicOpenGLDrawObjectItemRect;
 interface
 
 uses
-  sgeGraphicOpenGLDrawObjectItemBase;
+  sgeGraphicOpenGLDrawObjectItemSimple;
 
 type
-  TsgeGraphicOpenGLDrawObjectItemRect = class(TsgeGraphicOpenGLDrawObjectItemBase)
+  TsgeGraphicOpenGLDrawObjectItemRect = class(TsgeGraphicOpenGLDrawObjectItemSimple)
   protected
     function  GetShaderProgramName: String; override;
-    procedure UserDrawBegin; override;
-
   end;
 
 
 implementation
 
-uses
-  sgeDisplayElementItemRect;
-
 
 function TsgeGraphicOpenGLDrawObjectItemRect.GetShaderProgramName: String;
 begin
   Result := 'Rect';
-end;
-
-
-procedure TsgeGraphicOpenGLDrawObjectItemRect.UserDrawBegin;
-begin
-  //Задать цвет для шейдера
-  FShaderProgram.SetColor(TsgeDisplayElementItemRect(FElement).Color);
 end;
 
 

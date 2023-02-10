@@ -16,31 +16,14 @@ unit sgeDisplayElementItemRect;
 interface
 
 uses
-  sgeGraphicColor,
-  sgeDisplayElementItemBase;
+  sgeDisplayElementItemSimple;
 
 type
-  TsgeDisplayElementItemRect = class(TsgeDisplayElementItemBase)
-  private
-    FColor: TsgeColor;
-
-  public
-    constructor Create(X, Y, Width, Height: Single; Color: TsgeColor);
-
-    property Color: TsgeColor read FColor write FColor;
+  TsgeDisplayElementItemRect = class(TsgeDisplayElementSimple)
   end;
 
 
 implementation
-
-
-constructor TsgeDisplayElementItemRect.Create(X, Y, Width, Height: Single; Color: TsgeColor);
-begin
-  inherited Create(X, Y, Width, Height);
-
-  FColor := Color;
-end;
-
 
 
 end.

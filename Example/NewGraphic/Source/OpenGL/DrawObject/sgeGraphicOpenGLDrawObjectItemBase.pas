@@ -30,12 +30,13 @@ type
     FElement: TsgeDisplayElementItemBase;                           //Ссылка на элемент вывода (копия)
 
     function  GetShaderProgramName: String; virtual; abstract;      //Имя шейдерной программы для класса
+    function  GetVertexArrayObjectType: TsgeGraphicOpenGLVertexType; virtual; //Получить тип VAO
     procedure UserInit; virtual;                                    //Пользовательский конструктор
     procedure UserDone; virtual;                                    //Пользовательский деструктор
-    procedure UserDrawBegin; virtual;                               //Пользовательский рендер начало
-    procedure UserDrawEnd; virtual;                                 //Пользовательский рендер конец
+    procedure UserDrawBegin(Graphic: TsgeGraphicOpenGL); virtual;   //Пользовательский рендер начало
+    procedure UserDrawEnd(Graphic: TsgeGraphicOpenGL); virtual;     //Пользовательский рендер конец
 
-    procedure UpdateVertexBuffer(AElement: TsgeDisplayElementItemBase); //Обновить координаты вершин
+    procedure UpdateVertexBuffer(AElement: TsgeDisplayElementItemBase); virtual;  //Обновить координаты вершин
   public
     constructor Create(Element: TsgeDisplayElementItemBase = nil); virtual;
     destructor  Destroy; override;
@@ -59,6 +60,13 @@ const
   Err_EmptyElement = 'EmptyElement';
 
 
+function TsgeGraphicOpenGLDrawObjectItemBase.GetVertexArrayObjectType: TsgeGraphicOpenGLVertexType;
+begin
+  //По умолчанию треугольники
+  Result := vtTriangle;
+end;
+
+
 procedure TsgeGraphicOpenGLDrawObjectItemBase.UserInit;
 begin
   //Заглушка пользовательского конструктора
@@ -71,13 +79,13 @@ begin
 end;
 
 
-procedure TsgeGraphicOpenGLDrawObjectItemBase.UserDrawBegin;
+procedure TsgeGraphicOpenGLDrawObjectItemBase.UserDrawBegin(Graphic: TsgeGraphicOpenGL);
 begin
   //Заглушка пользовательской рисовалки
 end;
 
 
-procedure TsgeGraphicOpenGLDrawObjectItemBase.UserDrawEnd;
+procedure TsgeGraphicOpenGLDrawObjectItemBase.UserDrawEnd(Graphic: TsgeGraphicOpenGL);
 begin
   //Заглушка пользовательской рисовалки
 end;
@@ -116,7 +124,7 @@ begin
   FVertexBuffer := TsgeGraphicOpenGLBuffer.Create;
 
   //Создать VAO
-  FVAO := TsgeGraphicOpenGLVertexArrayObject.Create(vtTriangle);
+  FVAO := TsgeGraphicOpenGLVertexArrayObject.Create(GetVertexArrayObjectType);
 
   //Привязать буфер вершин к VAO
   FVAO.Attach;
@@ -178,13 +186,13 @@ begin
   FShaderProgram.SetScaleAngleAlpha(sgeGetFloatTriple(FElement.Scale, FElement.Angle, FElement.Alpha));
 
   //Пользовательский рендер
-  UserDrawBegin;
+  UserDrawBegin(Graphic);
 
   //Нарисовать
   FVAO.DrawArray;
 
   //Пользовательский рендер
-  UserDrawEnd;
+  UserDrawEnd(Graphic);
 
   //Включить смешивание цветов
   if not FElement.Transparent then

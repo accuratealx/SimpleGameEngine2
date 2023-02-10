@@ -19,7 +19,7 @@ uses
 
 type
   TsgeDisplayElementItemBase = class
-  private
+  protected
     FX: Single;                                                     //X
     FY: Single;                                                     //Y
     FWidth: Single;                                                 //Ширина
@@ -30,7 +30,7 @@ type
     FAngle: Single;                                                 //Угол поворота
     FAlpha: Single;                                                 //Прозрачность
 
-    procedure SetDefaultParameter;
+    procedure SetDefaultParameter; virtual;                         //Установить параметры по умолчанию
   public
     constructor Create(X, Y, Width, Height: Single);
 
