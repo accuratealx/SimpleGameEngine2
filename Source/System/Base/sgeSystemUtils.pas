@@ -27,6 +27,8 @@ function  sgeFloatToStr(Value: Extended): String;
 function  sgeStrToFloat(const S: String): Extended;
 function  sgeTryStrToFloat(const S: String; Out Value: Double): Boolean;
 
+function  sgeIntToHEX(Value: LongInt; Digits: Integer): String;
+
 function  sgeBoolToStr(Value: Boolean; TrueStr: String = 'True'; FalseStr: String = 'False'): String;
 
 function  sgeCompareMem(P1, P2: Pointer; Length: PtrUInt): Boolean;
@@ -134,6 +136,12 @@ var
 Begin
   Val(sgeTrim(S), Value, E);
   Result := (E = 0);
+end;
+
+
+function sgeIntToHEX(Value: LongInt; Digits: Integer): String;
+begin
+  Result := SysUtils.IntToHex(Value, Digits);
 end;
 
 
