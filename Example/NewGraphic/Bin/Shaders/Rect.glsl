@@ -11,15 +11,33 @@ uniform vec3 ScaleAngleAlpha;   //Масштаб, Угол поворота, п�
 //Нормализация координаты
 vec2 ScreenPointToGLPoint(vec2 ScreenPoint)
 {
-    //Коэффициенты
 	vec2 kwh = 2.0 / ScreenSize;
     return vec2(ScreenPoint.x, ScreenSize.y - ScreenPoint.y) * kwh - 1.0;
 }
 
+//Поворот точки
+#define PI 3.1415926538
+vec2 RotatePoint(vec2 Point, float Angle)
+{
+    //Перевод в радианы
+    float a = Angle * PI / 180;
+    float sinA = sin(a);
+    float cosA = cos(a);
+    return vec2(Point.x * cosA - Point.y * sinA, Point.x * sinA + Point.y * cosA);
+}
+
 void main()
 {
+    vec2 RealPoint = aPos;
+
+    //Повернуть на угол
+    if (ScaleAngleAlpha.y != 0)
+    {
+        RealPoint = RotatePoint(RealPoint, ScaleAngleAlpha.y);
+    }
+
     //Поправить координаты относительно слоя
-    vec2 RealPoint = aPos * Layer.z * ScaleAngleAlpha.x + Layer.xy + Pos;
+    RealPoint = RealPoint * Layer.z * ScaleAngleAlpha.x + Layer.xy + Pos;
 
     //Нормальзовать координаты
     vec2 GLPoint = ScreenPointToGLPoint(RealPoint);

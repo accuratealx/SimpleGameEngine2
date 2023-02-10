@@ -13,12 +13,8 @@ uniform vec3 ScaleAngleAlpha;   //Масштаб, Угол поворота, п�
 //Нормализация координаты
 vec2 ScreenPointToGLPoint(vec2 ScreenPoint)
 {
-    //Коэффициенты
-    float kw = (2.0 / ScreenSize.x);
-    float kh = (2.0 / ScreenSize.y);
-    float x = ScreenPoint.x * kw - 1.0;
-    float y = (ScreenSize.y - ScreenPoint.y) * kh - 1.0;
-    return vec2(x, y);
+    vec2 kwh = 2.0 /ScreenSize;
+    return vec2(ScreenPoint.x, ScreenSize.y - ScreenPoint.y) * kwh - 1.0;
 }
 
 //Поворот точки
@@ -42,19 +38,15 @@ void main()
         RealPoint = RotatePoint(RealPoint, ScaleAngleAlpha.y);
     }
 
-    //Масштаб
-    float scale = Layer.z * ScaleAngleAlpha.x;
-
     //Поправить координаты относительно слоя
-    RealPoint.x = (RealPoint.x * scale) + Layer.x + Pos.x;
-    RealPoint.y = (RealPoint.y * scale) + Layer.y + Pos.y;
-
-    //Координаты вершины
-    TexCoord = aTexCoord;
+    RealPoint = RealPoint * Layer.z * ScaleAngleAlpha.x + Layer.xy + Pos;
 
     //Нормальзовать координаты
     vec2 GLPoint = ScreenPointToGLPoint(RealPoint);
     gl_Position = vec4(GLPoint.x, GLPoint.y, 0.0, 1.0);
+
+    //Координаты вершины
+    TexCoord = aTexCoord;    
 }
 
 
