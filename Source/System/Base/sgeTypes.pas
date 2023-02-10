@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeTypes.pas
-Версия            1.3
+Версия            1.5
 Создан            22.04.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Общие типы
@@ -46,31 +46,67 @@ type
 
 
   //Горизонтальное выравнивание
-  TsgeHorizontalAlign = (haLeft, haCenter, haRight);
+  TsgeHorizontalAlign = (
+    haLeft,   //По левому краю
+    haCenter, //По центру
+    haRight   //По правлму краю
+  );
 
 
   //Вертикальное выравнивание
-  TsgeVerticalAlign = (vaTop, vaCenter, vaBottom);
+  TsgeVerticalAlign = (
+    vaTop,    //По верху
+    vaCenter, //По центру
+    vaBottom  //По низу
+  );
 
 
   //Модификаторы поиска
-  TsgeSearchOptions = set of (soUnique, soCaseSensivity);
+  TsgeSearchOptions = set of (
+    soUnique,       //Уникальный
+    soCaseSensivity //Регистрозависимый
+  );
 
 
   //Способы сортировки
-  TsgeSortMode = (smBubble);
+  TsgeSortMode = (
+    smBubble  //Пузырьком
+  );
 
 
   //Направление сортировки
-  TsgeDirection = (dForward, dBackward);
+  TsgeDirection = (
+    dForward, //Вперед
+    dBackward //Назад
+  );
 
 
   //Метод обрезания :)
-  TsgeTrimSide = (tsLeft, tsRight, tsBoth);
+  TsgeTrimSide = (
+    tsLeft,   //Слева
+    tsRight,  //Справа
+    tsBoth    //Вокруг
+  );
 
 
   //Тип прошедшего времени
-  TsgePassedTime = (ptBegin, ptMiddle, ptEnd);
+  TsgePassedTime = (
+    ptBegin,  //Начало
+    ptMiddle, //Середина
+    ptEnd     //Конец
+  );
+
+
+  //Штриховка линий
+  TsgeLineStipple = (
+    lsSolid,      //Сплошная
+    lsDash,       //Тире
+    lsNarrowDash, //Узкое тире
+    lsWideDash,   //Широкое тире
+    lsDot,        //Точки
+    lsDashDot,    //Тире-точка
+    lsDashDotDot  //Тире-точка-точка
+  );
 
 
   TsgeIntPoint = record
@@ -94,6 +130,22 @@ type
   PsgeSmallPoint = ^TsgeSmallPoint;
 
 
+  TsgeFloatTriple = record
+    X: Single;
+    Y: Single;
+    Z: Single;
+  end;
+  PsgeFloatTriple = ^TsgeFloatTriple;
+
+
+  TsgeIntTriple = record
+    X: Integer;
+    Y: Integer;
+    Z: Integer;
+  end;
+  PsgeIntTriple = ^TsgeIntTriple;
+
+
   TsgeIntRect = record
     X1: Integer;
     Y1: Integer;
@@ -115,6 +167,10 @@ type
 function  sgeGetIntPoint(X, Y: Integer): TsgeIntPoint;
 function  sgeGetFloatPoint(X, Y: Single): TsgeFloatPoint;
 function  sgeGetSmallPoint(X, Y: SmallInt): TsgeSmallPoint;
+
+function  sgeGetFloatTriple(X, Y, Z: Single): TsgeFloatTriple;
+function  sgeGetIntTriple(X, Y, Z: Integer): TsgeIntTriple;
+
 function  sgeGetIntRect(X1, Y1, X2, Y2: Integer): TsgeIntRect;
 function  sgeGetFloatRect(X1, Y1, X2, Y2: Single): TsgeFloatRect;
 
@@ -144,6 +200,22 @@ function sgeGetSmallPoint(X, Y: SmallInt): TsgeSmallPoint;
 begin
   Result.X := X;
   Result.Y := Y;
+end;
+
+
+function sgeGetFloatTriple(X, Y, Z: Single): TsgeFloatTriple;
+begin
+  Result.X := X;
+  Result.Y := Y;
+  Result.Z := Z;
+end;
+
+
+function sgeGetIntTriple(X, Y, Z: Integer): TsgeIntTriple;
+begin
+  Result.X := X;
+  Result.Y := Y;
+  Result.Z := Z;
 end;
 
 
