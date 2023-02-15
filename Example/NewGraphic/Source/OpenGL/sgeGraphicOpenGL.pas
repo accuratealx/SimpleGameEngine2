@@ -35,8 +35,7 @@ type
   TsgeGraphicCapabilities = (
     gcVerticalSync,       //Вертикальная синхронизация
     gcColorBlend,         //Смешивание цветов
-    gcTexturing,          //Текстурирование
-    gcLineStipple         //Штриховка линий
+    gcTexturing           //Текстурирование
   );
 
 
@@ -89,9 +88,6 @@ type
     procedure SetBlendFunction(BlendFunction: TsgeGraphicBlendFunction);
     procedure SetPoligonMode(Mode: TsgeGraphicPolygonMode);
     procedure SetLineWidth(Width: Single);
-
-    procedure SetLineStipple(Scale: Integer; Pattern: Word);
-    procedure SetLineStipple(Scale: Integer; Mode: TsgeLineStipple);
 
 
     //Свойства
@@ -368,9 +364,6 @@ begin
 
     gcTexturing:
       glEnable(GL_TEXTURE_2D);
-
-    gcLineStipple:
-      glEnable(GL_LINE_STIPPLE);
   end;
 end;
 
@@ -386,9 +379,6 @@ begin
 
     gcTexturing:
       glDisable(GL_TEXTURE_2D);
-
-    gcLineStipple:
-      glDisable(GL_LINE_STIPPLE);
   end;
 end;
 
@@ -420,29 +410,6 @@ end;
 procedure TsgeGraphicOpenGL.SetLineWidth(Width: Single);
 begin
   glLineWidth(Width);
-end;
-
-
-procedure TsgeGraphicOpenGL.SetLineStipple(Scale: Integer; Pattern: Word);
-begin
-  glLineStipple(Scale, Pattern);
-end;
-
-
-procedure TsgeGraphicOpenGL.SetLineStipple(Scale: Integer; Mode: TsgeLineStipple);
-var
-  W: GLushort;
-begin
-  case Mode of
-    lsSolid     : W := $FFFF; //****************
-    lsDash      : W := $0F0F; //----****----****
-    lsNarrowDash: W := $7777; //-***-***-***-***
-    lsWideDash  : W := $3F3F; //--******--******
-    lsDot       : W := $5555; //-*-*-*-*-*-*-*-*
-    lsDashDot   : W := $2727; //--*--***--*--***
-    lsDashDotDot: W := $5757; //-*-*-***-*-*-***
-  end;
-  glLineStipple(Scale, W);
 end;
 
 
