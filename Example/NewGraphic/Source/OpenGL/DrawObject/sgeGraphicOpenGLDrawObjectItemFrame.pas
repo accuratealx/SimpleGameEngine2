@@ -23,9 +23,6 @@ type
     function  GetShaderProgramName: String; override;
     function  GetVertexArrayObjectType: TsgeGraphicOpenGLVertexType; override;
     procedure UserDrawBegin(Graphic: TsgeGraphicOpenGL); override;
-    procedure UserDrawEnd(Graphic: TsgeGraphicOpenGL); override;
-  public
-
   end;
 
 implementation
@@ -56,19 +53,8 @@ begin
   //Настроить толщину линии
   Graphic.SetLineWidth(ElementFrame.LineWidth);
 
-  //Настроить штриховку
-  Graphic.Enable(gcLineStipple);
-  Graphic.SetLineStipple(ElementFrame.StippleScale, ElementFrame.LineStipple);
-
   //Задать цвет для шейдера
   FShaderProgram.SetColor(ElementFrame.Color);
-end;
-
-
-procedure TsgeGraphicOpenGLDrawObjectItemFrame.UserDrawEnd(Graphic: TsgeGraphicOpenGL);
-begin
-  //Отключить штриховку
-  Graphic.Disable(gcLineStipple);
 end;
 
 
