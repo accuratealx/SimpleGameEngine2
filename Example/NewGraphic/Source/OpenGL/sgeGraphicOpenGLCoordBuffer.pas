@@ -29,6 +29,7 @@ type
     procedure AddPoint(X, Y: Single);
     procedure AddPoint(Point: TsgeFloatPoint);
     procedure AddQuad(X1, Y1, X2, Y2: Single);
+    procedure AddLineRect(X1, Y1, X2, Y2: Single);
 
     property Data: Pointer read FData;
     property Size: Int64 read FSize;
@@ -94,6 +95,26 @@ begin
   PSingle(FData + FSize - DATA_SIZE * 7)^  := Y2;
   PSingle(FData + FSize - DATA_SIZE * 6)^  := X1;
   PSingle(FData + FSize - DATA_SIZE * 5)^  := Y1;
+  PSingle(FData + FSize - DATA_SIZE * 4)^  := X2;
+  PSingle(FData + FSize - DATA_SIZE * 3)^  := Y2;
+  PSingle(FData + FSize - DATA_SIZE * 2)^  := X2;
+  PSingle(FData + FSize - DATA_SIZE * 1)^  := Y1;
+end;
+
+
+procedure TsgeGraphicOpenGLCoordBuffer.AddLineRect(X1, Y1, X2, Y2: Single);
+begin
+  //Новый размер
+  FSize := FSize + 8 * DATA_SIZE;
+
+  //Выделить больше памяти
+  FData := ReAllocMem(FData, FSize);
+
+  //Записать данные
+  PSingle(FData + FSize - DATA_SIZE * 8)^  := X1;
+  PSingle(FData + FSize - DATA_SIZE * 7)^  := Y1;
+  PSingle(FData + FSize - DATA_SIZE * 6)^  := X1;
+  PSingle(FData + FSize - DATA_SIZE * 5)^  := Y2;
   PSingle(FData + FSize - DATA_SIZE * 4)^  := X2;
   PSingle(FData + FSize - DATA_SIZE * 3)^  := Y2;
   PSingle(FData + FSize - DATA_SIZE * 2)^  := X2;

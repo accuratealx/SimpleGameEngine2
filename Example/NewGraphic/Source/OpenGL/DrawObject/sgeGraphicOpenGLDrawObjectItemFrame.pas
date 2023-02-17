@@ -15,6 +15,7 @@ unit sgeGraphicOpenGLDrawObjectItemFrame;
 interface
 
 uses
+  sgeDisplayElementItemBase,
   sgeGraphicOpenGL, sgeGraphicOpenGLVertexArrayObject, sgeGraphicOpenGLDrawObjectItemSimple;
 
 type
@@ -23,12 +24,15 @@ type
     function  GetShaderProgramName: String; override;
     function  GetVertexArrayObjectType: TsgeGraphicOpenGLVertexType; override;
     procedure UserDrawBegin(Graphic: TsgeGraphicOpenGL); override;
+    procedure UpdateVertexBuffer(AElement: TsgeDisplayElementItemBase); override;
   end;
 
 implementation
 
 uses
-  sgeDisplayElementItemFrame;
+  dglOpenGL,
+  sgeDisplayElementItemFrame,
+  sgeGraphicOpenGLCoordBuffer;
 
 
 function TsgeGraphicOpenGLDrawObjectItemFrame.GetShaderProgramName: String;
@@ -55,6 +59,30 @@ begin
 
   //Задать цвет для шейдера
   FShaderProgram.SetColor(ElementFrame.Color);
+end;
+
+
+procedure TsgeGraphicOpenGLDrawObjectItemFrame.UpdateVertexBuffer(AElement: TsgeDisplayElementItemBase);
+var
+  Buff: TsgeGraphicOpenGLCoordBuffer;
+  w, h: GLfloat;
+begin
+  //Создать буфер c координатами
+  Buff := TsgeGraphicOpenGLCoordBuffer.Create;
+  if AElement.Centered then
+  begin
+    w := AElement.Width / 2;
+    h := AElement.Height / 2;
+    Buff.AddLineRect(-w, -h, w, h);
+  end
+  else
+    Buff.AddLineRect(0, 0, AElement.Width, AElement.Height);
+
+  //Залить данные в видеокарту
+  FVertexBuffer.SetData(Buff);
+
+  //Удалить промежуточный буфер
+  Buff.Free;
 end;
 
 

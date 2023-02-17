@@ -21,10 +21,10 @@ uses
 type
   //Тип вершин
   TsgeGraphicOpenGLVertexType = (
-    vtPoint,    //Отдельные Точки
-    vtLine,     //Отдельные Линии
-    vtLineLoop, //Соединенные линии
-    vtTriangle  //Отдельные треугольники
+    vtPoint,                                                        //Отдельные Точки
+    vtLine,                                                         //Отдельные Линии
+    vtLineLoop,                                                     //Соединенные линии
+    vtTriangle                                                      //Отдельные треугольники
   );
 
 
@@ -128,10 +128,10 @@ begin
   //Определить тип вывода
   case FVertexType of
     vtPoint:
-      Mode :=  GL_POINTS;
+      Mode := GL_POINTS;
 
     vtLine:
-      Mode :=  GL_LINES;
+      Mode := GL_LINES;
 
     vtLineLoop:
       Mode := GL_LINE_LOOP;
