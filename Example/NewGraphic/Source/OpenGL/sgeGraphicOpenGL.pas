@@ -23,33 +23,35 @@ uses
 type
   //Информация о драйвере
   TsgeGraphicInfo = (
-    giVendor,             //Производитель
-    giRenderer,           //Название видеокарты
-    giVersion,            //Версия OpenGL
-    giExtensions,         //Расширения
-    giShading             //Версия шейдеров
+    giVendor,                                                       //Производитель
+    giRenderer,                                                     //Название видеокарты
+    giVersion,                                                      //Версия OpenGL
+    giExtensions,                                                   //Расширения
+    giShading                                                       //Версия шейдеров
   );
 
 
   //Возможности
   TsgeGraphicCapabilities = (
-    gcVerticalSync,       //Вертикальная синхронизация
-    gcColorBlend,         //Смешивание цветов
-    gcTexturing           //Текстурирование
+    gcVerticalSync,                                                 //Вертикальная синхронизация
+    gcColorBlend,                                                   //Смешивание цветов
+    gcTexturing,                                                    //Текстурирование
+    gcLineSmooth,                                                   //Сглаживание линий
+    gcScissor                                                       //Ножницы
   );
 
 
   //Режим смешивания для цветов
   TsgeGraphicBlendFunction = (
-    gbfTransparent        //Альфасмешивание
+    gbfTransparent                                                  //Альфасмешивание
   );
 
 
   //Режим вывода полигонов
   TsgeGraphicPolygonMode = (
-    gpmFill,              //Заливка
-    gpmLine,              //Контуры
-    gpmDot                //Вершинные точки
+    gpmFill,                                                        //Заливка
+    gpmLine,                                                        //Контуры
+    gpmDot                                                          //Вершинные точки
   );
 
 
@@ -88,6 +90,7 @@ type
     procedure SetBlendFunction(BlendFunction: TsgeGraphicBlendFunction);
     procedure SetPoligonMode(Mode: TsgeGraphicPolygonMode);
     procedure SetLineWidth(Width: Single);
+    procedure SetScissor(X, Y, Width, Height: Integer);
 
 
     //Свойства
@@ -364,6 +367,12 @@ begin
 
     gcTexturing:
       glEnable(GL_TEXTURE_2D);
+
+    gcLineSmooth:
+      glEnable(GL_LINE_SMOOTH);
+
+    gcScissor:
+      glEnable(GL_SCISSOR_TEST);
   end;
 end;
 
@@ -379,6 +388,12 @@ begin
 
     gcTexturing:
       glDisable(GL_TEXTURE_2D);
+
+    gcLineSmooth:
+      glDisable(GL_LINE_SMOOTH);
+
+    gcScissor:
+      glDisable(GL_SCISSOR_TEST);
   end;
 end;
 
@@ -410,6 +425,13 @@ end;
 procedure TsgeGraphicOpenGL.SetLineWidth(Width: Single);
 begin
   glLineWidth(Width);
+end;
+
+
+procedure TsgeGraphicOpenGL.SetScissor(X, Y, Width, Height: Integer);
+begin
+  Y := FHeight - Y - Height;
+  glScissor(X, Y, Width, Height);
 end;
 
 
