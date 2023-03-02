@@ -262,6 +262,7 @@ begin
   Enable(gcVerticalSync);
   Enable(gcColorBlend);
   Enable(gcTexturing);
+  Enable(gcLineSmooth);
   SetBlendFunction(gbfTransparent);
   SetPoligonMode(gpmFill);
 end;
