@@ -123,7 +123,7 @@ begin
   FSize := Width * Height * 4;
 
   //Выделить память
-  FData := AllocMem(FSize);
+  FData := ReAllocMem(FData, FSize);
 end;
 
 
