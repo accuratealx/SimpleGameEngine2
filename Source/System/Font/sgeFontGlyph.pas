@@ -21,46 +21,40 @@ type
   TsgeFontGlyph = class
   private
     FCaption: String;                                               //Заголовок глифа
-    FSpriteRect: TsgeIntRect;                                       //Координаты спрайта
-    FWidth: Word;                                                   //Ширина символа
-    FHeight: Word;                                                  //Высота символа
+    FSpriteRect: TsgeFloatRect;                                     //Координаты спрайта
     FBaseLine: Word;                                                //Высота базовой линии от нижней части
 
-    procedure SetBaseLine(ABaseLine: Word);
-    procedure SetHeight(AHeight: Word);
+    function  GetWidth: Integer;
+    function  GetHeight: Integer;
   public
     constructor Create;
-    constructor Create(Caption: String; Width, Height, BaseLine: Word; SpriteRect: TsgeIntRect);
+    constructor Create(Caption: String; BaseLine: Word; SpriteRect: TsgeFloatRect);
 
     property Caption: String read FCaption write FCaption;
-    property SpriteRect: TsgeIntRect read FSpriteRect write FSpriteRect;
-    property Width: Word read FWidth write FWidth;
-    property Height: Word read FHeight write SetHeight;
-    property BaseLine: Word read FBaseLine write SetBaseLine;
+    property SpriteRect: TsgeFloatRect read FSpriteRect write FSpriteRect;
+    property BaseLine: Word read FBaseLine write FBaseLine;
+    property Width: Integer read GetWidth;
+    property Height: Integer read GetHeight;
+    property X1: Single read FSpriteRect.X1 write FSpriteRect.X1;
+    property Y1: Single read FSpriteRect.Y1 write FSpriteRect.Y1;
+    property X2: Single read FSpriteRect.X2 write FSpriteRect.X2;
+    property Y2: Single read FSpriteRect.Y2 write FSpriteRect.Y2;
   end;
 
 
 implementation
 
 
-procedure TsgeFontGlyph.SetBaseLine(ABaseLine: Word);
-begin
-  //Базовая лини не может быть больше высоты
-  if ABaseLine > FHeight then
-    ABaseLine := FHeight;
 
-  FBaseLine := ABaseLine;
+function TsgeFontGlyph.GetWidth: Integer;
+begin
+
 end;
 
 
-procedure TsgeFontGlyph.SetHeight(AHeight: Word);
+function TsgeFontGlyph.GetHeight: Integer;
 begin
-  //Запомнить высоту
-  FHeight := AHeight;
 
-  //Поправить базовую линию
-  if FBaseLine > FHeight then
-    FBaseLine := FHeight;
 end;
 
 
@@ -70,16 +64,11 @@ begin
 end;
 
 
-constructor TsgeFontGlyph.Create(Caption: String; Width, Height, BaseLine: Word; SpriteRect: TsgeIntRect);
+constructor TsgeFontGlyph.Create(Caption: String; BaseLine: Word; SpriteRect: TsgeFloatRect);
 begin
   //Сохранить параметры
   FCaption := Caption;
-  FWidth := Width;
-  FHeight := Height;
   FSpriteRect := SpriteRect;
-
-  //Изменить базовую линию
-  SetBaseLine(BaseLine)
 end;
 
 

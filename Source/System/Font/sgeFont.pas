@@ -43,6 +43,7 @@ type
     FAttributes: TsgeFontAttributes;                                //Атрибуты шрифта
     FLineSpace: Word;                                               //Расстояние между строками
     FGlyphSpace: Word;                                              //Расстояние между глифами
+    FGlyphDescent: Word;                                            //Базовая линия от нижней границы символа
     FHeight: Word;                                                  //Высота шрифта
 
     procedure CreateGlyphList;
@@ -57,6 +58,7 @@ type
     property Name: String read FName write FName;
     property LineSpace: Word read FLineSpace write FLineSpace;
     property GlyphSpace: Word read FGlyphSpace write FGlyphSpace;
+    property GlyphDescent: Word read FGlyphDescent write FGlyphDescent;
     property Height: Word read FHeight write FHeight;
   end;
 
@@ -105,6 +107,7 @@ begin
   FHeight := 10;
   FLineSpace := 1;
   FGlyphSpace := 1;
+  FGlyphDescent := 0;
 end;
 
 

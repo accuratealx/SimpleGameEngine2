@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 640
+  Left = 568
   Height = 589
-  Top = 225
+  Top = 233
   Width = 970
   Caption = 'FontEditor'
   ClientHeight = 569
@@ -17,16 +17,16 @@ object MainForm: TMainForm
     Left = 0
     Height = 546
     Top = 0
-    Width = 250
+    Width = 230
     Align = alLeft
     ClientHeight = 546
-    ClientWidth = 250
+    ClientWidth = 230
     TabOrder = 0
     object lbGlyphList: TListBox
       Left = 1
       Height = 339
       Top = 1
-      Width = 248
+      Width = 228
       Align = alClient
       ItemHeight = 0
       OnClick = lbGlyphListClick
@@ -36,17 +36,16 @@ object MainForm: TMainForm
       Left = 1
       Height = 200
       Top = 345
-      Width = 248
+      Width = 228
       Align = alBottom
       ClientHeight = 200
-      ClientWidth = 248
+      ClientWidth = 228
       TabOrder = 1
       object edGlyphCaption: TEdit
         Left = 100
         Height = 23
         Top = 8
-        Width = 140
-        Anchors = [akTop, akLeft, akRight]
+        Width = 115
         OnChange = edGlyphCaptionChange
         TabOrder = 0
       end
@@ -58,56 +57,90 @@ object MainForm: TMainForm
         Caption = 'Заголовок'
         ParentColor = False
       end
-      object edGlyphWidth: TSpinEdit
-        Left = 100
+      object edGlyphX1: TSpinEdit
+        Left = 35
         Height = 23
         Top = 40
-        Width = 140
-        Anchors = [akTop, akLeft, akRight]
-        OnChange = edGlyphWidthChange
+        Width = 70
+        MaxValue = 999999
+        OnChange = edGlyphX1Change
         TabOrder = 1
       end
-      object lblGlyphWidth: TLabel
+      object lblGlyphX1: TLabel
         Left = 10
         Height = 15
-        Top = 40
-        Width = 45
-        Caption = 'Ширина'
+        Top = 44
+        Width = 13
+        Caption = 'X1'
         ParentColor = False
       end
-      object edGlyphHeight: TSpinEdit
-        Left = 100
+      object edGlyphY1: TSpinEdit
+        Left = 35
         Height = 23
         Top = 70
-        Width = 140
-        Anchors = [akTop, akLeft, akRight]
-        OnChange = edGlyphHeightChange
+        Width = 70
+        MaxValue = 999999
+        OnChange = edGlyphY1Change
         TabOrder = 2
       end
-      object lblGlyphHeight: TLabel
+      object lblGlyphY1: TLabel
         Left = 10
         Height = 15
-        Top = 70
-        Width = 40
-        Caption = 'Высота'
+        Top = 74
+        Width = 13
+        Caption = 'Y1'
         ParentColor = False
       end
       object edGlyphBaseLine: TSpinEdit
         Left = 100
         Height = 23
-        Top = 100
-        Width = 140
-        Anchors = [akTop, akLeft, akRight]
+        Top = 105
+        Width = 115
+        MaxValue = 999999
         OnChange = edGlyphBaseLineChange
         TabOrder = 3
       end
       object lblGlyphBaseLine: TLabel
         Left = 10
         Height = 15
-        Top = 100
+        Top = 108
         Width = 80
         Caption = 'Базовая линия'
         ParentColor = False
+      end
+      object lblGlyphX2: TLabel
+        Left = 120
+        Height = 15
+        Top = 44
+        Width = 13
+        Caption = 'X2'
+        ParentColor = False
+      end
+      object edGlyphX2: TSpinEdit
+        Left = 145
+        Height = 23
+        Top = 40
+        Width = 70
+        MaxValue = 999999
+        OnChange = edGlyphX2Change
+        TabOrder = 4
+      end
+      object lblGlyphY2: TLabel
+        Left = 120
+        Height = 15
+        Top = 74
+        Width = 13
+        Caption = 'Y2'
+        ParentColor = False
+      end
+      object edGlyphY2: TSpinEdit
+        Left = 145
+        Height = 23
+        Top = 70
+        Width = 70
+        MaxValue = 999999
+        OnChange = edGlyphY2Change
+        TabOrder = 5
       end
     end
     object Splitter1: TSplitter
@@ -115,31 +148,33 @@ object MainForm: TMainForm
       Left = 1
       Height = 5
       Top = 340
-      Width = 248
+      Width = 228
       Align = alBottom
       ResizeAnchor = akBottom
     end
   end
   object pnlWorkArea: TPanel
-    Left = 255
+    Left = 235
     Height = 546
     Top = 0
-    Width = 715
+    Width = 735
     Align = alClient
     ClientHeight = 546
-    ClientWidth = 715
+    ClientWidth = 735
     TabOrder = 1
     object WorkAreaScrollBox: TScrollBox
       Left = 1
       Height = 544
       Top = 1
-      Width = 713
+      Width = 733
       HorzScrollBar.Page = 360
       VertScrollBar.Page = 320
       Align = alClient
       ClientHeight = 540
-      ClientWidth = 709
+      ClientWidth = 729
       TabOrder = 0
+      OnMouseWheelDown = pnlPaintMouseWheelDown
+      OnMouseWheelUp = pnlPaintMouseWheelUp
       object pnlPaint: TPanel
         Left = 0
         Height = 320
@@ -147,12 +182,14 @@ object MainForm: TMainForm
         Width = 360
         BevelOuter = bvNone
         TabOrder = 0
+        OnMouseWheelDown = pnlPaintMouseWheelDown
+        OnMouseWheelUp = pnlPaintMouseWheelUp
         OnPaint = pnlPaintPaint
       end
     end
   end
   object PanelSplitter: TSplitter
-    Left = 250
+    Left = 230
     Height = 546
     Top = 0
     Width = 5
@@ -186,6 +223,19 @@ object MainForm: TMainForm
       end
       object miClose: TMenuItem
         Caption = 'miClose'
+      end
+    end
+    object miView: TMenuItem
+      Caption = 'miView'
+      object miShowAllGlyphRect: TMenuItem
+        AutoCheck = True
+        Caption = 'miShowAllGlyphRect'
+        OnClick = miShowAllGlyphRectClick
+      end
+      object miShowSymbolDescent: TMenuItem
+        AutoCheck = True
+        Caption = 'miShowSymbolDescent'
+        OnClick = miShowSymbolDescentClick
       end
     end
     object miSprite: TMenuItem
