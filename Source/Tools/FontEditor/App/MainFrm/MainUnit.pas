@@ -5,7 +5,7 @@ unit MainUnit;
 interface
 
 uses
-  sgeTypes, sgeFont, sgeFontGlyph, sgeSprite,
+  sgeTypes, sgeFont, sgeFontGlyph, sgeSprite, sgeMemoryStream,
 
   GDIPAPI, GDIPOBJ,
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Menus, ExtCtrls,
@@ -13,12 +13,10 @@ uses
 
 type
   TMainForm = class(TForm)
-    edGlyphCaption: TEdit;
     edGlyphX2: TSpinEdit;
     edGlyphY1: TSpinEdit;
     edGlyphBaseLine: TSpinEdit;
     edGlyphY2: TSpinEdit;
-    lblGlyphCaption: TLabel;
     lblGlyphY2: TLabel;
     lblGlyphX1: TLabel;
     lblGlyphY1: TLabel;
@@ -40,17 +38,18 @@ type
     miSaveAs: TMenuItem;
     miSeparator1: TMenuItem;
     miClose: TMenuItem;
+    OpenDialog: TOpenDialog;
     pnlPaint: TPanel;
     pnlGlyphEditor: TPanel;
     pnlWorkArea: TPanel;
     pnlGlyph: TPanel;
     PanelSplitter: TSplitter;
     edGlyphX1: TSpinEdit;
+    SaveDialog: TSaveDialog;
     WorkAreaScrollBox: TScrollBox;
     Splitter1: TSplitter;
     StatusBar: TStatusBar;
     procedure edGlyphBaseLineChange(Sender: TObject);
-    procedure edGlyphCaptionChange(Sender: TObject);
     procedure edGlyphX2Change(Sender: TObject);
     procedure edGlyphY2Change(Sender: TObject);
     procedure edGlyphY1Change(Sender: TObject);
@@ -60,6 +59,8 @@ type
     procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
     procedure lbGlyphListClick(Sender: TObject);
     procedure miGenerateClick(Sender: TObject);
+    procedure miOpenClick(Sender: TObject);
+    procedure miSaveClick(Sender: TObject);
     procedure miShowAllGlyphRectClick(Sender: TObject);
     procedure miShowSymbolDescentClick(Sender: TObject);
     procedure pnlPaintMouseWheelDown(Sender: TObject; Shift: TShiftState; MousePos: TPoint; var Handled: Boolean);
@@ -68,11 +69,13 @@ type
   private
     FFont: TsgeFont;
     FGlyphCanvas: Graphics.TBitmap;
+    FPaintBoxBGColor: TColor;
     FShowAllGlyphRect: Boolean;
     FShowGlyphDescent: Boolean;
 
     function  GetGlyphEditIndex: Integer;
     procedure SpriteToGlyphCanvas(Sprite: TsgeSprite);
+    procedure GlyphCanvasToSprite(Sprite: TsgeSprite);
 
     procedure SetEnableEditorHandlers(AEnable: Boolean);
     procedure ReloadGlyphListBoxItemByIndex(Index: Integer);
@@ -87,11 +90,11 @@ type
 
     procedure GenerateFont(FontName: String; FontSize: Word; FontAttrib: TsgeFontAttributes);
     procedure FillFontGlyphInfo(AFont: TGPFont);
+
     procedure CopyGpBitmapToBitmap(GpBmp: TGPBitmap; Bmp: Graphics.TBitmap);
     function  FontAttribToGPFontAttrib(Attrib: TsgeFontAttributes): Integer;
     function  MultiByteToWideChar(Str: String): UnicodeString;
     function  GetFontSprite(AFont: TGPFont; SymbolSize: Integer): TGPBitmap;
-
   private
     FZoom: Single;
     FZoomMin: Single;
@@ -153,6 +156,71 @@ begin
 end;
 
 
+procedure TMainForm.miOpenClick(Sender: TObject);
+var
+  Stream: TsgeMemoryStream;
+begin
+  if OpenDialog.Execute then
+  begin
+
+    Stream := TsgeMemoryStream.Create;
+    try
+
+      //Прочитать из файла
+      try
+        Stream.LoadFromFile(OpenDialog.FileName);
+      except
+        ShowMessage('Ошибка при чтении' + LineEnding + Exception(ExceptObject).Message);
+      end;
+
+      //Десериализовать
+      FFont.FromMemoryStream(Stream);
+
+      //Спрайт на холст
+      SpriteToGlyphCanvas(FFont.Sprite);
+
+      //Поправить интерфейс
+      RepaintPaintBox;
+      SetEnableEditorHandlers(False);
+      ReloadGlyphListBox;
+      SetGlyphEditorByIndex;
+      SetEnableEditorHandlers(True);
+
+    finally
+      Stream.Free;
+    end;
+  end;
+end;
+
+
+procedure TMainForm.miSaveClick(Sender: TObject);
+var
+  Stream: TsgeMemoryStream;
+begin
+  if SaveDialog.Execute then
+  begin
+    Stream := TsgeMemoryStream.Create;
+    try
+      //Обновить глифы на спрайт
+      GlyphCanvasToSprite(FFont.Sprite);
+
+      //Сериализовать в блок памяти
+      FFont.ToMemoryStream(Stream);
+
+      //Сохранить в файл
+      try
+        Stream.SaveToFile(SaveDialog.FileName);
+      except
+        ShowMessage('Ошибка при сохранении' + LineEnding + Exception(ExceptObject).Message);
+      end;
+
+    finally
+      Stream.Free;
+    end;
+  end;
+end;
+
+
 procedure TMainForm.miShowAllGlyphRectClick(Sender: TObject);
 begin
   FShowAllGlyphRect := not FShowAllGlyphRect;
@@ -191,7 +259,6 @@ procedure TMainForm.SetEnableEditorHandlers(AEnable: Boolean);
 begin
   if AEnable = false then
   begin
-    edGlyphCaption.OnChange := nil;
     edGlyphX1.OnChange := nil;
     edGlyphY1.OnChange := nil;
     edGlyphX2.OnChange := nil;
@@ -200,7 +267,6 @@ begin
   end
   else
   begin
-    edGlyphCaption.OnChange := @edGlyphCaptionChange;
     edGlyphX1.OnChange := @edGlyphX1Change;
     edGlyphY1.OnChange := @edGlyphY1Change;
     edGlyphX2.OnChange := @edGlyphX2Change;
@@ -215,7 +281,7 @@ begin
   if (Index < 0) or (Index > $FF) then
     Exit;
 
-  lbGlyphList.Items.Strings[Index] := Format('%3d. %s', [Index, FFont.GlyphList[Index].Caption]);
+  lbGlyphList.Items.Strings[Index] := Format('%3d. %s', [Index, MultiByteToWideChar(Char(Index))]);
 end;
 
 
@@ -243,7 +309,7 @@ var
 begin
   ACanvas.Pen.Color := AColor;
   ACanvas.Pen.Style := psSolid;
-  Y := Round((Index * FFont.Height - FFont.GlyphDescent) * FZoom);
+  Y := Round((Index * FFont.Height - FFont.BaseLine) * FZoom);
   ACanvas.Line(0, Y, ACanvas.Width, Y);
 end;
 
@@ -310,12 +376,40 @@ begin
 end;
 
 
+procedure TMainForm.GlyphCanvasToSprite(Sprite: TsgeSprite);
+var
+  SpriteLine, BitmapLine: Pointer;
+  i, BytesPerLine: Integer;
+begin
+  //Поправить размеры спрайта
+  Sprite.SetSize(FGlyphCanvas.Width, FGlyphCanvas.Height);
+
+  //Скопировать данные на спрайт
+  BytesPerLine := Sprite.Width * 4;
+  for i := 0 to Sprite.Height - 1 do
+  begin
+    SpriteLine := Sprite.Data + i * BytesPerLine;
+    BitmapLine := FGlyphCanvas.ScanLine[Sprite.Height - 1 - i];
+    Move(BitmapLine^, SpriteLine^, BytesPerLine);
+  end;
+end;
+
+
 procedure TMainForm.RepaintPaintBox;
 var
   Index: Integer;
 begin
+  //Поправить размер холста
   pnlPaint.Width := Round(FGlyphCanvas.Width * FZoom);
   pnlPaint.Height := Round(FGlyphCanvas.Height * FZoom);
+
+  //Стерерть фон холста
+  with pnlPaint.Canvas do
+  begin
+    pnlPaint.Canvas.Brush.Color := FPaintBoxBGColor;
+    pnlPaint.Canvas.Brush.Style := bsSolid;
+    pnlPaint.Canvas.FillRect(0, 0, pnlPaint.Width, pnlPaint.Height);
+  end;
 
   //Вывод спрайта с символами
   pnlPaint.Canvas.StretchDraw(TRect(sgeGetIntRect(0, 0, pnlPaint.Width, pnlPaint.Height)), FGlyphCanvas);
@@ -330,7 +424,7 @@ begin
   //Вывод базовой линии шрифта
   if FShowGlyphDescent then
   begin
-    for Index := 0 to 15 do
+    for Index := 1 to 16 do
       PaintGlyphBaseLine(Index, RGB($7F, $0, $7F), pnlPaint.Canvas);
   end;
 
@@ -347,7 +441,6 @@ begin
 
   if (Index < 0) or (Index > $FF) then
   begin
-    edGlyphCaption.Text := '';
     edGlyphX1.Value := 0;
     edGlyphY1.Value := 0;
     edGlyphX2.Value := 0;
@@ -356,7 +449,6 @@ begin
   end
   else
   begin
-    edGlyphCaption.Text := FFont.GlyphList[Index].Caption;
     edGlyphX1.Value := FFont.GlyphList[Index].SpriteRect.X1;
     edGlyphY1.Value := FFont.GlyphList[Index].SpriteRect.Y1;
     edGlyphX2.Value := FFont.GlyphList[Index].SpriteRect.X2;
@@ -391,15 +483,18 @@ var
   FontFamily: TGPFontFamily;
   AFont: TGPFont;
   SymbolSize, Descent: Integer;
+  Attrib: Integer;
   Bmp: TGPBitmap;
 begin
+  Attrib := FontAttribToGPFontAttrib(FontAttrib);
+
   //Создать шрифт с нужными параметрами
   FontFamily := TGPFontFamily.Create(WideString(FontName));
-  AFont := TGPFont.Create(FontFamily, FontSize, FontAttribToGPFontAttrib(FontAttrib));
+  AFont := TGPFont.Create(FontFamily, FontSize, Attrib);
 
   //Записать высоты нисхождения символов
-  Descent := Round(FontFamily.GetCellDescent(FontAttribToGPFontAttrib(FontAttrib)) / 75);
-  FFont.GlyphDescent := Descent;
+  Descent := Round(FontFamily.GetCellDescent(Attrib) / 75);
+  FFont.BaseLine := Descent;
 
   //Размер одной клетки
   SymbolSize := Round(AFont.GetHeight(96));
@@ -441,8 +536,6 @@ begin
   for i := 0 to $FF do
   begin
     Glyph := FFont.GlyphList[i];
-
-    Glyph.Caption := MultiByteToWideChar(Chr(i));
     Glyph.BaseLine := 0;
 
     //Заполнить текстурные координаты
@@ -469,6 +562,11 @@ begin
 
   //Вспомогательный класс для рисования
   Graphic := TGPGraphics.Create(Bmp.Canvas.Handle);
+
+  //Стереть фон холста
+  Bmp.Canvas.Brush.Color := MakeColor(127, 0, 0, 0);
+  Bmp.Canvas.Brush.Style := bsSolid;
+  Bmp.Canvas.FillRect(0, 0, Bmp.Width, Bmp.Height);
 
   //Вывод
   Graphic.DrawImage(GpBmp, 0, 0);
@@ -498,7 +596,7 @@ end;
 
 function TMainForm.GetFontSprite(AFont: TGPFont; SymbolSize: Integer): TGPBitmap;
 var
-  FontBrush, ContourBrush, BGBrush: TGPSolidBrush;
+  FontBrush, BGBrush: TGPSolidBrush;
   Graphic: TGPGraphics;
   SpriteSize, X, Y, i: Integer;
   C: UnicodeString;
@@ -509,8 +607,6 @@ var
   begin
     GlyphRect.X := X;
     GlyphRect.Y := Y;
-    //GlyphRect.Width := SymbolSize2;
-    //GlyphRect.Height := SymbolSize2;
     GlyphRect.Width := 0;
     GlyphRect.Height := 0;
 
@@ -526,8 +622,7 @@ begin
 
   //Подготовить кисти для заливки
   FontBrush := TGPSolidBrush.Create(MakeColor(255, 255, 255));
-  ContourBrush := TGPSolidBrush.Create(MakeColor(0, 0, 0));
-  BGBrush := TGPSolidBrush.Create(MakeColor(127, 127, 127));
+  BGBrush := TGPSolidBrush.Create(MakeColor(0, 0, 0, 0));
 
   //Вспомогательный класс рисования
   Graphic := TGPGraphics.Create(Result);
@@ -553,16 +648,6 @@ begin
     //Преобразование кодировки
     C := MultiByteToWideChar(Chr(i));
 
-    //Контур
-    DrawSymbol(C, X - 1, Y - 1, ContourBrush);
-    DrawSymbol(C, X + 1, Y - 1, ContourBrush);
-    DrawSymbol(C, X - 1, Y + 1, ContourBrush);
-    DrawSymbol(C, X + 1, Y + 1, ContourBrush);
-    DrawSymbol(C, X - 1, Y    , ContourBrush);
-    DrawSymbol(C, X + 1, Y    , ContourBrush);
-    DrawSymbol(C, X, Y + 1    , ContourBrush);
-    DrawSymbol(C, X, Y - 1    , ContourBrush);
-
     //Символ
     DrawSymbol(C, X, Y, FontBrush);
   end;
@@ -570,7 +655,6 @@ begin
   //Почистить память
   Graphic.Free;
   FontBrush.Free;
-  ContourBrush.Free;
   BGBrush.Free;
 end;
 
@@ -597,12 +681,13 @@ begin
   FZoomMin := 0.01;
   FZoomMax := 10;
   FZoom := 1;
-  FZoomFactor := 1.2;
+  FZoomFactor := 1.1;
+  FPaintBoxBGColor := RGB($7F, $7F, $7F);
 
   FFont := TsgeFont.Create('');
   FGlyphCanvas := Graphics.TBitmap.Create;
   FGlyphCanvas.PixelFormat := pf32bit;
-  SetBkMode(FGlyphCanvas.Canvas.Handle, TRANSPARENT);
+  //SetBkMode(FGlyphCanvas.Canvas.Handle, TRANSPARENT);
 
   ReloadGlyphListBox;
   SetGlyphEditorByIndex;
@@ -614,17 +699,6 @@ begin
   FFont.Sprite.FillChessBoard(25);
 
   SpriteToGlyphCanvas(FFont.Sprite);
-end;
-
-
-procedure TMainForm.edGlyphCaptionChange(Sender: TObject);
-var
-  Idx: Integer;
-begin
-  Idx := GetGlyphEditIndex;
-
-  FFont.GlyphList[Idx].Caption := edGlyphCaption.Text;
-  ReloadGlyphListBoxItemByIndex(Idx);
 end;
 
 

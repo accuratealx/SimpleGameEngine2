@@ -41,35 +41,19 @@ object MainForm: TMainForm
       ClientHeight = 200
       ClientWidth = 228
       TabOrder = 1
-      object edGlyphCaption: TEdit
-        Left = 100
-        Height = 23
-        Top = 8
-        Width = 115
-        OnChange = edGlyphCaptionChange
-        TabOrder = 0
-      end
-      object lblGlyphCaption: TLabel
-        Left = 10
-        Height = 15
-        Top = 8
-        Width = 58
-        Caption = 'Заголовок'
-        ParentColor = False
-      end
       object edGlyphX1: TSpinEdit
         Left = 35
         Height = 23
-        Top = 40
+        Top = 10
         Width = 70
         MaxValue = 999999
         OnChange = edGlyphX1Change
-        TabOrder = 1
+        TabOrder = 0
       end
       object lblGlyphX1: TLabel
         Left = 10
         Height = 15
-        Top = 44
+        Top = 14
         Width = 13
         Caption = 'X1'
         ParentColor = False
@@ -77,16 +61,16 @@ object MainForm: TMainForm
       object edGlyphY1: TSpinEdit
         Left = 35
         Height = 23
-        Top = 70
+        Top = 40
         Width = 70
         MaxValue = 999999
         OnChange = edGlyphY1Change
-        TabOrder = 2
+        TabOrder = 1
       end
       object lblGlyphY1: TLabel
         Left = 10
         Height = 15
-        Top = 74
+        Top = 44
         Width = 13
         Caption = 'Y1'
         ParentColor = False
@@ -94,16 +78,16 @@ object MainForm: TMainForm
       object edGlyphBaseLine: TSpinEdit
         Left = 100
         Height = 23
-        Top = 105
+        Top = 75
         Width = 115
         MaxValue = 999999
         OnChange = edGlyphBaseLineChange
-        TabOrder = 3
+        TabOrder = 2
       end
       object lblGlyphBaseLine: TLabel
         Left = 10
         Height = 15
-        Top = 108
+        Top = 78
         Width = 80
         Caption = 'Базовая линия'
         ParentColor = False
@@ -111,7 +95,7 @@ object MainForm: TMainForm
       object lblGlyphX2: TLabel
         Left = 120
         Height = 15
-        Top = 44
+        Top = 14
         Width = 13
         Caption = 'X2'
         ParentColor = False
@@ -119,16 +103,16 @@ object MainForm: TMainForm
       object edGlyphX2: TSpinEdit
         Left = 145
         Height = 23
-        Top = 40
+        Top = 10
         Width = 70
         MaxValue = 999999
         OnChange = edGlyphX2Change
-        TabOrder = 4
+        TabOrder = 3
       end
       object lblGlyphY2: TLabel
         Left = 120
         Height = 15
-        Top = 74
+        Top = 44
         Width = 13
         Caption = 'Y2'
         ParentColor = False
@@ -136,11 +120,11 @@ object MainForm: TMainForm
       object edGlyphY2: TSpinEdit
         Left = 145
         Height = 23
-        Top = 70
+        Top = 40
         Width = 70
         MaxValue = 999999
         OnChange = edGlyphY2Change
-        TabOrder = 5
+        TabOrder = 4
       end
     end
     object Splitter1: TSplitter
@@ -211,9 +195,11 @@ object MainForm: TMainForm
       end
       object miOpen: TMenuItem
         Caption = 'miOpen'
+        OnClick = miOpenClick
       end
       object miSave: TMenuItem
         Caption = 'miSave'
+        OnClick = miSaveClick
       end
       object miSaveAs: TMenuItem
         Caption = 'miSaveAs'
@@ -251,5 +237,19 @@ object MainForm: TMainForm
         OnClick = miGenerateClick
       end
     end
+  end
+  object SaveDialog: TSaveDialog
+    DefaultExt = '.Font'
+    Filter = 'Шрифт (*.Font)|*.Font'
+    Options = [ofPathMustExist, ofCreatePrompt, ofEnableSizing, ofViewDetail]
+    Left = 724
+    Top = 90
+  end
+  object OpenDialog: TOpenDialog
+    DefaultExt = '.Font'
+    Filter = 'Шрифт (*.Font)|*.Font'
+    Options = [ofFileMustExist, ofEnableSizing, ofViewDetail]
+    Left = 724
+    Top = 145
   end
 end
