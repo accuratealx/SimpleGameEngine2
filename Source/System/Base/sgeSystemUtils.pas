@@ -1,7 +1,7 @@
 ﻿{
 Пакет             Simple Game Engine 2
 Файл              sgeSystemUtils.pas
-Версия            1.6
+Версия            1.7
 Создан            24.02.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Вспомогательные Функции
@@ -22,10 +22,12 @@ function  sgeTrimRight(const S: string): string;
 function  sgeIntToStr(Value: Longint): string;
 function  sgeStrToInt(const S: string): Integer;
 function  sgeTryStrToInt(const S: string; out Int: Longint): boolean;
+function  sgeTryStrToInt(const S: string; out Int: Word): boolean;
 
 function  sgeFloatToStr(Value: Extended): String;
 function  sgeStrToFloat(const S: String): Extended;
 function  sgeTryStrToFloat(const S: String; Out Value: Double): Boolean;
+function  sgeTryStrToFloat(const S: String; Out Value: Single): Boolean;
 
 function  sgeIntToHEX(Value: LongInt; Digits: Integer): String;
 
@@ -114,6 +116,15 @@ begin
 end;
 
 
+function sgeTryStrToInt(const S: string; out Int: Word): boolean;
+var
+  Err: Word;
+begin
+  System.Val(S, Int, Err);
+  Result := Err = 0;
+end;
+
+
 function sgeFloatToStr(Value: Extended): String;
 begin
   Result := SysUtils.FloatToStr(Value);
@@ -133,7 +144,16 @@ end;
 function sgeTryStrToFloat(const S: String; out Value: Double): Boolean;
 var
   E: Integer;
-Begin
+begin
+  Val(sgeTrim(S), Value, E);
+  Result := (E = 0);
+end;
+
+
+function sgeTryStrToFloat(const S: String; out Value: Single): Boolean;
+var
+  E: Integer;
+begin
   Val(sgeTrim(S), Value, E);
   Result := (E = 0);
 end;
