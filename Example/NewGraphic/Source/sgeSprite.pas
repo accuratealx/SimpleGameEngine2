@@ -82,6 +82,8 @@ type
     constructor Create(Width: Integer = 0; Height: Integer = 0; TileCols: Word = 1; TileRows: Word = 1);
     destructor  Destroy; override;
 
+    procedure SetSize(Width, Height: Integer);
+
     procedure FillColor(Color: TsgeColor);
     procedure FillChessBoard(CellSize: Integer);
 
@@ -248,6 +250,19 @@ begin
   //Обработать информацию о плитках
   SetTiles(TileCols, TileRows);
 
+  //Изменить размеры
+  SetSize(Width, Height);
+end;
+
+
+destructor TsgeSprite.Destroy;
+begin
+  Data_Free;
+end;
+
+
+procedure TsgeSprite.SetSize(Width, Height: Integer);
+begin
   //Проверить размеры
   if Width < 0 then
     Width := 0;
@@ -263,12 +278,6 @@ begin
 
   //Пересчитать размеры плиток
   CalcTiles;
-end;
-
-
-destructor TsgeSprite.Destroy;
-begin
-  Data_Free;
 end;
 
 
