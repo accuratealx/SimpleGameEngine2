@@ -20,17 +20,17 @@ uses
 type
   TsgeFontGlyph = class
   private
-    FCaption: String;                                               //Заголовок глифа
     FSpriteRect: TsgeFloatRect;                                     //Координаты спрайта
     FBaseLine: Word;                                                //Высота базовой линии от нижней части
 
     function  GetWidth: Integer;
     function  GetHeight: Integer;
   public
-    constructor Create;
-    constructor Create(Caption: String; BaseLine: Word; SpriteRect: TsgeFloatRect);
+    constructor Create(BaseLine: Word; SpriteRect: TsgeFloatRect);
 
-    property Caption: String read FCaption write FCaption;
+    procedure FromString(Str: String);
+    function  ToString: String; reintroduce;
+
     property SpriteRect: TsgeFloatRect read FSpriteRect write FSpriteRect;
     property BaseLine: Word read FBaseLine write FBaseLine;
     property Width: Integer read GetWidth;
@@ -44,6 +44,16 @@ type
 
 implementation
 
+uses
+  sgeErrors, sgeSystemUtils, sgeStringList;
+
+const
+  SEPARATOR = ';';
+
+  _UNITNAME = 'FontGlyph';
+
+  Err_NotEnoughPart = 'NotEnoughPart';
+  Err_CantConvertValue = 'CantConvertValue';
 
 
 function TsgeFontGlyph.GetWidth: Integer;
@@ -58,17 +68,60 @@ begin
 end;
 
 
-constructor TsgeFontGlyph.Create;
+constructor TsgeFontGlyph.Create(BaseLine: Word; SpriteRect: TsgeFloatRect);
 begin
-  FCaption := '???';
+  //Сохранить параметры
+  FSpriteRect := SpriteRect;
 end;
 
 
-constructor TsgeFontGlyph.Create(Caption: String; BaseLine: Word; SpriteRect: TsgeFloatRect);
+procedure TsgeFontGlyph.FromString(Str: String);
+var
+  List: TsgeStringList;
 begin
-  //Сохранить параметры
-  FCaption := Caption;
-  FSpriteRect := SpriteRect;
+  List := TsgeStringList.Create;
+  try
+    //Разобрать строку на части
+    List.Separator := SEPARATOR;
+    List.FromString(Str);
+
+    //Количество секций
+    if List.Count < 5 then
+      raise EsgeException.Create(_UNITNAME, Err_NotEnoughPart, sgeIntToStr(List.Count));
+
+    //X1
+    if not sgeTryStrToFloat(List.Part[0], FSpriteRect.X1) then
+      raise EsgeException.Create(_UNITNAME, Err_CantConvertValue, List.Part[0]);
+
+    //Y1
+    if not sgeTryStrToFloat(List.Part[1], FSpriteRect.Y1) then
+      raise EsgeException.Create(_UNITNAME, Err_CantConvertValue, List.Part[1]);
+
+    //X2
+    if not sgeTryStrToFloat(List.Part[2], FSpriteRect.X2) then
+      raise EsgeException.Create(_UNITNAME, Err_CantConvertValue, List.Part[2]);
+
+    //Y2
+    if not sgeTryStrToFloat(List.Part[3], FSpriteRect.Y2) then
+      raise EsgeException.Create(_UNITNAME, Err_CantConvertValue, List.Part[3]);
+
+    //Y1
+    if not sgeTryStrToInt(List.Part[4], FBaseLine) then
+      raise EsgeException.Create(_UNITNAME, Err_CantConvertValue, List.Part[4]);
+
+  finally
+    List.Free;
+  end;
+end;
+
+
+function TsgeFontGlyph.ToString: String;
+begin
+  Result := sgeFloatToStr(FSpriteRect.X1) + SEPARATOR +
+            sgeFloatToStr(FSpriteRect.Y1) + SEPARATOR +
+            sgeFloatToStr(FSpriteRect.X2) + SEPARATOR +
+            sgeFloatToStr(FSpriteRect.Y2) + SEPARATOR +
+            sgeIntToStr(FBaseLine);
 end;
 
 
