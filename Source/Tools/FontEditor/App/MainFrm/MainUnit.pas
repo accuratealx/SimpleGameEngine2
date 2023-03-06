@@ -17,6 +17,7 @@ type
     edGlyphY1: TSpinEdit;
     edGlyphBaseLine: TSpinEdit;
     edGlyphY2: TSpinEdit;
+    FontDialog: TFontDialog;
     lblGlyphY2: TLabel;
     lblGlyphX1: TLabel;
     lblGlyphY1: TLabel;
@@ -81,8 +82,8 @@ type
     procedure ReloadGlyphListBoxItemByIndex(Index: Integer);
     procedure ReloadGlyphListBox;
     procedure PaintGlyphBaseLine(Index: Integer; AColor: TColor; ACanvas: TCanvas);
-    procedure PaintGlyphRect(Glyph: TsgeFontGlyph; AColor: TColor; ACanvas: TCanvas);
-    procedure PaintGlyphRects(AColor: TColor; ACanvas: TCanvas);
+    procedure PaintGlyphRect(Glyph: TsgeFontGlyph; AColor, AColorBase: TColor; ACanvas: TCanvas);
+    procedure PaintGlyphRects(AColor, AColorBase: TColor; ACanvas: TCanvas);
 
     procedure RepaintPaintBox;
 
@@ -133,26 +134,27 @@ begin
   Index := GetGlyphEditIndex;
   SetGlyphEditorByIndex(Index);
 
-  if (Index >= 0) and (Index <= $FF) then
+  {if (Index >= 0) and (Index <= $FF) then
   begin
-    PaintGlyphRect(FFont.GlyphList[Index], clRed, pnlPaint.Canvas);
+    PaintGlyphRect(FFont.GlyphList[Index], clRed, clre pnlPaint.Canvas);
     pnlPaint.Invalidate;
-  end;
+  end;}
 end;
 
 
 procedure TMainForm.miGenerateClick(Sender: TObject);
 begin
-  FZoom := 1;
-  GenerateFont('Lucida Console', 22, []); //???
-  //GenerateFont('Times new roman', 22, []);
-  //GenerateFont('Segoe UI', 22, [faBold]);
+  if FontDialog.Execute then
+  begin
+    FZoom := 1;
+    GenerateFont(FontDialog.Font.Name, FontDialog.Font.Size, TsgeFontAttributes(FontDialog.Font.Style));
 
-  SetEnableEditorHandlers(False);
-  ReloadGlyphListBox;
-  SetGlyphEditorByIndex;
-  SetEnableEditorHandlers(True);
-  RepaintPaintBox;
+    SetEnableEditorHandlers(False);
+    ReloadGlyphListBox;
+    SetGlyphEditorByIndex;
+    SetEnableEditorHandlers(True);
+    RepaintPaintBox;
+  end;
 end;
 
 
@@ -320,39 +322,42 @@ begin
 end;
 
 
-procedure TMainForm.PaintGlyphRect(Glyph: TsgeFontGlyph; AColor: TColor; ACanvas: TCanvas);
+procedure TMainForm.PaintGlyphRect(Glyph: TsgeFontGlyph; AColor, AColorBase: TColor; ACanvas: TCanvas);
 var
   X1, X2, Y: Integer;
 begin
   with ACanvas do
   begin
+    //Рамка
     Brush.Style := bsClear;
     Pen.Width := 1;
     Pen.Style := psSolid;
     Pen.Color := AColor;
 
-    //Рамка
     Rectangle(
       Round(Glyph.SpriteRect.X1 * FZoom),
       Round(Glyph.SpriteRect.Y1 * FZoom),
       Round(Glyph.SpriteRect.X2 * FZoom),
       Round(Glyph.SpriteRect.Y2 * FZoom));
 
+
     //Базовая линия
+    Pen.Color := AColorBase;
+
     X1 := Round(Glyph.SpriteRect.X1 * FZoom);
     X2 := Round(Glyph.SpriteRect.X2 * FZoom);
-    Y := Round((Glyph.SpriteRect.Y2 - Glyph.BaseLine) * FZoom);
+    Y := Round((Glyph.SpriteRect.Y2 + Glyph.BaseLine) * FZoom);
     Line(X1, Y, X2, Y);
   end;
 end;
 
 
-procedure TMainForm.PaintGlyphRects(AColor: TColor; ACanvas: TCanvas);
+procedure TMainForm.PaintGlyphRects(AColor, AColorBase: TColor; ACanvas: TCanvas);
 var
   i: Integer;
 begin
   for i := 0 to $FF do
-    PaintGlyphRect(FFont.GlyphList[i], AColor, ACanvas);
+    PaintGlyphRect(FFont.GlyphList[i], AColor, AColorBase, ACanvas);
 end;
 
 
@@ -418,7 +423,7 @@ begin
   if FShowAllGlyphRect then
   begin
     for Index := 0 to $FF do
-      PaintGlyphRect(FFont.GlyphList[Index], RGB($7F, $0, $7F), pnlPaint.Canvas);
+      PaintGlyphRect(FFont.GlyphList[Index], RGB($7F, $0, $7F), RGB($7F, $0, $7F), pnlPaint.Canvas);
   end;
 
   //Вывод базовой линии шрифта
@@ -431,7 +436,7 @@ begin
   //Вывод рамки активного глифа
   Index := GetGlyphEditIndex;
   if (Index >= 0) and (Index <= $FF) then
-    PaintGlyphRect(FFont.GlyphList[Index], clYellow, pnlPaint.Canvas);
+    PaintGlyphRect(FFont.GlyphList[Index], clYellow, clRed, pnlPaint.Canvas);
 end;
 
 
@@ -493,7 +498,7 @@ begin
   AFont := TGPFont.Create(FontFamily, FontSize, Attrib);
 
   //Записать высоты нисхождения символов
-  Descent := Round(FontFamily.GetCellDescent(Attrib) / 75);
+  Descent := Round(FontFamily.GetCellDescent(Attrib) / 96);
   FFont.BaseLine := Descent;
 
   //Размер одной клетки
