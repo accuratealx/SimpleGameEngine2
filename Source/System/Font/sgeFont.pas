@@ -28,7 +28,6 @@ type
     faStrikeOut                                                     //Перечеркнутый
   );
 
-
   //Список глифов
   TsgeFontGlyphList = array[0..$FF] of TsgeFontGlyph;
 

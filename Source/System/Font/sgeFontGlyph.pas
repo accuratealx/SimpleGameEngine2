@@ -21,18 +21,18 @@ type
   TsgeFontGlyph = class
   private
     FSpriteRect: TsgeFloatRect;                                     //Координаты спрайта
-    FBaseLine: Word;                                                //Высота базовой линии от нижней части
+    FBaseLine: Integer;                                             //Смещение прямоугольника от нижней части до базовой линии
 
     function  GetWidth: Integer;
     function  GetHeight: Integer;
   public
-    constructor Create(BaseLine: Word; SpriteRect: TsgeFloatRect);
+    constructor Create(BaseLine: Integer; SpriteRect: TsgeFloatRect);
 
     procedure FromString(Str: String);
     function  ToString: String; reintroduce;
 
     property SpriteRect: TsgeFloatRect read FSpriteRect write FSpriteRect;
-    property BaseLine: Word read FBaseLine write FBaseLine;
+    property BaseLine: Integer read FBaseLine write FBaseLine;
     property Width: Integer read GetWidth;
     property Height: Integer read GetHeight;
     property X1: Single read FSpriteRect.X1 write FSpriteRect.X1;
@@ -68,9 +68,10 @@ begin
 end;
 
 
-constructor TsgeFontGlyph.Create(BaseLine: Word; SpriteRect: TsgeFloatRect);
+constructor TsgeFontGlyph.Create(BaseLine: Integer; SpriteRect: TsgeFloatRect);
 begin
   //Сохранить параметры
+  FBaseLine := BaseLine;
   FSpriteRect := SpriteRect;
 end;
 
