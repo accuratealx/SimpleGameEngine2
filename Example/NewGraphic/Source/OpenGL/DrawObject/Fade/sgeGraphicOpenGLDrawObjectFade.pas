@@ -16,16 +16,13 @@ interface
 
 uses
   sgeGraphicColor, sgeGraphicOpenGLDrawObjectFadeItemList, sgeGraphicOpenGLDrawObjectFadeItem,
-  sgeGraphicOpenGL, sgeGraphicOpenGLVertexArrayObject, sgeGraphicOpenGLShaderProgram, sgeGraphicOpenGLBuffer;
+  sgeGraphicOpenGL, sgeGraphicOpenGLShaderProgram;
 
 type
   TsgeGraphicOpenGLDrawObjectFade = class
   private
-    FVAO: TsgeGraphicOpenGLVertexArrayObject;                       //Объект хранения буферов и настроек вывода
-    FShaderProgram: TsgeGraphicOpenGLShaderProgram;                 //Ссылка на шейдерную программу
-    FVertexBuffer: TsgeGraphicOpenGLBuffer;                         //Массив вершин
-
-    FFadeList: TsgeGraphicOpenGLDrawObjectFadeItemList;             //Список затемнений
+    FFadeList: TsgeGraphicOpenGLDrawObjectFadeItemList;
+    FShaderProgram: TsgeGraphicOpenGLShaderProgram;
 
   public
     constructor Create;
@@ -40,38 +37,15 @@ type
 implementation
 
 uses
-  sgeGraphicOpenGLShaderProgramTable, sgeGraphicOpenGLCoordBuffer;
+  sgeGraphicOpenGLTypes, sgeGraphicOpenGLShaderProgramTable;
 
 
 constructor TsgeGraphicOpenGLDrawObjectFade.Create;
 const
   SHADER_NAME = 'Fade';
-var
-  Buff: TsgeGraphicOpenGLCoordBuffer;
 begin
   //Найти шейдерную программу в таблице
   FShaderProgram := OpenGLShaderProgramTable.Get(SHADER_NAME);
-
-  //Создать вершинный буфер
-  FVertexBuffer := TsgeGraphicOpenGLBuffer.Create;
-
-  //Создать VAO
-  FVAO := TsgeGraphicOpenGLVertexArrayObject.Create(vtTriangle);
-
-  //Привязать буфер вершин к VAO
-  FVAO.Attach;
-  FVertexBuffer.Attach;
-  FVAO.BindVertexCoord(FVertexBuffer);
-
-  //Подготовить координаты вершин
-  Buff := TsgeGraphicOpenGLCoordBuffer.Create;
-  Buff.AddQuad(-1, 1, 1, -1);
-
-  //Залить данные в видеокарту
-  FVertexBuffer.Create(Buff);
-
-  //Удалить временный буфер
-  Buff.Free;
 
   //Создать список затемнений
   FFadeList := TsgeGraphicOpenGLDrawObjectFadeItemList.Create(True);
@@ -82,12 +56,6 @@ destructor TsgeGraphicOpenGLDrawObjectFade.Destroy;
 begin
   //Удалить список затемнений
   FFadeList.Free;
-
-  //Удалить массив вершин
-  FVertexBuffer.Free;
-
-  //Удалить VAO
-  FVAO.Free;
 end;
 
 
@@ -119,9 +87,6 @@ begin
   if FadeItem.Status = fsCompleted then
     FFadeList.Delete(0);
 
-  //Выбрать объект
-  FVAO.Attach;
-
   //Активировать программу
   FShaderProgram.Attach;
 
@@ -129,7 +94,7 @@ begin
   FShaderProgram.SetColor(Color);
 
   //Нарисовать
-  FVAO.DrawArray;
+  Graphic.DrawArray(vtTriangle, 0, 6);
 end;
 
 

@@ -21,10 +21,10 @@ uses
 type
   //Виды затемнения
   TsgeFadeMode = (
-    fmNormalToColor,                                                //Экран - цвет
-    fmColorToNormal,                                                //Цвет - Экран
-    fmNormalToColorToNormal,                                        //Экран - Цвет - Экран
-    fmColorToNormalToColor                                          //Цвет - Экран - Цвет
+    fmNormalToColor,          //Экран - цвет
+    fmColorToNormal,          //Цвет - Экран
+    fmNormalToColorToNormal,  //Экран - Цвет - Экран
+    fmColorToNormalToColor    //Цвет - Экран - Цвет
   );
 
 
@@ -34,25 +34,25 @@ type
 
   //Состояние затемнения
   TsgeFadeStatus = (
-    fsPrepared,                                                     //Готово к запуску
-    fsRun,                                                          //Работает
-    fsCompleted                                                     //Завершено
+    fsPrepared,   //Готово к запуску
+    fsRun,        //Работает
+    fsCompleted   //Завершено
   );
 
 
   //Элемент очереди
   TsgeGraphicOpenGLDrawObjectFadeItem = class
   private
-    FStatus: TsgeFadeStatus;                                        //Состояние задачи
-    FMode: TsgeFadeMode;                                            //Режим перехода
-    FColor: TsgeColor;                                              //Цвет затемнения
-    FTime: Cardinal;                                                //Время перехода в мс
-    FID: Integer;                                                   //Идентификатор затемнения
-    FTimeProc: TsgeFadeProc;                                        //Функция-обработчик прошедшего времени
+    FStatus: TsgeFadeStatus;    //Состояние задачи
+    FMode: TsgeFadeMode;        //Режим перехода
+    FColor: TsgeColor;          //Цвет затемнения
+    FTime: Cardinal;            //Время перехода в мс
+    FID: Integer;               //Идентификатор затемнения
+    FTimeProc: TsgeFadeProc;    //Функция-обработчик прошедшего времени
 
-    FValues: array of Single;                                       //Массив прозрачностей
-    FStartTime: Int64;                                              //Начало затемнения
-    FTimeMiddle: Boolean;                                           //Флаг середины перехода
+    FValues: array of Single;   //Массив прозрачностей
+    FStartTime: Int64;          //Начало затемнения
+    FTimeMiddle: Boolean;       //Флаг середины перехода
 
     procedure ValuesClear;
     procedure ValuesAdd(aValue: Single);
