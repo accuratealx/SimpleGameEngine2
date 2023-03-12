@@ -16,35 +16,56 @@ unit sgeDisplayElementItemFrame;
 interface
 
 uses
-  sgeTypes,
-  sgeDisplayElementItemSimple;
+  sgeGraphicColor,
+  sgeDisplayElementItemBase, sgeDisplayElementItemPropertyFloatRect, sgeDisplayElementItemPropertyColor,
+  sgeDisplayElementItemPropertyScale, sgeDisplayElementItemPropertyRotate, sgeDisplayElementItemPropertyFloatPoint,
+  sgeDisplayElementItemPropertyLine;
 
 type
-  TsgeDisplayElementItemFrame = class(TsgeDisplayElementSimple)
+  TsgeDisplayElementItemFrame = class(TsgeDisplayElementItemBase)
   protected
-    FLineWidth: Single;             //Толщина линии
-    FLineStipple: TsgeLineStipple;  //Тип штриховки
-    FStippleScale: Word;            //Масштаб штриховки
+    FRect: TsgeDisplayElementItemPropertyFloatRect;
+    FColor: TsgeDisplayElementItemPropertyColor;
+    FScale: TsgeDisplayElementItemPropertyScale;
+    FOrigin: TsgeDisplayElementItemPropertyFloatPoint;
+    FRotate: TsgeDisplayElementItemPropertyRotate;
+    FLine: TsgeDisplayElementItemPropertyLine;
 
-    procedure SetDefaultParameter; override;
   public
-    property LineWidth: Single read FLineWidth write FLineWidth;
-    property LineStipple: TsgeLineStipple read FLineStipple write FLineStipple;
-    property StippleScale: Word read FStippleScale write FStippleScale;
+    constructor Create(X1, Y1, X2, Y2: Single; Color: TsgeColor; LineWidth: Single = 1);
+    destructor  Destroy; override;
+
+    property Rect: TsgeDisplayElementItemPropertyFloatRect read FRect;
+    property Color: TsgeDisplayElementItemPropertyColor read FColor;
+    property Scale: TsgeDisplayElementItemPropertyScale read FScale;
+    property Origin: TsgeDisplayElementItemPropertyFloatPoint read FOrigin;
+    property Rotate: TsgeDisplayElementItemPropertyRotate read FRotate;
+    property Line: TsgeDisplayElementItemPropertyLine read FLine;
   end;
 
 
 implementation
 
 
-procedure TsgeDisplayElementItemFrame.SetDefaultParameter;
+constructor TsgeDisplayElementItemFrame.Create(X1, Y1, X2, Y2: Single; Color: TsgeColor; LineWidth: Single = 1);
 begin
-  inherited SetDefaultParameter;
+  FRect := TsgeDisplayElementItemPropertyFloatRect.Create(X1, Y1, X2, Y2);
+  FColor := TsgeDisplayElementItemPropertyColor.Create(Color);
+  FScale := TsgeDisplayElementItemPropertyScale.Create;
+  FOrigin := TsgeDisplayElementItemPropertyFloatPoint.Create;
+  FRotate := TsgeDisplayElementItemPropertyRotate.Create;
+  FLine := TsgeDisplayElementItemPropertyLine.Create(LineWidth);
+end;
 
-  //Параметры линии
-  FLineWidth := 1;
-  FLineStipple := lsSolid;
-  FStippleScale := 1;
+
+destructor TsgeDisplayElementItemFrame.Destroy;
+begin
+  FLine.Free;
+  FRotate.Free;
+  FOrigin.Free;
+  FScale.Free;
+  FColor.Free;
+  FRect.Free;
 end;
 
 

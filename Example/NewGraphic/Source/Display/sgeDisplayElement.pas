@@ -38,8 +38,8 @@ type
 implementation
 
 uses
-  sgeDisplayElementItemBase,
-  sgeDisplayElementItemSprite;
+  sgeDisplayElementItemBase{,
+  sgeDisplayElementItemSprite};
 
 
 constructor TsgeDisplayElement.Create;
@@ -62,11 +62,11 @@ end;
 
 
 procedure TsgeDisplayElement.DrawSprite(X, Y, Width, Height: Single; Sprite: TsgeSprite);
-var
-  Item: TsgeDisplayElementItemBase;
+{var
+  Item: TsgeDisplayElementItemBase;}
 begin
-  Item := TsgeDisplayElementItemSprite.Create(X, Y, Width, Height, Sprite);
-  FItems.Add(Item);
+  {Item := TsgeDisplayElementItemSprite.Create(X, Y, Width, Height, Sprite);
+  FItems.Add(Item);}
 end;
 
 

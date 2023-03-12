@@ -16,41 +16,71 @@ unit sgeDisplayElementItemSprite;
 interface
 
 uses
-  sgeSprite,
-  sgeDisplayElementItemBase;
+  sgeSprite, sgeGraphicColor,
+  sgeDisplayElementItemBase, sgeDisplayElementItemPropertyFloatRect, sgeDisplayElementItemPropertyColor,
+  sgeDisplayElementItemPropertyScale, sgeDisplayElementItemPropertyRotate, sgeDisplayElementItemPropertyFloatPoint,
+  sgeDisplayElementItemPropertySprite;
 
 type
   TsgeDisplayElementItemSprite = class(TsgeDisplayElementItemBase)
   private
-    FSprite: TsgeSprite;
+    FRect: TsgeDisplayElementItemPropertyFloatRect;
+    FColor: TsgeDisplayElementItemPropertyColor;
+    FScale: TsgeDisplayElementItemPropertyScale;
+    FOrigin: TsgeDisplayElementItemPropertyFloatPoint;
+    FRotate: TsgeDisplayElementItemPropertyRotate;
+    FSprite: TsgeDisplayElementItemPropertySprite;
+
+    procedure CreateObjects(X, Y, Width, Height: Single);
   public
     constructor Create(X, Y, Width, Height: Single; Sprite: TsgeSprite);
+    constructor Create(X, Y: Single; Sprite: TsgeSprite);
+    destructor  Destroy; override;
 
-    property Sprite: TsgeSprite read FSprite write FSprite;
+    property Rect: TsgeDisplayElementItemPropertyFloatRect read FRect;
+    property Color: TsgeDisplayElementItemPropertyColor read FColor;
+    property Scale: TsgeDisplayElementItemPropertyScale read FScale;
+    property Origin: TsgeDisplayElementItemPropertyFloatPoint read FOrigin;
+    property Rotate: TsgeDisplayElementItemPropertyRotate read FRotate;
+    property Sprite: TsgeDisplayElementItemPropertySprite read FSprite;
   end;
 
 
 implementation
 
-uses
-  sgeErrors;
 
-const
-  _UNITNAME = 'DisplayElementItemSprite';
-
-  Err_EmptySprite = 'EmptySprite';
+procedure TsgeDisplayElementItemSprite.CreateObjects(X, Y, Width, Height: Single);
+begin
+  FRect := TsgeDisplayElementItemPropertyFloatRect.Create(X, Y, X + Width, X + Height);
+  FColor := TsgeDisplayElementItemPropertyColor.Create(cWhite);
+  FScale := TsgeDisplayElementItemPropertyScale.Create;
+  FOrigin := TsgeDisplayElementItemPropertyFloatPoint.Create;
+  FRotate := TsgeDisplayElementItemPropertyRotate.Create;
+end;
 
 
 constructor TsgeDisplayElementItemSprite.Create(X, Y, Width, Height: Single; Sprite: TsgeSprite);
 begin
-  inherited Create(X, Y, Width, Height);
+  FSprite := TsgeDisplayElementItemPropertySprite.Create(Sprite);
+  CreateObjects(X, Y, Width, Height);
+end;
 
-  //Проверить спрайт
-  if Sprite = nil then
-    raise EsgeException.Create(_UNITNAME, Err_EmptySprite);
 
-  //Сохранить спрайт
-  FSprite := Sprite;
+constructor TsgeDisplayElementItemSprite.Create(X, Y: Single; Sprite: TsgeSprite);
+begin
+  FSprite := TsgeDisplayElementItemPropertySprite.Create(Sprite);
+  CreateObjects(X, Y, Sprite.Width, Sprite.Height);
+end;
+
+
+destructor TsgeDisplayElementItemSprite.Destroy;
+begin
+  FSprite.Free;
+  FRotate.Free;
+  FOrigin.Free;
+  FScale.Free;
+  FColor.Free;
+  FRect.Free;
 end;
 
 
