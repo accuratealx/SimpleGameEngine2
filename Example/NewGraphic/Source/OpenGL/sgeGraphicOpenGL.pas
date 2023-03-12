@@ -16,52 +16,52 @@ interface
 
 uses
   dglOpenGL, Windows,
-  sgeTypes,
-  sgeGraphicColor;
+  sgeGraphicColor,
+  sgeGraphicOpenGLTypes;
 
 
 type
   //Информация о драйвере
   TsgeGraphicInfo = (
-    giVendor,                                                       //Производитель
-    giRenderer,                                                     //Название видеокарты
-    giVersion,                                                      //Версия OpenGL
-    giExtensions,                                                   //Расширения
-    giShading                                                       //Версия шейдеров
+    giVendor,       //Производитель
+    giRenderer,     //Название видеокарты
+    giVersion,      //Версия OpenGL
+    giExtensions,   //Расширения
+    giShading       //Версия шейдеров
   );
 
 
   //Возможности
   TsgeGraphicCapabilities = (
-    gcVerticalSync,                                                 //Вертикальная синхронизация
-    gcColorBlend,                                                   //Смешивание цветов
-    gcTexturing,                                                    //Текстурирование
-    gcLineSmooth,                                                   //Сглаживание линий
-    gcScissor                                                       //Ножницы
+    gcVerticalSync,   //Вертикальная синхронизация
+    gcColorBlend,     //Смешивание цветов
+    gcTexturing,      //Текстурирование
+    gcLineSmooth,     //Сглаживание линий
+    gcScissor         //Ножницы
   );
 
 
   //Режим смешивания для цветов
   TsgeGraphicBlendFunction = (
-    gbfTransparent                                                  //Альфасмешивание
+    gbfTransparent  //Альфасмешивание
   );
 
 
   //Режим вывода полигонов
   TsgeGraphicPolygonMode = (
-    gpmFill,                                                        //Заливка
-    gpmLine,                                                        //Контуры
-    gpmDot                                                          //Вершинные точки
+    gpmFill,  //Заливка
+    gpmLine,  //Контуры
+    gpmDot    //Вершинные точки
   );
 
 
   //Рендерер OpenGL
   TsgeGraphicOpenGL = class
   private
-    FDC: HDC;                                                       //Хэндл окна
-    FGLContext: HGLRC;                                              //Контекст OpenGL
-    FWidth: Integer;                                                //Ширина области вывода
-    FHeight: Integer;                                               //Высота области вывода
+    FDC: HDC;           //Хэндл окна
+    FGLContext: HGLRC;  //Контекст OpenGL
+    FWidth: Integer;    //Ширина области вывода
+    FHeight: Integer;   //Высота области вывода
 
     function  GetInfo(Index: TsgeGraphicInfo): String;
 
@@ -92,6 +92,7 @@ type
     procedure SetLineWidth(Width: Single);
     procedure SetScissor(X, Y, Width, Height: Integer);
 
+    procedure DrawArray(VertexType: TsgeGraphicOpenGLVertexType; VertexStart, VertexCount: Integer);
 
     //Свойства
     property DC: HDC read FDC;
@@ -433,6 +434,30 @@ procedure TsgeGraphicOpenGL.SetScissor(X, Y, Width, Height: Integer);
 begin
   Y := FHeight - Y - Height;
   glScissor(X, Y, Width, Height);
+end;
+
+
+procedure TsgeGraphicOpenGL.DrawArray(VertexType: TsgeGraphicOpenGLVertexType; VertexStart, VertexCount: Integer);
+var
+  Mode: GLenum;
+begin
+  //Определить тип вывода
+  case VertexType of
+    vtPoint:
+      Mode := GL_POINTS;
+
+    vtLine:
+      Mode := GL_LINES;
+
+    vtLineLoop:
+      Mode := GL_LINE_LOOP;
+
+    vtTriangle:
+      Mode := GL_TRIANGLES;
+  end;
+
+  //Вывести массив вершин
+  glDrawArrays(Mode, VertexStart, VertexCount);
 end;
 
 
