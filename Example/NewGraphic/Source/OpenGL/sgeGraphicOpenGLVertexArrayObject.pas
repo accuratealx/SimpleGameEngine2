@@ -16,18 +16,9 @@ interface
 
 uses
   dglOpenGL,
-  sgeGraphicOpenGLBuffer;
+  sgeGraphicOpenGLTypes, sgeGraphicOpenGLBuffer;
 
 type
-  //Тип вершин
-  TsgeGraphicOpenGLVertexType = (
-    vtPoint,                                                        //Отдельные Точки
-    vtLine,                                                         //Отдельные Линии
-    vtLineLoop,                                                     //Соединенные линии
-    vtTriangle                                                      //Отдельные треугольники
-  );
-
-
   TsgeGraphicOpenGLVertexArrayObject = class
   private
     FHandle: GLUInt;
@@ -35,6 +26,7 @@ type
     FVertexBuffer: TsgeGraphicOpenGLBuffer;
     FTextureBuffer: TsgeGraphicOpenGLBuffer;
 
+    function GetVertexCount: Integer;
   public
     constructor Create(VertexType: TsgeGraphicOpenGLVertexType = vtTriangle);
     destructor  Destroy; override;
@@ -42,13 +34,12 @@ type
     procedure BindVertexCoord(Buffer: TsgeGraphicOpenGLBuffer);
     procedure BindTextureCoord(Buffer: TsgeGraphicOpenGLBuffer);
 
-    procedure DrawArray;
-
     procedure Attach;
     procedure Detach;
 
     property Handle: GLuint read FHandle;
     property VertexType: TsgeGraphicOpenGLVertexType read FVertexType;
+    property VertexCount: Integer read GetVertexCount;
   end;
 
 
@@ -63,6 +54,12 @@ const
   _UNITNAME = 'GraphicOpenGLVertexArrayObject';
 
   Err_EmptyBuffer = 'EmptyBuffer';
+
+
+function TsgeGraphicOpenGLVertexArrayObject.GetVertexCount: Integer;
+begin
+  Result := FVertexBuffer.CoordCount;
+end;
 
 
 constructor TsgeGraphicOpenGLVertexArrayObject.Create(VertexType: TsgeGraphicOpenGLVertexType);
@@ -118,30 +115,6 @@ begin
 
   //Сохранить указатель на буфер текстурных координат
   FTextureBuffer := Buffer;
-end;
-
-
-procedure TsgeGraphicOpenGLVertexArrayObject.DrawArray;
-var
-  Mode: GLenum;
-begin
-  //Определить тип вывода
-  case FVertexType of
-    vtPoint:
-      Mode := GL_POINTS;
-
-    vtLine:
-      Mode := GL_LINES;
-
-    vtLineLoop:
-      Mode := GL_LINE_LOOP;
-
-    vtTriangle:
-      Mode := GL_TRIANGLES;
-  end;
-
-  //Вывести массив вершин
-  glDrawArrays(Mode, 0, FVertexBuffer.CoordCount);
 end;
 
 
