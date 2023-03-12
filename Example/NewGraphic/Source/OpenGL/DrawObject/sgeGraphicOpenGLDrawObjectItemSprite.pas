@@ -15,29 +15,27 @@ unit sgeGraphicOpenGLDrawObjectItemSprite;
 interface
 
 uses
+  sgeTypes,
   sgeDisplayElementItemBase,
-  sgeGraphicOpenGL, sgeGraphicOpenGLBuffer, sgeGraphicOpenGLSprite,
-  sgeGraphicOpenGLDrawObjectItemBase;
+  sgeGraphicOpenGL, sgeGraphicOpenGLDrawObjectItemBase, sgeGraphicOpenGLVertexArrayObject,
+  sgeGraphicOpenGLShaderProgram, sgeGraphicOpenGLBuffer, sgeGraphicOpenGLSprite;
 
 
 type
   TsgeGraphicOpenGLDrawObjectItemSprite = class(TsgeGraphicOpenGLDrawObjectItemBase)
-  protected
-    FGLSprite: TsgeGraphicOpenGLSprite;
+  private
+    FVAO: TsgeGraphicOpenGLVertexArrayObject;
+    FShaderProgram: TsgeGraphicOpenGLShaderProgram;
+    FVertexBuffer: TsgeGraphicOpenGLBuffer;
     FTextureBuffer: TsgeGraphicOpenGLBuffer;
+    FGLSprite: TsgeGraphicOpenGLSprite;
 
-    procedure SetTexBuffer; virtual;
-
-    function  GetShaderProgramName: String; override;
-    procedure UserInit; override;
-    procedure UserDone; override;
-    procedure UserDrawBegin(Graphic: TsgeGraphicOpenGL); override;
-    procedure UserDrawEnd(Graphic: TsgeGraphicOpenGL); override;
-
-    procedure UpdateTextureBuffer(X1, Y1, X2, Y2: Single);
   public
-    procedure Update(Element: TsgeDisplayElementItemBase); override;
+    constructor Create(Element: TsgeDisplayElementItemBase); override;
+    destructor  Destroy; override;
 
+    procedure Update(AElement: TsgeDisplayElementItemBase); override;
+    procedure Draw(Graphic: TsgeGraphicOpenGL; ScreenSize: TsgeFloatPoint; LayerInfo: TsgeFloatRect); override;
   end;
 
 
@@ -45,95 +43,114 @@ implementation
 
 uses
   sgeDisplayElementItemSprite,
-  sgeGraphicOpenGLSpriteTable, sgeGraphicOpenGLCoordBuffer;
+  sgeGraphicOpenGLShaderProgramTable, sgeGraphicOpenGLSpriteTable, sgeGraphicOpenGLCoordBuffer;
 
 
-procedure TsgeGraphicOpenGLDrawObjectItemSprite.SetTexBuffer;
+constructor TsgeGraphicOpenGLDrawObjectItemSprite.Create(Element: TsgeDisplayElementItemBase);
+const
+  SHADER_NAME = 'Sprite';
 begin
-  UpdateTextureBuffer(0, 1, 1, 0);
-end;
+  //Найти шейдерную программу в таблице
+  FShaderProgram := OpenGLShaderProgramTable.Get(SHADER_NAME);
 
+  //Создать вершинный буфер
+  FVertexBuffer := TsgeGraphicOpenGLBuffer.Create;
 
-function TsgeGraphicOpenGLDrawObjectItemSprite.GetShaderProgramName: String;
-begin
-  Result := 'Sprite';
-end;
-
-
-procedure TsgeGraphicOpenGLDrawObjectItemSprite.UserInit;
-begin
   //Подготовить буфер с текстурными координатами
   FTextureBuffer := TsgeGraphicOpenGLBuffer.Create;
+
+  //Создать VAO
+  FVAO := TsgeGraphicOpenGLVertexArrayObject.Create;
+  FVAO.Attach;
+
+  //Привязать буфер вершин к VAO
+  FVertexBuffer.Attach;
+  FVAO.BindVertexCoord(FVertexBuffer);
 
   //Привязать буфер координат
   FTextureBuffer.Attach;
   FVAO.BindTextureCoord(FTextureBuffer);
+
+  //Родительский конструктор
+  inherited Create(Element);
 end;
 
 
-procedure TsgeGraphicOpenGLDrawObjectItemSprite.UserDone;
-var
-  ElementSprite: TsgeDisplayElementItemSprite;
+destructor TsgeGraphicOpenGLDrawObjectItemSprite.Destroy;
 begin
-  //Ссылка на елемент
-  ElementSprite := FElement as TsgeDisplayElementItemSprite;
+  //Удалить спрайт из таблицы
+  if Assigned(FElement) then
+    OpenGLSpriteTable.Delete(TsgeDisplayElementItemSprite(FElement).Sprite.Sprite);
 
-  //Удалить координатный буфер
+  //Удалить буфер вершинных координат
   FTextureBuffer.Free;
 
-  //Удалить спрайт из таблицы
-  OpenGLSpriteTable.Delete(ElementSprite.Sprite);
+  //Удалить буфер вершин
+  FVertexBuffer.Free;
+
+  //Удалить объект настройки вывода
+  FVAO.Free;
 end;
 
 
-procedure TsgeGraphicOpenGLDrawObjectItemSprite.UserDrawBegin(Graphic: TsgeGraphicOpenGL);
-begin
-  //Привязать спрайт
-  FGLSprite.Attach;
-end;
-
-
-procedure TsgeGraphicOpenGLDrawObjectItemSprite.UserDrawEnd(Graphic: TsgeGraphicOpenGL);
-begin
-  //Отвязать спрайт
-  FGLSprite.Detach;
-end;
-
-
-procedure TsgeGraphicOpenGLDrawObjectItemSprite.UpdateTextureBuffer(X1, Y1, X2, Y2: Single);
+procedure TsgeGraphicOpenGLDrawObjectItemSprite.Update(AElement: TsgeDisplayElementItemBase);
 var
   Buff: TsgeGraphicOpenGLCoordBuffer;
+  Element: TsgeDisplayElementItemSprite absolute AElement;
 begin
-  //Создать промежуточный буфер
+  //Удалить старый спрайт, если происходит обновление элемента
+  if Assigned(FElement) then
+    OpenGLSpriteTable.Delete(TsgeDisplayElementItemSprite(FElement).Sprite.Sprite);
+
+  inherited Update(Element);
+
+  //Найти спрайт в таблице
+  FGLSprite := OpenGLSpriteTable.Add(Element.Sprite.Sprite);
+
+  //Залить данные в видеокарту
   Buff := TsgeGraphicOpenGLCoordBuffer.Create;
 
-  //Задать текстурные координаты
-  Buff.Clear;
-  Buff.AddQuad(X1, Y1, X2, Y2);
+  Buff.AddQuad(0, 0, Element.Rect.Width, Element.Rect.Height);
+  FVertexBuffer.SetData(Buff);
 
-  //Залить данные текстурных координат в видеокарту
+  Buff.Clear;
+  Buff.AddQuad(0, 1, 1, 0);
   FTextureBuffer.SetData(Buff);
 
-  //Удалить промежуточный буфер
   Buff.Free;
 end;
 
 
-procedure TsgeGraphicOpenGLDrawObjectItemSprite.Update(Element: TsgeDisplayElementItemBase);
+procedure TsgeGraphicOpenGLDrawObjectItemSprite.Draw(Graphic: TsgeGraphicOpenGL; ScreenSize: TsgeFloatPoint; LayerInfo: TsgeFloatRect);
 var
-  ElementSprite: TsgeDisplayElementItemSprite;
+  Element: TsgeDisplayElementItemSprite;
 begin
-  //Метод предка
-  inherited Update(Element);
+  Element := TsgeDisplayElementItemSprite(FElement);
 
-  //Ссылка на елемент
-  ElementSprite := FElement as TsgeDisplayElementItemSprite;
+  //Выбрать объект
+  FVAO.Attach;
 
-  //Найти спрайт в таблице
-  FGLSprite := OpenGLSpriteTable.Add(ElementSprite.Sprite);
+  //Активировать программу
+  FShaderProgram.Attach;
 
-  //Обновить текстурный буфер
-  SetTexBuffer;
+  //Передать параметры в программу
+  FShaderProgram.SetScreenSize(ScreenSize);
+  FShaderProgram.SetLayer(LayerInfo);
+
+  FShaderProgram.SetPos(sgeGetFloatPoint(Element.Rect.X1, Element.Rect.Y1));
+  FShaderProgram.SetColor(Element.Color.Color);
+  FShaderProgram.SetScale(Element.Scale.Scale);
+  FShaderProgram.SetOrigin(Element.Origin.Point);
+  FShaderProgram.SetAngle(Element.Rotate.Angle);
+
+  //Привязать спрайт
+  FGLSprite.Attach;
+
+  //Нарисовать
+  Graphic.DrawArray(FVAO.VertexType, 0, FVAO.VertexCount);
+
+  //Отвязать спрайт
+  FGLSprite.Detach;
 end;
 
 

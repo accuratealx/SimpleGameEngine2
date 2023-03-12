@@ -15,74 +15,108 @@ unit sgeGraphicOpenGLDrawObjectItemFrame;
 interface
 
 uses
+  sgeTypes,
   sgeDisplayElementItemBase,
-  sgeGraphicOpenGL, sgeGraphicOpenGLVertexArrayObject, sgeGraphicOpenGLDrawObjectItemSimple;
+  sgeGraphicOpenGL, sgeGraphicOpenGLDrawObjectItemBase, sgeGraphicOpenGLVertexArrayObject,
+  sgeGraphicOpenGLShaderProgram, sgeGraphicOpenGLBuffer;
 
 type
-  TsgeGraphicOpenGLDrawObjectItemFrame = class(TsgeGraphicOpenGLDrawObjectItemSimple)
-  protected
-    function  GetShaderProgramName: String; override;
-    function  GetVertexArrayObjectType: TsgeGraphicOpenGLVertexType; override;
-    procedure UserDrawBegin(Graphic: TsgeGraphicOpenGL); override;
-    procedure UpdateVertexBuffer(AElement: TsgeDisplayElementItemBase); override;
+  TsgeGraphicOpenGLDrawObjectItemFrame = class(TsgeGraphicOpenGLDrawObjectItemBase)
+  private
+    FVAO: TsgeGraphicOpenGLVertexArrayObject;
+    FShaderProgram: TsgeGraphicOpenGLShaderProgram;
+    FVertexBuffer: TsgeGraphicOpenGLBuffer;
+
+  public
+    constructor Create(Element: TsgeDisplayElementItemBase); override;
+    destructor  Destroy; override;
+
+    procedure Update(AElement: TsgeDisplayElementItemBase); override;
+    procedure Draw(Graphic: TsgeGraphicOpenGL; ScreenSize: TsgeFloatPoint; LayerInfo: TsgeFloatRect); override;
   end;
 
 implementation
 
 uses
-  dglOpenGL,
   sgeDisplayElementItemFrame,
-  sgeGraphicOpenGLCoordBuffer;
+  sgeGraphicOpenGLTypes, sgeGraphicOpenGLShaderProgramTable, sgeGraphicOpenGLCoordBuffer;
 
 
-function TsgeGraphicOpenGLDrawObjectItemFrame.GetShaderProgramName: String;
+constructor TsgeGraphicOpenGLDrawObjectItemFrame.Create(Element: TsgeDisplayElementItemBase);
+const
+  SHADER_NAME = 'Frame';
 begin
-  Result := 'Frame';
+  //Найти шейдерную программу в таблице
+  FShaderProgram := OpenGLShaderProgramTable.Get(SHADER_NAME);
+
+  //Создать вершинный буфер
+  FVertexBuffer := TsgeGraphicOpenGLBuffer.Create;
+
+  //Создать VAO
+  FVAO := TsgeGraphicOpenGLVertexArrayObject.Create(vtLineLoop);
+
+  //Привязать буфер вершин к VAO
+  FVAO.Attach;
+  FVertexBuffer.Attach;
+  FVAO.BindVertexCoord(FVertexBuffer);
+
+  //Родительский конструктор
+  inherited Create(Element);
 end;
 
 
-function TsgeGraphicOpenGLDrawObjectItemFrame.GetVertexArrayObjectType: TsgeGraphicOpenGLVertexType;
+destructor TsgeGraphicOpenGLDrawObjectItemFrame.Destroy;
 begin
-  Result := vtLineLoop;
+  //Удалить буфер вершин
+  FVertexBuffer.Free;
+
+  //Удалить объект настройки вывода
+  FVAO.Free;
 end;
 
 
-procedure TsgeGraphicOpenGLDrawObjectItemFrame.UserDrawBegin(Graphic: TsgeGraphicOpenGL);
-var
-  ElementFrame: TsgeDisplayElementItemFrame;
-begin
-  //Ссылка на елемент
-  ElementFrame := FElement as TsgeDisplayElementItemFrame;
-
-  //Настроить толщину линии
-  Graphic.SetLineWidth(ElementFrame.LineWidth);
-
-  //Задать цвет для шейдера
-  FShaderProgram.SetColor(ElementFrame.Color);
-end;
-
-
-procedure TsgeGraphicOpenGLDrawObjectItemFrame.UpdateVertexBuffer(AElement: TsgeDisplayElementItemBase);
+procedure TsgeGraphicOpenGLDrawObjectItemFrame.Update(AElement: TsgeDisplayElementItemBase);
 var
   Buff: TsgeGraphicOpenGLCoordBuffer;
-  w, h: GLfloat;
+  Element: TsgeDisplayElementItemFrame absolute AElement;
 begin
-  //Создать буфер c координатами
-  Buff := TsgeGraphicOpenGLCoordBuffer.Create;
-  if AElement.Centered then
-  begin
-    w := AElement.Width / 2;
-    h := AElement.Height / 2;
-    Buff.AddLineRect(-w, -h, w, h);
-  end
-  else
-    Buff.AddLineRect(0, 0, AElement.Width, AElement.Height);
+  inherited Update(Element);
 
   //Залить данные в видеокарту
+  Buff := TsgeGraphicOpenGLCoordBuffer.Create;
+  Buff.AddLineRect(0, 0, Element.Rect.Width, Element.Rect.Height);
   FVertexBuffer.SetData(Buff);
-
-  //Удалить промежуточный буфер
   Buff.Free;
+end;
+
+
+procedure TsgeGraphicOpenGLDrawObjectItemFrame.Draw(Graphic: TsgeGraphicOpenGL; ScreenSize: TsgeFloatPoint; LayerInfo: TsgeFloatRect);
+var
+  Element: TsgeDisplayElementItemFrame;
+begin
+  Element := TsgeDisplayElementItemFrame(FElement);
+
+  //Выбрать объект
+  FVAO.Attach;
+
+  //Активировать программу
+  FShaderProgram.Attach;
+
+  //Передать параметры в программу
+  FShaderProgram.SetScreenSize(ScreenSize);
+  FShaderProgram.SetLayer(LayerInfo);
+
+  FShaderProgram.SetPos(sgeGetFloatPoint(Element.Rect.X1, Element.Rect.Y1));
+  FShaderProgram.SetColor(Element.Color.Color);
+  FShaderProgram.SetScale(Element.Scale.Scale);
+  FShaderProgram.SetOrigin(Element.Origin.Point);
+  FShaderProgram.SetAngle(Element.Rotate.Angle);
+
+  //Настроить толщину линии
+  Graphic.SetLineWidth(Element.Line.Width);
+
+  //Нарисовать
+  Graphic.DrawArray(FVAO.VertexType, 0, FVAO.VertexCount);
 end;
 
 

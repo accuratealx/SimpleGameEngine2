@@ -16,43 +16,26 @@ interface
 
 uses
   sgeTypes,
-  sgeGraphicOpenGL, sgeGraphicOpenGLShaderProgram,
-  sgeDisplayElementItemBase,
-  sgeGraphicOpenGLVertexArrayObject, sgeGraphicOpenGLBuffer;
+  sgeGraphicOpenGL,
+  sgeDisplayElementItemBase;
 
 type
   TsgeGraphicOpenGLDrawObjectItemBase = class
   protected
-    FVAO: TsgeGraphicOpenGLVertexArrayObject;                       //Объект хранения буферов и настроек вывода
-    FShaderProgram: TsgeGraphicOpenGLShaderProgram;                 //Ссылка на шейдерную программу
-    FVertexBuffer: TsgeGraphicOpenGLBuffer;                         //Массив вершин
+    FElement: TsgeDisplayElementItemBase; //Ссылка на элемент вывода (копия)
 
-    FElement: TsgeDisplayElementItemBase;                           //Ссылка на элемент вывода (копия)
-
-    function  GetShaderProgramName: String; virtual; abstract;      //Имя шейдерной программы для класса
-    function  GetVertexArrayObjectType: TsgeGraphicOpenGLVertexType; virtual; //Получить тип VAO
-    procedure UserInit; virtual;                                    //Пользовательский конструктор
-    procedure UserDone; virtual;                                    //Пользовательский деструктор
-    procedure UserDrawBegin(Graphic: TsgeGraphicOpenGL); virtual;   //Пользовательский рендер начало
-    procedure UserDrawEnd(Graphic: TsgeGraphicOpenGL); virtual;     //Пользовательский рендер конец
-
-    procedure UpdateVertexBuffer(AElement: TsgeDisplayElementItemBase); virtual;  //Обновить координаты вершин
   public
-    constructor Create(Element: TsgeDisplayElementItemBase = nil); virtual;
-    destructor  Destroy; override;
+    constructor Create(Element: TsgeDisplayElementItemBase); virtual;
 
-    procedure Update(Element: TsgeDisplayElementItemBase); virtual; //Обновление параметров
-
-    procedure Draw(Graphic: TsgeGraphicOpenGL; ScreenSize: TsgeFloatPoint; LayerInfo: TsgeFloatTriple); virtual;
+    procedure Update(Element: TsgeDisplayElementItemBase); virtual;
+    procedure Draw(Graphic: TsgeGraphicOpenGL; ScreenSize: TsgeFloatPoint; LayerInfo: TsgeFloatRect); virtual; abstract;
   end;
 
 
 implementation
 
 uses
-  dglOpenGL,
-  sgeErrors,
-  sgeGraphicOpenGLShaderProgramTable, sgeGraphicOpenGLCoordBuffer;
+  sgeErrors, sgeSystemUtils;
 
 const
   _UNITNAME = 'sgeGraphicOpenGLDrawObjectItemBase';
@@ -60,96 +43,9 @@ const
   Err_EmptyElement = 'EmptyElement';
 
 
-function TsgeGraphicOpenGLDrawObjectItemBase.GetVertexArrayObjectType: TsgeGraphicOpenGLVertexType;
-begin
-  //По умолчанию треугольники
-  Result := vtTriangle;
-end;
-
-
-procedure TsgeGraphicOpenGLDrawObjectItemBase.UserInit;
-begin
-  //Заглушка пользовательского конструктора
-end;
-
-
-procedure TsgeGraphicOpenGLDrawObjectItemBase.UserDone;
-begin
-  //Заглушка пользовательского деструктора
-end;
-
-
-procedure TsgeGraphicOpenGLDrawObjectItemBase.UserDrawBegin(Graphic: TsgeGraphicOpenGL);
-begin
-  //Заглушка пользовательской рисовалки
-end;
-
-
-procedure TsgeGraphicOpenGLDrawObjectItemBase.UserDrawEnd(Graphic: TsgeGraphicOpenGL);
-begin
-  //Заглушка пользовательской рисовалки
-end;
-
-
-procedure TsgeGraphicOpenGLDrawObjectItemBase.UpdateVertexBuffer(AElement: TsgeDisplayElementItemBase);
-var
-  Buff: TsgeGraphicOpenGLCoordBuffer;
-  w, h: GLfloat;
-begin
-  //Создать буфер c координатами
-  Buff := TsgeGraphicOpenGLCoordBuffer.Create;
-  if AElement.Centered then
-  begin
-    w := AElement.Width / 2;
-    h := AElement.Height / 2;
-    Buff.AddQuad(-w, -h, w, h);
-  end
-  else
-    Buff.AddQuad(0, 0, AElement.Width, AElement.Height);
-
-  //Залить данные в видеокарту
-  FVertexBuffer.SetData(Buff);
-
-  //Удалить промежуточный буфер
-  Buff.Free;
-end;
-
-
 constructor TsgeGraphicOpenGLDrawObjectItemBase.Create(Element: TsgeDisplayElementItemBase);
 begin
-  //Найти шейдерную программу в таблице
-  FShaderProgram := OpenGLShaderProgramTable.Get(GetShaderProgramName);
-
-  //Создать вершинный буфер
-  FVertexBuffer := TsgeGraphicOpenGLBuffer.Create;
-
-  //Создать VAO
-  FVAO := TsgeGraphicOpenGLVertexArrayObject.Create(GetVertexArrayObjectType);
-
-  //Привязать буфер вершин к VAO
-  FVAO.Attach;
-  FVertexBuffer.Attach;
-  FVAO.BindVertexCoord(FVertexBuffer);
-
-  //Пользовательский конструктор
-  UserInit;
-
-  //Обновить из элемента
-  if Element <> nil then
-    Update(Element);
-end;
-
-
-destructor TsgeGraphicOpenGLDrawObjectItemBase.Destroy;
-begin
-  //Пользовательский деструктор
-  UserDone;
-
-  //Удалить буфер вершин
-  FVertexBuffer.Free;
-
-  //Удалить объект настройки вывода
-  FVAO.Free;
+  Update(Element);
 end;
 
 
@@ -159,44 +55,12 @@ begin
   if Element = nil then
     raise EsgeException.Create(_UNITNAME, Err_EmptyElement);
 
+  //Удалить старый элемент
+  if FElement <> nil then
+    sgeFreeAndNil(FElement);
+
   //Запонить элемент
   FElement := Element;
-
-  //Обновить буфер вершин
-  UpdateVertexBuffer(FElement);
-end;
-
-
-procedure TsgeGraphicOpenGLDrawObjectItemBase.Draw(Graphic: TsgeGraphicOpenGL; ScreenSize: TsgeFloatPoint; LayerInfo: TsgeFloatTriple);
-begin
-  //Отключить смешивание цветов
-  if not FElement.Transparent then
-    Graphic.Disable(gcColorBlend);
-
-  //Выбрать объект
-  FVAO.Attach;
-
-  //Активировать программу
-  FShaderProgram.Attach;
-
-  //Передать параметры в программу
-  FShaderProgram.SetScreenSize(ScreenSize);
-  FShaderProgram.SetLayer(LayerInfo);
-  FShaderProgram.SetPos(sgeGetFloatPoint(FElement.X, FElement.Y));
-  FShaderProgram.SetScaleAngleAlpha(sgeGetFloatTriple(FElement.Scale, FElement.Angle, FElement.Alpha));
-
-  //Пользовательский рендер
-  UserDrawBegin(Graphic);
-
-  //Нарисовать
-  FVAO.DrawArray;
-
-  //Пользовательский рендер
-  UserDrawEnd(Graphic);
-
-  //Включить смешивание цветов
-  if not FElement.Transparent then
-    Graphic.Enable(gcColorBlend);
 end;
 
 
