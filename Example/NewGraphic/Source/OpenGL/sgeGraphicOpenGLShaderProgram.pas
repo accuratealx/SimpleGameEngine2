@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGraphicOpenGLShaderProgram.pas
-Версия            1.1
+Версия            1.2
 Создан            21.01.2023
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          OpenGL: Шейдерная программа
@@ -17,7 +17,8 @@ interface
 uses
   dglOpenGL,
   sgeTypes, sgeMemoryStream,
-  sgeGraphicColor, sgeGraphicOpenGLShader;
+  sgeGraphicColor,
+  sgeGraphicOpenGLShader;
 
 type
   TsgeGraphicOpenGLShaderProgram = class
@@ -40,10 +41,12 @@ type
     procedure SetValue(Name: String; Value: Integer);
 
     procedure SetScreenSize(Value: TsgeFloatPoint);
-    procedure SetLayer(Value: TsgeFloatTriple);
+    procedure SetLayer(Value: TsgeFloatRect);
     procedure SetPos(Value: TsgeFloatPoint);
-    procedure SetScaleAngleAlpha(Value: TsgeFloatTriple);
     procedure SetColor(Value: TsgeColor);
+    procedure SetScale(Value: TsgeFloatPoint);
+    procedure SetOrigin(Value: TsgeFloatPoint);
+    procedure SetAngle(Value: Single);
 
     procedure Attach;
     procedure Detach;
@@ -264,9 +267,9 @@ begin
 end;
 
 
-procedure TsgeGraphicOpenGLShaderProgram.SetLayer(Value: TsgeFloatTriple);
+procedure TsgeGraphicOpenGLShaderProgram.SetLayer(Value: TsgeFloatRect);
 begin
-  glUniform3fv(GetParamIndex('Layer'), 1, @Value);
+  glUniform4fv(GetParamIndex('Layer'), 1, @Value);
 end;
 
 
@@ -276,15 +279,27 @@ begin
 end;
 
 
-procedure TsgeGraphicOpenGLShaderProgram.SetScaleAngleAlpha(Value: TsgeFloatTriple);
-begin
-  glUniform3fv(GetParamIndex('ScaleAngleAlpha'), 1, @Value);
-end;
-
-
 procedure TsgeGraphicOpenGLShaderProgram.SetColor(Value: TsgeColor);
 begin
   glUniform4fv(GetParamIndex('Color'), 1, @Value);
+end;
+
+
+procedure TsgeGraphicOpenGLShaderProgram.SetScale(Value: TsgeFloatPoint);
+begin
+  glUniform2fv(GetParamIndex('Scale'), 1, @Value);
+end;
+
+
+procedure TsgeGraphicOpenGLShaderProgram.SetOrigin(Value: TsgeFloatPoint);
+begin
+  glUniform2fv(GetParamIndex('Origin'), 1, @Value);
+end;
+
+
+procedure TsgeGraphicOpenGLShaderProgram.SetAngle(Value: Single);
+begin
+  glUniform1fv(GetParamIndex('Angle'), 1, @Value);
 end;
 
 
