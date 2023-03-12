@@ -27,7 +27,7 @@ type
     constructor Create;
     destructor  Destroy; override;
 
-    procedure Add(Name: String; ShaderProgram: TsgeGraphicOpenGLShaderProgram);
+    procedure Add(ShaderProgram: TsgeGraphicOpenGLShaderProgram);
     procedure Delete(Name: String);
     procedure Clear;
     function  Get(Name: String): TsgeGraphicOpenGLShaderProgram;
@@ -62,16 +62,16 @@ begin
 end;
 
 
-procedure TsgeGraphicOpenGLShaderProgramTable.Add(Name: String; ShaderProgram: TsgeGraphicOpenGLShaderProgram);
+procedure TsgeGraphicOpenGLShaderProgramTable.Add(ShaderProgram: TsgeGraphicOpenGLShaderProgram);
 begin
   if ShaderProgram = nil then
     raise EsgeException.Create(_UNITNAME, Err_EmptyProgram);
 
   //Добавить в список
-  if FTable.FindIndexOf(Name) = -1 then
-    FTable.Add(Name, ShaderProgram)
+  if FTable.FindIndexOf(ShaderProgram.Name) = -1 then
+    FTable.Add(ShaderProgram.Name, ShaderProgram)
   else
-    raise EsgeException.Create(_UNITNAME, Err_ProgramExist, Name);
+    raise EsgeException.Create(_UNITNAME, Err_ProgramExist, ShaderProgram.Name);
 end;
 
 
