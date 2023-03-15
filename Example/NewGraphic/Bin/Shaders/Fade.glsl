@@ -1,4 +1,4 @@
-#version 400 core
+#version 450 core
 
 layout (location = 0) in vec2 aPos;
 
@@ -21,7 +21,7 @@ void main()
 PROGRAM_SEPARATOR
 
 
-#version 400 core
+#version 450 core
 
 out vec4 FragColor;
 uniform vec4 Color;

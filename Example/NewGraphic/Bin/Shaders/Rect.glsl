@@ -1,4 +1,4 @@
-#version 400 core
+#version 450 core
 
 layout (location = 0) in vec2 aPos;
 
@@ -25,7 +25,7 @@ vec2 RotatePoint(vec2 Point, float angle) {
 
 void main() {
     //Координаты вершины
-    vec2 RealPoint = (aPos.xy + Origin.xy) * Scale.xy;
+    vec2 RealPoint = (aPos.xy - Origin.xy) * Scale.xy;
 
     //Повернуть на угол
     if (Angle != 0) {
@@ -44,7 +44,7 @@ void main() {
 PROGRAM_SEPARATOR
 
 
-#version 400 core
+#version 450 core
 
 out vec4 FragColor;
 uniform vec4 Color;
