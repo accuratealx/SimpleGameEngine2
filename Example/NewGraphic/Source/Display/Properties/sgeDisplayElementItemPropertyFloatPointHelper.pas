@@ -30,13 +30,13 @@ implementation
 
 procedure TsgeDisplayElementItemPropertyFloatPointHelper.XToMiddle(Width: Single);
 begin
-  Self.X := -(Width / 2);
+  Self.X := (Width / 2);
 end;
 
 
 procedure TsgeDisplayElementItemPropertyFloatPointHelper.YToMiddle(Height: Single);
 begin
-  Self.Y := -(Height / 2);
+  Self.Y := (Height / 2);
 end;
 
 
