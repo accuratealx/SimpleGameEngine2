@@ -20,12 +20,12 @@ uses
 
 
 type
-  //Атрибуты шрифта (Жирный, Наклонный, Подчеркнутый, Перечёркнутый)
+  //Атрибуты шрифта
   TsgeFontAttributes = set of (
-    faBold,                                                         //Жирный
-    faItalic,                                                       //Наклонный
-    faUnderline,                                                    //Подчеркнутый
-    faStrikeOut                                                     //Перечеркнутый
+    faBold,       //Жирный
+    faItalic,     //Наклонный
+    faUnderline,  //Подчеркнутый
+    faStrikeOut   //Перечеркнутый
   );
 
   //Список глифов
@@ -35,14 +35,14 @@ type
   //Шрифт
   TsgeFont = class
   private
-    FGlyphList: TsgeFontGlyphList;                                  //Список глифов
-    FSprite: TsgeSprite;                                            //Спрайт с изображениями глифов
+    FGlyphList: TsgeFontGlyphList;  //Список глифов
+    FSprite: TsgeSprite;            //Спрайт с изображениями глифов
 
-    FName: String;                                                  //Имя шрифта
-    FLineSpace: Word;                                               //Расстояние между строками
-    FGlyphSpace: Word;                                              //Расстояние между глифами
-    FBaseLine: Word;                                                //Базовая линия от нижней границы символа
-    FHeight: Word;                                                  //Высота шрифта
+    FName: String;                  //Имя шрифта
+    FLineSpace: Word;               //Расстояние между строками
+    FGlyphSpace: Word;              //Расстояние между глифами
+    FBaseLine: Word;                //Базовая линия от нижней границы символа
+    FHeight: Word;                  //Высота шрифта
 
     procedure CreateGlyphList;
     procedure DestroyGlyphList;
@@ -58,9 +58,11 @@ type
     procedure ToMemoryStream(Stream: TsgeMemoryStream);
     procedure FromMemoryStream(Stream: TsgeMemoryStream);
 
+    function GetTextWidth(Text: String): Single;
+    function GetTextHeight(Text: String): Single;
+
     property GlyphList: TsgeFontGlyphList read FGlyphList;
     property Sprite: TsgeSprite read FSprite;
-
     property Name: String read FName write FName;
     property LineSpace: Word read FLineSpace write FLineSpace;
     property GlyphSpace: Word read FGlyphSpace write FGlyphSpace;
@@ -178,13 +180,11 @@ begin
     Params.SetValue(PARAM_BASE_LINE, FBaseLine);
     Container.Add(SECTION_INFO, Params.ToString);
 
-
     //Glyph
     Params.Clear;
     for i := 0 to $FF do
       List.Add(FGlyphList[i].ToString);
     Container.Add(SECTION_GLYPH, List.ToString);
-
 
     //Sprite
     s := '';
@@ -196,7 +196,6 @@ begin
     s := EncodeStringBase64(s);
     Params.SetValue(PARAM_DATA, s);
     Container.Add(SECTION_SPRITE, Params.ToString);
-
 
     //Результат
     Result := Container.ToString;
@@ -233,14 +232,12 @@ begin
       FGlyphSpace := Params.GetIntegerValue(PARAM_GLYPHS_PACE);
       FBaseLine := Params.GetIntegerValue(PARAM_BASE_LINE);
 
-
       //Glyph
       Container.GetSectionList(SECTION_GLYPH, List);
       if List.Count < $FF then
         raise EsgeException.Create(_UNITNAME, Err_CorruptData, SECTION_GLYPH);
       for i := 0 to $FF do
         FGlyphList[i].FromString(List.Part[i]);
-
 
       //Sprite
       Params.Clear;
@@ -279,6 +276,27 @@ end;
 procedure TsgeFont.FromMemoryStream(Stream: TsgeMemoryStream);
 begin
   FromString(Stream.ToString);
+end;
+
+
+function TsgeFont.GetTextWidth(Text: String): Single;
+var
+  i, c: Integer;
+begin
+  Result := 0;
+  c := Length(Text) - 1;
+  for i := 0 to c do
+  begin
+    Result := Result + FGlyphList[Ord(Text[i + 1])].Width;
+    if i <> c then
+      Result := Result + FGlyphSpace;
+  end;
+end;
+
+
+function TsgeFont.GetTextHeight(Text: String): Single;
+begin
+  Result := FLineSpace;
 end;
 
 
