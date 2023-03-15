@@ -2,9 +2,9 @@
 Пакет             Simple Game Engine 2
 Файл              sgeDisplayElementItemSpritePart.pas
 Версия            1.0
-Создан            09.02.2023
+Создан            16.01.2023
 Автор             Творческий человек  (accuratealx@gmail.com)
-Описание          Элемент рисования: Часть спрайта
+Описание          Элемент рисования: Спрайт
 }
 {$Include Defines.inc}
 
@@ -16,43 +16,96 @@ unit sgeDisplayElementItemSpritePart;
 interface
 
 uses
-  sgeSprite,
-  sgeDisplayElementItemSprite;
+  sgeSprite, sgeGraphicColor,
+  sgeDisplayElementItemBase, sgeDisplayElementItemPropertyFloatRect, sgeDisplayElementItemPropertyColor,
+  sgeDisplayElementItemPropertyScale, sgeDisplayElementItemPropertyRotate, sgeDisplayElementItemPropertyFloatPoint;
 
 type
-  TsgeDisplayElementItemSpritePart = class(TsgeDisplayElementItemSprite)
+  TsgeDisplayElementItemSpritePart = class(TsgeDisplayElementItemBase)
   private
-    FSpriteX1: Single;
-    FSpriteY1: Single;
-    FSpriteX2: Single;
-    FSpriteY2: Single;
+    FRect: TsgeDisplayElementItemPropertyFloatRect;
+    FColor: TsgeDisplayElementItemPropertyColor;
+    FScale: TsgeDisplayElementItemPropertyScale;
+    FOrigin: TsgeDisplayElementItemPropertyFloatPoint;
+    FRotate: TsgeDisplayElementItemPropertyRotate;
+    FSpriteRect: TsgeDisplayElementItemPropertyFloatRect;
+    FSprite: TsgeSprite;
 
+    procedure CreateObjects(X, Y, Width, Height: Single; X1, Y1, X2, Y2: Single);
+    procedure SetSprite(ASprite: TsgeSprite);
   public
     constructor Create(X, Y, Width, Height: Single; Sprite: TsgeSprite; SpriteX1, SpriteY1, SpriteX2, SpriteY2: Single);
+    constructor Create(X, Y: Single; Sprite: TsgeSprite; SpriteX1, SpriteY1, SpriteX2, SpriteY2: Single);
+    destructor  Destroy; override;
 
-    property SpriteX1: Single read FSpriteX1 write FSpriteX1;
-    property SpriteY1: Single read FSpriteY1 write FSpriteY1;
-    property SpriteX2: Single read FSpriteX2 write FSpriteX2;
-    property SpriteY2: Single read FSpriteY2 write FSpriteY2;
+    property Rect: TsgeDisplayElementItemPropertyFloatRect read FRect;
+    property Color: TsgeDisplayElementItemPropertyColor read FColor;
+    property Scale: TsgeDisplayElementItemPropertyScale read FScale;
+    property Origin: TsgeDisplayElementItemPropertyFloatPoint read FOrigin;
+    property Rotate: TsgeDisplayElementItemPropertyRotate read FRotate;
+    property SpriteRect: TsgeDisplayElementItemPropertyFloatRect read FSpriteRect;
+    property Sprite: TsgeSprite read FSprite write SetSprite;
   end;
-
 
 
 implementation
 
+uses
+  sgeErrors;
+
+const
+  _UNITNAME = 'sgeDisplayElementItemSprite';
+
+  Err_EmptySprite = 'EmptySprite';
+
+
+procedure TsgeDisplayElementItemSpritePart.CreateObjects(X, Y, Width, Height: Single; X1, Y1, X2, Y2: Single);
+begin
+  FRect := TsgeDisplayElementItemPropertyFloatRect.Create(X, Y, X + Width, X + Height);
+  FColor := TsgeDisplayElementItemPropertyColor.Create(cWhite);
+  FScale := TsgeDisplayElementItemPropertyScale.Create;
+  FOrigin := TsgeDisplayElementItemPropertyFloatPoint.Create;
+  FRotate := TsgeDisplayElementItemPropertyRotate.Create;
+  FSpriteRect := TsgeDisplayElementItemPropertyFloatRect.Create(X1, Y1, X2, Y2);
+end;
+
+
+procedure TsgeDisplayElementItemSpritePart.SetSprite(ASprite: TsgeSprite);
+begin
+  //Проверить спрайт
+  if ASprite = nil then
+    raise EsgeException.Create(_UNITNAME, Err_EmptySprite);
+
+  FSprite := ASprite;
+end;
+
 
 constructor TsgeDisplayElementItemSpritePart.Create(X, Y, Width, Height: Single; Sprite: TsgeSprite; SpriteX1, SpriteY1, SpriteX2, SpriteY2: Single);
 begin
-  inherited Create(X, Y, Width, Height, Sprite);
+  SetSprite(Sprite);
+  CreateObjects(X, Y, Width, Height, SpriteX1, SpriteY1, SpriteX2, SpriteY2);
+end;
 
-  //Запомнить параметры
-  FSpriteX1 := SpriteX1;
-  FSpriteY1 := SpriteY1;
-  FSpriteX2 := SpriteX2;
-  FSpriteY2 := SpriteY2;
+
+constructor TsgeDisplayElementItemSpritePart.Create(X, Y: Single; Sprite: TsgeSprite; SpriteX1, SpriteY1, SpriteX2, SpriteY2: Single);
+begin
+  SetSprite(Sprite);
+  CreateObjects(X, Y, Sprite.Width, Sprite.Height, SpriteX1, SpriteY1, SpriteX2, SpriteY2);
+end;
+
+
+destructor TsgeDisplayElementItemSpritePart.Destroy;
+begin
+  FSpriteRect.Free;
+  FRotate.Free;
+  FOrigin.Free;
+  FScale.Free;
+  FColor.Free;
+  FRect.Free;
 end;
 
 
 
 end.
+
 

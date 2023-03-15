@@ -18,8 +18,7 @@ interface
 uses
   sgeSprite, sgeGraphicColor,
   sgeDisplayElementItemBase, sgeDisplayElementItemPropertyFloatRect, sgeDisplayElementItemPropertyColor,
-  sgeDisplayElementItemPropertyScale, sgeDisplayElementItemPropertyRotate, sgeDisplayElementItemPropertyFloatPoint,
-  sgeDisplayElementItemPropertySprite;
+  sgeDisplayElementItemPropertyScale, sgeDisplayElementItemPropertyRotate, sgeDisplayElementItemPropertyFloatPoint;
 
 type
   TsgeDisplayElementItemSprite = class(TsgeDisplayElementItemBase)
@@ -29,9 +28,10 @@ type
     FScale: TsgeDisplayElementItemPropertyScale;
     FOrigin: TsgeDisplayElementItemPropertyFloatPoint;
     FRotate: TsgeDisplayElementItemPropertyRotate;
-    FSprite: TsgeDisplayElementItemPropertySprite;
+    FSprite: TsgeSprite;
 
     procedure CreateObjects(X, Y, Width, Height: Single);
+    procedure SetSprite(ASprite: TsgeSprite);
   public
     constructor Create(X, Y, Width, Height: Single; Sprite: TsgeSprite);
     constructor Create(X, Y: Single; Sprite: TsgeSprite);
@@ -42,11 +42,19 @@ type
     property Scale: TsgeDisplayElementItemPropertyScale read FScale;
     property Origin: TsgeDisplayElementItemPropertyFloatPoint read FOrigin;
     property Rotate: TsgeDisplayElementItemPropertyRotate read FRotate;
-    property Sprite: TsgeDisplayElementItemPropertySprite read FSprite;
+    property Sprite: TsgeSprite read FSprite write SetSprite;
   end;
 
 
 implementation
+
+uses
+  sgeErrors;
+
+const
+  _UNITNAME = 'sgeDisplayElementItemSprite';
+
+  Err_EmptySprite = 'EmptySprite';
 
 
 procedure TsgeDisplayElementItemSprite.CreateObjects(X, Y, Width, Height: Single);
@@ -59,23 +67,32 @@ begin
 end;
 
 
+procedure TsgeDisplayElementItemSprite.SetSprite(ASprite: TsgeSprite);
+begin
+  //Проверить спрайт
+  if ASprite = nil then
+    raise EsgeException.Create(_UNITNAME, Err_EmptySprite);
+
+  FSprite := ASprite;
+end;
+
+
 constructor TsgeDisplayElementItemSprite.Create(X, Y, Width, Height: Single; Sprite: TsgeSprite);
 begin
-  FSprite := TsgeDisplayElementItemPropertySprite.Create(Sprite);
+  SetSprite(Sprite);
   CreateObjects(X, Y, Width, Height);
 end;
 
 
 constructor TsgeDisplayElementItemSprite.Create(X, Y: Single; Sprite: TsgeSprite);
 begin
-  FSprite := TsgeDisplayElementItemPropertySprite.Create(Sprite);
+  SetSprite(Sprite);
   CreateObjects(X, Y, Sprite.Width, Sprite.Height);
 end;
 
 
 destructor TsgeDisplayElementItemSprite.Destroy;
 begin
-  FSprite.Free;
   FRotate.Free;
   FOrigin.Free;
   FScale.Free;
