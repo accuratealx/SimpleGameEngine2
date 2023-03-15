@@ -80,7 +80,7 @@ destructor TsgeGraphicOpenGLDrawObjectItemSprite.Destroy;
 begin
   //Удалить спрайт из таблицы
   if Assigned(FElement) then
-    OpenGLSpriteTable.Delete(TsgeDisplayElementItemSprite(FElement).Sprite.Sprite);
+    OpenGLSpriteTable.Delete(TsgeDisplayElementItemSprite(FElement).Sprite);
 
   //Удалить буфер вершинных координат
   FTextureBuffer.Free;
@@ -100,23 +100,26 @@ var
 begin
   //Удалить старый спрайт, если происходит обновление элемента
   if Assigned(FElement) then
-    OpenGLSpriteTable.Delete(TsgeDisplayElementItemSprite(FElement).Sprite.Sprite);
+    OpenGLSpriteTable.Delete(TsgeDisplayElementItemSprite(FElement).Sprite);
 
   inherited Update(Element);
 
   //Найти спрайт в таблице
-  FGLSprite := OpenGLSpriteTable.Add(Element.Sprite.Sprite);
+  FGLSprite := OpenGLSpriteTable.Add(Element.Sprite);
 
   //Залить данные в видеокарту
   Buff := TsgeGraphicOpenGLCoordBuffer.Create;
 
+  //Вершины
   Buff.AddQuad(0, 0, Element.Rect.Width, Element.Rect.Height);
   FVertexBuffer.SetData(Buff);
 
+  //Текстурные координаты
   Buff.Clear;
   Buff.AddQuad(0, 1, 1, 0);
   FTextureBuffer.SetData(Buff);
 
+  //Удалить временный буфер
   Buff.Free;
 end;
 

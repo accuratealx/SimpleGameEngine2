@@ -1,14 +1,14 @@
 {
 Пакет             Simple Game Engine 2
-Файл              sgeGraphicOpenGLDrawObjectItemSpriteTile.pas
+Файл              sgeGraphicOpenGLDrawObjectItemSpritePart.pas
 Версия            1.0
 Создан            15.03.2023
 Автор             Творческий человек  (accuratealx@gmail.com)
-Описание          OpenGL: Элемент отрисовки: Плитка спрайта
+Описание          OpenGL: Элемент отрисовки: Часть спрайта
 }
 {$Include Defines.inc}
 
-unit sgeGraphicOpenGLDrawObjectItemSpriteTile;
+unit sgeGraphicOpenGLDrawObjectItemSpritePart;
 
 {$mode ObjFPC}{$H+}
 
@@ -22,7 +22,7 @@ uses
 
 
 type
-  TsgeGraphicOpenGLDrawObjectItemSpriteTile = class(TsgeGraphicOpenGLDrawObjectItemBase)
+  TsgeGraphicOpenGLDrawObjectItemSpritePart = class(TsgeGraphicOpenGLDrawObjectItemBase)
   private
     FVAO: TsgeGraphicOpenGLVertexArrayObject;
     FShaderProgram: TsgeGraphicOpenGLShaderProgram;
@@ -42,11 +42,11 @@ type
 implementation
 
 uses
-  sgeDisplayElementItemSpriteTile,
+  sgeDisplayElementItemSpritePart,
   sgeGraphicOpenGLShaderProgramTable, sgeGraphicOpenGLSpriteTable, sgeGraphicOpenGLCoordBuffer;
 
 
-constructor TsgeGraphicOpenGLDrawObjectItemSpriteTile.Create(Element: TsgeDisplayElementItemBase);
+constructor TsgeGraphicOpenGLDrawObjectItemSpritePart.Create(Element: TsgeDisplayElementItemBase);
 const
   SHADER_NAME = 'Sprite';
 begin
@@ -76,11 +76,11 @@ begin
 end;
 
 
-destructor TsgeGraphicOpenGLDrawObjectItemSpriteTile.Destroy;
+destructor TsgeGraphicOpenGLDrawObjectItemSpritePart.Destroy;
 begin
   //Удалить спрайт из таблицы
   if Assigned(FElement) then
-    OpenGLSpriteTable.Delete(TsgeDisplayElementItemSpriteTile(FElement).Sprite);
+    OpenGLSpriteTable.Delete(TsgeDisplayElementItemSpritePart(FElement).Sprite);
 
   //Удалить буфер вершинных координат
   FTextureBuffer.Free;
@@ -93,15 +93,15 @@ begin
 end;
 
 
-procedure TsgeGraphicOpenGLDrawObjectItemSpriteTile.Update(AElement: TsgeDisplayElementItemBase);
+procedure TsgeGraphicOpenGLDrawObjectItemSpritePart.Update(AElement: TsgeDisplayElementItemBase);
 var
   Buff: TsgeGraphicOpenGLCoordBuffer;
-  Element: TsgeDisplayElementItemSpriteTile absolute AElement;
+  Element: TsgeDisplayElementItemSpritePart absolute AElement;
   X1, Y1, X2, Y2: Single;
 begin
   //Удалить старый спрайт, если происходит обновление элемента
   if Assigned(FElement) then
-    OpenGLSpriteTable.Delete(TsgeDisplayElementItemSpriteTile(FElement).Sprite);
+    OpenGLSpriteTable.Delete(TsgeDisplayElementItemSpritePart(FElement).Sprite);
 
   inherited Update(Element);
 
@@ -117,10 +117,10 @@ begin
 
   //Текстурные координаты
   Buff.Clear;
-  X1 := Element.Tile.X * FGLSprite.GLTileWidth;
-  Y1 := 1 - Element.Tile.Y * FGLSprite.GLTileHeight;
-  X2 := X1 + FGLSprite.GLTileWidth;
-  Y2 := Y1 - FGLSprite.GLTileHeight;
+  X1 := Element.SpriteRect.X1 * FGLSprite.GLPixelWidth;
+  Y1 := 1 - Element.SpriteRect.Y1 * FGLSprite.GLPixelHeight;
+  X2 := Element.SpriteRect.X2 * FGLSprite.GLPixelWidth;
+  Y2 := 1 - Element.SpriteRect.Y2 * FGLSprite.GLPixelHeight;
   Buff.AddQuad(X1, Y1, X2, Y2);
   FTextureBuffer.SetData(Buff);
 
@@ -129,11 +129,11 @@ begin
 end;
 
 
-procedure TsgeGraphicOpenGLDrawObjectItemSpriteTile.Draw(Graphic: TsgeGraphicOpenGL; ScreenSize: TsgeFloatPoint; LayerInfo: TsgeFloatRect);
+procedure TsgeGraphicOpenGLDrawObjectItemSpritePart.Draw(Graphic: TsgeGraphicOpenGL; ScreenSize: TsgeFloatPoint; LayerInfo: TsgeFloatRect);
 var
-  Element: TsgeDisplayElementItemSpriteTile;
+  Element: TsgeDisplayElementItemSpritePart;
 begin
-  Element := TsgeDisplayElementItemSpriteTile(FElement);
+  Element := TsgeDisplayElementItemSpritePart(FElement);
 
   //Выбрать объект
   FVAO.Attach;

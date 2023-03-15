@@ -1,14 +1,14 @@
 {
 Пакет             Simple Game Engine 2
-Файл              sgeGraphicOpenGLDrawObjectItemSpriteTile.pas
+Файл              sgeGraphicOpenGLDrawObjectItemText.pas
 Версия            1.0
-Создан            15.03.2023
+Создан            28.01.2023
 Автор             Творческий человек  (accuratealx@gmail.com)
-Описание          OpenGL: Элемент отрисовки: Плитка спрайта
+Описание          OpenGL: Элемент отрисовки: Текст
 }
 {$Include Defines.inc}
 
-unit sgeGraphicOpenGLDrawObjectItemSpriteTile;
+unit sgeGraphicOpenGLDrawObjectItemText;
 
 {$mode ObjFPC}{$H+}
 
@@ -17,12 +17,11 @@ interface
 uses
   sgeTypes,
   sgeDisplayElementItemBase,
-  sgeGraphicOpenGL, sgeGraphicOpenGLDrawObjectItemBase, sgeGraphicOpenGLVertexArrayObject,
-  sgeGraphicOpenGLShaderProgram, sgeGraphicOpenGLBuffer, sgeGraphicOpenGLSprite;
-
+  sgeGraphicOpenGL, sgeGraphicOpenGLSprite, sgeGraphicOpenGLDrawObjectItemBase, sgeGraphicOpenGLVertexArrayObject,
+  sgeGraphicOpenGLShaderProgram, sgeGraphicOpenGLBuffer;
 
 type
-  TsgeGraphicOpenGLDrawObjectItemSpriteTile = class(TsgeGraphicOpenGLDrawObjectItemBase)
+  TsgeGraphicOpenGLDrawObjectItemText = class(TsgeGraphicOpenGLDrawObjectItemBase)
   private
     FVAO: TsgeGraphicOpenGLVertexArrayObject;
     FShaderProgram: TsgeGraphicOpenGLShaderProgram;
@@ -42,13 +41,14 @@ type
 implementation
 
 uses
-  sgeDisplayElementItemSpriteTile,
+  sgeFont, sgeFontGlyph,
+  sgeDisplayElementItemText,
   sgeGraphicOpenGLShaderProgramTable, sgeGraphicOpenGLSpriteTable, sgeGraphicOpenGLCoordBuffer;
 
 
-constructor TsgeGraphicOpenGLDrawObjectItemSpriteTile.Create(Element: TsgeDisplayElementItemBase);
+constructor TsgeGraphicOpenGLDrawObjectItemText.Create(Element: TsgeDisplayElementItemBase);
 const
-  SHADER_NAME = 'Sprite';
+  SHADER_NAME = 'Text';
 begin
   //Найти шейдерную программу в таблице
   FShaderProgram := OpenGLShaderProgramTable.Get(SHADER_NAME);
@@ -61,9 +61,9 @@ begin
 
   //Создать VAO
   FVAO := TsgeGraphicOpenGLVertexArrayObject.Create;
-  FVAO.Attach;
 
   //Привязать буфер вершин к VAO
+  FVAO.Attach;
   FVertexBuffer.Attach;
   FVAO.BindVertexCoord(FVertexBuffer);
 
@@ -76,11 +76,11 @@ begin
 end;
 
 
-destructor TsgeGraphicOpenGLDrawObjectItemSpriteTile.Destroy;
+destructor TsgeGraphicOpenGLDrawObjectItemText.Destroy;
 begin
   //Удалить спрайт из таблицы
   if Assigned(FElement) then
-    OpenGLSpriteTable.Delete(TsgeDisplayElementItemSpriteTile(FElement).Sprite);
+    OpenGLSpriteTable.Delete(TsgeDisplayElementItemText(FElement).Font.Sprite);
 
   //Удалить буфер вершинных координат
   FTextureBuffer.Free;
@@ -93,47 +93,77 @@ begin
 end;
 
 
-procedure TsgeGraphicOpenGLDrawObjectItemSpriteTile.Update(AElement: TsgeDisplayElementItemBase);
+procedure TsgeGraphicOpenGLDrawObjectItemText.Update(AElement: TsgeDisplayElementItemBase);
 var
-  Buff: TsgeGraphicOpenGLCoordBuffer;
-  Element: TsgeDisplayElementItemSpriteTile absolute AElement;
-  X1, Y1, X2, Y2: Single;
+  VertexBuff, TexBuff: TsgeGraphicOpenGLCoordBuffer;
+  Element: TsgeDisplayElementItemText absolute AElement;
+  c, i: Integer;
+  Glyph: TsgeFontGlyph;
+  X, Y, X1, Y1, X2, Y2, W, H: Single;
 begin
   //Удалить старый спрайт, если происходит обновление элемента
   if Assigned(FElement) then
-    OpenGLSpriteTable.Delete(TsgeDisplayElementItemSpriteTile(FElement).Sprite);
+    OpenGLSpriteTable.Delete(TsgeDisplayElementItemText(FElement).Font.Sprite);
 
   inherited Update(Element);
 
   //Найти спрайт в таблице
-  FGLSprite := OpenGLSpriteTable.Add(Element.Sprite);
+  FGLSprite := OpenGLSpriteTable.Add(Element.Font.Sprite);
 
   //Залить данные в видеокарту
-  Buff := TsgeGraphicOpenGLCoordBuffer.Create;
+  VertexBuff := TsgeGraphicOpenGLCoordBuffer.Create;
+  TexBuff := TsgeGraphicOpenGLCoordBuffer.Create;
 
-  //Вершины
-  Buff.AddQuad(0, 0, Element.Rect.Width, Element.Rect.Height);
-  FVertexBuffer.SetData(Buff);
+  //Подготовить данные
+  X := 0;
+  Y := 0;
+  c := Length(Element.Text);
+  for i := 1 to c do
+  begin
+    //Ссылка на глиф
+    Glyph := Element.Font.GlyphList[Ord(Element.Text[i])];
+
+    //Размеры глифа
+    W := Glyph.Width;
+    H := Glyph.Height;
+
+    //Вершины
+    X1 := X;
+    X2 := X1 + W;
+    Y1 := 0;
+    Y2 := Element.Font.Height;
+    VertexBuff.AddQuad(X1, Y1, X2, Y2);
+
+    //Текстуры
+    X1 := Glyph.X1 * FGLSprite.GLPixelWidth;
+    Y1 := 1 - Glyph.Y1 * FGLSprite.GLPixelHeight;
+    X2 := Glyph.X2 * FGLSprite.GLPixelWidth;
+    Y2 := 1 - Glyph.Y2 * FGLSprite.GLPixelHeight;
+    TexBuff.AddQuad(X1, Y1, X2, Y2);
+
+    //Сместить X следующего глифа
+    X := X + W + Element.Font.GlyphSpace;
+  end;
+
+
+
+  //Координаты вершин
+  FVertexBuffer.SetData(VertexBuff);
 
   //Текстурные координаты
-  Buff.Clear;
-  X1 := Element.Tile.X * FGLSprite.GLTileWidth;
-  Y1 := 1 - Element.Tile.Y * FGLSprite.GLTileHeight;
-  X2 := X1 + FGLSprite.GLTileWidth;
-  Y2 := Y1 - FGLSprite.GLTileHeight;
-  Buff.AddQuad(X1, Y1, X2, Y2);
-  FTextureBuffer.SetData(Buff);
+  FTextureBuffer.SetData(TexBuff);
 
-  //Удалить временный буфер
-  Buff.Free;
+  //Почистить память
+  VertexBuff.Free;
+  TexBuff.Free;
 end;
 
 
-procedure TsgeGraphicOpenGLDrawObjectItemSpriteTile.Draw(Graphic: TsgeGraphicOpenGL; ScreenSize: TsgeFloatPoint; LayerInfo: TsgeFloatRect);
+procedure TsgeGraphicOpenGLDrawObjectItemText.Draw(Graphic: TsgeGraphicOpenGL; ScreenSize: TsgeFloatPoint; LayerInfo: TsgeFloatRect);
 var
-  Element: TsgeDisplayElementItemSpriteTile;
+  Element: TsgeDisplayElementItemText;
 begin
-  Element := TsgeDisplayElementItemSpriteTile(FElement);
+  Element := TsgeDisplayElementItemText(FElement);
 
   //Выбрать объект
   FVAO.Attach;
@@ -145,7 +175,7 @@ begin
   FShaderProgram.SetScreenSize(ScreenSize);
   FShaderProgram.SetLayer(LayerInfo);
 
-  FShaderProgram.SetPos(sgeGetFloatPoint(Element.Rect.X1, Element.Rect.Y1));
+  FShaderProgram.SetPos(sgeGetFloatPoint(Element.Point.X, Element.Point.Y));
   FShaderProgram.SetColor(Element.Color.Color);
   FShaderProgram.SetScale(Element.Scale.Scale);
   FShaderProgram.SetOrigin(Element.Origin.Point);
