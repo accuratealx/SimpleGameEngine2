@@ -68,7 +68,7 @@ type
     procedure SetVerticalSync(AEnable: Boolean);
     function  GetVerticalSync: Boolean;
   public
-    constructor Create(DC: HDC; MajorVersion, MinorVersion: Byte);
+    constructor Create(DC: HDC; MajorVersion: Byte = 4; MinorVersion: Byte = 5);
     destructor Destroy; override;
 
     //Системные функции
@@ -165,7 +165,7 @@ begin
 end;
 
 
-constructor TsgeGraphicOpenGL.Create(DC: HDC; MajorVersion, MinorVersion: Byte);
+constructor TsgeGraphicOpenGL.Create(DC: HDC; MajorVersion: Byte; MinorVersion: Byte);
 var
   PFDescriptor: TPixelFormatDescriptor;
   PixelFormat: Integer;
