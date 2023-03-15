@@ -31,18 +31,44 @@ const
 
 type
   //Кнопки мыши
-  TsgeMouseButton = (mbLeft, mbMiddle, mbRight, mbExtra1, mbExtra2);
+  TsgeMouseButton = (
+    mbLeft,   //Левая
+    mbMiddle, //Стредняя
+    mbRight,  //Правая
+    mbExtra1, //Дополнительная 1
+    mbExtra2  //Дополнительная 2
+  );
   TsgeMouseButtons = set of TsgeMouseButton;
 
 
   //Специальные кнопки клавиатуры
-  TsgeKeyboardButton = (kbLeftAlt, kbRightAlt, kbLeftCtrl, kbRightCtrl, kbLeftShift, kbRightShift,
-                        kbAlt, kbCtrl, kbShift, kbCapsLock, kbNumLock, kbScrollLock, kbInsert);
+  TsgeKeyboardButton = (
+    kbLeftAlt,    //Левый альт
+    kbRightAlt,   //Правый альт
+    kbLeftCtrl,   //Левый контрол
+    kbRightCtrl,  //Правый контрол
+    kbLeftShift,  //Левый шифт
+    kbRightShift, //Правый шифт
+    kbAlt,        //Альт
+    kbCtrl,       //Контрол
+    kbShift,      //Шифт
+    kbCapsLock,   //Верхний регистр
+    kbNumLock,    //Дополнительная цифровая клавиатура
+    kbScrollLock, //
+    kbInsert      //Вставка
+  );
   TsgeKeyboardButtons = set of TsgeKeyboardButton;
 
 
   //Модификаторы клавиш
-  TsgeKeyboardShifts = set of (ksLeftAlt, ksRightAlt, ksLeftCtrl, ksRightCtrl, ksLeftShift, ksRightShift);
+  TsgeKeyboardShifts = set of (
+    ksLeftAlt,    //Левый альт
+    ksRightAlt,   //Правый альт
+    ksLeftCtrl,   //Левый контрол
+    ksRightCtrl,  //Правый контрол
+    ksLeftShift,  //Левый шифт
+    ksRightShift  //Правый шифт
+  );
 
 
   //Горизонтальное выравнивание
