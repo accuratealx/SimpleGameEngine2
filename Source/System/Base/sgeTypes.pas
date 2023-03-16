@@ -30,6 +30,10 @@ const
 
 
 type
+  //Массив байтов
+  TsgeByteArray = array of Byte;
+
+
   //Кнопки мыши
   TsgeMouseButton = (
     mbLeft,   //Левая

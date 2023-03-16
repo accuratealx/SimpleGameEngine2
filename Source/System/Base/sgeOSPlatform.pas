@@ -15,7 +15,8 @@ unit sgeOSPlatform;
 interface
 
 uses
-  SysUtils;
+  SysUtils,
+  sgeTypes;
 
 
 const
@@ -164,8 +165,13 @@ procedure sgeGlobalDeleteAtom(Atom: TAtom);
 function  sgeGlobalFindAtom(Name: ShortString): TAtom;
 function  sgeGlobalGetAtomName(Atom: TAtom): ShortString;
 
+
 //Раскладки
 function sgeDisableIME(IdThread: Cardinal): Boolean;
+
+
+//Кодировки
+function sgeUtf8ToAnsiBytes(Str: String): TsgeByteArray;
 
 
 var
@@ -761,6 +767,11 @@ begin
   Result := ImmDisableIME(IdThread);
 end;
 
+
+function sgeUtf8ToAnsiBytes(Str: String): TsgeByteArray;
+begin
+  Result := TEncoding.ANSI.GetAnsiBytes(Str);
+end;
 
 
 
