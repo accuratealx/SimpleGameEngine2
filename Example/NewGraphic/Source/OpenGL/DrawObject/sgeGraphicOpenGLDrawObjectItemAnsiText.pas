@@ -1,6 +1,6 @@
 {
 Пакет             Simple Game Engine 2
-Файл              sgeGraphicOpenGLDrawObjectItemText.pas
+Файл              sgeGraphicOpenGLDrawObjectItemAnsiText.pas
 Версия            1.0
 Создан            28.01.2023
 Автор             Творческий человек  (accuratealx@gmail.com)
@@ -8,7 +8,7 @@
 }
 {$Include Defines.inc}
 
-unit sgeGraphicOpenGLDrawObjectItemText;
+unit sgeGraphicOpenGLDrawObjectItemAnsiText;
 
 {$mode ObjFPC}{$H+}
 
@@ -21,7 +21,7 @@ uses
   sgeGraphicOpenGLShaderProgram, sgeGraphicOpenGLBuffer;
 
 type
-  TsgeGraphicOpenGLDrawObjectItemText = class(TsgeGraphicOpenGLDrawObjectItemBase)
+  TsgeGraphicOpenGLDrawObjectItemAnsiText = class(TsgeGraphicOpenGLDrawObjectItemBase)
   private
     FVAO: TsgeGraphicOpenGLVertexArrayObject;
     FShaderProgram: TsgeGraphicOpenGLShaderProgram;
@@ -41,12 +41,12 @@ type
 implementation
 
 uses
-  sgeFont, sgeFontGlyph,
-  sgeDisplayElementItemText,
+  sgeAnsiFontGlyph,
+  sgeDisplayElementItemAnsiText,
   sgeGraphicOpenGLShaderProgramTable, sgeGraphicOpenGLSpriteTable, sgeGraphicOpenGLCoordBuffer;
 
 
-constructor TsgeGraphicOpenGLDrawObjectItemText.Create(Element: TsgeDisplayElementItemBase);
+constructor TsgeGraphicOpenGLDrawObjectItemAnsiText.Create(Element: TsgeDisplayElementItemBase);
 const
   SHADER_NAME = 'Text';
 begin
@@ -76,11 +76,11 @@ begin
 end;
 
 
-destructor TsgeGraphicOpenGLDrawObjectItemText.Destroy;
+destructor TsgeGraphicOpenGLDrawObjectItemAnsiText.Destroy;
 begin
   //Удалить спрайт из таблицы
   if Assigned(FElement) then
-    OpenGLSpriteTable.Delete(TsgeDisplayElementItemText(FElement).Font.Sprite);
+    OpenGLSpriteTable.Delete(TsgeDisplayElementItemAnsiText(FElement).Font.Sprite);
 
   //Удалить буфер вершинных координат
   FTextureBuffer.Free;
@@ -93,17 +93,17 @@ begin
 end;
 
 
-procedure TsgeGraphicOpenGLDrawObjectItemText.Update(AElement: TsgeDisplayElementItemBase);
+procedure TsgeGraphicOpenGLDrawObjectItemAnsiText.Update(AElement: TsgeDisplayElementItemBase);
 var
   VertexBuff, TexBuff: TsgeGraphicOpenGLCoordBuffer;
-  Element: TsgeDisplayElementItemText absolute AElement;
+  Element: TsgeDisplayElementItemAnsiText absolute AElement;
   c, i: Integer;
-  Glyph: TsgeFontGlyph;
-  X, Y, X1, Y1, X2, Y2, W, H: Single;
+  Glyph: TsgeAnsiFontGlyph;
+  X, X1, Y1, X2, Y2: Single;
 begin
   //Удалить старый спрайт, если происходит обновление элемента
   if Assigned(FElement) then
-    OpenGLSpriteTable.Delete(TsgeDisplayElementItemText(FElement).Font.Sprite);
+    OpenGLSpriteTable.Delete(TsgeDisplayElementItemAnsiText(FElement).Font.Sprite);
 
   inherited Update(Element);
 
@@ -116,22 +116,17 @@ begin
 
   //Подготовить данные
   X := 0;
-  Y := 0;
-  c := Length(Element.Text);
-  for i := 1 to c do
+  c := Length(Element.TextBytes) - 1;
+  for i := 0 to c do
   begin
     //Ссылка на глиф
-    Glyph := Element.Font.GlyphList[Ord(Element.Text[i])];
-
-    //Размеры глифа
-    W := Glyph.Width;
-    H := Glyph.Height;
+    Glyph := Element.Font.GlyphList[Element.TextBytes[i]];
 
     //Вершины
     X1 := X;
-    X2 := X1 + W;
-    Y1 := 0;
-    Y2 := Element.Font.Height;
+    X2 := X1 + Glyph.Width;
+    Y1 := Element.Font.Height - Element.Font.BaseLine - Glyph.Height - Glyph.BaseLine;
+    Y2 := Y1 + Glyph.Height;
     VertexBuff.AddQuad(X1, Y1, X2, Y2);
 
     //Текстуры
@@ -142,10 +137,8 @@ begin
     TexBuff.AddQuad(X1, Y1, X2, Y2);
 
     //Сместить X следующего глифа
-    X := X + W + Element.Font.GlyphSpace;
+    X := X + Glyph.Width + Element.Font.GlyphSpace;
   end;
-
-
 
   //Координаты вершин
   FVertexBuffer.SetData(VertexBuff);
@@ -159,11 +152,11 @@ begin
 end;
 
 
-procedure TsgeGraphicOpenGLDrawObjectItemText.Draw(Graphic: TsgeGraphicOpenGL; ScreenSize: TsgeFloatPoint; LayerInfo: TsgeFloatRect);
+procedure TsgeGraphicOpenGLDrawObjectItemAnsiText.Draw(Graphic: TsgeGraphicOpenGL; ScreenSize: TsgeFloatPoint; LayerInfo: TsgeFloatRect);
 var
-  Element: TsgeDisplayElementItemText;
+  Element: TsgeDisplayElementItemAnsiText;
 begin
-  Element := TsgeDisplayElementItemText(FElement);
+  Element := TsgeDisplayElementItemAnsiText(FElement);
 
   //Выбрать объект
   FVAO.Attach;

@@ -1,39 +1,40 @@
 {
 Пакет             Simple Game Engine 2
-Файл              sgeDisplayElementItemText.pas
+Файл              sgeDisplayElementItemAnsiText.pas
 Версия            1.0
 Создан            16.03.2023
 Автор             Творческий человек  (accuratealx@gmail.com)
-Описание          Элемент рисования: Текст
+Описание          Элемент рисования: Текст Ansi
 }
 {$Include Defines.inc}
 
-unit sgeDisplayElementItemText;
+unit sgeDisplayElementItemAnsiText;
 
 {$mode ObjFPC}{$H+}
 
 interface
 
 uses
-  sgeGraphicColor, sgeFont,
+  sgeTypes, sgeGraphicColor, sgeAnsiFont,
   sgeDisplayElementItemBase, sgeDisplayElementItemPropertyColor, sgeDisplayElementItemPropertyScale,
   sgeDisplayElementItemPropertyRotate, sgeDisplayElementItemPropertyFloatPoint;
 
 type
-  TsgeDisplayElementItemText = class(TsgeDisplayElementItemBase)
+  TsgeDisplayElementItemAnsiText = class(TsgeDisplayElementItemBase)
   private
     FPoint: TsgeDisplayElementItemPropertyFloatPoint;
     FColor: TsgeDisplayElementItemPropertyColor;
     FScale: TsgeDisplayElementItemPropertyScale;
     FOrigin: TsgeDisplayElementItemPropertyFloatPoint;
     FRotate: TsgeDisplayElementItemPropertyRotate;
-    FFont: TsgeFont;
+    FFont: TsgeAnsiFont;
     FText: String;
+    FTextBytes: TsgeByteArray;
 
-    procedure SetFont(AFont: TsgeFont);
+    procedure SetFont(AFont: TsgeAnsiFont);
     procedure SetText(AText: String);
   public
-    constructor Create(X, Y: Single; Color: TsgeColor; Font: TsgeFont; Text: String);
+    constructor Create(X, Y: Single; Color: TsgeColor; Font: TsgeAnsiFont; Text: String);
     destructor  Destroy; override;
 
     property Point: TsgeDisplayElementItemPropertyFloatPoint read FPoint;
@@ -41,15 +42,16 @@ type
     property Scale: TsgeDisplayElementItemPropertyScale read FScale;
     property Origin: TsgeDisplayElementItemPropertyFloatPoint read FOrigin;
     property Rotate: TsgeDisplayElementItemPropertyRotate read FRotate;
-    property Font: TsgeFont read FFont write SetFont;
+    property Font: TsgeAnsiFont read FFont write SetFont;
     property Text: String read FText write SetText;
+    property TextBytes: TsgeByteArray read FTextBytes;
   end;
 
 
 implementation
 
 uses
-  sgeErrors;
+  sgeErrors, sgeOSPlatform;
 
 const
   _UNITNAME = 'sgeDisplayElementItemRect';
@@ -57,7 +59,7 @@ const
   Err_EmptyFont = 'EmptyFont';
 
 
-procedure TsgeDisplayElementItemText.SetFont(AFont: TsgeFont);
+procedure TsgeDisplayElementItemAnsiText.SetFont(AFont: TsgeAnsiFont);
 begin
   //Проверить спрайт
   if AFont = nil then
@@ -67,15 +69,18 @@ begin
 end;
 
 
-procedure TsgeDisplayElementItemText.SetText(AText: String);
+procedure TsgeDisplayElementItemAnsiText.SetText(AText: String);
 begin
-  //Шрифт не понимает utf-8, только Ansi. Поэтому переведем тут,
+  //Запомнить текст
+  FText := AText;
+
+  //Шрифт не понимает utf-8, только Ansi. Поэтому переведем тут в байты,
   //что бы не напрягать поток графики
-  FText := Utf8ToAnsi(AText);
+  FTextBytes := sgeUtf8ToAnsiBytes(FText);
 end;
 
 
-constructor TsgeDisplayElementItemText.Create(X, Y: Single; Color: TsgeColor; Font: TsgeFont; Text: String);
+constructor TsgeDisplayElementItemAnsiText.Create(X, Y: Single; Color: TsgeColor; Font: TsgeAnsiFont; Text: String);
 begin
   SetFont(Font);
   FPoint := TsgeDisplayElementItemPropertyFloatPoint.Create(X, Y);
@@ -87,8 +92,9 @@ begin
 end;
 
 
-destructor TsgeDisplayElementItemText.Destroy;
+destructor TsgeDisplayElementItemAnsiText.Destroy;
 begin
+  SetLength(FText, 0);
   FRotate.Free;
   FOrigin.Free;
   FScale.Free;
