@@ -692,7 +692,6 @@ begin
   FFont := TsgeFont.Create('');
   FGlyphCanvas := Graphics.TBitmap.Create;
   FGlyphCanvas.PixelFormat := pf32bit;
-  //SetBkMode(FGlyphCanvas.Canvas.Handle, TRANSPARENT);
 
   ReloadGlyphListBox;
   SetGlyphEditorByIndex;
