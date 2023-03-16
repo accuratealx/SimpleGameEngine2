@@ -8,7 +8,7 @@
 }
 {$Include Defines.inc}
 
-unit sgeFontGlyph;
+unit sgeAnsiFontGlyph;
 
 {$mode ObjFPC}{$H+}
 
@@ -18,7 +18,7 @@ uses
   sgeTypes;
 
 type
-  TsgeFontGlyph = class
+  TsgeAnsiFontGlyph = class
   private
     FSpriteRect: TsgeFloatRect; //Координаты спрайта
     FBaseLine: Integer;         //Смещение прямоугольника от нижней части до базовой линии
@@ -40,7 +40,7 @@ type
     property SpriteRect: TsgeFloatRect read FSpriteRect write SetSpriteRect;
     property BaseLine: Integer read FBaseLine write FBaseLine;
     property Width: Single read FWidth;
-    property Height: Single read FWidth;
+    property Height: Single read FHeight;
     property X1: Single read FSpriteRect.X1 write SetX1;
     property Y1: Single read FSpriteRect.Y1 write SetY1;
     property X2: Single read FSpriteRect.X2 write SetX2;
@@ -62,49 +62,49 @@ const
   Err_CantConvertValue = 'CantConvertValue';
 
 
-procedure TsgeFontGlyph.CorrectSizes;
+procedure TsgeAnsiFontGlyph.CorrectSizes;
 begin
   FWidth := FSpriteRect.X2 - FSpriteRect.X1;
-  FHeight := FSpriteRect.Y2 - FSpriteRect.Y1 + FBaseLine;
+  FHeight := FSpriteRect.Y2 - FSpriteRect.Y1;
 end;
 
 
-procedure TsgeFontGlyph.SetX1(AX1: Single);
+procedure TsgeAnsiFontGlyph.SetX1(AX1: Single);
 begin
   FSpriteRect.X1 := AX1;
   CorrectSizes;
 end;
 
 
-procedure TsgeFontGlyph.SetY1(AY1: Single);
+procedure TsgeAnsiFontGlyph.SetY1(AY1: Single);
 begin
   FSpriteRect.Y1 := AY1;
   CorrectSizes;
 end;
 
 
-procedure TsgeFontGlyph.SetX2(AX2: Single);
+procedure TsgeAnsiFontGlyph.SetX2(AX2: Single);
 begin
   FSpriteRect.X2 := AX2;
   CorrectSizes;
 end;
 
 
-procedure TsgeFontGlyph.SetY2(AY2: Single);
+procedure TsgeAnsiFontGlyph.SetY2(AY2: Single);
 begin
   FSpriteRect.Y2 := AY2;
   CorrectSizes;
 end;
 
 
-procedure TsgeFontGlyph.SetSpriteRect(Arect: TsgeFloatRect);
+procedure TsgeAnsiFontGlyph.SetSpriteRect(Arect: TsgeFloatRect);
 begin
   FSpriteRect:= Arect;
   CorrectSizes;
 end;
 
 
-constructor TsgeFontGlyph.Create(BaseLine: Integer; SpriteRect: TsgeFloatRect);
+constructor TsgeAnsiFontGlyph.Create(BaseLine: Integer; SpriteRect: TsgeFloatRect);
 begin
   //Сохранить параметры
   FBaseLine := BaseLine;
@@ -113,7 +113,7 @@ begin
 end;
 
 
-procedure TsgeFontGlyph.FromString(Str: String);
+procedure TsgeAnsiFontGlyph.FromString(Str: String);
 var
   List: TsgeStringList;
 begin
@@ -156,7 +156,7 @@ begin
 end;
 
 
-function TsgeFontGlyph.ToString: String;
+function TsgeAnsiFontGlyph.ToString: String;
 begin
   Result := sgeFloatToStr(FSpriteRect.X1) + SEPARATOR +
             sgeFloatToStr(FSpriteRect.Y1) + SEPARATOR +
