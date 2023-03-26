@@ -55,9 +55,10 @@ begin
   if Element = nil then
     raise EsgeException.Create(_UNITNAME, Err_EmptyElement);
 
+  { #todo : Раскомментировать }
   //Удалить старый элемент
-  if FElement <> nil then
-    sgeFreeAndNil(FElement);
+  //if FElement <> nil then
+  //  sgeFreeAndNil(FElement);
 
   //Запонить элемент
   FElement := Element;
