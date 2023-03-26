@@ -43,7 +43,8 @@ implementation
 
 uses
   sgeDisplayElementItemSpriteTile,
-  sgeGraphicOpenGLShaderProgramTable, sgeGraphicOpenGLSpriteTable, sgeGraphicOpenGLCoordBuffer;
+  sgeGraphicOpenGLUtils, sgeGraphicOpenGLShaderProgramTable, sgeGraphicOpenGLSpriteTable,
+  sgeGraphicOpenGLCoordBuffer;
 
 
 constructor TsgeGraphicOpenGLDrawObjectItemSpriteTile.Create(Element: TsgeDisplayElementItemBase);
@@ -97,7 +98,7 @@ procedure TsgeGraphicOpenGLDrawObjectItemSpriteTile.Update(AElement: TsgeDisplay
 var
   Buff: TsgeGraphicOpenGLCoordBuffer;
   Element: TsgeDisplayElementItemSpriteTile absolute AElement;
-  X1, Y1, X2, Y2: Single;
+  Rect: TsgeFloatRect;
 begin
   //Удалить старый спрайт, если происходит обновление элемента
   if Assigned(FElement) then
@@ -117,11 +118,8 @@ begin
 
   //Текстурные координаты
   Buff.Clear;
-  X1 := Element.Tile.X * FGLSprite.GLTileWidth;
-  Y1 := 1 - Element.Tile.Y * FGLSprite.GLTileHeight;
-  X2 := X1 + FGLSprite.GLTileWidth;
-  Y2 := Y1 - FGLSprite.GLTileHeight;
-  Buff.AddQuad(X1, Y1, X2, Y2);
+  Rect := sgeGetTextureTileRect(FGLSprite.GLTileWidth, FGLSprite.GLTileHeight, Element.Tile.X, Element.Tile.Y);
+  Buff.AddQuad(Rect);
   FTextureBuffer.SetData(Buff);
 
   //Удалить временный буфер
