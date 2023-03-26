@@ -27,23 +27,28 @@ type
 
     procedure Clear;
 
+    //Добавить точку
     procedure AddPoint(X, Y: Single);
     procedure AddPoint(Point: TsgeFloatPoint);
 
+    //Добавить прямоугольник
     procedure AddQuad(X1, Y1, X2, Y2: Single);
     procedure AddQuad(Rect: TsgeFloatRect);
 
     //Добавить вершины замкнутой линии
     procedure AddLineRect(X1, Y1, X2, Y2: Single);
 
-    //Добавить 9 прямоугольников в массив вершин. X1, Y1, X2, Y2 - Координаты в пикселях
+    //Добавить 9 прямоугольников в массив вершин.
+    //X1, Y1, X2, Y2 - Координаты в пикселях
     procedure Add9Quad(Width, Height: Single; X1, Y1, X2, Y2: Single);
     procedure Add9Quad(Width, Height: Single; Offset: TsgeFloatRect);
 
-    //Добавить 9 прямоугольников в массив текстурных координат. X1, Y1, X2, Y2 - Координаты в пикселях
+    //Добавить 9 прямоугольников в массив текстурных координат.
+    //X1, Y1, X2, Y2 - Координаты в пикселях
     procedure Add9QuadSprite(GLPixelWidth, GLPixelHeight: Single; X1, Y1, X2, Y2: Single);
     procedure Add9QuadSprite(GLPixelWidth, GLPixelHeight: Single; Offset: TsgeFloatRect);
 
+    //Свойства
     property Data: Pointer read FData;
     property Size: Int64 read FSize;
   end;
