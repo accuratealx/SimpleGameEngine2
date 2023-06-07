@@ -25,7 +25,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir);..\..\..\System"/>
-            <OtherUnitFiles Value="MainFrm;..\..\..\System\Font;..\..\..\System\Base;..\..\..\..\Example\NewGraphic\Source;..\..\..\System\Graphic;..\..\..\ThirdParty\GDIPlus"/>
+            <OtherUnitFiles Value="MainFrm;..\..\..\System\Base;..\..\..\..\Example\NewGraphic\Source;..\..\..\System\Graphic;..\..\..\ThirdParty\GDIPlus;..\..\..\System\Font"/>
             <UnitOutputDirectory Value="..\..\..\..\~Tmp\FontEditor\$(TargetCPU)-$(TargetOS)"/>
           </SearchPaths>
           <CodeGeneration>
@@ -75,14 +75,6 @@
         <ResourceBaseClass Value="Form"/>
       </Unit>
       <Unit>
-        <Filename Value="..\..\..\System\Font\sgeFont.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
-        <Filename Value="..\..\..\System\Font\sgeFontGlyph.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit>
-      <Unit>
         <Filename Value="..\..\..\System\Base\sgeTypes.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit>
@@ -91,11 +83,15 @@
         <IsPartOfProject Value="True"/>
       </Unit>
       <Unit>
-        <Filename Value="..\..\..\System\Font\sgeFontLoader.pas"/>
+        <Filename Value="..\..\..\System\Graphic\sgeGraphicColor.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit>
       <Unit>
-        <Filename Value="..\..\..\System\Graphic\sgeGraphicColor.pas"/>
+        <Filename Value="..\..\..\System\Font\sgeAnsiFont.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="..\..\..\System\Font\sgeAnsiFontGlyph.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit>
     </Units>
@@ -108,7 +104,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir);..\..\..\System"/>
-      <OtherUnitFiles Value="MainFrm;..\..\..\System\Font;..\..\..\System\Base;..\..\..\..\Example\NewGraphic\Source;..\..\..\System\Graphic;..\..\..\ThirdParty\GDIPlus"/>
+      <OtherUnitFiles Value="MainFrm;..\..\..\System\Base;..\..\..\..\Example\NewGraphic\Source;..\..\..\System\Graphic;..\..\..\ThirdParty\GDIPlus;..\..\..\System\Font"/>
       <UnitOutputDirectory Value="..\..\..\..\~Tmp\FontEditor\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Parsing>

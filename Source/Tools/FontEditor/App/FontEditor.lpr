@@ -10,8 +10,8 @@ uses
   athreads,
   {$ENDIF}
   Interfaces, // this includes the LCL widgetset
-  Forms, sgeSprite, MainUnit, sgeFont, sgeFontGlyph, sgeTypes,
-  sgeGraphicColor
+  Forms, sgeSprite, MainUnit, sgeTypes,
+  sgeGraphicColor, sgeAnsiFont, sgeAnsiFontGlyph
   { you can add units after this };
 
 {$R *.res}

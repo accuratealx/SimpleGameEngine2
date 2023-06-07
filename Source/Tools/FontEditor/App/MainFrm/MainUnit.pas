@@ -5,13 +5,20 @@ unit MainUnit;
 interface
 
 uses
-  sgeTypes, sgeFont, sgeFontGlyph, sgeSprite, sgeMemoryStream,
+  sgeTypes, sgeAnsiFont, sgeAnsiFontGlyph, sgeSprite, sgeMemoryStream,
 
   GDIPAPI, GDIPOBJ,
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Menus, ExtCtrls,
   ComCtrls, StdCtrls, Spin, Windows, Types;
 
 type
+  TsgeFontAttributes = set of (
+    faBold,       //Жирный
+    faItalic,     //Наклонный
+    faUnderline,  //Подчеркнутый
+    faStrikeOut   //Перечеркнутый
+  );
+
   TMainForm = class(TForm)
     edGlyphX2: TSpinEdit;
     edGlyphY1: TSpinEdit;
@@ -68,7 +75,7 @@ type
     procedure pnlPaintMouseWheelUp(Sender: TObject; Shift: TShiftState; MousePos: TPoint; var Handled: Boolean);
     procedure pnlPaintPaint(Sender: TObject);
   private
-    FFont: TsgeFont;
+    FFont: TsgeAnsiFont;
     FGlyphCanvas: Graphics.TBitmap;
     FPaintBoxBGColor: TColor;
     FShowAllGlyphRect: Boolean;
@@ -81,8 +88,8 @@ type
     procedure SetEnableEditorHandlers(AEnable: Boolean);
     procedure ReloadGlyphListBoxItemByIndex(Index: Integer);
     procedure ReloadGlyphListBox;
-    procedure PaintGlyphBaseLine(Index: Integer; AColor: TColor; ACanvas: TCanvas);
-    procedure PaintGlyphRect(Glyph: TsgeFontGlyph; AColor, AColorBase: TColor; ACanvas: TCanvas);
+    procedure PaintGlyphBaseLine(Index: Integer; AColor: TColor; ACanvas: TCanvas; Offset: Integer);
+    procedure PaintGlyphRect(Glyph: TsgeAnsiFontGlyph; AColor, AColorBase: TColor; ACanvas: TCanvas);
     procedure PaintGlyphRects(AColor, AColorBase: TColor; ACanvas: TCanvas);
 
     procedure RepaintPaintBox;
@@ -101,6 +108,7 @@ type
     FZoomMin: Single;
     FZoomMax: Single;
     FZoomFactor: Single;
+    FBaseLineOffset: Integer;
     procedure ZoomIn;
     procedure ZoomOut;
   public
@@ -305,13 +313,16 @@ begin
 end;
 
 
-procedure TMainForm.PaintGlyphBaseLine(Index: Integer; AColor: TColor; ACanvas: TCanvas);
+procedure TMainForm.PaintGlyphBaseLine(Index: Integer; AColor: TColor; ACanvas: TCanvas; Offset: Integer);
 var
-  Y: Integer;
+  Y, AHeight: Integer;
 begin
   ACanvas.Pen.Color := AColor;
   ACanvas.Pen.Style := psSolid;
-  Y := Round((Index * FFont.Height - FFont.BaseLine) * FZoom);
+
+  AHeight := FGlyphCanvas.Height div 16;
+
+  Y := Round((Index * AHeight - Offset) * FZoom);
   ACanvas.Line(0, Y, ACanvas.Width, Y);
 end;
 
@@ -322,7 +333,7 @@ begin
 end;
 
 
-procedure TMainForm.PaintGlyphRect(Glyph: TsgeFontGlyph; AColor, AColorBase: TColor; ACanvas: TCanvas);
+procedure TMainForm.PaintGlyphRect(Glyph: TsgeAnsiFontGlyph; AColor, AColorBase: TColor; ACanvas: TCanvas);
 var
   X1, X2, Y: Integer;
 begin
@@ -430,7 +441,7 @@ begin
   if FShowGlyphDescent then
   begin
     for Index := 1 to 16 do
-      PaintGlyphBaseLine(Index, RGB($7F, $0, $7F), pnlPaint.Canvas);
+      PaintGlyphBaseLine(Index, RGB($7F, $0, $7F), pnlPaint.Canvas, FBaseLineOffset);
   end;
 
   //Вывод рамки активного глифа
@@ -487,7 +498,7 @@ procedure TMainForm.GenerateFont(FontName: String; FontSize: Word; FontAttrib: T
 var
   FontFamily: TGPFontFamily;
   AFont: TGPFont;
-  SymbolSize, Descent: Integer;
+  SymbolSize: Integer;
   Attrib: Integer;
   Bmp: TGPBitmap;
 begin
@@ -496,10 +507,6 @@ begin
   //Создать шрифт с нужными параметрами
   FontFamily := TGPFontFamily.Create(WideString(FontName));
   AFont := TGPFont.Create(FontFamily, FontSize, Attrib);
-
-  //Записать высоты нисхождения символов
-  Descent := Round(FontFamily.GetCellDescent(Attrib) / 96);
-  FFont.BaseLine := Descent;
 
   //Размер одной клетки
   SymbolSize := Round(AFont.GetHeight(96));
@@ -523,7 +530,7 @@ end;
 procedure TMainForm.FillFontGlyphInfo(AFont: TGPFont);
 var
   X, Y, i, SymbolSize: Integer;
-  Glyph: TsgeFontGlyph;
+  Glyph: TsgeAnsiFontGlyph;
 begin
   //Размер глифа
   SymbolSize := Round(AFont.GetHeight(96));
@@ -682,6 +689,7 @@ end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
+  FBaseLineOffset := 6;
   FShowAllGlyphRect := False;
   FZoomMin := 0.01;
   FZoomMax := 10;
@@ -689,7 +697,7 @@ begin
   FZoomFactor := 1.1;
   FPaintBoxBGColor := RGB($7F, $7F, $7F);
 
-  FFont := TsgeFont.Create('');
+  FFont := TsgeAnsiFont.Create('');
   FGlyphCanvas := Graphics.TBitmap.Create;
   FGlyphCanvas.PixelFormat := pf32bit;
 
