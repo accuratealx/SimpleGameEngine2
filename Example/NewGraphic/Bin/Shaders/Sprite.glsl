@@ -54,7 +54,7 @@ PROGRAM_SEPARATOR
 
 out vec4 FragColor;             //Выходной цвет
 
-in vec2 TexCoord;               //Координаты текстуры   
+in vec2 TexCoord;               //Координаты текстуры
 uniform vec4 Color;
 
 uniform sampler2D Texture0;     //Текстура 0
