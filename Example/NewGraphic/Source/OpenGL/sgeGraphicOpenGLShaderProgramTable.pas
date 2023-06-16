@@ -43,7 +43,7 @@ uses
   sgeErrors;
 
 const
-  _UNITNAME = 'sgeGraphicOpenGLShaderProgramTable';
+  _UNITNAME = 'GraphicOpenGLShaderProgramTable';
 
   Err_EmptyProgram = 'EmptyProgram';
   Err_ProgramNotFound = 'ProgramNotFound';

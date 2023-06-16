@@ -54,7 +54,7 @@ uses
   sgeErrors, sgeOSPlatform;
 
 const
-  _UNITNAME = 'sgeDisplayElementItemRect';
+  _UNITNAME = 'DisplayElementItemRect';
 
   Err_EmptyFont = 'EmptyFont';
 

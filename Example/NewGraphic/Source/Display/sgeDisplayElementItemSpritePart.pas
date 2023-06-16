@@ -54,7 +54,7 @@ uses
   sgeErrors;
 
 const
-  _UNITNAME = 'sgeDisplayElementItemSprite';
+  _UNITNAME = 'DisplayElementItemSprite';
 
   Err_EmptySprite = 'EmptySprite';
 
