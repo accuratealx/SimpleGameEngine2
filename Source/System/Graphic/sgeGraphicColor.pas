@@ -94,6 +94,9 @@ function sgeGetQuadColor(Color1, Color2, Color3, Color4: TsgeColor): TsgeQuadCol
 
 implementation
 
+uses
+  sgeMathUtils;
+
 
 function sgeRGBAToColor(R, G, B, A: Byte): TsgeColor;
 begin
@@ -127,29 +130,11 @@ end;
 
 function sgeGetColor(R, G, B, A: Single): TsgeColor;
 begin
-  //R
-  if R < 0 then
-    R := 0;
-  if R > 1 then
-    R := 1;
-
-  //G
-  if G < 0 then
-    G := 0;
-  if G > 1 then
-    G := 1;
-
-  //B
-  if B < 0 then
-    B := 0;
-  if B > 1 then
-    B := 1;
-
-  //A
-  if A < 0 then
-    A := 0;
-  if A > 1 then
-    A := 1;
+  //Поправить диапазон
+  sgeFitToRange(R);
+  sgeFitToRange(G);
+  sgeFitToRange(B);
+  sgeFitToRange(A);
 
   //Result
   Result.Red := R;
@@ -170,10 +155,7 @@ end;
 
 function sgeChangeColorAlpha(Color: TsgeColor; Alpha: Single): TsgeColor;
 begin
-  if Alpha < 0 then
-    Alpha := 0;
-  if Alpha > 1 then
-    Alpha := 1;
+  sgeFitToRange(Alpha);
 
   Result := Color;
   Result.Alpha := Alpha;
