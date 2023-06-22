@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeStringUtils.pas
-Версия            1.1
+Версия            1.2
 Создан            14.08.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Вспомогательные математические функции
@@ -14,6 +14,11 @@ unit sgeMathUtils;
 {$Inline On}
 
 interface
+
+const
+  _PI = 3.1415926538;
+  _PI_DIV_180 = PI / 180.0;
+  _180_DIV_PI = 180 / PI;
 
 
 function sgeMin(a, b: Integer): Integer; inline;
@@ -30,6 +35,8 @@ function sgeRadToDeg(Rad: Double): Double; inline;
 
 function sgeDegToRad(Deg: Single): Single; inline;
 function sgeDegToRad(Deg: Double): Double; inline;
+
+procedure sgeFitToRange(var Value: Single; Min: Single = 0; Max: Single = 1); inline;
 
 implementation
 
@@ -78,25 +85,34 @@ end;
 
 function sgeRadToDeg(Rad: Single): Single;
 begin
-  Result := Rad * (180.0 / Pi);
+  Result := Rad * _180_DIV_PI;
 end;
 
 
 function sgeRadToDeg(Rad: Double): Double;
 begin
-  Result := Rad * (180.0 / Pi);
+  Result := Rad * _180_DIV_PI;
 end;
 
 
 function sgeDegToRad(Deg: Single): Single;
 begin
-  Result := Deg * (Pi / 180.0);
+  Result := Deg * _PI_DIV_180;
 end;
 
 
 function sgeDegToRad(Deg: Double): Double;
 begin
-  Result := Deg * (Pi / 180.0);
+  Result := Deg * _PI_DIV_180;
+end;
+
+
+procedure sgeFitToRange(var Value: Single; Min: Single; Max: Single);
+begin
+  if Value < Min then
+    Value := Min;
+  if Value > Max then
+    Value := Max;
 end;
 
 
