@@ -14,10 +14,13 @@ unit sgeDisplayElementItemBase;
 
 interface
 
+
 type
   TsgeDisplayElementItemBase = class
   protected
   public
+    procedure ResetChangeSet; virtual; abstract;
+    function  GetCopy: TsgeDisplayElementItemBase; virtual; abstract;
   end;
 
 
