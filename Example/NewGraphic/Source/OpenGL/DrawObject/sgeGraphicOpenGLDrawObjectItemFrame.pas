@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGraphicOpenGLDrawObjectItemFrame.pas
-Версия            1.0
+Версия            1.1
 Создан            11.02.2023
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          OpenGL: Элемент отрисовки: Цветная рамка
@@ -16,13 +16,14 @@ interface
 
 uses
   sgeTypes,
-  sgeDisplayElementItemBase,
+  sgeDisplayElementItemBase, sgeDisplayElementItemFrame,
   sgeGraphicOpenGL, sgeGraphicOpenGLDrawObjectItemBase, sgeGraphicOpenGLVertexArrayObject,
   sgeGraphicOpenGLShaderProgram, sgeGraphicOpenGLBuffer;
 
 type
   TsgeGraphicOpenGLDrawObjectItemFrame = class(TsgeGraphicOpenGLDrawObjectItemBase)
   private
+    FData: TsgeDisplayElementItemFrameData;
     FVAO: TsgeGraphicOpenGLVertexArrayObject;
     FShaderProgram: TsgeGraphicOpenGLShaderProgram;
     FVertexBuffer: TsgeGraphicOpenGLBuffer;
@@ -38,7 +39,6 @@ type
 implementation
 
 uses
-  sgeDisplayElementItemFrame,
   sgeGraphicOpenGLTypes, sgeGraphicOpenGLShaderProgramTable, sgeGraphicOpenGLCoordBuffer;
 
 
@@ -80,22 +80,53 @@ var
   Buff: TsgeGraphicOpenGLCoordBuffer;
   Element: TsgeDisplayElementItemFrame absolute AElement;
 begin
-  inherited Update(Element);
+  //Положение
+  if deifcsPosition in Element.ChangeSet then
+    FData.Position := Element.Data.Position;
 
-  //Залить данные в видеокарту
-  Buff := TsgeGraphicOpenGLCoordBuffer.Create;
-  Buff.AddLineRect(0, 0, Element.Rect.Width, Element.Rect.Height);
-  FVertexBuffer.SetData(Buff);
-  Buff.Free;
+  //Размеры
+  if deifcsSize in Element.ChangeSet then
+  begin
+    FData.Size := Element.Data.Size;
+
+    Buff := TsgeGraphicOpenGLCoordBuffer.Create;
+    Buff.AddLineRect(0, 0, FData.Size.X, FData.Size.Y);
+    FVertexBuffer.SetData(Buff);
+    Buff.Free;
+  end;
+
+  //Масштаб
+  if deifcsScale in Element.ChangeSet then
+    FData.Scale := Element.Data.Scale;
+
+  //Точка поворота
+  if deifcsOrigin in Element.ChangeSet then
+    FData.Origin := Element.Data.Origin;
+
+  //Угол
+  if deifcsAngle in Element.ChangeSet then
+    FData.Angle := Element.Data.Angle;
+
+  //Цвет
+  if deifcsColor in Element.ChangeSet then
+    FData.Color := Element.Data.Color;
+
+  //Толщина
+  if deifcsThickness in Element.ChangeSet then
+    FData.Thickness := Element.Data.Thickness;
+
+  //Штриховка
+  if deifcsStipple in Element.ChangeSet then
+    FData.Stipple := Element.Data.Stipple;
+
+  //масштаб штриховки
+  if deifcsStippleScale in Element.ChangeSet then
+    FData.StippleScale := Element.Data.StippleScale;
 end;
 
 
 procedure TsgeGraphicOpenGLDrawObjectItemFrame.Draw(Graphic: TsgeGraphicOpenGL; ScreenSize: TsgeFloatPoint; LayerInfo: TsgeFloatRect);
-var
-  Element: TsgeDisplayElementItemFrame;
 begin
-  Element := TsgeDisplayElementItemFrame(FElement);
-
   //Выбрать объект
   FVAO.Attach;
 
@@ -106,14 +137,19 @@ begin
   FShaderProgram.SetScreenSize(ScreenSize);
   FShaderProgram.SetLayer(LayerInfo);
 
-  FShaderProgram.SetPos(sgeGetFloatPoint(Element.Rect.X1, Element.Rect.Y1));
-  FShaderProgram.SetColor(Element.Color.Color);
-  FShaderProgram.SetScale(Element.Scale.Scale);
-  FShaderProgram.SetOrigin(Element.Origin.Point);
-  FShaderProgram.SetAngle(Element.Rotate.Angle);
+  FShaderProgram.SetPos(FData.Position);
+  FShaderProgram.SetColor(FData.Color);
+  FShaderProgram.SetScale(FData.Scale);
+  FShaderProgram.SetOrigin(FData.Origin);
+  FShaderProgram.SetAngle(FData.Angle);
 
   //Настроить толщину линии
-  Graphic.SetLineWidth(Element.Line.Width);
+  Graphic.SetLineWidth(FData.Thickness);
+
+  //Настроить штриховку
+
+  //Настроить масштаб штриховки
+
 
   //Нарисовать
   Graphic.DrawArray(FVAO.VertexType, 0, FVAO.VertexCount);

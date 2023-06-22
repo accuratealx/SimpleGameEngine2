@@ -38,7 +38,7 @@ uses
   sgeErrors, sgeSystemUtils;
 
 const
-  _UNITNAME = 'sgeGraphicOpenGLDrawObjectItemBase';
+  _UNITNAME = 'GraphicOpenGLDrawObjectItemBase';
 
   Err_EmptyElement = 'EmptyElement';
 

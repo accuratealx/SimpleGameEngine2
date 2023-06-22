@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGraphicOpenGLDrawObjectItemRect.pas
-Версия            1.0
+Версия            1.1
 Создан            28.01.2023
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          OpenGL: Элемент отрисовки: Цветной прямоугольник
@@ -16,13 +16,14 @@ interface
 
 uses
   sgeTypes,
-  sgeDisplayElementItemBase,
+  sgeDisplayElementItemBase, sgeDisplayElementItemRect,
   sgeGraphicOpenGL, sgeGraphicOpenGLDrawObjectItemBase, sgeGraphicOpenGLVertexArrayObject,
   sgeGraphicOpenGLShaderProgram, sgeGraphicOpenGLBuffer;
 
 type
   TsgeGraphicOpenGLDrawObjectItemRect = class(TsgeGraphicOpenGLDrawObjectItemBase)
   private
+    FData: TsgeDisplayElementItemRectData;
     FVAO: TsgeGraphicOpenGLVertexArrayObject;
     FShaderProgram: TsgeGraphicOpenGLShaderProgram;
     FVertexBuffer: TsgeGraphicOpenGLBuffer;
@@ -39,7 +40,6 @@ type
 implementation
 
 uses
-  sgeDisplayElementItemRect,
   sgeGraphicOpenGLShaderProgramTable, sgeGraphicOpenGLCoordBuffer;
 
 
@@ -81,22 +81,41 @@ var
   Buff: TsgeGraphicOpenGLCoordBuffer;
   Element: TsgeDisplayElementItemRect absolute AElement;
 begin
-  inherited Update(Element);
+  //Положение
+  if deircsPosition in Element.ChangeSet then
+    FData.Position := Element.Data.Position;
 
-  //Залить данные в видеокарту
-  Buff := TsgeGraphicOpenGLCoordBuffer.Create;
-  Buff.AddQuad(0, 0, Element.Rect.Width, Element.Rect.Height);
-  FVertexBuffer.SetData(Buff);
-  Buff.Free;
+  //Размеры
+  if deircsSize in Element.ChangeSet then
+  begin
+    FData.Size := Element.Data.Size;
+
+    Buff := TsgeGraphicOpenGLCoordBuffer.Create;
+    Buff.AddQuad(0, 0, FData.Size.X, FData.Size.Y);
+    FVertexBuffer.SetData(Buff);
+    Buff.Free;
+  end;
+
+  //Масштаб
+  if deircsScale in Element.ChangeSet then
+    FData.Scale := Element.Data.Scale;
+
+  //Точка поворота
+  if deircsOrigin in Element.ChangeSet then
+    FData.Origin := Element.Data.Origin;
+
+  //Угол
+  if deircsAngle in Element.ChangeSet then
+    FData.Angle := Element.Data.Angle;
+
+  //Цвет
+  if deircsColor in Element.ChangeSet then
+    FData.Color := Element.Data.Color;
 end;
 
 
 procedure TsgeGraphicOpenGLDrawObjectItemRect.Draw(Graphic: TsgeGraphicOpenGL; ScreenSize: TsgeFloatPoint; LayerInfo: TsgeFloatRect);
-var
-  Element: TsgeDisplayElementItemRect;
 begin
-  Element := TsgeDisplayElementItemRect(FElement);
-
   //Выбрать объект
   FVAO.Attach;
 
@@ -107,11 +126,11 @@ begin
   FShaderProgram.SetScreenSize(ScreenSize);
   FShaderProgram.SetLayer(LayerInfo);
 
-  FShaderProgram.SetPos(sgeGetFloatPoint(Element.Rect.X1, Element.Rect.Y1));
-  FShaderProgram.SetColor(Element.Color.Color);
-  FShaderProgram.SetScale(Element.Scale.Scale);
-  FShaderProgram.SetOrigin(Element.Origin.Point);
-  FShaderProgram.SetAngle(Element.Rotate.Angle);
+  FShaderProgram.SetPos(FData.Position);
+  FShaderProgram.SetColor(FData.Color);
+  FShaderProgram.SetScale(FData.Scale);
+  FShaderProgram.SetOrigin(FData.Origin);
+  FShaderProgram.SetAngle(FData.Angle);
 
   //Нарисовать
   Graphic.DrawArray(FVAO.VertexType, 0, FVAO.VertexCount);
