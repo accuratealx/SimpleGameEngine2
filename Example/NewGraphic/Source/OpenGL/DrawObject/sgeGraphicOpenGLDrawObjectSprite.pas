@@ -1,14 +1,14 @@
 {
 Пакет             Simple Game Engine 2
-Файл              sgeGraphicOpenGLDrawObjectItemSprite.pas
-Версия            1.1
+Файл              sgeGraphicOpenGLDrawObjectSprite.pas
+Версия            1.2
 Создан            29.01.2023
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          OpenGL: Элемент отрисовки: Спрайт
 }
 {$Include Defines.inc}
 
-unit sgeGraphicOpenGLDrawObjectItemSprite;
+unit sgeGraphicOpenGLDrawObjectSprite;
 
 {$mode ObjFPC}{$H+}
 
@@ -16,15 +16,15 @@ interface
 
 uses
   sgeTypes,
-  sgeDisplayElementItemBase, sgeDisplayElementItemSprite,
-  sgeGraphicOpenGL, sgeGraphicOpenGLDrawObjectItemBase, sgeGraphicOpenGLVertexArrayObject,
+  sgeDisplayElement, sgeDisplayElementSprite,
+  sgeGraphicOpenGL, sgeGraphicOpenGLDrawObject, sgeGraphicOpenGLVertexArrayObject,
   sgeGraphicOpenGLShaderProgram, sgeGraphicOpenGLBuffer, sgeGraphicOpenGLSprite;
 
 
 type
-  TsgeGraphicOpenGLDrawObjectItemSprite = class(TsgeGraphicOpenGLDrawObjectItemBase)
+  TsgeGraphicOpenGLDrawObjectSprite = class(TsgeGraphicOpenGLDrawObject)
   private
-    FData: TsgeDisplayElementItemSptiteData;
+    FData: TsgeDisplayElementSptiteData;
     FVAO: TsgeGraphicOpenGLVertexArrayObject;
     FShaderProgram: TsgeGraphicOpenGLShaderProgram;
     FVertexBuffer: TsgeGraphicOpenGLBuffer;
@@ -32,10 +32,10 @@ type
     FGLSprite: TsgeGraphicOpenGLSprite;
 
   public
-    constructor Create(Element: TsgeDisplayElementItemBase); override;
+    constructor Create(Element: TsgeDisplayElement); override;
     destructor  Destroy; override;
 
-    procedure Update(AElement: TsgeDisplayElementItemBase); override;
+    procedure Update(AElement: TsgeDisplayElement); override;
     procedure Draw(Graphic: TsgeGraphicOpenGL; ScreenSize: TsgeFloatPoint; LayerInfo: TsgeFloatRect); override;
   end;
 
@@ -46,7 +46,7 @@ uses
   sgeGraphicOpenGLShaderProgramTable, sgeGraphicOpenGLSpriteTable, sgeGraphicOpenGLCoordBuffer;
 
 
-constructor TsgeGraphicOpenGLDrawObjectItemSprite.Create(Element: TsgeDisplayElementItemBase);
+constructor TsgeGraphicOpenGLDrawObjectSprite.Create(Element: TsgeDisplayElement);
 const
   SHADER_NAME = 'Sprite';
 var
@@ -87,7 +87,7 @@ begin
 end;
 
 
-destructor TsgeGraphicOpenGLDrawObjectItemSprite.Destroy;
+destructor TsgeGraphicOpenGLDrawObjectSprite.Destroy;
 begin
   //Удалить спрайт из таблицы
   if Assigned(FData.Sprite) then
@@ -104,17 +104,17 @@ begin
 end;
 
 
-procedure TsgeGraphicOpenGLDrawObjectItemSprite.Update(AElement: TsgeDisplayElementItemBase);
+procedure TsgeGraphicOpenGLDrawObjectSprite.Update(AElement: TsgeDisplayElement);
 var
   Buff: TsgeGraphicOpenGLCoordBuffer;
-  Element: TsgeDisplayElementItemSprite absolute AElement;
+  Element: TsgeDisplayElementSprite absolute AElement;
 begin
   //Положение
-  if deiscsPosition in Element.ChangeSet then
+  if descsPosition in Element.ChangeSet then
     FData.Position := Element.Data.Position;
 
   //Размеры
-  if deiscsSize in Element.ChangeSet then
+  if descsSize in Element.ChangeSet then
   begin
     FData.Size := Element.Data.Size;
 
@@ -125,29 +125,29 @@ begin
   end;
 
   //Масштаб
-  if deiscsScale in Element.ChangeSet then
+  if descsScale in Element.ChangeSet then
     FData.Scale := Element.Data.Scale;
 
   //Точка поворота
-  if deiscsOrigin in Element.ChangeSet then
+  if descsOrigin in Element.ChangeSet then
     FData.Origin := Element.Data.Origin;
 
   //Угол
-  if deiscsAngle in Element.ChangeSet then
+  if descsAngle in Element.ChangeSet then
     FData.Angle := Element.Data.Angle;
 
   //Цвет
-  if deiscsColor in Element.ChangeSet then
+  if descsColor in Element.ChangeSet then
     FData.Color := Element.Data.Color;
 
   //Спрайт
-  if deiscsSprite in Element.ChangeSet then
+  if descsSprite in Element.ChangeSet then
   begin
     if FData.Sprite <> Element.Data.Sprite then
     begin
       //Удалить старый спрайт
       if FData.Sprite <> nil then
-        OpenGLSpriteTable.Delete(Element.Data.Sprite);
+        OpenGLSpriteTable.Delete(FData.Sprite);
 
       //Найти новый спрайт
       FData.Sprite := Element.Data.Sprite;
@@ -157,7 +157,7 @@ begin
 end;
 
 
-procedure TsgeGraphicOpenGLDrawObjectItemSprite.Draw(Graphic: TsgeGraphicOpenGL; ScreenSize: TsgeFloatPoint; LayerInfo: TsgeFloatRect);
+procedure TsgeGraphicOpenGLDrawObjectSprite.Draw(Graphic: TsgeGraphicOpenGL; ScreenSize: TsgeFloatPoint; LayerInfo: TsgeFloatRect);
 begin
   //Выбрать объект
   FVAO.Attach;

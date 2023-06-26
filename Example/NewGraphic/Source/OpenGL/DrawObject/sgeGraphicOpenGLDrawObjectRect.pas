@@ -1,14 +1,14 @@
 {
 Пакет             Simple Game Engine 2
-Файл              sgeGraphicOpenGLDrawObjectItemRect.pas
-Версия            1.1
+Файл              sgeGraphicOpenGLDrawObjectRect.pas
+Версия            1.2
 Создан            28.01.2023
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          OpenGL: Элемент отрисовки: Цветной прямоугольник
 }
 {$Include Defines.inc}
 
-unit sgeGraphicOpenGLDrawObjectItemRect;
+unit sgeGraphicOpenGLDrawObjectRect;
 
 {$mode ObjFPC}{$H+}
 
@@ -16,23 +16,23 @@ interface
 
 uses
   sgeTypes,
-  sgeDisplayElementItemBase, sgeDisplayElementItemRect,
-  sgeGraphicOpenGL, sgeGraphicOpenGLDrawObjectItemBase, sgeGraphicOpenGLVertexArrayObject,
+  sgeDisplayElement, sgeDisplayElementRect,
+  sgeGraphicOpenGL, sgeGraphicOpenGLDrawObject, sgeGraphicOpenGLVertexArrayObject,
   sgeGraphicOpenGLShaderProgram, sgeGraphicOpenGLBuffer;
 
 type
-  TsgeGraphicOpenGLDrawObjectItemRect = class(TsgeGraphicOpenGLDrawObjectItemBase)
+  TsgeGraphicOpenGLDrawObjectRect = class(TsgeGraphicOpenGLDrawObject)
   private
-    FData: TsgeDisplayElementItemRectData;
+    FData: TsgeDisplayElementRectData;
     FVAO: TsgeGraphicOpenGLVertexArrayObject;
     FShaderProgram: TsgeGraphicOpenGLShaderProgram;
     FVertexBuffer: TsgeGraphicOpenGLBuffer;
 
   public
-    constructor Create(Element: TsgeDisplayElementItemBase); override;
+    constructor Create(Element: TsgeDisplayElement); override;
     destructor  Destroy; override;
 
-    procedure Update(AElement: TsgeDisplayElementItemBase); override;
+    procedure Update(AElement: TsgeDisplayElement); override;
     procedure Draw(Graphic: TsgeGraphicOpenGL; ScreenSize: TsgeFloatPoint; LayerInfo: TsgeFloatRect); override;
   end;
 
@@ -43,7 +43,7 @@ uses
   sgeGraphicOpenGLShaderProgramTable, sgeGraphicOpenGLCoordBuffer;
 
 
-constructor TsgeGraphicOpenGLDrawObjectItemRect.Create(Element: TsgeDisplayElementItemBase);
+constructor TsgeGraphicOpenGLDrawObjectRect.Create(Element: TsgeDisplayElement);
 const
   SHADER_NAME = 'Rect';
 begin
@@ -66,7 +66,7 @@ begin
 end;
 
 
-destructor TsgeGraphicOpenGLDrawObjectItemRect.Destroy;
+destructor TsgeGraphicOpenGLDrawObjectRect.Destroy;
 begin
   //Удалить буфер вершин
   FVertexBuffer.Free;
@@ -76,17 +76,17 @@ begin
 end;
 
 
-procedure TsgeGraphicOpenGLDrawObjectItemRect.Update(AElement: TsgeDisplayElementItemBase);
+procedure TsgeGraphicOpenGLDrawObjectRect.Update(AElement: TsgeDisplayElement);
 var
   Buff: TsgeGraphicOpenGLCoordBuffer;
-  Element: TsgeDisplayElementItemRect absolute AElement;
+  Element: TsgeDisplayElementRect absolute AElement;
 begin
   //Положение
-  if deircsPosition in Element.ChangeSet then
+  if dercsPosition in Element.ChangeSet then
     FData.Position := Element.Data.Position;
 
   //Размеры
-  if deircsSize in Element.ChangeSet then
+  if dercsSize in Element.ChangeSet then
   begin
     FData.Size := Element.Data.Size;
 
@@ -97,24 +97,24 @@ begin
   end;
 
   //Масштаб
-  if deircsScale in Element.ChangeSet then
+  if dercsScale in Element.ChangeSet then
     FData.Scale := Element.Data.Scale;
 
   //Точка поворота
-  if deircsOrigin in Element.ChangeSet then
+  if dercsOrigin in Element.ChangeSet then
     FData.Origin := Element.Data.Origin;
 
   //Угол
-  if deircsAngle in Element.ChangeSet then
+  if dercsAngle in Element.ChangeSet then
     FData.Angle := Element.Data.Angle;
 
   //Цвет
-  if deircsColor in Element.ChangeSet then
+  if dercsColor in Element.ChangeSet then
     FData.Color := Element.Data.Color;
 end;
 
 
-procedure TsgeGraphicOpenGLDrawObjectItemRect.Draw(Graphic: TsgeGraphicOpenGL; ScreenSize: TsgeFloatPoint; LayerInfo: TsgeFloatRect);
+procedure TsgeGraphicOpenGLDrawObjectRect.Draw(Graphic: TsgeGraphicOpenGL; ScreenSize: TsgeFloatPoint; LayerInfo: TsgeFloatRect);
 begin
   //Выбрать объект
   FVAO.Attach;

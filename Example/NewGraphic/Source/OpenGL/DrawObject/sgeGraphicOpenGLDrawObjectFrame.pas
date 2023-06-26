@@ -1,14 +1,14 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGraphicOpenGLDrawObjectItemFrame.pas
-Версия            1.1
+Версия            1.2
 Создан            11.02.2023
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          OpenGL: Элемент отрисовки: Цветная рамка
 }
 {$Include Defines.inc}
 
-unit sgeGraphicOpenGLDrawObjectItemFrame;
+unit sgeGraphicOpenGLDrawObjectFrame;
 
 {$mode ObjFPC}{$H+}
 
@@ -16,23 +16,23 @@ interface
 
 uses
   sgeTypes,
-  sgeDisplayElementItemBase, sgeDisplayElementItemFrame,
-  sgeGraphicOpenGL, sgeGraphicOpenGLDrawObjectItemBase, sgeGraphicOpenGLVertexArrayObject,
+  sgeDisplayElement, sgeDisplayElementFrame,
+  sgeGraphicOpenGL, sgeGraphicOpenGLDrawObject, sgeGraphicOpenGLVertexArrayObject,
   sgeGraphicOpenGLShaderProgram, sgeGraphicOpenGLBuffer;
 
 type
-  TsgeGraphicOpenGLDrawObjectItemFrame = class(TsgeGraphicOpenGLDrawObjectItemBase)
+  TsgeGraphicOpenGLDrawObjectFrame = class(TsgeGraphicOpenGLDrawObject)
   private
-    FData: TsgeDisplayElementItemFrameData;
+    FData: TsgeDisplayElementFrameData;
     FVAO: TsgeGraphicOpenGLVertexArrayObject;
     FShaderProgram: TsgeGraphicOpenGLShaderProgram;
     FVertexBuffer: TsgeGraphicOpenGLBuffer;
 
   public
-    constructor Create(Element: TsgeDisplayElementItemBase); override;
+    constructor Create(Element: TsgeDisplayElement); override;
     destructor  Destroy; override;
 
-    procedure Update(AElement: TsgeDisplayElementItemBase); override;
+    procedure Update(AElement: TsgeDisplayElement); override;
     procedure Draw(Graphic: TsgeGraphicOpenGL; ScreenSize: TsgeFloatPoint; LayerInfo: TsgeFloatRect); override;
   end;
 
@@ -42,7 +42,7 @@ uses
   sgeGraphicOpenGLTypes, sgeGraphicOpenGLShaderProgramTable, sgeGraphicOpenGLCoordBuffer;
 
 
-constructor TsgeGraphicOpenGLDrawObjectItemFrame.Create(Element: TsgeDisplayElementItemBase);
+constructor TsgeGraphicOpenGLDrawObjectFrame.Create(Element: TsgeDisplayElement);
 const
   SHADER_NAME = 'Frame';
 begin
@@ -65,7 +65,7 @@ begin
 end;
 
 
-destructor TsgeGraphicOpenGLDrawObjectItemFrame.Destroy;
+destructor TsgeGraphicOpenGLDrawObjectFrame.Destroy;
 begin
   //Удалить буфер вершин
   FVertexBuffer.Free;
@@ -75,17 +75,17 @@ begin
 end;
 
 
-procedure TsgeGraphicOpenGLDrawObjectItemFrame.Update(AElement: TsgeDisplayElementItemBase);
+procedure TsgeGraphicOpenGLDrawObjectFrame.Update(AElement: TsgeDisplayElement);
 var
   Buff: TsgeGraphicOpenGLCoordBuffer;
-  Element: TsgeDisplayElementItemFrame absolute AElement;
+  Element: TsgeDisplayElementFrame absolute AElement;
 begin
   //Положение
-  if deifcsPosition in Element.ChangeSet then
+  if defcsPosition in Element.ChangeSet then
     FData.Position := Element.Data.Position;
 
   //Размеры
-  if deifcsSize in Element.ChangeSet then
+  if defcsSize in Element.ChangeSet then
   begin
     FData.Size := Element.Data.Size;
 
@@ -96,36 +96,36 @@ begin
   end;
 
   //Масштаб
-  if deifcsScale in Element.ChangeSet then
+  if defcsScale in Element.ChangeSet then
     FData.Scale := Element.Data.Scale;
 
   //Точка поворота
-  if deifcsOrigin in Element.ChangeSet then
+  if defcsOrigin in Element.ChangeSet then
     FData.Origin := Element.Data.Origin;
 
   //Угол
-  if deifcsAngle in Element.ChangeSet then
+  if defcsAngle in Element.ChangeSet then
     FData.Angle := Element.Data.Angle;
 
   //Цвет
-  if deifcsColor in Element.ChangeSet then
+  if defcsColor in Element.ChangeSet then
     FData.Color := Element.Data.Color;
 
   //Толщина
-  if deifcsThickness in Element.ChangeSet then
+  if defcsThickness in Element.ChangeSet then
     FData.Thickness := Element.Data.Thickness;
 
   //Штриховка
-  if deifcsStipple in Element.ChangeSet then
+  if defcsStipple in Element.ChangeSet then
     FData.Stipple := Element.Data.Stipple;
 
   //масштаб штриховки
-  if deifcsStippleScale in Element.ChangeSet then
+  if defcsStippleScale in Element.ChangeSet then
     FData.StippleScale := Element.Data.StippleScale;
 end;
 
 
-procedure TsgeGraphicOpenGLDrawObjectItemFrame.Draw(Graphic: TsgeGraphicOpenGL; ScreenSize: TsgeFloatPoint; LayerInfo: TsgeFloatRect);
+procedure TsgeGraphicOpenGLDrawObjectFrame.Draw(Graphic: TsgeGraphicOpenGL; ScreenSize: TsgeFloatPoint; LayerInfo: TsgeFloatRect);
 begin
   //Выбрать объект
   FVAO.Attach;
