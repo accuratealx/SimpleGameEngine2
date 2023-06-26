@@ -4,7 +4,7 @@
 Версия            1.0
 Создан            16.01.2023
 Автор             Творческий человек  (accuratealx@gmail.com)
-Описание          Класс отображаемого элемента. Содержит список действий отрисовки
+Описание          Элемент отображения: Базовый
 }
 {$Include Defines.inc}
 
@@ -14,65 +14,92 @@ unit sgeDisplayElement;
 
 interface
 
-uses
-  sgeSprite,
-  sgeDisplayElementItemList;
 
 type
   TsgeDisplayElement = class
-  private
-    FItems: TsgeDisplayElementItemList;
+  protected
+    FID: Integer;       //Уникальный номер элемента
+    FVisible: Boolean;  //Видимость элемента
+
+    procedure SetVisible(AVisible: Boolean);
+
+    procedure ResetChangeSet; virtual; abstract;  //Сброс флагов изменения
+    procedure SetUniqueID;                        //Присвоить уникальный номер
 
   public
-    constructor Create;
-    destructor  Destroy; override;
+    destructor Destroy; override;
 
-    procedure Clear;
-    procedure DrawSprite(X, Y, Width, Height: Single; Sprite: TsgeSprite);
-    procedure DrawSprite(X, Y, Width, Height: Single; Col, Row: Word; Sprite: TsgeSprite);
+    function  GetCopy: TsgeDisplayElement; virtual; abstract; //Копирование объекта
 
-    property Items: TsgeDisplayElementItemList read FItems;
+    //События
+    procedure Add;              //Добавление нового объекта
+    procedure ChangeVisibility; //Изменение видимости
+    procedure Modify;           //Изменение объекта
+    procedure Delete;           //Удаление объекта
+
+    property ID: Integer read FID;
+    property Visible: Boolean read FVisible write SetVisible;
   end;
 
 
 implementation
 
 uses
-  sgeDisplayElementItemBase{,
-  sgeDisplayElementItemSprite};
+  sgeUniqueID;
 
 
-constructor TsgeDisplayElement.Create;
+procedure TsgeDisplayElement.SetVisible(AVisible: Boolean);
 begin
-  //Создать список
-  FItems := TsgeDisplayElementItemList.Create(True);
+  if FVisible = AVisible then
+    Exit;
+
+  FVisible := AVisible;
+
+  //Послать событие изменения видимости
+  ChangeVisibility;
+end;
+
+
+procedure TsgeDisplayElement.SetUniqueID;
+begin
+  FID := UniqueID.GetID;
 end;
 
 
 destructor TsgeDisplayElement.Destroy;
 begin
-  FItems.Free;
+  //При разрушении почистить объект
+  Delete;
 end;
 
 
-procedure TsgeDisplayElement.Clear;
+procedure TsgeDisplayElement.Add;
 begin
-  FItems.Clear;
+  //Новый объект
+
+  ResetChangeSet;
 end;
 
 
-procedure TsgeDisplayElement.DrawSprite(X, Y, Width, Height: Single; Sprite: TsgeSprite);
-{var
-  Item: TsgeDisplayElementItemBase;}
+procedure TsgeDisplayElement.ChangeVisibility;
 begin
-  {Item := TsgeDisplayElementItemSprite.Create(X, Y, Width, Height, Sprite);
-  FItems.Add(Item);}
+  //Зименение видимости
 end;
 
 
-procedure TsgeDisplayElement.DrawSprite(X, Y, Width, Height: Single; Col, Row: Word; Sprite: TsgeSprite);
+procedure TsgeDisplayElement.Modify;
 begin
+  //Изменился объект
 
+  ResetChangeSet;
+end;
+
+
+procedure TsgeDisplayElement.Delete;
+begin
+  //Удалить объект
+
+  ResetChangeSet;
 end;
 
 

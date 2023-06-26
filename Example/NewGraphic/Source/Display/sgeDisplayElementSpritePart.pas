@@ -1,14 +1,14 @@
 {
 Пакет             Simple Game Engine 2
-Файл              sgeDisplayElementItemSpritePart.pas
-Версия            1.1
+Файл              sgeDisplayElementSpritePart.pas
+Версия            1.2
 Создан            16.01.2023
 Автор             Творческий человек  (accuratealx@gmail.com)
-Описание          Элемент рисования: Спрайт
+Описание          Элемент рисования: Часть спрайта
 }
 {$Include Defines.inc}
 
-unit sgeDisplayElementItemSpritePart;
+unit sgeDisplayElementSpritePart;
 
 {$mode ObjFPC}{$H+}
 {$ModeSwitch duplicatelocals}
@@ -17,24 +17,24 @@ interface
 
 uses
   sgeTypes, sgeSprite, sgeGraphicColor,
-  sgeDisplayElementItemBase;
+  sgeDisplayElement;
 
 type
   //Набор измененных параметров
-  TsgeDisplayElementItemSpritePartChangeSet = set of (
-    deispcsPosition,    //Положение на экране
-    deispcsSize,        //Размеры элемента
-    deispcsScale,       //Масштаб
-    deispcsOrigin,      //Точка поворота
-    deispcsAngle,       //Угол в радианах
-    deispcsColor,       //Цвет
-    deispcsSpriteRect,  //Координаты части спрайта
-    deispcsSprite       //Спрайт
+  TsgeDisplayElementSpritePartChangeSet = set of (
+    despcsPosition,     //Положение на экране
+    despcsSize,         //Размеры элемента
+    despcsScale,        //Масштаб
+    despcsOrigin,       //Точка поворота
+    despcsAngle,        //Угол в радианах
+    despcsColor,        //Цвет
+    despcsSpriteRect,   //Координаты части спрайта
+    despcsSprite        //Спрайт
   );
 
 
   //Настройки отображения
-  TsgeDisplayElementItemSptitePartData = record
+  TsgeDisplayElementSptitePartData = record
     Position: TsgeFloatPoint;   //Положение на экране
     Size: TsgeFloatPoint;       //Размеры элемента
     Scale: TsgeFloatPoint;      //Масштаб
@@ -46,10 +46,10 @@ type
   end;
 
 
-  TsgeDisplayElementItemSpritePart = class(TsgeDisplayElementItemBase)
+  TsgeDisplayElementSpritePart = class(TsgeDisplayElement)
   private
-    FData: TsgeDisplayElementItemSptitePartData;
-    FChangeSet: TsgeDisplayElementItemSpritePartChangeSet;
+    FData: TsgeDisplayElementSptitePartData;
+    FChangeSet: TsgeDisplayElementSpritePartChangeSet;
 
     procedure SetPosition(APosition: TsgeFloatPoint);
     procedure SetPositionX(APositionX: Single);
@@ -78,15 +78,19 @@ type
     procedure SetSprite(ASprite: TsgeSprite);
 
     procedure FillData(X, Y, Width, Height: Single; SpriteRect: TsgeFloatRect);
+
+  protected
+    procedure ResetChangeSet; override;
+
   public
+    constructor Create;
     constructor Create(X, Y, Width, Height: Single; Sprite: TsgeSprite; SpriteRect: TsgeFloatRect);
     constructor Create(X, Y: Single; Sprite: TsgeSprite; SpriteRect: TsgeFloatRect);
 
-    procedure ResetChangeSet; override;
-    function  GetCopy: TsgeDisplayElementItemBase; override;
+    function GetCopy: TsgeDisplayElement; override;
 
-    property Data: TsgeDisplayElementItemSptitePartData read FData;
-    property ChangeSet: TsgeDisplayElementItemSpritePartChangeSet read FChangeSet;
+    property Data: TsgeDisplayElementSptitePartData read FData;
+    property ChangeSet: TsgeDisplayElementSpritePartChangeSet read FChangeSet;
 
     property Position: TsgeFloatPoint read FData.Position write SetPosition;
     property PositionX: Single read FData.Position.X write SetPositionX;
@@ -121,18 +125,19 @@ uses
   sgeErrors, sgeMathUtils;
 
 const
-  sgeDisplayElementItemSpritePartChangeSetAll = [
-    deispcsPosition, deispcsSize, deispcsScale, deispcsOrigin, deispcsAngle, deispcsColor, deispcsSpriteRect, deispcsSprite
-  ];
-
-  _UNITNAME = 'DisplayElementItemSpritePart';
+  _UNITNAME = 'DisplayElementSpritePart';
 
   Err_EmptySprite = 'EmptySprite';
 
 
-procedure TsgeDisplayElementItemSpritePart.FillData(X, Y, Width, Height: Single; SpriteRect: TsgeFloatRect);
+procedure TsgeDisplayElementSpritePart.FillData(X, Y, Width, Height: Single; SpriteRect: TsgeFloatRect);
+const
+  SetAll = [despcsPosition, despcsSize, despcsScale, despcsOrigin, despcsAngle, despcsColor, despcsSpriteRect, despcsSprite];
 begin
-  FChangeSet := sgeDisplayElementItemSpritePartChangeSetAll;
+  FChangeSet := SetAll;
+
+  //Сгенерировать уникальный ID
+  SetUniqueID;
 
   //Записать параметры
   FData.Position := sgeGetFloatPoint(X, Y);
@@ -145,217 +150,226 @@ begin
 end;
 
 
-procedure TsgeDisplayElementItemSpritePart.SetPosition(APosition: TsgeFloatPoint);
+procedure TsgeDisplayElementSpritePart.ResetChangeSet;
+begin
+  FChangeSet := [];
+end;
+
+
+constructor TsgeDisplayElementSpritePart.Create;
+begin
+  //Заглушка
+end;
+
+
+procedure TsgeDisplayElementSpritePart.SetPosition(APosition: TsgeFloatPoint);
 begin
   FData.Position := APosition;
-  Include(FChangeSet, deispcsPosition);
+  Include(FChangeSet, despcsPosition);
 end;
 
 
-procedure TsgeDisplayElementItemSpritePart.SetPositionX(APositionX: Single);
+procedure TsgeDisplayElementSpritePart.SetPositionX(APositionX: Single);
 begin
   FData.Position.X := APositionX;
-  Include(FChangeSet, deispcsPosition);
+  Include(FChangeSet, despcsPosition);
 end;
 
 
-procedure TsgeDisplayElementItemSpritePart.SetPositionY(APositionY: Single);
+procedure TsgeDisplayElementSpritePart.SetPositionY(APositionY: Single);
 begin
   FData.Position.Y := APositionY;
-  Include(FChangeSet, deispcsPosition);
+  Include(FChangeSet, despcsPosition);
 end;
 
 
-procedure TsgeDisplayElementItemSpritePart.SetWidth(AWidth: Single);
+procedure TsgeDisplayElementSpritePart.SetWidth(AWidth: Single);
 begin
   FData.Size.Y := AWidth;
-  Include(FChangeSet, deispcsSize);
+  Include(FChangeSet, despcsSize);
 end;
 
 
-procedure TsgeDisplayElementItemSpritePart.SetHeight(AHeight: Single);
+procedure TsgeDisplayElementSpritePart.SetHeight(AHeight: Single);
 begin
   FData.Size.Y := AHeight;
-  Include(FChangeSet, deispcsSize);
+  Include(FChangeSet, despcsSize);
 end;
 
 
-procedure TsgeDisplayElementItemSpritePart.SetScale(AScale: Single);
+procedure TsgeDisplayElementSpritePart.SetScale(AScale: Single);
 begin
   FData.Scale.X := AScale;
   FData.Scale.Y := AScale;
-  Include(FChangeSet, deispcsScale);
+  Include(FChangeSet, despcsScale);
 end;
 
 
-procedure TsgeDisplayElementItemSpritePart.SetScaleX(AScaleX: Single);
+procedure TsgeDisplayElementSpritePart.SetScaleX(AScaleX: Single);
 begin
   FData.Scale.X := AScaleX;
-  Include(FChangeSet, deispcsScale);
+  Include(FChangeSet, despcsScale);
 end;
 
 
-procedure TsgeDisplayElementItemSpritePart.SetScaleY(AScaleY: Single);
+procedure TsgeDisplayElementSpritePart.SetScaleY(AScaleY: Single);
 begin
   FData.Scale.Y := AScaleY;
-  Include(FChangeSet, deispcsScale);
+  Include(FChangeSet, despcsScale);
 end;
 
 
-procedure TsgeDisplayElementItemSpritePart.SetOrigin(AOrigin: TsgeFloatPoint);
+procedure TsgeDisplayElementSpritePart.SetOrigin(AOrigin: TsgeFloatPoint);
 begin
   FData.Origin := AOrigin;
-  Include(FChangeSet, deispcsOrigin);
+  Include(FChangeSet, despcsOrigin);
 end;
 
 
-procedure TsgeDisplayElementItemSpritePart.SetOriginX(AOriginX: Single);
+procedure TsgeDisplayElementSpritePart.SetOriginX(AOriginX: Single);
 begin
   FData.Origin.X := AOriginX;
-  Include(FChangeSet, deispcsOrigin);
+  Include(FChangeSet, despcsOrigin);
 end;
 
 
-procedure TsgeDisplayElementItemSpritePart.SetOriginY(AOriginY: Single);
+procedure TsgeDisplayElementSpritePart.SetOriginY(AOriginY: Single);
 begin
   FData.Origin.Y := AOriginY;
-  Include(FChangeSet, deispcsOrigin);
+  Include(FChangeSet, despcsOrigin);
 end;
 
 
-procedure TsgeDisplayElementItemSpritePart.SetAngle(AAngle: Single);
+procedure TsgeDisplayElementSpritePart.SetAngle(AAngle: Single);
 begin
   FData.Angle := AAngle;
-  Include(FChangeSet, deispcsAngle);
+  Include(FChangeSet, despcsAngle);
 end;
 
 
-procedure TsgeDisplayElementItemSpritePart.SetAngleDegree(AAngle: Single);
+procedure TsgeDisplayElementSpritePart.SetAngleDegree(AAngle: Single);
 begin
   FData.Angle := sgeDegToRad(AAngle);
-  Include(FChangeSet, deispcsAngle);
+  Include(FChangeSet, despcsAngle);
 end;
 
 
-function TsgeDisplayElementItemSpritePart.GetAngleDegree: Single;
+function TsgeDisplayElementSpritePart.GetAngleDegree: Single;
 begin
   Result := sgeRadToDeg(FData.Angle);
 end;
 
 
-procedure TsgeDisplayElementItemSpritePart.SetColor(AColor: TsgeColor);
+procedure TsgeDisplayElementSpritePart.SetColor(AColor: TsgeColor);
 begin
   sgeFitToRange(AColor.Red);
   sgeFitToRange(AColor.Green);
   sgeFitToRange(AColor.Blue);
   sgeFitToRange(AColor.Alpha);
   FData.Color := AColor;
-  Include(FChangeSet, deispcsColor);
+  Include(FChangeSet, despcsColor);
 end;
 
 
-procedure TsgeDisplayElementItemSpritePart.SetColorRed(ARed: Single);
+procedure TsgeDisplayElementSpritePart.SetColorRed(ARed: Single);
 begin
   sgeFitToRange(ARed);
   FData.Color.Red := ARed;
-  Include(FChangeSet, deispcsColor);
+  Include(FChangeSet, despcsColor);
 end;
 
 
-procedure TsgeDisplayElementItemSpritePart.SetColorGreen(AGreen: Single);
+procedure TsgeDisplayElementSpritePart.SetColorGreen(AGreen: Single);
 begin
   sgeFitToRange(AGreen);
   FData.Color.Green := AGreen;
-  Include(FChangeSet, deispcsColor);
+  Include(FChangeSet, despcsColor);
 end;
 
 
-procedure TsgeDisplayElementItemSpritePart.SetColorBlue(ABlue: Single);
+procedure TsgeDisplayElementSpritePart.SetColorBlue(ABlue: Single);
 begin
   sgeFitToRange(ABlue);
   FData.Color.Blue := ABlue;
-  Include(FChangeSet, deispcsColor);
+  Include(FChangeSet, despcsColor);
 end;
 
 
-procedure TsgeDisplayElementItemSpritePart.SetColorAlpha(AAlpha: Single);
+procedure TsgeDisplayElementSpritePart.SetColorAlpha(AAlpha: Single);
 begin
   sgeFitToRange(AAlpha);
   FData.Color.Alpha := AAlpha;
-  Include(FChangeSet, deispcsColor);
+  Include(FChangeSet, despcsColor);
 end;
 
 
-procedure TsgeDisplayElementItemSpritePart.SetSpriteRect(ASpriteRect: TsgeFloatRect);
+procedure TsgeDisplayElementSpritePart.SetSpriteRect(ASpriteRect: TsgeFloatRect);
 begin
   FData.SpriteRect := ASpriteRect;
-  Include(FChangeSet, deispcsSpriteRect);
+  Include(FChangeSet, despcsSpriteRect);
 end;
 
 
-procedure TsgeDisplayElementItemSpritePart.SetSpriteRectX1(ASpriteRectX1: Single);
+procedure TsgeDisplayElementSpritePart.SetSpriteRectX1(ASpriteRectX1: Single);
 begin
   FData.SpriteRect.X1 := ASpriteRectX1;
-  Include(FChangeSet, deispcsSpriteRect);
+  Include(FChangeSet, despcsSpriteRect);
 end;
 
 
-procedure TsgeDisplayElementItemSpritePart.SetSpriteRectY1(ASpriteRectY1: Single);
+procedure TsgeDisplayElementSpritePart.SetSpriteRectY1(ASpriteRectY1: Single);
 begin
   FData.SpriteRect.Y1 := ASpriteRectY1;
-  Include(FChangeSet, deispcsSpriteRect);
+  Include(FChangeSet, despcsSpriteRect);
 end;
 
 
-procedure TsgeDisplayElementItemSpritePart.SetSpriteRectX2(ASpriteRectX2: Single);
+procedure TsgeDisplayElementSpritePart.SetSpriteRectX2(ASpriteRectX2: Single);
 begin
   FData.SpriteRect.X2 := ASpriteRectX2;
-  Include(FChangeSet, deispcsSpriteRect);
+  Include(FChangeSet, despcsSpriteRect);
 end;
 
 
-procedure TsgeDisplayElementItemSpritePart.SetSpriteRectY2(ASpriteRectY2: Single);
+procedure TsgeDisplayElementSpritePart.SetSpriteRectY2(ASpriteRectY2: Single);
 begin
   FData.SpriteRect.Y2 := ASpriteRectY2;
-  Include(FChangeSet, deispcsSpriteRect);
+  Include(FChangeSet, despcsSpriteRect);
 end;
 
 
-procedure TsgeDisplayElementItemSpritePart.SetSprite(ASprite: TsgeSprite);
+procedure TsgeDisplayElementSpritePart.SetSprite(ASprite: TsgeSprite);
 begin
   //Проверить спрайт
   if ASprite = nil then
     raise EsgeException.Create(_UNITNAME, Err_EmptySprite);
 
-  Include(FChangeSet, deispcsSprite);
   FData.Sprite := ASprite;
+  Include(FChangeSet, despcsSprite);
 end;
 
 
-constructor TsgeDisplayElementItemSpritePart.Create(X, Y, Width, Height: Single; Sprite: TsgeSprite; SpriteRect: TsgeFloatRect);
+constructor TsgeDisplayElementSpritePart.Create(X, Y, Width, Height: Single; Sprite: TsgeSprite; SpriteRect: TsgeFloatRect);
 begin
   SetSprite(Sprite);
   FillData(X, Y, Width, Height, SpriteRect);
 end;
 
 
-constructor TsgeDisplayElementItemSpritePart.Create(X, Y: Single; Sprite: TsgeSprite; SpriteRect: TsgeFloatRect);
+constructor TsgeDisplayElementSpritePart.Create(X, Y: Single; Sprite: TsgeSprite; SpriteRect: TsgeFloatRect);
 begin
   SetSprite(Sprite);
   FillData(X, Y, Sprite.Width, Sprite.Height, SpriteRect);
 end;
 
 
-procedure TsgeDisplayElementItemSpritePart.ResetChangeSet;
+function TsgeDisplayElementSpritePart.GetCopy: TsgeDisplayElement;
 begin
-  FChangeSet := [];
-end;
+  Result := TsgeDisplayElementSpritePart.Create;
 
-
-function TsgeDisplayElementItemSpritePart.GetCopy: TsgeDisplayElementItemBase;
-begin
-  Result := TsgeDisplayElementItemSpritePart.Create(0, 0, 0, 0, Self.FData.Sprite, Self.FData.SpriteRect);
-  TsgeDisplayElementItemSpritePart(Result).FData := Self.FData;
+  //Заполнить данные
+  TsgeDisplayElementSpritePart(Result).FData := Self.FData;
+  TsgeDisplayElementSpritePart(Result).FChangeSet := Self.FChangeSet;
 end;
 
 

@@ -1,14 +1,14 @@
 {
 Пакет             Simple Game Engine 2
-Файл              sgeDisplayElementItemSpriteTile.pas
-Версия            1.1
+Файл              sgeDisplayElementSpriteTile.pas
+Версия            1.2
 Создан            15.03.2023
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Элемент рисования: Плитка спрайта
 }
 {$Include Defines.inc}
 
-unit sgeDisplayElementItemSpriteTile;
+unit sgeDisplayElementSpriteTile;
 
 {$mode ObjFPC}{$H+}
 {$ModeSwitch duplicatelocals}
@@ -17,24 +17,24 @@ interface
 
 uses
   sgeTypes, sgeSprite, sgeGraphicColor,
-  sgeDisplayElementItemBase;
+  sgeDisplayElement;
 
 type
   //Набор измененных параметров
-  TsgeDisplayElementItemSpriteTileChangeSet = set of (
-    deistcsPosition,  //Положение на экране
-    deistcsSize,      //Размеры элемента
-    deistcsScale,     //Масштаб
-    deistcsOrigin,    //Точка поворота
-    deistcsAngle,     //Угол в радианах
-    deistcsColor,     //Цвет
-    deistcsTile,      //Координаты тайла
-    deistcsSprite     //Спрайт
+  TsgeDisplayElementSpriteTileChangeSet = set of (
+    destcsPosition, //Положение на экране
+    destcsSize,     //Размеры элемента
+    destcsScale,    //Масштаб
+    destcsOrigin,   //Точка поворота
+    destcsAngle,    //Угол в радианах
+    destcsColor,    //Цвет
+    destcsTile,     //Координаты тайла
+    destcsSprite    //Спрайт
   );
 
 
   //Настройки отображения
-  TsgeDisplayElementItemSptiteTileData = record
+  TsgeDisplayElementSptiteTileData = record
     Position: TsgeFloatPoint; //Положение на экране
     Size: TsgeFloatPoint;     //Размеры элемента
     Scale: TsgeFloatPoint;    //Масштаб
@@ -47,10 +47,10 @@ type
   end;
 
 
-  TsgeDisplayElementItemSpriteTile = class(TsgeDisplayElementItemBase)
+  TsgeDisplayElementSpriteTile = class(TsgeDisplayElement)
   private
-    FData: TsgeDisplayElementItemSptiteTileData;
-    FChangeSet: TsgeDisplayElementItemSpriteTileChangeSet;
+    FData: TsgeDisplayElementSptiteTileData;
+    FChangeSet: TsgeDisplayElementSpriteTileChangeSet;
 
     procedure SetPosition(APosition: TsgeFloatPoint);
     procedure SetPositionX(APositionX: Single);
@@ -76,15 +76,19 @@ type
     procedure SetSprite(ASprite: TsgeSprite);
 
     procedure FillData(X, Y, Width, Height: Single; Column, Row: Word);
+
+  protected
+    procedure ResetChangeSet; override;
+
   public
+    constructor Create;
     constructor Create(X, Y, Width, Height: Single; Sprite: TsgeSprite; Column, Row: Word);
     constructor Create(X, Y: Single; Sprite: TsgeSprite; Column, Row: Word);
 
-    procedure ResetChangeSet; override;
-    function  GetCopy: TsgeDisplayElementItemBase; override;
+    function GetCopy: TsgeDisplayElement; override;
 
-    property Data: TsgeDisplayElementItemSptiteTileData read FData;
-    property ChangeSet: TsgeDisplayElementItemSpriteTileChangeSet read FChangeSet;
+    property Data: TsgeDisplayElementSptiteTileData read FData;
+    property ChangeSet: TsgeDisplayElementSpriteTileChangeSet read FChangeSet;
 
     property Position: TsgeFloatPoint read FData.Position write SetPosition;
     property PositionX: Single read FData.Position.X write SetPositionX;
@@ -116,18 +120,185 @@ uses
   sgeErrors, sgeMathUtils;
 
 const
-  sgeDisplayElementItemSpriteTileChangeSetAll = [
-    deistcsPosition, deistcsSize, deistcsScale, deistcsOrigin, deistcsAngle, deistcsColor, deistcsTile, deistcsSprite
-  ];
-
-  _UNITNAME = 'DisplayElementItemSpriteTile';
+  _UNITNAME = 'DisplayElementSpriteTile';
 
   Err_EmptySprite = 'EmptySprite';
 
 
-procedure TsgeDisplayElementItemSpriteTile.FillData(X, Y, Width, Height: Single; Column, Row: Word);
+procedure TsgeDisplayElementSpriteTile.SetPosition(APosition: TsgeFloatPoint);
 begin
-  FChangeSet := sgeDisplayElementItemSpriteTileChangeSetAll;
+  FData.Position := APosition;
+  Include(FChangeSet, destcsPosition);
+end;
+
+
+procedure TsgeDisplayElementSpriteTile.SetPositionX(APositionX: Single);
+begin
+  FData.Position.X := APositionX;
+  Include(FChangeSet, destcsPosition);
+end;
+
+
+procedure TsgeDisplayElementSpriteTile.SetPositionY(APositionY: Single);
+begin
+  FData.Position.Y := APositionY;
+  Include(FChangeSet, destcsPosition);
+end;
+
+
+procedure TsgeDisplayElementSpriteTile.SetWidth(AWidth: Single);
+begin
+  FData.Size.Y := AWidth;
+  Include(FChangeSet, destcsSize);
+end;
+
+
+procedure TsgeDisplayElementSpriteTile.SetHeight(AHeight: Single);
+begin
+  FData.Size.Y := AHeight;
+  Include(FChangeSet, destcsSize);
+end;
+
+
+procedure TsgeDisplayElementSpriteTile.SetScale(AScale: Single);
+begin
+  FData.Scale.X := AScale;
+  FData.Scale.Y := AScale;
+  Include(FChangeSet, destcsScale);
+end;
+
+
+procedure TsgeDisplayElementSpriteTile.SetScaleX(AScaleX: Single);
+begin
+  FData.Scale.X := AScaleX;
+  Include(FChangeSet, destcsScale);
+end;
+
+
+procedure TsgeDisplayElementSpriteTile.SetScaleY(AScaleY: Single);
+begin
+  FData.Scale.Y := AScaleY;
+  Include(FChangeSet, destcsScale);
+end;
+
+
+procedure TsgeDisplayElementSpriteTile.SetOrigin(AOrigin: TsgeFloatPoint);
+begin
+  FData.Origin := AOrigin;
+  Include(FChangeSet, destcsOrigin);
+end;
+
+
+procedure TsgeDisplayElementSpriteTile.SetOriginX(AOriginX: Single);
+begin
+  FData.Origin.X := AOriginX;
+  Include(FChangeSet, destcsOrigin);
+end;
+
+
+procedure TsgeDisplayElementSpriteTile.SetOriginY(AOriginY: Single);
+begin
+  FData.Origin.Y := AOriginY;
+  Include(FChangeSet, destcsOrigin);
+end;
+
+
+procedure TsgeDisplayElementSpriteTile.SetAngle(AAngle: Single);
+begin
+  FData.Angle := AAngle;
+  Include(FChangeSet, destcsAngle);
+end;
+
+
+procedure TsgeDisplayElementSpriteTile.SetAngleDegree(AAngle: Single);
+begin
+  FData.Angle := sgeDegToRad(AAngle);
+  Include(FChangeSet, destcsAngle);
+end;
+
+
+function TsgeDisplayElementSpriteTile.GetAngleDegree: Single;
+begin
+  Result := sgeRadToDeg(FData.Angle);
+end;
+
+
+procedure TsgeDisplayElementSpriteTile.SetColor(AColor: TsgeColor);
+begin
+  sgeFitToRange(AColor.Red);
+  sgeFitToRange(AColor.Green);
+  sgeFitToRange(AColor.Blue);
+  sgeFitToRange(AColor.Alpha);
+  FData.Color := AColor;
+  Include(FChangeSet, destcsColor);
+end;
+
+
+procedure TsgeDisplayElementSpriteTile.SetColorRed(ARed: Single);
+begin
+  sgeFitToRange(ARed);
+  FData.Color.Red := ARed;
+  Include(FChangeSet, destcsColor);
+end;
+
+
+procedure TsgeDisplayElementSpriteTile.SetColorGreen(AGreen: Single);
+begin
+  sgeFitToRange(AGreen);
+  FData.Color.Green := AGreen;
+  Include(FChangeSet, destcsColor);
+end;
+
+
+procedure TsgeDisplayElementSpriteTile.SetColorBlue(ABlue: Single);
+begin
+  sgeFitToRange(ABlue);
+  FData.Color.Blue := ABlue;
+  Include(FChangeSet, destcsColor);
+end;
+
+
+procedure TsgeDisplayElementSpriteTile.SetColorAlpha(AAlpha: Single);
+begin
+  sgeFitToRange(AAlpha);
+  FData.Color.Alpha := AAlpha;
+  Include(FChangeSet, destcsColor);
+end;
+
+
+procedure TsgeDisplayElementSpriteTile.SetColum(AColumn: Word);
+begin
+  FData.Column := AColumn;
+  Include(FChangeSet, destcsTile);
+end;
+
+
+procedure TsgeDisplayElementSpriteTile.SetRow(ARow: Word);
+begin
+  FData.Row := ARow;
+  Include(FChangeSet, destcsTile);
+end;
+
+
+procedure TsgeDisplayElementSpriteTile.SetSprite(ASprite: TsgeSprite);
+begin
+  //Проверить спрайт
+  if ASprite = nil then
+    raise EsgeException.Create(_UNITNAME, Err_EmptySprite);
+
+  FData.Sprite := ASprite;
+  Include(FChangeSet, destcsSprite);
+end;
+
+
+procedure TsgeDisplayElementSpriteTile.FillData(X, Y, Width, Height: Single; Column, Row: Word);
+const
+  SetAll = [destcsPosition, destcsSize, destcsScale, destcsOrigin, destcsAngle, destcsColor, destcsTile, destcsSprite];
+begin
+  FChangeSet := SetAll;
+
+  //Сгенерировать уникальный ID
+  SetUniqueID;
 
   //Записать параметры
   FData.Position := sgeGetFloatPoint(X, Y);
@@ -141,196 +312,39 @@ begin
 end;
 
 
-procedure TsgeDisplayElementItemSpriteTile.SetPosition(APosition: TsgeFloatPoint);
+procedure TsgeDisplayElementSpriteTile.ResetChangeSet;
 begin
-  FData.Position := APosition;
-  Include(FChangeSet, deistcsPosition);
+  FChangeSet := [];
 end;
 
 
-procedure TsgeDisplayElementItemSpriteTile.SetPositionX(APositionX: Single);
+constructor TsgeDisplayElementSpriteTile.Create;
 begin
-  FData.Position.X := APositionX;
-  Include(FChangeSet, deistcsPosition);
+  //Заглушка
 end;
 
 
-procedure TsgeDisplayElementItemSpriteTile.SetPositionY(APositionY: Single);
-begin
-  FData.Position.Y := APositionY;
-  Include(FChangeSet, deistcsPosition);
-end;
-
-
-procedure TsgeDisplayElementItemSpriteTile.SetWidth(AWidth: Single);
-begin
-  FData.Size.Y := AWidth;
-  Include(FChangeSet, deistcsSize);
-end;
-
-
-procedure TsgeDisplayElementItemSpriteTile.SetHeight(AHeight: Single);
-begin
-  FData.Size.Y := AHeight;
-  Include(FChangeSet, deistcsSize);
-end;
-
-
-procedure TsgeDisplayElementItemSpriteTile.SetScale(AScale: Single);
-begin
-  FData.Scale.X := AScale;
-  FData.Scale.Y := AScale;
-  Include(FChangeSet, deistcsScale);
-end;
-
-
-procedure TsgeDisplayElementItemSpriteTile.SetScaleX(AScaleX: Single);
-begin
-  FData.Scale.X := AScaleX;
-  Include(FChangeSet, deistcsScale);
-end;
-
-
-procedure TsgeDisplayElementItemSpriteTile.SetScaleY(AScaleY: Single);
-begin
-  FData.Scale.Y := AScaleY;
-  Include(FChangeSet, deistcsScale);
-end;
-
-
-procedure TsgeDisplayElementItemSpriteTile.SetOrigin(AOrigin: TsgeFloatPoint);
-begin
-  FData.Origin := AOrigin;
-  Include(FChangeSet, deistcsOrigin);
-end;
-
-
-procedure TsgeDisplayElementItemSpriteTile.SetOriginX(AOriginX: Single);
-begin
-  FData.Origin.X := AOriginX;
-  Include(FChangeSet, deistcsOrigin);
-end;
-
-
-procedure TsgeDisplayElementItemSpriteTile.SetOriginY(AOriginY: Single);
-begin
-  FData.Origin.Y := AOriginY;
-  Include(FChangeSet, deistcsOrigin);
-end;
-
-
-procedure TsgeDisplayElementItemSpriteTile.SetAngle(AAngle: Single);
-begin
-  FData.Angle := AAngle;
-  Include(FChangeSet, deistcsAngle);
-end;
-
-
-procedure TsgeDisplayElementItemSpriteTile.SetAngleDegree(AAngle: Single);
-begin
-  FData.Angle := sgeDegToRad(AAngle);
-  Include(FChangeSet, deistcsAngle);
-end;
-
-
-function TsgeDisplayElementItemSpriteTile.GetAngleDegree: Single;
-begin
-  Result := sgeRadToDeg(FData.Angle);
-end;
-
-
-procedure TsgeDisplayElementItemSpriteTile.SetColor(AColor: TsgeColor);
-begin
-  sgeFitToRange(AColor.Red);
-  sgeFitToRange(AColor.Green);
-  sgeFitToRange(AColor.Blue);
-  sgeFitToRange(AColor.Alpha);
-  FData.Color := AColor;
-  Include(FChangeSet, deistcsColor);
-end;
-
-
-procedure TsgeDisplayElementItemSpriteTile.SetColorRed(ARed: Single);
-begin
-  sgeFitToRange(ARed);
-  FData.Color.Red := ARed;
-  Include(FChangeSet, deistcsColor);
-end;
-
-
-procedure TsgeDisplayElementItemSpriteTile.SetColorGreen(AGreen: Single);
-begin
-  sgeFitToRange(AGreen);
-  FData.Color.Green := AGreen;
-  Include(FChangeSet, deistcsColor);
-end;
-
-
-procedure TsgeDisplayElementItemSpriteTile.SetColorBlue(ABlue: Single);
-begin
-  sgeFitToRange(ABlue);
-  FData.Color.Blue := ABlue;
-  Include(FChangeSet, deistcsColor);
-end;
-
-
-procedure TsgeDisplayElementItemSpriteTile.SetColorAlpha(AAlpha: Single);
-begin
-  sgeFitToRange(AAlpha);
-  FData.Color.Alpha := AAlpha;
-  Include(FChangeSet, deistcsColor);
-end;
-
-
-procedure TsgeDisplayElementItemSpriteTile.SetColum(AColumn: Word);
-begin
-  FData.Column := AColumn;
-  Include(FChangeSet, deistcsTile);
-end;
-
-
-procedure TsgeDisplayElementItemSpriteTile.SetRow(ARow: Word);
-begin
-  FData.Row := ARow;
-  Include(FChangeSet, deistcsTile);
-end;
-
-
-procedure TsgeDisplayElementItemSpriteTile.SetSprite(ASprite: TsgeSprite);
-begin
-  //Проверить спрайт
-  if ASprite = nil then
-    raise EsgeException.Create(_UNITNAME, Err_EmptySprite);
-
-  Include(FChangeSet, deistcsSprite);
-  FData.Sprite := ASprite;
-end;
-
-
-constructor TsgeDisplayElementItemSpriteTile.Create(X, Y, Width, Height: Single; Sprite: TsgeSprite; Column, Row: Word);
+constructor TsgeDisplayElementSpriteTile.Create(X, Y, Width, Height: Single; Sprite: TsgeSprite; Column, Row: Word);
 begin
   SetSprite(Sprite);
   FillData(X, Y, Width, Height, Column, Row);
 end;
 
 
-constructor TsgeDisplayElementItemSpriteTile.Create(X, Y: Single; Sprite: TsgeSprite; Column, Row: Word);
+constructor TsgeDisplayElementSpriteTile.Create(X, Y: Single; Sprite: TsgeSprite; Column, Row: Word);
 begin
   SetSprite(Sprite);
   FillData(X, Y, Sprite.Width, Sprite.Height, Column, Row);
 end;
 
 
-procedure TsgeDisplayElementItemSpriteTile.ResetChangeSet;
+function TsgeDisplayElementSpriteTile.GetCopy: TsgeDisplayElement;
 begin
-  FChangeSet := [];
-end;
+  Result := TsgeDisplayElementSpriteTile.Create;
 
-
-function TsgeDisplayElementItemSpriteTile.GetCopy: TsgeDisplayElementItemBase;
-begin
-  Result := TsgeDisplayElementItemSpriteTile.Create(0, 0, 0, 0, Self.FData.Sprite, 0, 0);
-  TsgeDisplayElementItemSpriteTile(Result).FData := Self.FData;
+  //Заполнить данные
+  TsgeDisplayElementSpriteTile(Result).FData := Self.FData;
+  TsgeDisplayElementSpriteTile(Result).FChangeSet := Self.FChangeSet;
 end;
 
 
