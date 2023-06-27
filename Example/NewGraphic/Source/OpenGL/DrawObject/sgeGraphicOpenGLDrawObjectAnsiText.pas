@@ -157,7 +157,7 @@ begin
       //Вершины
       X1 := X;
       X2 := X1 + Glyph.Width;
-      Y1 := Element.Font.Height - Glyph.Height - Glyph.BaseLine;
+      Y1 := Element.Font.Height - Element.Font.BaseLine - Glyph.Height - Glyph.BaseLine;
       Y2 := Y1 + Glyph.Height;
       VertexBuff.AddQuad(X1, Y1, X2, Y2);
 
