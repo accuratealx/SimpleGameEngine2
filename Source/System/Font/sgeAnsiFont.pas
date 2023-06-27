@@ -33,6 +33,7 @@ type
     FName: String;                  //Имя шрифта
     FLineSpace: Word;               //Расстояние между строками
     FGlyphSpace: Word;              //Расстояние между глифами
+    FBaseLine: Word;                //Базовая линия от нижней границы символа
     FHeight: Word;                  //Высота шрифта
     FSmooth: Boolean;               //Сглаживание
 
@@ -60,6 +61,7 @@ type
     property Name: String read FName write FName;
     property LineSpace: Word read FLineSpace write FLineSpace;
     property GlyphSpace: Word read FGlyphSpace write FGlyphSpace;
+    property BaseLine: Word read FBaseLine write FBaseLine;
     property Height: Word read FHeight write FHeight;
     property Smooth: Boolean read FSmooth write SetSmooth;
   end;
@@ -79,6 +81,7 @@ const
   PARAM_NAME = 'Name';
   PARAM_LINES_PACE = 'LineSpace';
   PARAM_GLYPHS_PACE = 'GlyphSpace';
+  PARAM_BASE_LINE = 'BaseLine';
   PARAM_SMOOTH = 'Smooth';
   PARAM_HEIGHT = 'Height';
   PARAM_WIDTH = 'Width';
@@ -148,6 +151,7 @@ begin
   FHeight := 10;
   FLineSpace := 1;
   FGlyphSpace := 1;
+  FBaseLine := 0;
   FSmooth := False;
 end;
 
@@ -188,6 +192,7 @@ begin
     Params.SetValue(PARAM_HEIGHT, FHeight);
     Params.SetValue(PARAM_LINES_PACE, FLineSpace);
     Params.SetValue(PARAM_GLYPHS_PACE, FGlyphSpace);
+    Params.SetValue(PARAM_BASE_LINE, FBaseLine);
     Params.SetValue(PARAM_SMOOTH, FSmooth);
     Container.Add(SECTION_INFO, Params.ToString);
 
@@ -241,6 +246,7 @@ begin
       FHeight := Params.GetIntegerValue(PARAM_HEIGHT);
       FLineSpace := Params.GetIntegerValue(PARAM_LINES_PACE);
       FGlyphSpace := Params.GetIntegerValue(PARAM_GLYPHS_PACE);
+      FBaseLine := Params.GetIntegerValue(PARAM_BASE_LINE);
       SetSmooth(Params.GetBooleanValue(PARAM_SMOOTH));
 
       //Glyph
