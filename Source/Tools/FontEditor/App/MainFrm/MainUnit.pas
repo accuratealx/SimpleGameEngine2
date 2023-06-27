@@ -108,7 +108,6 @@ type
     FZoomMin: Single;
     FZoomMax: Single;
     FZoomFactor: Single;
-    FBaseLineOffset: Integer;
     procedure ZoomIn;
     procedure ZoomOut;
   public
@@ -441,7 +440,7 @@ begin
   if FShowGlyphDescent then
   begin
     for Index := 1 to 16 do
-      PaintGlyphBaseLine(Index, RGB($7F, $0, $7F), pnlPaint.Canvas, FBaseLineOffset);
+      PaintGlyphBaseLine(Index, RGB($7F, $0, $7F), pnlPaint.Canvas, FFont.BaseLine);
   end;
 
   //Вывод рамки активного глифа
@@ -689,7 +688,6 @@ end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
-  FBaseLineOffset := 6;
   FShowAllGlyphRect := False;
   FZoomMin := 0.01;
   FZoomMax := 10;
