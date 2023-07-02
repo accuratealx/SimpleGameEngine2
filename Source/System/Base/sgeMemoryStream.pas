@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeFileStream.pas
-Версия            1.4
+Версия            1.5
 Создан            27.04.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс доступа к набору байт в памяти
@@ -22,11 +22,16 @@ type
 
     procedure SetSize(ASize: Int64);
   public
-    destructor Destroy; override;
+    constructor Create;
+    constructor Create(Stream: TsgeMemoryStream);
+    constructor Create(Str: String);
+    destructor  Destroy; override;
 
     procedure Clear;
     procedure Write(const Buffer; Offset: Int64; Size: Int64);
     procedure Read(out Buffer; Offset: Int64; Size: Int64);
+
+    procedure FromStream(Stream: TsgeMemoryStream);
 
     procedure FromString(Str: String);
     function  ToString: String; override;
@@ -53,13 +58,31 @@ const
   Err_FileNotFound        = 'FileNotFound';
   Err_CantReadFile        = 'CantReadFile';
   Err_CantWriteFile       = 'CantWriteFile';
-
+  Err_EmptyStream         = 'EmptyStream';
 
 
 procedure TsgeMemoryStream.SetSize(ASize: Int64);
 begin
   FSize := ASize;
   FData := ReAllocMem(FData, FSize);
+end;
+
+
+constructor TsgeMemoryStream.Create;
+begin
+
+end;
+
+
+constructor TsgeMemoryStream.Create(Stream: TsgeMemoryStream);
+begin
+  FromStream(Stream);
+end;
+
+
+constructor TsgeMemoryStream.Create(Str: String);
+begin
+  FromString(Str);
 end;
 
 
@@ -117,14 +140,28 @@ begin
 end;
 
 
+procedure TsgeMemoryStream.FromStream(Stream: TsgeMemoryStream);
+  var
+  Sz: Int64;
+begin
+  if not Assigned(Stream) then
+    raise EsgeException.Create(_UNITNAME, Err_EmptyStream);
+
+  Sz := Stream.Size;              //Узнать длину
+  FData := ReAllocMem(FData, Sz); //Подготовить память
+  Move(Stream.Data^, FData^, Sz); //Скопировать данные
+  FSize := Sz;                    //Запомнить размер
+end;
+
+
 procedure TsgeMemoryStream.FromString(Str: String);
 var
   Sz: Int64;
 begin
-  Sz := Length(Str);                                                //Узнать длину
-  FData := ReAllocMem(FData, Sz);                                   //Подготовить память
-  Move(Str[1], FData^, Sz);                                         //Скопировать данные
-  FSize := Sz;                                                      //Запомнить размер
+  Sz := Length(Str);              //Узнать длину
+  FData := ReAllocMem(FData, Sz); //Подготовить память
+  Move(Str[1], FData^, Sz);       //Скопировать данные
+  FSize := Sz;                    //Запомнить размер
 end;
 
 
