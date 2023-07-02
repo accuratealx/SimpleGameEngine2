@@ -20,10 +20,22 @@ uses
 
 type
   //Приоритет потока
-  TsgeThreadPriority = (tpIdle, tpLowest, tpLower, tpNormal, tpHigher, tpHighest, tpTimeCritical);
+  TsgeThreadPriority = (
+    tpIdle,
+    tpLowest,
+    tpLower,
+    tpNormal,
+    tpHigher,
+    tpHighest,
+    tpTimeCritical
+  );
 
-  //Модификатор окончания выполнения метода (Нет, Заснуть, Уничтожить)
-  TsgeThreadProcEndModifier = (tpemNone, tpemSuspend, tpemDestroy);
+  //Модификатор окончания выполнения метода
+  TsgeThreadProcEndModifier = (
+    tpemNone,     //Ничего не делать
+    tpemSuspend,  //Заснуть
+    tpemDestroy   //Уничтожить
+  );
 
   //Метод для обработки
   TsgeThreadProc = procedure of object;
@@ -33,7 +45,7 @@ type
   private
     //Классы
     FWaitEvent: TsgeSystemEvent;                  //Синхронизатор
-    FException: EsgeException;                    //Последнее исключение
+    FException: EsgeException;
 
     //Поля
     FName: String;                                //Имя потока
@@ -50,7 +62,9 @@ type
     FRunOnceProc: TsgeThreadProc;                 //Указатель на метод однократной работы
     FRunLoopProc: TsgeThreadProc;                 //Указатель на метод бесконечной работы
 
-    function  GetException: EsgeException;        //Вернуть ошибку и обнулить указатель
+    procedure ClearException;                     //Почистить объект исключения
+    procedure SetException(Str: String);          //Установить исключение
+
     function  GetPriority: TsgeThreadPriority;
     procedure SetPriority(AValue: TsgeThreadPriority);
     function  GetProcessorID: DWORD;
@@ -74,14 +88,14 @@ type
     property Finished: Boolean read FFinished;
     property ProcessorID: DWORD read GetProcessorID write SetProcessorID;
     property LoopProc: TsgeThreadProc read FRunLoopProc write FRunLoopProc;
-    property Exception: EsgeException read GetException;
+    property Exception: EsgeException read FException;
   end;
 
 
 implementation
 
 uses
-  sgeOSPlatform;
+  sgeOSPlatform, sgeSystemUtils;
 
 const
   _UNITNAME = 'Thread';
@@ -121,12 +135,12 @@ begin
     //Проверить указатель на одноразовый метод с ожиданием
     if Thread.FRunOnceProcWait <> nil then
     begin
-      //Выполнить метод
       try
+        //Выполнить метод
         Thread.FRunOnceProcWait();
       except
         on E: EsgeException do
-          Thread.FException := E;
+          Thread.SetException(E.Message);
       end;
 
       //Стереть указатель
@@ -159,12 +173,12 @@ begin
     //Проверить указатель анонимной функции
     if Thread.FRunOnceProc <> nil then
     begin
-      //Выполнить метод
       try
+        //Выполнить метод
         Thread.FRunOnceProc();
       except
         on E: EsgeException do
-          Thread.FException := E;
+          Thread.SetException(E.Message);
       end;
 
       //Стереть указатель
@@ -194,15 +208,18 @@ begin
 
     //Проверить указатель бесконечного метода
     if Thread.FRunLoopProc <> nil then
+    begin
       try
+        //Выполнить метод
         Thread.FRunLoopProc();
       except
         on E: EsgeException do
         begin
-          Thread.FException := E;         //Запомнить исключение
+          Thread.SetException(E.Message); //Запомнить исключение
           Thread.FTerminated := True;     //Остановить поток
         end;
       end;
+    end;
 
   end;  // while not Terminate
 
@@ -220,10 +237,18 @@ begin
 end;
 
 
-function TsgeThread.GetException: EsgeException;
+procedure TsgeThread.ClearException;
 begin
-  Result := FException;
-  FException := nil;
+  sgeFreeAndNil(FException);
+end;
+
+
+procedure TsgeThread.SetException(Str: String);
+begin
+  if FException <> nil then
+    ClearException;
+
+  FException := EsgeException.Create(Str);
 end;
 
 
@@ -307,6 +332,9 @@ begin
     FRunLoopProc := nil;
     FRunOnceProc := nil;
     FRunOnceProcWait := nil;
+
+    //Почистить исключение
+    ClearException;
 
     //Если поток не завершил свою работу, то прибить
     if not FFinished then
