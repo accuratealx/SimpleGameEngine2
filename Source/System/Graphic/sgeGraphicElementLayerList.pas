@@ -16,10 +16,13 @@ interface
 
 uses
   sgeTemplateThreadSafeCollection,
-  sgeGraphicElementLayer, sgeGraphicElementBase;
+  sgeGraphicElementLayer{, sgeGraphicElementBase};
 
 
 type
+  TsgeGraphicElementBase = class
+  end;
+
   TsgeGraphicElementLayerList = class(specialize TsgeTemplateThreadSafeCollection<TsgeGraphicElementLayer>)
   private
     procedure Sort;
@@ -193,7 +196,7 @@ begin
     end;
 
     //Добавить элемент в слой
-    FList[Idx].Elements.Add(DrawElement);
+    //FList[Idx].Elements.Add(DrawElement);
   finally
     FCS.Leave;
   end;
@@ -210,8 +213,8 @@ begin
     Idx := IndexOf(LayerName);
 
     //Подвинуть элемент в конец списка
-    if Idx <> -1 then
-      FList[Idx].Elements.MoveToEnd(DrawElement);
+    //if Idx <> -1 then
+    //  FList[Idx].Elements.MoveToEnd(DrawElement);
   finally
     FCS.Leave;
   end;

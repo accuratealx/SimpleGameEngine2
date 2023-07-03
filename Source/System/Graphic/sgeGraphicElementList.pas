@@ -15,10 +15,13 @@ unit sgeGraphicElementList;
 interface
 
 uses
-  sgeGraphicElementBase, sgeTemplateList;
+  {sgeGraphicElementBase,} sgeTemplateList;
 
 
 type
+  TsgeGraphicElementBase = class
+  end;
+
   TsgeGraphicElementList = class(specialize TsgeTemplateList<TsgeGraphicElementBase>)
   private
     FIterator: PListItem;

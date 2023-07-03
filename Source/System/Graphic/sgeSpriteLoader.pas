@@ -1,14 +1,14 @@
 {
 Пакет             Simple Game Engine 2
-Файл              sgeGraphicSpriteLoader.pas
+Файл              sgeSpriteLoader.pas
 Версия            1.0
-Создан            27.04.2021
+Создан            05.01.2022
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс загрузчика спрайтов: Базовый
 }
 {$Include Defines.inc}
 
-unit sgeGraphicSpriteLoader;
+unit sgeSpriteLoader;
 
 {$mode objfpc}{$H+}
 
@@ -19,20 +19,23 @@ uses
 
 
 type
-  TsgeGraphicSpriteLoader = class
+  TsgeSpriteLoader = class
   protected
     FData: Pointer;
+    FSize: Int64;
     FWidth: DWord;
     FHeight: DWord;
 
   public
     constructor Create(FileName: String);
     constructor Create(Stream: TsgeMemoryStream);
+    destructor  Destroy; override;
 
     procedure FromMemoryStream(Stream: TsgeMemoryStream); virtual abstract;
     procedure LoadFromFile(FileName: String);
 
     property Data: Pointer read FData;
+    property Size: Int64 read FSize;
     property Width: DWord read FWidth;
     property Height: DWord read FHeight;
   end;
@@ -44,25 +47,32 @@ uses
   sgeErrors;
 
 const
-  _UNITNAME = 'GraphicSpriteLoader';
+  _UNITNAME = 'SpriteLoader';
 
   Err_CantReadFile = 'CantReadFile';
 
 
 
-constructor TsgeGraphicSpriteLoader.Create(FileName: String);
+constructor TsgeSpriteLoader.Create(FileName: String);
 begin
   LoadFromFile(FileName);
 end;
 
 
-constructor TsgeGraphicSpriteLoader.Create(Stream: TsgeMemoryStream);
+constructor TsgeSpriteLoader.Create(Stream: TsgeMemoryStream);
 begin
   FromMemoryStream(Stream);
 end;
 
 
-procedure TsgeGraphicSpriteLoader.LoadFromFile(FileName: String);
+destructor TsgeSpriteLoader.Destroy;
+begin
+  //Почистить память
+  Freemem(FData, FSize);
+end;
+
+
+procedure TsgeSpriteLoader.LoadFromFile(FileName: String);
 var
   Ms: TsgeMemoryStream;
 begin
@@ -85,6 +95,7 @@ begin
     Ms.Free;
   end;
 end;
+
 
 
 end.

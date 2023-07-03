@@ -1,15 +1,15 @@
 {
 Пакет             Simple Game Engine 2
-Файл              *.pas
+Файл              sgeSpriteLoaderGDIP.pas
 Версия            1.0
-Создан            28.04.2021
+Создан            05.01.2022
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс загрузчика спрайтов: GDIPlus
                   форматы: .bmp, .jpeg, .gif, .emf, .wmf, .tif, .png, .ico
 }
 {$Include Defines.inc}
 
-unit sgeGraphicSpriteGDIPLoader;
+unit sgeSpriteLoaderGDIP;
 
 {$mode objfpc}{$H+}
 
@@ -17,17 +17,12 @@ interface
 
 uses
   sgeMemoryStream,
-  sgeGraphicSpriteLoader;
+  sgeSpriteLoader;
 
 
 type
-  TsgeGraphicSpriteGDIPLoader = class(TsgeGraphicSpriteLoader)
-  private
-    FDataSize: PtrUInt;
-
+  TsgeSpriteLoaderGDIP = class(TsgeSpriteLoader)
   public
-    destructor Destroy; override;
-
     procedure FromMemoryStream(Stream: TsgeMemoryStream); override;
   end;
 
@@ -39,7 +34,7 @@ uses
   GDIPAPI, Windows, ActiveX;
 
 const
-  _UNITNAME = 'GraphicSpriteGDIPLoader';
+  _UNITNAME = 'SpriteLoaderGDIP';
 
   Err_CantAllocMemory             = 'CantAllocMemory';
   Err_CantLockMemory              = 'CantLockMemory';
@@ -50,16 +45,10 @@ const
   Err_CantGetHeight               = 'CantGetHeight';
 
 
-destructor TsgeGraphicSpriteGDIPLoader.Destroy;
-begin
-  //Освободить память
-  Freemem(FData);
-end;
 
-
-procedure TsgeGraphicSpriteGDIPLoader.FromMemoryStream(Stream: TsgeMemoryStream);
+procedure TsgeSpriteLoaderGDIP.FromMemoryStream(Stream: TsgeMemoryStream);
 var
-  i, Size, BytesPerLine, IdxBmp, IdxData: Integer;
+  i, BytesPerLine, IdxBmp, IdxData: Integer;
   HBuf: HGLOBAL;
   PBuf: Pointer;
   PStream: IStream;
@@ -67,16 +56,12 @@ var
   BmpData: TBitmapData;
   Rct: TGPRect;
 begin
-  //Размер файла
-  Size := Stream.Size;
-
   //Выделить память для данных
-  HBuf := GlobalAlloc(GMEM_MOVEABLE, Size);
+  HBuf := GlobalAlloc(GMEM_MOVEABLE, Stream.Size);
 
   //Проверить выделение памяти
   if HBuf = 0 then
-    raise EsgeException.Create(_UNITNAME, Err_CantAllocMemory, sgeIntToStr(Size));
-
+    raise EsgeException.Create(_UNITNAME, Err_CantAllocMemory, sgeIntToStr(Stream.Size));
 
   try
     //Заблокировать память
@@ -87,7 +72,7 @@ begin
       raise EsgeException.Create(_UNITNAME, Err_CantLockMemory);
 
     //Скопировать в буфер Stream
-    CopyMemory(PBuf, Stream.Data, Size);
+    CopyMemory(PBuf, Stream.Data, Stream.Size);
 
     //Создать IStream
     if not CreateStreamOnHGlobal(HBuf, False, PStream) = S_OK then
@@ -113,15 +98,15 @@ begin
       raise EsgeException.Create(_UNITNAME, Err_CantAccessMemory);
 
     //Подготовка буфера
-    BytesPerLine := FWidth * 4;           //Байтов в строке
-    FDataSize := BytesPerLine * FHeight;  //Всего данных
-    FData := AllocMem(FDataSize);         //Выделить память
+    BytesPerLine := FWidth * 4;                                     //Байтов в строке
+    FSize := BytesPerLine * FHeight;                                //Всего данных
+    FData := AllocMem(FSize);                                       //Выделить память
 
     //Переворачивание рисунка
     for i := 0 to FHeight - 1 do
     begin
-      IdxBmp := i * BytesPerLine;                                                       //Смещение линии GPBitmap
-      IdxData := FDataSize - (i * BytesPerLine) - BytesPerLine;                         //Смещение буфера для OpenGL
+      IdxBmp := i * BytesPerLine;                                   //Смещение линии GPBitmap
+      IdxData := FSize - (i * BytesPerLine) - BytesPerLine;         //Смещение буфера для OpenGL
       Move(Pointer(BmpData.Scan0 + IdxBmp)^, Pointer(FData + IdxData)^, BytesPerLine);  //Копирование из GPBitmap в буфер
     end;
 
