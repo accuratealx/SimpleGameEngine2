@@ -83,6 +83,7 @@ type
     procedure CheckStartParameters;                                 //Обработать стартовые параметры
     procedure CheckStartParameter_Debug;                            //Режим отладки
     procedure RunScript(ScriptName: String; Wait: Boolean = False); //Запустить скрипт
+    procedure LoadShaders;                                          //Загрузить шейдеры в расширение графики
 
     //Обработчики событий
     procedure RegisterEventHandlers;                                //Подписать системные обработчики событий
@@ -139,7 +140,8 @@ implementation
 uses
   sgeErrors, sgeKeys, sgeMemoryStream,
   sgeOSPlatform, sgeDateUtils, sgeFileUtils, sgeShellCommands, sgeVariables,
-  sgeEventWindow, sgeEventTimeEvent;
+  sgeResourceList, sgeAnsiFont,
+  sgeEventWindow, sgeEventTimeEvent, sgeEventGraphic;
 
 
 const
@@ -152,6 +154,7 @@ const
   //Имена файлов
   Script_AutoStartName = 'AutoStart';
   Script_AutoStopName = 'AutoStop';
+  System_ResList = 'System\System.List';
 
   //Расширения
   Ext_Journal = 'Journal';
@@ -199,6 +202,23 @@ begin
   s := ScriptName + '.' + Ext_Script;
   if FExtensionFileSystem.FileExists(s) then
     FExtensionShell.DoCommand('Script.Load ' + s + '; System.Run ' + ScriptName, Wait);
+end;
+
+
+procedure TSimpleGameEngine.LoadShaders;
+var
+  i: Integer;
+  Item: TsgeResource;
+begin
+  for i := 0 to FExtensionResourceList.ResourceList.Count - 1 do
+  begin
+    //Ссылка на запись о ресурсе
+    Item := FExtensionResourceList.ResourceList.Item[i];
+
+    //Ищем шейдеры и добавляем
+    if Item.ResType = rtShader then
+      FExtensionGraphic.AddShader(Item.Name, TsgeMemoryStream(Item.Obj));
+  end;
 end;
 
 
@@ -305,11 +325,12 @@ begin
     FExtensionStartParameters := TsgeExtensionStartParameters.Create;               //Стартовые параметры
     CheckStartParameter_Debug;                                                      //Проверить режим отладки
 
-    FExtensionWindow := TsgeExtensionWindow.Create;                                 //Окно
-    FExtensionGraphic := TsgeExtensionGraphic.Create;                               //Графика
     FExtensionPackFiles := TsgeExtensionPackList.Create;                            //Файловые архивы
     FExtensionFileSystem := TsgeExtensionFileSystem.Create;                         //Файловая система
     FExtensionResourceList := TsgeExtensionResourceList.Create;                     //Список ресурсов
+
+    FExtensionWindow := TsgeExtensionWindow.Create;                                 //Окно
+    FExtensionGraphic := TsgeExtensionGraphic.Create;                               //Графика
     FExtensionCursor := TsgeExtensionCursor.Create;                                 //Курсоры
     FExtensionControllers := TsgeExtensionControllers.Create;                       //Контроллеры
     FExtensionScenes := TsgeExtensionScenes.Create;                                 //Сцены
@@ -337,6 +358,21 @@ begin
     //Проверить автозагрузку архивов
     if ioFindAndLoadPacks in FInitOptions then
       FExtensionPackFiles.LoadPackFromDirectory;
+
+    //Загрузить системные ресурсы без которых невозможно работать
+    FExtensionResourceList.LoadFromFile(System_ResList);
+
+    //Загрузить в графике необходимые ресурсы (Shader)
+    LoadShaders;
+
+    //Установить системный шрифт
+    FExtensionGraphic.SetSystemFont(TsgeAnsiFont(FExtensionResourceList.ResourceList.TypedObj['System', rtAnsiFont]));
+
+    //Инициализировать графику (Создать недостающие объекты)
+    FExtensionGraphic.Init;
+
+    //Запустить рендер
+    FExtensionGraphic.StartRender;
 
     //Пользовательская инициализация
     Init;
@@ -415,7 +451,7 @@ begin
   try
     try
       //Запросить снимок экрана
-      FExtensionGraphic.ScreenShot(MS);
+      //FExtensionGraphic.ScreenShot(MS);
 
       //Сохранить в файл
       MS.SaveToFile(FExtensionFileSystem.ScreenshotDir + s);
