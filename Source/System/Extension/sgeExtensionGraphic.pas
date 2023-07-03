@@ -15,11 +15,15 @@ unit sgeExtensionGraphic;
 interface
 
 uses
-  sgeTypes, sgeThread, sgeMemoryStream,
-  sgeGraphicColor, sgeGraphic,
-  sgeCounter, sgeWindow,
-  sgeExtensionBase, sgeGraphicElementLayerList, sgeGraphicElementBase, sgeGraphicElementFade, sgeGraphicFPS,
-  sgeScreenFade, sgeEventList, sgeEventBase, sgeEventWindow,
+  sgeTypes, sgeThread, sgeMemoryStream, sgeCounter, sgeWindow, sgeAnsiFont,
+  sgeExtensionBase,
+  sgeGraphicColor, sgeGraphicOpenGL,
+  sgeGraphicOpenGLDrawObjectFade, sgeGraphicOpenGLDrawObjectFadeItem,
+  sgeDisplayElementAnsiText, sgeGraphicOpenGLDrawObjectAnsiText,
+
+  sgeGraphicElementLayerList,
+
+  sgeEventList, sgeEventBase, sgeEventWindow, sgeEventGraphic,
   sgeExtensionWindow;
 
 
@@ -29,31 +33,35 @@ const
 
 type
   //Тип перехода затемнения
-  TsgeExtensionFadeMode = (efmNormalToColor, efmColorToNormal, efmNormalToColorToNormal, efmColorToNormalToColor);
+  TsgeExtensionFadeMode = sgeGraphicOpenGLDrawObjectFadeItem.TsgeFadeMode;
 
 
-  //Режим ограничения кадров (Вертикальная синхронизация, Програмный способ)
-  TsgeExtensionGraphicDrawControl = (gdcSync, gdcProgram);
+  //Режим ограничения кадров
+  TsgeExtensionGraphicDrawControl = (
+    gdcSync,    //Вертикальная синхронизация
+    gdcProgram  //Програмный способ
+  );
 
 
   TsgeExtensionGraphic = class(TsgeExtensionBase)
   private
     //Ссылки на объекты
     FExtWindow: TsgeExtensionWindow;
+    FFont: TsgeAnsiFont;                                            //ССылка на класс шрифта
 
     //Классы
-    FLayerList: TsgeGraphicElementLayerList;                        //Класс слоёв отрисовки
-    FGraphicInner: TsgeGraphic;                                     //Класс графики для потока рендера сцены
-    FGraphic: TsgeGraphic;                                          //Класс графики для основного потока
+    //FLayerList: TsgeGraphicElementLayerList;                        //Класс слоёв отрисовки
+    FGraphic: TsgeGraphicOpenGL;                                    //Класс графики для потока рендера сцены
     FThread: TsgeThread;                                            //Поток основного класса графики
     FEventList: TsgeEventList;                                      //Список объектов событий
-    FFPS: TsgeGraphicFPS;                                           //Настройки вывода FPS
+    FFadeElement: TsgeGraphicOpenGLDrawObjectFade;                  //Элемент затемнения
+
+    FDisplayFPS: TsgeDisplayElementAnsiText;                        //Элемент рисования
+    FDrawFPS: TsgeGraphicOpenGLDrawObjectAnsiText;                  //Элемент рендера
     FFPSCounter: TsgeCounter;                                       //Счётчик FPS
 
-    FFadeElement: TsgeGraphicElementFade;                           //Элемент затемнения
-    FFadeID: Integer;                                               //Идентификатор перехода
-
     //Перменные
+    FScreenSize: TsgeFloatPoint;                                    //Размеры экрана
     FDrawControl: TsgeExtensionGraphicDrawControl;                  //Способ ограничения кадров
     FMaxFPS: Word;                                                  //Максимальное количество кадров в секунду
     FAutoEraseBG: Boolean;                                          //Автостирание фона перед выводом кадра
@@ -62,20 +70,22 @@ type
     FDrawLastTime: Int64;
     FDrawCurrentTime: Int64;
     FDrawDelay: Int64;
-    FTempWindow: TsgeWindow;                                        //Временное окно для не основных контекстов
-    FScreenshotStream: TsgeMemoryStream;                            //Ссылка на память
+    //FScreenshotStream: TsgeMemoryStream;                            //Ссылка на память
 
     //Методы потока
     procedure InitGraphic;
     procedure DoneGraphic;
+    procedure CreateObjects;
+
     procedure ProcessEvents;
     procedure ChangeDrawControl;
-    procedure GetScreenshot;
+    //procedure GetScreenshot;
     procedure SystemDraw;
     procedure Draw;
 
     //Вывод графики
     procedure DrawElements;
+    procedure processFPS;
     procedure DrawFPS;
 
     //Свойства
@@ -83,14 +93,14 @@ type
     procedure SetMaxFPS(AMaxFPS: Word);
 
     //Затемнение
-    procedure FadeCallBackProc(Time: TsgePassedTime);
+    procedure FadeCallBackProc(Time: TsgePassedTime; ID: Integer);
 
     //Подписка на события
     function Event_WindowResize(Obj: TsgeEventWindow): TsgeEventHandlerResult;
+    function Event_GraphicAddShader(Obj: TsgeEventGraphicAddShader): TsgeEventHandlerResult;
+    function Event_GraphicFadeNew(Obj: TsgeEventGraphicNewFade): TsgeEventHandlerResult;
 
   protected
-    FGraphicShell: TsgeGraphic;                                     //Класс графики для потока оболочки
-
     function GetName: String; override;
     procedure RegisterEventHandlers; override;
 
@@ -99,13 +109,18 @@ type
     destructor  Destroy; override;
 
     //Методы
+    procedure Init;                                                           //Создние необходимых объектов
+    procedure AddShader(ShaderName: String; ShaderStream: TsgeMemoryStream);  //Добавить шейдерную программу
+    procedure SetSystemFont(Font: TsgeAnsiFont);                             //Установить системный шрифт
+    procedure StartRender;                                                    //Запуск потока рендерера
+
     procedure Fade(Mode: TsgeExtensionFadeMode; Color: TsgeColor; Time: Cardinal; ID: Integer = -1);
-    procedure ScreenShot(Stream: TsgeMemoryStream);
+    //procedure ScreenShot(Stream: TsgeMemoryStream);
 
     //Объекты
-    property Graphic: TsgeGraphic read FGraphic;
-    property LayerList: TsgeGraphicElementLayerList read FLayerList;
-    property FPS: TsgeGraphicFPS read FFPS;
+    //property Graphic: TsgeGraphicOpenGL read FGraphic;
+    //property LayerList: TsgeGraphicElementLayerList read FLayerList;
+    //property FPS: TsgeGraphicFPS read FFPS;
 
     //Параметры
     property MaxFPS: Word read FMaxFPS write SetMaxFPS;
@@ -114,51 +129,102 @@ type
   end;
 
 
-
-
 implementation
 
 uses
   sgeErrors, sgeOSPlatform,
-  sgeEventGraphic, sgeGraphicElementLayer;
+  sgeGraphicOpenGLShaderProgram, sgeGraphicOpenGLShaderProgramTable,
+  sgeGraphicElementLayer, dglOpenGL;
 
 
 const
   _UNITNAME = 'ExtensionGraphic';
 
-
-type
-  TsgeGraphicElementBaseExt = class(TsgeGraphicElementBase);
+  ERR_EVENT_ERROR = 'EventError';
 
 
 procedure TsgeExtensionGraphic.InitGraphic;
 begin
-  FGraphicInner.Init;
-  FGraphicInner.Activate;
-  FGraphic.ChangeViewArea(100, 100);
+  FGraphic.Activate;
+  FGraphic.ChangeViewPort(0, 0);
+  FGraphic.SetBGColor(cDarkGray);
 end;
 
 
 procedure TsgeExtensionGraphic.DoneGraphic;
 begin
-  FGraphicInner.Done;
+  FDrawFPS.Free;
+  FDisplayFPS.Free;
+  FFadeElement.Free;
+  FGraphic.Deactivate;
+end;
+
+
+procedure TsgeExtensionGraphic.CreateObjects;
+begin
+  //Специальный объект  затемнения
+  FFadeElement := TsgeGraphicOpenGLDrawObjectFade.Create;
+
+  //FPS
+  FDisplayFPS := TsgeDisplayElementAnsiText.Create(10, 10, cWhite, FFont, '0');
+  FDrawFPS := TsgeGraphicOpenGLDrawObjectAnsiText.Create(FDisplayFPS);
 end;
 
 
 procedure TsgeExtensionGraphic.ProcessEvents;
 var
   Event: TsgeEventBase;
+  EventNewFade: TsgeEventGraphicNewFade;
+  EventAddShader: TsgeEventGraphicAddShader;
+  ShaderProgram: TsgeGraphicOpenGLShaderProgram;
 begin
   while FEventList.Count > 0 do
   begin
-    //Указатель на объект события
-    Event := FEventList.Item[0];
 
-    //Обработать событие
-    case Event.Name of
-      Event_WindowSize:
-        FGraphicInner.ChangeViewArea(TsgeEventWindow(Event).Width, TsgeEventWindow(Event).Height);
+    try
+      //Указатель на объект события
+      Event := FEventList.Item[0];
+
+      //Обработать события
+      case Event.Name of
+
+        //Изменение размеров окна
+        Event_WindowSize:
+        begin
+          //Запомнить размеры экрана
+          FScreenSize := sgeGetFloatPoint(TsgeEventWindow(Event).Width, TsgeEventWindow(Event).Height);
+
+          //Изменить область вывода
+          FGraphic.ChangeViewPort(Round(FScreenSize.X), Round(FScreenSize.Y));
+        end;
+
+        //Добавление нового затемнения
+        EVENT_GRAPHIC_ADD_SHADER:
+        begin
+          EventAddShader := TsgeEventGraphicAddShader(Event);
+
+          //Создать микропорограмму
+          ShaderProgram := TsgeGraphicOpenGLShaderProgram.Create(EventAddShader.ShaderName, EventAddShader.ShaderStream);
+
+          //Добавить в таблицу
+          OpenGLShaderProgramTable.Add(ShaderProgram);
+        end;
+
+        //Добавление нового затемнения
+        Event_GraphicNewFade:
+        begin
+          EventNewFade := TsgeEventGraphicNewFade(Event);
+          FFadeElement.Add(EventNewFade.Mode, EventNewFade.Color, EventNewFade.Time, EventNewFade.ID, EventNewFade.TimeProc);
+        end;
+
+      end;
+
+
+    except
+      on E: EsgeException do
+        ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, ERR_EVENT_ERROR, Event.Name, E.Message));
     end;
+
 
     //Удалить первый элемент
     FEventList.Delete(0);
@@ -168,14 +234,14 @@ end;
 
 procedure TsgeExtensionGraphic.ChangeDrawControl;
 begin
-  FGraphicInner.VerticalSync := FDrawControl = gdcSync;
+  FGraphic.VerticalSync := FDrawControl = gdcSync;
 end;
 
 
-procedure TsgeExtensionGraphic.GetScreenshot;
+{procedure TsgeExtensionGraphic.GetScreenshot;
 begin
-  FGraphicInner.ScreenShot(FScreenshotStream);
-end;
+  FGraphic.ScreenShot(FScreenshotStream);
+end;}
 
 
 procedure TsgeExtensionGraphic.SystemDraw;
@@ -211,45 +277,35 @@ begin
   if FDestroying then
     Exit;
 
-  //Увеличить счётчик кадров
-  FFPSCounter.Inc;
-
-  //Сохранить состояние
-  FGraphicInner.PushAttrib;
-  FGraphicInner.Reset;
-  FGraphicInner.ResetDrawOptions;
+  //Обработать FPS
+  processFPS;
 
   //Стереть фон
   if FAutoEraseBG then
-    FGraphicInner.EraseBG;
+    FGraphic.EraseBG;
 
   //Вывод елементов
-  DrawElements;
+  //DrawElements;
+
+  //Вывод затемнения
+  FFadeElement.Draw(FGraphic);
 
   //Вывод FPS
-  if FFPS.Enable then
+  if FDrawFPS.Visible then
     DrawFPS;
 
-  //Восстановить состояние
-  FGraphicInner.PopAttrib;
-
   //Смена кадров
-  case FGraphicInner.RenderBuffer of
-    grbBack:
-      FGraphicInner.SwapBuffers;
-
-    grbFront:
-      FGraphicInner.Finish;
-  end;
+  FGraphic.SwapBuffers;
 end;
 
 
 procedure TsgeExtensionGraphic.DrawElements;
-var
+{var
   I: Integer;
   El: TsgeGraphicElementBase;
-  Layer: TsgeGraphicElementLayer;
+  Layer: TsgeGraphicElementLayer;}
 begin
+  (*
   //Заблокировать список
   FLayerList.Lock;
   try
@@ -268,16 +324,11 @@ begin
       if not Layer.Visible then
         Continue;
 
-      //Настроить графику графики
-      FGraphicInner.PushAttrib;
-      FGraphicInner.Reset;
-      FGraphicInner.ResetDrawOptions;
-
       //Поправить смещение
       FGraphicInner.SetPos(Layer.Offset);
 
       //Поправить масштаб
-      FGraphicInner.SetScale(Layer.Scale, Layer.Scale);
+      FGraphicInner.SetScale(Layer.Scale, Layer.Scale);}
 
       //Обработать элементы в слое
       El := Layer.Elements.GetFirst;
@@ -315,65 +366,34 @@ begin
     //Разблокировать список
     FLayerList.UnLock;
   end;
+  *)
+end;
+
+
+procedure TsgeExtensionGraphic.processFPS;
+begin
+  //Увеличить счётчик
+  FFPSCounter.Inc;
+
+  //Обновить параметр
+  if FFPSCounter.StrCount <> FDisplayFPS.Text then
+  begin
+    FDisplayFPS.Text := FFPSCounter.StrCount;
+    FDrawFPS.Update(FDisplayFPS);
+  end;
 end;
 
 
 procedure TsgeExtensionGraphic.DrawFPS;
-var
-  X, Y: Integer;
-  TxtW, TxtH: Integer;
-  s: String;
+const
+  LayerInfo: TsgeFloatRect = (
+    X1: 0;  //PosX
+    Y1: 0;  //PosY
+    X2: 1;  //ScaleX
+    Y2: 1   //ScaleY
+  );
 begin
-  //Если уничтожение, то не рисовать
-  if FDestroying then
-    Exit;
-
-  //Подготовить графику
-  FGraphicInner.PushAttrib;
-  FGraphicInner.Reset;
-  FGraphicInner.ColorBlend := True;
-
-  //FPS
-  s := FFPSCounter.StrCount;
-
-  //Размеры текста
-  TxtW := FFPS.Font.GetStringWidth(s);
-  TxtH := FFPS.Font.CharHeight;
-
-  //Вертикальное выравнивание
-  case FFPS.VerticalAlign of
-    vaTop:
-      Y := 0;
-
-    vaCenter:
-      Y := FExtWindow.Window.Height div 2 - TxtH div 2;
-
-    vaBottom:
-      Y := FExtWindow.Window.Height - TxtH;
-  end;
-
-  //Горизонтальное выравнивание
-  case FFPS.HorizontalAlign of
-    haLeft:
-      X := 0;
-
-    haCenter:
-      X := FExtWindow.Window.Width div 2 - TxtW div 2;
-
-    haRight:
-      X := FExtWindow.Window.Width - TxtW;
-  end;
-
-  //Смещение
-  X := X + FFPS.XOffset;
-  Y := Y + FFPS.YOffset;
-
-  //Вывод FPS
-  FGraphicInner.Color := FFPS.Color;
-  FGraphicInner.DrawText(X, Y, FFPS.Font, s);
-
-  //Восстановить графику
-  FGraphicInner.PopAttrib;
+  FDrawFPS.Draw(FGraphic, FScreenSize, LayerInfo);
 end;
 
 
@@ -385,7 +405,7 @@ begin
   FDrawControl := AMetod;
   FThread.RunProcAndWait(@ChangeDrawControl);
 
-  //Проверить действие в другом потоке на ошибки
+  //Проверить на ошибки
   if FThread.Exception <> nil then
     raise EsgeException.Create(FThread.Exception.Message);
 end;
@@ -403,9 +423,15 @@ begin
 end;
 
 
-procedure TsgeExtensionGraphic.FadeCallBackProc(Time: TsgePassedTime);
+procedure TsgeExtensionGraphic.FadeCallBackProc(Time: TsgePassedTime; ID: Integer);
+var
+  Event: TsgeEventBase;
 begin
-  EventManager.Publish(TsgeEventGraphicFade.Create(Event_GraphicFade, Time, FFadeID));
+  //Создать событие смены состояния затемнения
+  Event := TsgeEventGraphicFade.Create(Event_GraphicFade, Time, ID);
+
+  //Добавить в очередь
+  EventManager.Publish(Event);
 end;
 
 
@@ -413,10 +439,25 @@ function TsgeExtensionGraphic.Event_WindowResize(Obj: TsgeEventWindow): TsgeEven
 begin
   Result := ehrNormal;
 
-  //Изменить размер контекста основног потока
-  FGraphic.ChangeViewArea(Obj.Width, Obj.Height);
-
   //Добавить событие в очередь
+  FEventList.Add(Obj.Copy);
+end;
+
+
+function TsgeExtensionGraphic.Event_GraphicAddShader(Obj: TsgeEventGraphicAddShader): TsgeEventHandlerResult;
+begin
+  Result := ehrNormal;
+
+  //Добавить событие в очередь самому себе
+  FEventList.Add(Obj.Copy);
+end;
+
+
+function TsgeExtensionGraphic.Event_GraphicFadeNew(Obj: TsgeEventGraphicNewFade): TsgeEventHandlerResult;
+begin
+  Result := ehrNormal;
+
+  //Добавить событие в очередь самому себе
   FEventList.Add(Obj.Copy);
 end;
 
@@ -429,8 +470,10 @@ end;
 
 procedure TsgeExtensionGraphic.RegisterEventHandlers;
 begin
-  //Установить обработчик изменения размеров окна
-  EventManager.SubscriberGroupList.Subscribe(Event_WindowSize, TsgeEventHandler(@Event_WindowResize), Event_Priority_Max, True);
+  //Установить обработчики
+  EventManager.SubscriberGroupList.Subscribe(Event_WindowSize, TsgeEventHandler(@Event_WindowResize), Event_Priority_Max - 0, True);
+  EventManager.SubscriberGroupList.Subscribe(EVENT_GRAPHIC_ADD_SHADER, TsgeEventHandler(@Event_GraphicAddShader), Event_Priority_Max - 1, True);
+  EventManager.SubscriberGroupList.Subscribe(Event_GraphicNewFade, TsgeEventHandler(@Event_GraphicFadeNew), Event_Priority_Max - 2, True);
 end;
 
 
@@ -442,7 +485,6 @@ begin
     //Параметры
     FDrawControl := gdcSync;
     FAutoEraseBG := True;
-    FFadeID := -1;
     SetMaxFPS(120);
 
     //Получить ссылки на объекты
@@ -451,45 +493,25 @@ begin
     //Список объктов событий
     FEventList := TsgeEventList.Create(True);
 
-    //Скрытое окно
-    FTempWindow := TsgeWindow.Create('SGETempWindowClass', '', 0, 0, 0, 0);
-
-    //Контекст графики
-    FGraphicInner := TsgeGraphic.Create(FExtWindow.Window.DC, FExtWindow.Window.Width, FExtWindow.Window.Height);
-    FGraphicShell := TsgeGraphic.Create(FTempWindow.DC, 0, 0);
-    FGraphic := TsgeGraphic.Create(FTempWindow.DC, 0, 0);
-
-    //Расшарить ресурсы между контекстами
-    FGraphicInner.ShareList(FGraphic.Context);
-    FGraphicInner.ShareList(FGraphicShell.Context);
-
     //Создать поток
     FThread := TsgeThread.Create(Extension_Graphic, nil, True, False);
 
-    //Настроить основной контекст графики
+    //Создать контекст
+    FGraphic := TsgeGraphicOpenGL.Create(FExtWindow.Window.DC, 4, 6);
+
+    //Инициализировать контекст
     FThread.RunProcAndWait(@InitGraphic);
 
     //Проверить создание графики на ошибку
     if FThread.Exception <> nil then
       raise EsgeException.Create(FThread.Exception.Message);
 
-    //Активировать контекст основного потока
-    FGraphic.Init;
-    FGraphic.Activate;
-
     //Слои отрисовки
-    FLayerList := TsgeGraphicElementLayerList.Create(True);
-    FLayerList.Add(Graphic_Layer_System_Fade, Graphic_LayerIndex_Fade, True);
+    //FLayerList := TsgeGraphicElementLayerList.Create(True);
+    //FLayerList.Add(Graphic_Layer_System_Fade, Graphic_LayerIndex_Fade, True);
 
     //Создать объекты
-    FFPS := TsgeGraphicFPS.Create;
     FFPSCounter := TsgeCounter.Create(1000);
-
-    FFadeElement := TsgeGraphicElementFade.Create(cBlack, sfmNormalToColorToNormal, 1000, @FadeCallBackProc);
-    FLayerList.AddElement(FFadeElement, Graphic_Layer_System_Fade);
-
-    //Установить метод отрисовки
-    FThread.LoopProc := @SystemDraw;
   except
     on E: EsgeException do
       raise EsgeException.Create(_UNITNAME, Err_CantCreateExtension, '', E.Message);
@@ -504,40 +526,82 @@ begin
   //Прибить поток
   if FThread <> nil then
   begin
-    FThread.LoopProc := nil;                                        //Убрать метод отрисовки
-    FThread.RunProcAndWait(@DoneGraphic);                           //Деактивировать контекст
+    FThread.LoopProc := nil;
+    FThread.RunProcAndWait(@DoneGraphic);
   end;
 
   //Удалить объекты
   FThread.Free;
-  FGraphicShell.Free;
   FEventList.Free;
-  FGraphic.Done;
   FGraphic.Free;
-  FGraphicInner.Free;
-  FLayerList.Free;
-  FFPS.Free;
   FFPSCounter.Free;
-  FTempWindow.Free;
 
   inherited Destroy;
 end;
 
-procedure TsgeExtensionGraphic.Fade(Mode: TsgeExtensionFadeMode; Color: TsgeColor; Time: Cardinal; ID: Integer);
+
+procedure TsgeExtensionGraphic.Init;
 begin
-  FFadeID := ID;
-  FFadeElement.Color := Color;
-  FFadeElement.Mode := TsgeScreenFadeMode(Mode);
-  FFadeElement.Time := Time;
-  FFadeElement.Update
+  //Обработать очередь событий, потому что основной поток еще не работает
+  FThread.RunProcAndWait(@ProcessEvents);
+
+  //Создать недостающие объекты
+  FThread.RunProcAndWait(@CreateObjects);
+
+  if FThread.Exception <> nil then
+    raise EsgeException.Create(FThread.Exception.Message);
 end;
 
-procedure TsgeExtensionGraphic.ScreenShot(Stream: TsgeMemoryStream);
+
+procedure TsgeExtensionGraphic.AddShader(ShaderName: String; ShaderStream: TsgeMemoryStream);
+var
+  Event: TsgeEventGraphicAddShader;
+begin
+  //Создать событие
+  Event := TsgeEventGraphicAddShader.Create(EVENT_GRAPHIC_ADD_SHADER, ShaderName, ShaderStream);
+
+  //Добавить в собственную очередь
+  FEventList.Add(Event);
+end;
+
+
+procedure TsgeExtensionGraphic.SetSystemFont(Font: TsgeAnsiFont);
+begin
+  if FFont = Font then
+    Exit;
+
+  //Запомнить ссылку на шрифт
+  FFont := Font;
+end;
+
+
+procedure TsgeExtensionGraphic.StartRender;
+begin
+  //Установить метод отрисовки
+  FThread.LoopProc := @SystemDraw;
+
+  //Продолжить выполнение потока
+  FThread.Resume;
+end;
+
+
+procedure TsgeExtensionGraphic.Fade(Mode: TsgeExtensionFadeMode; Color: TsgeColor; Time: Cardinal; ID: Integer);
+var
+  Event: TsgeEventBase;
+begin
+  //Создать событие
+  Event := TsgeEventGraphicNewFade.Create(Event_GraphicNewFade, Mode, Color, Time, ID, @FadeCallBackProc);
+
+  //Добавить в очередь
+  FEventList.Add(Event);
+end;
+
+{procedure TsgeExtensionGraphic.ScreenShot(Stream: TsgeMemoryStream);
 begin
   FScreenshotStream := Stream;
 
   FThread.RunProcAndWait(@GetScreenshot);
-end;
+end;}
 
 
 end.
