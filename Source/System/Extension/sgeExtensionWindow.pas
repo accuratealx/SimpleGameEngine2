@@ -434,6 +434,15 @@ begin
       end;
     end;
 
+    WM_PAINT: ;
+
+    WM_ERASEBKGND:
+      Result := 1;
+
+    WM_SYSCOMMAND:
+      //Убирает пиканье при нажатии Alt
+      if wParam <> SC_KEYMENU then
+        Result := DefWindowProc(hWnd, Msg, wParam, lParam);
 
     {WM_SIZING:
       begin
@@ -441,13 +450,6 @@ begin
       Rct := Pointer(lParam);
       FEventManager.Publish(Event_WindowSize, TsgeEventWindowSize.Create(Rct^.Right - Rct^.Left, Rct^.Bottom - Rct^.Top));
       end;}
-
-    WM_ERASEBKGND: ;
-
-    WM_SYSCOMMAND:
-      //Убирает пиканье при нажатии Alt
-      if wParam <> SC_KEYMENU then
-        Result := DefWindowProc(hWnd, Msg, wParam, lParam);
 
     else
       Result := DefWindowProc(hWnd, Msg, wParam, lParam);
