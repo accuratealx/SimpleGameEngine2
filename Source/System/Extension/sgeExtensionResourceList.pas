@@ -17,10 +17,9 @@ interface
 
 uses
   sgeMemoryStream, sgeStringList, sgeSimpleParameters, sgeSimpleCommand,
-  sgeExtensionBase,
-  sgeResourceList, sgeMetaInfoList, sgeExtensionFileSystem, sgeExtensionSound,
-  sgeSystemFont, sgeGraphicFont, sgeGraphicSprite, sgeGraphicAnimationFrames,
-  sgeGraphicAnimation, sgeSimpleContainer, sgeSoundBuffer, sgeCursor;
+  sgeExtensionBase, sgeResourceList, sgeResourceItem, sgeMetaInfoList,
+  sgeExtensionFileSystem, sgeExtensionSound,
+  sgeAnsiFont, sgeSprite, sgeAnimationFrameList, sgeSimpleContainer, sgeSoundBuffer, sgeCursor;
 
 
 const
@@ -29,15 +28,14 @@ const
 
 type
   //Типы ресурсов
-  TsgeResourceType = sgeResourceList.TsgeResourceType;
+  TsgeResourceType = sgeResourceItem.TsgeResourceType;
 
 
   //Ресурсы по умолчанию
   TsgeExtensionResourceDefault = record
-    Font: TsgeGraphicFont;
-    Sprite: TsgeGraphicSprite;
-    Frames: TsgeGraphicAnimationFrames;
-    Animation: TsgeGraphicAnimation;
+    AnsiFont: TsgeAnsiFont;
+    Sprite: TsgeSprite;
+    Frames: TsgeAnimationFrameList;
     SoundBufer: TsgeSoundBuffer;
     StringList: TsgeStringList;
     Parameters: TsgeSimpleParameters;
@@ -59,16 +57,14 @@ type
     FDefault: TsgeExtensionResourceDefault;
 
     //Создание объектов
-    function  LoadResource_SystemFont(Stream: TsgeMemoryStream): TObject;
-    function  LoadResource_Font(Cmd: TsgeSimpleCommand; Meta: TsgeMetaInfoList): TObject;
+    function  LoadResource_AnsiFont(Stream: TsgeMemoryStream): TObject;
     function  LoadResource_Sprite(Stream: TsgeMemoryStream; Meta: TsgeMetaInfoList): TObject;
-    function  LoadResource_AnimationFrames(Stream: TsgeMemoryStream): TObject;
-    function  LoadResource_Animation(Stream: TsgeMemoryStream; Meta: TsgeMetaInfoList): TObject;
+    function  LoadResource_AnimFrames(Stream: TsgeMemoryStream): TObject;
     function  LoadResource_SoundBuffer(Stream: TsgeMemoryStream): TObject;
     function  LoadResource_StringList(Stream: TsgeMemoryStream): TObject;
     function  LoadResource_Parameters(Stream: TsgeMemoryStream): TObject;
     function  LoadResource_Container(Stream: TsgeMemoryStream): TObject;
-    function  LoadResource_Cursor(Cmd: TsgeSimpleCommand; Meta: TsgeMetaInfoList): TObject;
+    function  LoadResource_Cursor(Stream: TsgeMemoryStream): TObject;
 
     //Команды таблицы
     procedure Command_SetParam(Prm: TsgeSimpleParameters; Cmd: TsgeSimpleCommand);
@@ -85,17 +81,19 @@ type
     constructor Create; override;
     destructor  Destroy; override;
 
-    function  GetFont(Name: String): TsgeGraphicFont;
-    function  GetSprite(Name: String): TsgeGraphicSprite;
-    function  GetFrames(Name: String): TsgeGraphicAnimationFrames;
-    function  GetAnimation(Name: String): TsgeGraphicAnimation;
-    function  GetSoundBuffer(Name: String): TsgeSoundBuffer;
-    function  GetStringList(Name: String): TsgeStringList;
-    function  GetParameters(Name: String): TsgeSimpleParameters;
-    function  GetContainer(Name: String): TsgeSimpleContainer;
-    function  GetCursor(Name: String): TsgeCursor;
+    procedure SetDefaultAnsiFont(Font: TsgeAnsiFont);
 
-    procedure LoadResourceFromFile(ResType: TsgeResourceType; FileName: String);  //Загрузка ресурса из файла с разбором метаинформации
+    function GetAnsiFont(Name: String): TsgeAnsiFont;
+    function GetSprite(Name: String): TsgeSprite;
+    function GetAnimationFrames(Name: String): TsgeAnimationFrameList;
+    function GetSoundBuffer(Name: String): TsgeSoundBuffer;
+    function GetStringList(Name: String): TsgeStringList;
+    function GetParameters(Name: String): TsgeSimpleParameters;
+    function GetContainer(Name: String): TsgeSimpleContainer;
+    function GetCursor(Name: String): TsgeCursor;
+
+    //Загрузка ресурса из файла с разбором метаинформации
+    procedure LoadResourceFromFile(ResType: TsgeResourceType; FileName: String);
 
     procedure FromString(Str: String; BaseDirectory: String = '');
     procedure FromMemoryStream(Stream: TsgeMemoryStream; BaseDirectory: String = '');
@@ -111,22 +109,22 @@ implementation
 
 uses
   sgeErrors,
-  sgeSystemUtils, sgeFileUtils, sgeStringUtils, sgeOSPlatform;
+  sgeSystemUtils, sgeFileUtils, sgeStringUtils, sgeOSPlatform,
+  sgeAnimationFrame;
 
 
 const
   //Имя модуля
   _UNITNAME = 'ExtensionResourceList';
 
+  //Ошибки
   Err_UnknownCommand      = 'UnknownCommand';
   Err_FileNotFound        = 'FileNotFound';
   Err_CantReadFile        = 'CantReadFile';
   Err_NotEnoughParameters = 'NotEnoughParameters';
   Err_LoadResourceError   = 'LoadResourceError';
-  Err_DuplicateResource   = 'DuplicateResource';
   Err_UnknownResource     = 'UnknownResource';
   Err_ResourceNotFound    = 'ResourceNotFound';
-
 
   //Имена команд
   rcSetParameter          = 'setparam';
@@ -137,84 +135,66 @@ const
 
 
 
-function TsgeExtensionResourceList.LoadResource_SystemFont(Stream: TsgeMemoryStream): TObject;
+
+function TsgeExtensionResourceList.LoadResource_AnsiFont(Stream: TsgeMemoryStream): TObject;
 begin
-  Result := TsgeSystemFont.Create(Stream);
-end;
-
-
-function TsgeExtensionResourceList.LoadResource_Font(Cmd: TsgeSimpleCommand; Meta: TsgeMetaInfoList): TObject;
-var
-  Size: Integer;
-  fAttr: TsgeGraphicFontAttrib;
-  s: String;
-  FntName: String;
-begin
-  //Name
-  if Cmd.Count >= 4 then
-    FntName := Cmd.Part[3]
-  else
-    FntName := '';
-
-  //Size
-  Size := Meta.GetValue('Size', 12, True);
-
-  //Attrib
-  s := Meta.GetValue('Attrib', '', True);
-  fAttr := sgeFontStringToAttrib(s);
-
-  //Вернуть объект
-  Result := TsgeGraphicFont.Create(FntName, Size, fAttr);
+  Result := TsgeAnsiFont.Create(Stream);
 end;
 
 
 function TsgeExtensionResourceList.LoadResource_Sprite(Stream: TsgeMemoryStream; Meta: TsgeMetaInfoList): TObject;
 
-  function GetValue(Str: String): TsgeGraphicSpriteFilter;
+  //Фильтр для увеличения
+  function GetMagFilter(Str: String): TsgeSpriteMagFilter;
   begin
     case LowerCase(Str) of
       'linear':
-        Result := gsfLinear;
+        Result := smagfLinear;
 
       'nearest':
-        Result := gsfNearest;
+        Result := smagfNearest;
 
       else
-        Result := gsfNearest;
+        Result := smagfNearest;
+    end;
+  end;
+
+  //Фильтр для уменьшения
+  function GetMinFilter(Str: String): TsgeSpriteMinFilter;
+  begin
+    case LowerCase(Str) of
+      'linear':
+        Result := sminfLinear;
+
+      'nearest':
+        Result := sminfNearest;
+
+      else
+        Result := sminfNearest;
     end;
   end;
 
 var
   Cols, Rows: Integer;
-  MagFilter, MinFilter: TsgeGraphicSpriteFilter;
+  MagFilter: TsgeSpriteMagFilter;
+  MinFilter: TsgeSpriteMinFilter;
 begin
   //Определить параметры
   Cols := Meta.GetValue('Cols', 1, True);
   Rows := Meta.GetValue('Rows', 1, True);
-  MinFilter := GetValue(Meta.GetValue('MinFilter', '', True));
-  MagFilter := GetValue(Meta.GetValue('MagFilter', '', True));
+  MinFilter := GetMinFilter(Meta.GetValue('MinFilter', '', True));
+  MagFilter := GetMagFilter(Meta.GetValue('MagFilter', '', True));
 
   //Вернуть объект
-  Result := TsgeGraphicSprite.Create(Stream, Cols, Rows, MagFilter, MinFilter);
+  Result := TsgeSprite.Create(Stream, Cols, Rows);
+  TsgeSprite(Result).MagFilter := MagFilter;
+  TsgeSprite(Result).MinFilter := MinFilter;
 end;
 
 
-function TsgeExtensionResourceList.LoadResource_AnimationFrames(Stream: TsgeMemoryStream): TObject;
+function TsgeExtensionResourceList.LoadResource_AnimFrames(Stream: TsgeMemoryStream): TObject;
 begin
-  Result := TsgeGraphicAnimationFrames.Create(Stream, FResourceList);
-end;
-
-
-function TsgeExtensionResourceList.LoadResource_Animation(Stream: TsgeMemoryStream; Meta: TsgeMetaInfoList): TObject;
-var
-  Width, Height: Integer;
-begin
-  //Найти параметры
-  Width := Meta.GetValue('Width', 8, True);
-  Height := Meta.GetValue('Height', 8, True);
-
-  //Вернуть объект
-  Result := TsgeGraphicAnimation.Create(Stream, Width, Height, FResourceList);
+  Result := TsgeAnimationFrameList.Create(Stream);
 end;
 
 
@@ -244,29 +224,36 @@ begin
 end;
 
 
-function TsgeExtensionResourceList.LoadResource_Cursor(Cmd: TsgeSimpleCommand; Meta: TsgeMetaInfoList): TObject;
+function TsgeExtensionResourceList.LoadResource_Cursor(Stream: TsgeMemoryStream): TObject;
 var
   Width, Height, HotX, HotY: Integer;
-  FrameName: String;
-  Frames: TsgeGraphicAnimationFrames;
+  FrameName, SpriteName: String;
+  Sprite: TsgeSprite;
+  Frames: TsgeAnimationFrameList;
+  Params: TsgeSimpleParameters;
 begin
-  //Frame name
-  if Cmd.Count >= 4 then
-    FrameName := Cmd.Part[3]
-  else
-    FrameName := '';
+  Params := TsgeSimpleParameters.Create(Stream);
+  try
+    //Прочитать параметры из файла
+    Width := Params.GetValue('Width', 16);
+    Height := Params.GetValue('Height', 16);
+    HotX := Params.GetValue('HotX', 0);
+    HotY := Params.GetValue('HotY', 0);
+    SpriteName := Params.GetValue('Sprite', '');
+    FrameName := Params.GetValue('AnimationFrames', '');
 
-  //Найти указатель на кадры
-  Frames := TsgeGraphicAnimationFrames(FResourceList.TypedObj[FrameName, rtAnimationFrames]);
+    //Найти спрайт
+    Sprite := TsgeSprite(FResourceList.TypedItem[SpriteName, rtSprite].Obj);
 
-  //Найти параметры
-  Width := Meta.GetValue('Width', 16, True);
-  Height := Meta.GetValue('Height', 16, True);
-  HotX := Meta.GetValue('HotPointX', 0, True);
-  HotY := Meta.GetValue('HotPointY', 0, True);
+    //Найти кадры анимации
+    Frames :=  TsgeAnimationFrameList(FResourceList.TypedItem[FrameName, rtAnimationFrames].Obj);
 
-  //Вернуть объект
-  Result := TsgeCursor.Create(Frames, Width, Height, HotX, HotY);
+    //Вернуть объект
+    Result := TsgeCursor.Create(Sprite, Frames, Width, Height, HotX, HotY);
+
+  finally
+    Params.Free;
+  end;
 end;
 
 
@@ -296,8 +283,7 @@ end;
 
 procedure TsgeExtensionResourceList.Command_LoadResource(Cmd: TsgeSimpleCommand; BaseDirectory: String);
 var
-  Idx: Integer;
-  nm, fn, Group, MetaStr, s: String;
+  nm, fn, MetaStr, s: String;
   ResObj: TObject;
   ResType, rt: TsgeResourceType;
   Stream: TsgeMemoryStream;
@@ -309,9 +295,6 @@ begin
 
   //Проверить на одинаковое имя
   nm := Cmd.Part[2];
-  Idx := FResourceList.IndexOf(nm);
-  if Idx <> -1 then
-    raise EsgeException.Create(_UNITNAME, Err_DuplicateResource, nm);
 
   //Поправить базовый каталог
   if BaseDirectory <> '' then
@@ -324,7 +307,6 @@ begin
   //Подготовить метастроку
   MetaStr := '';
   s := sgeTrim(Cmd.GetTail(4));
-
   if (s <> '') and (s[1] = '[') and (s[Length(s)] = ']') then
   begin
     System.Delete(s, Length(s), 1);
@@ -335,9 +317,6 @@ begin
   //Создать объект метаинформации из строки
   MetaObj := TsgeMetaInfoList.Create(MetaStr);
 
-  //Подготовить группу из метаинформации
-  Group := MetaObj.GetValue('Group', '', True);
-
   //Загрузить файл в MemoryStream
   try
     Stream := TsgeMemoryStream.Create;
@@ -347,50 +326,39 @@ begin
       s := LowerCase(Cmd.Part[1]);
       ResType := sgeStrToResType(s);
 
-      //Прочитаем файл, если это не Font и не Cursor
-      if (ResType <> rtFont) and (ResType <> rtCursor) then
-        FExtFileSystem.ReadFile(fn, Stream);
+      //Прочитаем файл
+      FExtFileSystem.ReadFile(fn, Stream);
 
       //Создать ресурс
       case ResType of
-        rtSystemFont:
+        rtStream:
         begin
-          ResObj := LoadResource_SystemFont(Stream);
-          TsgeSystemFont(ResObj).FileName := fn;
-          rt := rtSystemFont;
+          ResObj := TsgeMemoryStream.Create(Stream);
+          rt := rtStream;
         end;
 
-        rtFont:
+        rtShader:
         begin
-          ResObj := LoadResource_Font(Cmd, MetaObj);
-          rt := rtFont;
+          ResObj := TsgeMemoryStream.Create(Stream);
+          rt := rtShader;
         end;
 
-        rtCursor:
+        rtAnsiFont:
         begin
-          ResObj := LoadResource_Cursor(Cmd, MetaObj);
-          rt := rtCursor;
+          ResObj := LoadResource_AnsiFont(Stream);
+          rt := rtAnsiFont;
         end;
 
         rtSprite:
         begin
           ResObj := LoadResource_Sprite(Stream, MetaObj);
-          TsgeGraphicSprite(ResObj).FileName := fn;
           rt := rtSprite;
         end;
 
         rtAnimationFrames:
         begin
-          ResObj := LoadResource_AnimationFrames(Stream);
-          TsgeGraphicAnimationFrames(ResObj).FileName := fn;
+          ResObj := LoadResource_AnimFrames(Stream);
           rt := rtAnimationFrames;
-        end;
-
-        rtAnimation:
-        begin
-          ResObj := LoadResource_Animation(Stream, MetaObj);
-          TsgeGraphicAnimation(ResObj).FileName := fn;
-          rt := rtAnimation;
         end;
 
         rtSoundBuffer:
@@ -420,6 +388,12 @@ begin
           rt := rtContainer;
         end;
 
+        rtCursor:
+        begin
+          ResObj := LoadResource_Cursor(Stream);
+          rt := rtCursor;
+        end;
+
         rtUnknown:
           raise EsgeException.Create(_UNITNAME, Err_UnknownResource, Cmd.Part[1]);
 
@@ -429,17 +403,15 @@ begin
 
       //Добавить в хранилище
       if ResObj <> nil then
-        FResourceList.AddItem(nm, rt, ResObj, MetaObj, Group);
+        FResourceList.AddItem(nm, rt, ResObj, MetaStr);
 
     except
       on E: EsgeException do
-      begin
-        MetaObj.Free;
         raise EsgeException.Create(E.Message);
-      end;
     end;
 
   finally
+    MetaObj.Free;
     Stream.Free;
   end;
 end;
@@ -504,15 +476,17 @@ begin
     FResourceList := TsgeResourceList.Create;
 
     //Создать ресурсы по умолчанию
-    FDefault.Font := TsgeGraphicFont.Create('System', 14, [gfaBold]);
-    FDefault.Sprite := TsgeGraphicSprite.Create(16, 16);
-    FDefault.Frames := TsgeGraphicAnimationFrames.Create;
-    FDefault.Frames.Add(FDefault.Sprite);
-    FDefault.Animation := TsgeGraphicAnimation.Create(FDefault.Frames, 32, 32);
+    FDefault.Sprite := TsgeSprite.Create(16, 16);
+    FDefault.Sprite.FillChessBoard(4);
+
+    FDefault.Frames := TsgeAnimationFrameList.Create;
+    FDefault.Frames.Add(TsgeAnimationFrame.Create(0, 0, 0));
+
     FDefault.StringList := TsgeStringList.Create;
     FDefault.Parameters := TsgeSimpleParameters.Create;
     FDefault.Container := TsgeSimpleContainer.Create;
-    FDefault.Cursor := TsgeCursor.Create(FDefault.Frames, 16, 16, 0, 0);
+    FDefault.Cursor := TsgeCursor.Create(FDefault.Sprite, FDefault.Frames, 16, 16, 0, 0);
+
     if ExtensionExist(Extension_Sound) then
       FDefault.SoundBufer := TsgeSoundBuffer.CreateBlank;
 
@@ -526,10 +500,8 @@ end;
 destructor TsgeExtensionResourceList.Destroy;
 begin
   //Ресурсы по умолчанию
-  FDefault.Font.Free;
   FDefault.Sprite.Free;
   FDefault.Frames.Free;
-  FDefault.Animation.Free;
   FDefault.SoundBufer.Free;
   FDefault.StringList.Free;
   FDefault.Parameters.Free;
@@ -543,20 +515,26 @@ begin
 end;
 
 
-function TsgeExtensionResourceList.GetFont(Name: String): TsgeGraphicFont;
+procedure TsgeExtensionResourceList.SetDefaultAnsiFont(Font: TsgeAnsiFont);
 begin
-  Result := TsgeGraphicFont(FResourceList.TypedObj[Name, rtFont]);
+  FDefault.AnsiFont := Font;
+end;
+
+
+function TsgeExtensionResourceList.GetAnsiFont(Name: String): TsgeAnsiFont;
+begin
+  Result := TsgeAnsiFont(FResourceList.TypedObj[Name, rtAnsiFont]);
   if Result = nil then
   begin
-    Result := FDefault.Font;
+    Result := FDefault.AnsiFont;
     ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_ResourceNotFound, Name));
   end;
 end;
 
 
-function TsgeExtensionResourceList.GetSprite(Name: String): TsgeGraphicSprite;
+function TsgeExtensionResourceList.GetSprite(Name: String): TsgeSprite;
 begin
-  Result := TsgeGraphicSprite(FResourceList.TypedObj[Name, rtSprite]);
+  Result := TsgeSprite(FResourceList.TypedObj[Name, rtSprite]);
   if Result = nil then
   begin
     Result := FDefault.Sprite;
@@ -565,23 +543,12 @@ begin
 end;
 
 
-function TsgeExtensionResourceList.GetFrames(Name: String): TsgeGraphicAnimationFrames;
+function TsgeExtensionResourceList.GetAnimationFrames(Name: String): TsgeAnimationFrameList;
 begin
-  Result := TsgeGraphicAnimationFrames(FResourceList.TypedObj[Name, rtAnimationFrames]);
+  Result := TsgeAnimationFrameList(FResourceList.TypedObj[Name, rtAnimationFrames]);
   if Result = nil then
   begin
     Result := FDefault.Frames;
-    ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_ResourceNotFound, Name));
-  end;
-end;
-
-
-function TsgeExtensionResourceList.GetAnimation(Name: String): TsgeGraphicAnimation;
-begin
-  Result := TsgeGraphicAnimation(FResourceList.TypedObj[Name, rtAnimation]);
-  if Result = nil then
-  begin
-    Result := FDefault.Animation;
     ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_ResourceNotFound, Name));
   end;
 end;
@@ -691,13 +658,16 @@ begin
     c := Lines.Count - 1;
     for i := 0 to c do
     begin
-      Lines.Part[i] := sgeTrim(Lines.Part[i]);                      //Отрезать лишнее
-      if Lines.Part[i] = '' then                                    //Пусто
+      Lines.Part[i] := sgeTrim(Lines.Part[i]);
+
+      if Lines.Part[i] = '' then
         Continue;
-      if Lines.Part[i][1] = '#' then                                //Заметка
+
+      if Lines.Part[i][1] = '#' then
         Continue;
-      Lines.Part[i] := sgeSubstituteParamsToString(Lines.Part[i], Params, '%', '%');  //Подставить в строку переменные
-      Cmd.Command := Lines.Part[i];                                 //Разобрать на части
+
+      Lines.Part[i] := sgeSubstituteParamsToString(Lines.Part[i], Params, '%', '%');
+      Cmd.Command := Lines.Part[i];
 
       //Загрузить ресурс
       try
@@ -751,9 +721,8 @@ begin
     raise EsgeException.Create(_UNITNAME, Err_FileNotFound, FileName);
 
   //Прочитать файл в строку
+  MS := TsgeMemoryStream.Create;
   try
-
-    MS := TsgeMemoryStream.Create;
     try
       FExtFileSystem.ReadFile(FileName, MS);
       S := MS.ToString;
@@ -771,6 +740,7 @@ begin
   //Преобразовать строку в массив
   FromString(S, BaseDirectory);
 end;
+
 
 
 end.
