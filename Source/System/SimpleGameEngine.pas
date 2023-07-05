@@ -140,7 +140,7 @@ implementation
 uses
   sgeErrors, sgeKeys, sgeMemoryStream,
   sgeOSPlatform, sgeDateUtils, sgeFileUtils, sgeShellCommands, sgeVariables,
-  sgeResourceList, sgeAnsiFont,
+  sgeResourceItem, sgeAnsiFont,
   sgeEventWindow, sgeEventTimeEvent, sgeEventGraphic;
 
 
@@ -208,7 +208,7 @@ end;
 procedure TSimpleGameEngine.LoadShaders;
 var
   i: Integer;
-  Item: TsgeResource;
+  Item: TsgeResourceItem;
 begin
   for i := 0 to FExtensionResourceList.ResourceList.Count - 1 do
   begin
@@ -298,6 +298,7 @@ end;
 constructor TSimpleGameEngine.Create(Options: TsgeInitOptions);
 var
   JFile: String;
+  SystemFont: TsgeAnsiFont;
 begin
   //Сохранить режим инициализации
   FInitOptions := Options;
@@ -362,11 +363,17 @@ begin
     //Загрузить системные ресурсы без которых невозможно работать
     FExtensionResourceList.LoadFromFile(System_ResList);
 
+    //Ссылка на системный шрифт
+    SystemFont := TsgeAnsiFont(FExtensionResourceList.ResourceList.TypedObj['System', rtAnsiFont]);
+
+    //Установить шрифт по умолчанию в таблице ресурсов
+    FExtensionResourceList.SetDefaultAnsiFont(SystemFont);
+
     //Загрузить в графике необходимые ресурсы (Shader)
     LoadShaders;
 
     //Установить системный шрифт
-    FExtensionGraphic.SetSystemFont(TsgeAnsiFont(FExtensionResourceList.ResourceList.TypedObj['System', rtAnsiFont]));
+    FExtensionGraphic.SetSystemFont(SystemFont);
 
     //Инициализировать графику (Создать недостающие объекты)
     FExtensionGraphic.Init;
