@@ -37,7 +37,7 @@ type
   //Кнопки мыши
   TsgeMouseButton = (
     mbLeft,   //Левая
-    mbMiddle, //Стредняя
+    mbMiddle, //Средняя
     mbRight,  //Правая
     mbExtra1, //Дополнительная 1
     mbExtra2  //Дополнительная 2
