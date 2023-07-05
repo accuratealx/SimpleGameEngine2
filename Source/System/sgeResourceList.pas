@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeResourceList.pas
-Версия            1.4
+Версия            1.5
 Создан            15.05.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Хранилище загруженных ресурсов
@@ -15,82 +15,30 @@ unit sgeResourceList;
 interface
 
 uses
-  sgeMetaInfoList;
-
-
-
-type
-  //Типы ресурсов
-  TsgeResourceType = (
-    rtUnknown,
-    rtSystemFont,
-    rtFont,
-    rtSprite,
-    rtAnimationFrames,
-    rtAnimation,
-    rtSoundBuffer,
-    rtStringList,
-    rtParameters,
-    rtContainer,
-    rtCursor
-    );
-
-const
-  //Имена ресурсов
-  sgeResourceNames: array[TsgeResourceType] of String = (
-    'Unknown',
-    'SystemFont',
-    'Font',
-    'Sprite',
-    'AnimFrames',
-    'Animation',
-    'SoundBuffer',
-    'StringList',
-    'Parameters',
-    'Container',
-    'Cursor'
-    );
+  sgeTemplateCollection,
+  sgeResourceItem;
 
 
 type
-  //Запись для одного ресурса
-  TsgeResource = record
-    Name: String;                   //Имя ресурса в таблице
-    ResType: TsgeResourceType;      //Тип ресурса
-    Obj: TObject;                   //Ссылка на объект
-    Group: String;                  //Группа
-    Meta: TsgeMetaInfoList;         //Список метаинформации
-  end;
-
-
-  TsgeResourceList = class
+  TsgeResourceList = class(specialize TsgeTemplateCollection<TsgeResourceItem>)
   private
-    //Классы
-    FResources: array of TsgeResource;
-
-    function  GetCount: Integer;
-    function  GetItem(Index: Integer): TsgeResource;
-    function  GetTypedItem(Name: String; ResType: TsgeResourceType): TsgeResource;
-
+    function  GetTypedItem(Name: String; ResType: TsgeResourceType): TsgeResourceItem;
     function  GetObject(Name: String): TObject;
     function  GetTypedObject(Name: String; ResType: TsgeResourceType): TObject;
-  public
-    destructor  Destroy; override;
 
-    procedure Clear;
-    procedure AddItem(AItem: TsgeResource);
-    procedure AddItem(Name: String; ResType: TsgeResourceType; Obj: TObject; MetaInfo: TsgeMetaInfoList; Group: String = '');
-    procedure Delete(Index: Integer);
+  public
+    constructor Create;
+
+    procedure AddItem(Name: String; ResType: TsgeResourceType; Obj: TObject; MetaStr: String = ''; Group: String = '');
     procedure Delete(Name: String);
     procedure Delete(Name: String; ResType: TsgeResourceType);
     procedure DeleteByGroup(Group: String);
+
     function  IndexOf(Name: String): Integer;
     function  IndexOf(Name: String; ResType: TsgeResourceType): Integer;
     function  IndexOf(Obj: TObject): Integer;
 
-    property Count: Integer read GetCount;
-    property Item[Index: Integer]: TsgeResource read GetItem;
-    property TypedItem[Name: String; ResType: TsgeResourceType]: TsgeResource read GetTypedItem;
+    property TypedItem[Name: String; ResType: TsgeResourceType]: TsgeResourceItem read GetTypedItem;
 
     property Obj[Name: String]: TObject read GetObject;
     property TypedObj[Name: String; ResType: TsgeResourceType]: TObject read GetTypedObject;
@@ -109,9 +57,9 @@ uses
 const
   _UNITNAME = 'ResourceList';
 
-  Err_IndexOutOfBounds          = 'IndexOutOfBounds';
-  Err_ResourceNotFound          = 'ResourceNotFound';
-  Err_ObjectIsEmpty             = 'ObjectIsEmpty';
+  Err_IndexOutOfBounds = 'IndexOutOfBounds';
+  Err_ResourceNotFound = 'ResourceNotFound';
+  //Err_ObjectIsEmpty    = 'ObjectIsEmpty';
 
 
 function sgeStrToResType(Str: String): TsgeResourceType;
@@ -130,25 +78,7 @@ begin
 end;
 
 
-function TsgeResourceList.GetCount: Integer;
-begin
-  Result := Length(FResources);
-end;
-
-
-function TsgeResourceList.GetItem(Index: Integer): TsgeResource;
-var
-  c: Integer;
-begin
-  c := GetCount - 1;
-  if (Index < 0) or (Index > c) then
-    raise EsgeException.Create(_UNITNAME, Err_IndexOutOfBounds, sgeIntToStr(Index));
-
-  Result := FResources[Index];
-end;
-
-
-function TsgeResourceList.GetTypedItem(Name: String; ResType: TsgeResourceType): TsgeResource;
+function TsgeResourceList.GetTypedItem(Name: String; ResType: TsgeResourceType): TsgeResourceItem;
 var
   Idx: Integer;
 begin
@@ -156,7 +86,7 @@ begin
   if Idx = -1 then
     raise EsgeException.Create(_UNITNAME, Err_ResourceNotFound, Name + ', ' + sgeResourceNames[ResType]);
 
-  Result := FResources[Idx];
+  Result := FList[Idx];
 end;
 
 
@@ -169,7 +99,7 @@ begin
   if Idx = -1 then
     Exit;
 
-  Result := FResources[Idx].Obj;
+  Result := FList[Idx].Obj;
 end;
 
 
@@ -182,78 +112,25 @@ begin
   if Idx = -1 then
     Exit;
 
-  Result := FResources[Idx].Obj;
+  Result := FList[Idx].Obj;
 end;
 
 
-destructor TsgeResourceList.Destroy;
+constructor TsgeResourceList.Create;
 begin
-  Clear;
+  inherited Create(True);
 end;
 
 
-procedure TsgeResourceList.Clear;
+procedure TsgeResourceList.AddItem(Name: String; ResType: TsgeResourceType; Obj: TObject; MetaStr: String; Group: String);
 var
-  i, c: Integer;
+  AItem: TsgeResourceItem;
 begin
-  c := GetCount - 1;
-  for i := 0 to c do
-  begin
-    FResources[i].Meta.Free;
-    FResources[i].Obj.Free;
-  end;
-
-  SetLength(FResources, 0);
-end;
-
-
-procedure TsgeResourceList.AddItem(AItem: TsgeResource);
-var
-  c: Integer;
-begin
-  //Проверить класс метаинформации
-  if AItem.Meta = nil then
-    raise EsgeException.Create(_UNITNAME, Err_ObjectIsEmpty, 'MetaInfo');
-
-  c := GetCount;
-  SetLength(FResources, c + 1);
-  FResources[c] := AItem;
-end;
-
-
-procedure TsgeResourceList.AddItem(Name: String; ResType: TsgeResourceType; Obj: TObject; MetaInfo: TsgeMetaInfoList; Group: String);
-var
-  I: TsgeResource;
-begin
-  I.Name := Name;
-  I.ResType := ResType;
-  I.Obj := Obj;
-  I.Group := Group;
-  I.Meta := MetaInfo;
+  //Создать элемент
+  AItem := TsgeResourceItem.Create(Name, ResType, Obj, MetaStr, Group);
 
   //Добавить в массив
-  AddItem(I);
-end;
-
-
-procedure TsgeResourceList.Delete(Index: Integer);
-var
-  i, c: Integer;
-begin
-  c := GetCount - 1;
-  if (Index < 0) or (Index > c) then
-    raise EsgeException.Create(_UNITNAME, Err_IndexOutOfBounds, sgeIntToStr(Index));
-
-  //Удалить метаинформацию
-  FResources[Index].Meta.Free;
-
-  //Удалить объект
-  FResources[Index].Obj.Free;
-
-  for i := Index to c - 1 do
-    FResources[i] := FResources[i + 1];
-
-  SetLength(FResources, c);
+  inherited Add(AItem);
 end;
 
 
@@ -265,7 +142,7 @@ begin
   if Idx = -1 then
     raise EsgeException.Create(_UNITNAME, Err_ResourceNotFound, Name);
 
-  Delete(Idx);
+  inherited Delete(Idx);
 end;
 
 
@@ -277,7 +154,7 @@ begin
   if Idx = -1 then
     raise EsgeException.Create(_UNITNAME, Err_ResourceNotFound, Name);
 
-  Delete(Idx);
+  inherited Delete(Idx);
 end;
 
 
@@ -288,13 +165,13 @@ begin
   Group := LowerCase(Group);
 
   i := -1;
-  while i < GetCount - 1 do
+  while i < FCount - 1 do
   begin
     Inc(i);
 
-    if LowerCase(FResources[i].Group) = Group then
+    if LowerCase(FList[i].Group) = Group then
     begin
-      Delete(i);
+      inherited Delete(i);
       Dec(i)
     end;
   end;
@@ -303,38 +180,35 @@ end;
 
 function TsgeResourceList.IndexOf(Name: String): Integer;
 var
-  i, c: Integer;
+  i: Integer;
 begin
   Result := -1;
-  c := GetCount - 1;
   Name := LowerCase(Name);
-  for i := 0 to c do
-    if Name = LowerCase(FResources[i].Name) then
+  for i := 0 to FCount - 1 do
+    if Name = LowerCase(FList[i].Name) then
       Exit(i);
 end;
 
 
 function TsgeResourceList.IndexOf(Name: String; ResType: TsgeResourceType): Integer;
 var
-  i, c: Integer;
+  i: Integer;
 begin
   Result := -1;
-  c := GetCount - 1;
   Name := LowerCase(Name);
-  for i := 0 to c do
-    if (Name = LowerCase(FResources[i].Name)) and (ResType = FResources[i].ResType) then
+  for i := 0 to FCount - 1 do
+    if (Name = LowerCase(FList[i].Name)) and (ResType = FList[i].ResType) then
       Exit(i);
 end;
 
 
 function TsgeResourceList.IndexOf(Obj: TObject): Integer;
 var
-  i, c: Integer;
+  i: Integer;
 begin
   Result := -1;
-  c := GetCount - 1;
-  for i := 0 to c do
-    if FResources[i].Obj = Obj then
+  for i := 0 to FCount - 1 do
+    if FList[i].Obj = Obj then
       Exit(i);
 end;
 
