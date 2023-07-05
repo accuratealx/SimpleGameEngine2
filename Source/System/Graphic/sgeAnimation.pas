@@ -60,6 +60,7 @@ begin
     raise EsgeException.Create(_UNITNAME, Err_ZeroFrames);
 
   FFrameList := FrameList;
+
   Reset;
 end;
 
