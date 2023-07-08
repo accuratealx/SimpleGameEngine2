@@ -64,7 +64,7 @@ begin
 
   //Заполнить вершины
   Buff := TsgeGraphicOpenGLCoordBuffer.Create;
-  Buff.AddQuad(0, 0, 1, 1);
+  Buff.AddQuad(1, -1, -1, 1);
   FVertexBuffer.SetData(Buff);
   Buff.Free;
 
