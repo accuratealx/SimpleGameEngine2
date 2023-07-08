@@ -16,7 +16,7 @@ interface
 
 uses
   sgeTemplateThreadSafeCollection,
-  sgeGraphicElementLayer{, sgeGraphicElementBase};
+  sgeGraphicOpenGLLayer;
 
 
 type
@@ -96,7 +96,7 @@ begin
     if (Index < 0) or (Index > FCount - 1) then
       raise EsgeException.Create(_UNITNAME, Err_IndexOutOfBounds, sgeIntToStr(Index));
 
-    FList[Index].Visible := AVisible;
+    //FList[Index].Visible := AVisible;
   finally
     FCS.Leave;
   end;
@@ -142,7 +142,7 @@ begin
       Exit;
 
     //Создать слой
-    Result := TsgeGraphicElementLayer.Create(Name, Index, Visible);
+    //Result := TsgeGraphicElementLayer.Create(Name, Index, Visible);
 
     //Добавить в список
     inherited Add(Result);
