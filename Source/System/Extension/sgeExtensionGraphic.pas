@@ -78,6 +78,14 @@ type
     procedure CreateObjects;
 
     procedure ProcessEvents;
+    procedure ProcessEvent_WindowResize(Event: TsgeEventWindow);
+    procedure ProcessEvent_ShaderAdd(Event: TsgeEventGraphicShaderAdd);
+    procedure ProcessEvent_FadeNew(Event: TsgeEventGraphicFadeNew);
+    procedure ProcessEvent_LayerAdd(Event: TsgeEventGraphicLayer);
+    procedure ProcessEvent_LayerModify(Event: TsgeEventGraphicLayer);
+    procedure ProcessEvent_LayerDelete(Event: TsgeEventGraphicLayer);
+
+
     procedure ChangeDrawControl;
     //procedure GetScreenshot;
     procedure SystemDraw;
@@ -85,7 +93,7 @@ type
 
     //Вывод графики
     procedure DrawElements;
-    procedure processFPS;
+    procedure ProcessFPS;
     procedure DrawFPS;
 
     //Свойства
@@ -96,9 +104,11 @@ type
     procedure FadeCallBackProc(Time: TsgePassedTime; ID: Integer);
 
     //Подписка на события
-    function Event_WindowResize(Obj: TsgeEventWindow): TsgeEventHandlerResult;
-    function Event_GraphicAddShader(Obj: TsgeEventGraphicAddShader): TsgeEventHandlerResult;
-    function Event_GraphicFadeNew(Obj: TsgeEventGraphicNewFade): TsgeEventHandlerResult;
+    function EventHandler_WindowResize(Obj: TsgeEventWindow): TsgeEventHandlerResult;
+    function EventHandler_ShaderAdd(Obj: TsgeEventGraphicShaderAdd): TsgeEventHandlerResult;
+    function EventHandler_FadeNew(Obj: TsgeEventGraphicFadeNew): TsgeEventHandlerResult;
+    function EventHandler_Layer(Obj: TsgeEventGraphicLayer): TsgeEventHandlerResult;
+
 
   protected
     function GetName: String; override;
@@ -134,7 +144,7 @@ implementation
 uses
   sgeErrors, sgeOSPlatform,
   sgeGraphicOpenGLShaderProgram, sgeGraphicOpenGLShaderProgramTable,
-  sgeGraphicElementLayer, dglOpenGL;
+  sgeGraphicOpenGLLayerTable, sgeGraphicOpenGLLayer, dglOpenGL;
 
 
 const
@@ -174,9 +184,6 @@ end;
 procedure TsgeExtensionGraphic.ProcessEvents;
 var
   Event: TsgeEventBase;
-  EventNewFade: TsgeEventGraphicNewFade;
-  EventAddShader: TsgeEventGraphicAddShader;
-  ShaderProgram: TsgeGraphicOpenGLShaderProgram;
 begin
   while FEventList.Count > 0 do
   begin
@@ -190,32 +197,27 @@ begin
 
         //Изменение размеров окна
         Event_WindowSize:
-        begin
-          //Запомнить размеры экрана
-          FScreenSize := sgeGetFloatPoint(TsgeEventWindow(Event).Width, TsgeEventWindow(Event).Height);
+          ProcessEvent_WindowResize(TsgeEventWindow(Event));
 
-          //Изменить область вывода
-          FGraphic.ChangeViewPort(Round(FScreenSize.X), Round(FScreenSize.Y));
-        end;
+        //Добавление нового шейдера
+        Event_GraphicShaderAdd:
+          ProcessEvent_ShaderAdd(TsgeEventGraphicShaderAdd(Event));
 
         //Добавление нового затемнения
-        EVENT_GRAPHIC_ADD_SHADER:
-        begin
-          EventAddShader := TsgeEventGraphicAddShader(Event);
+        Event_GraphicFadeNew:
+          ProcessEvent_FadeNew(TsgeEventGraphicFadeNew(Event));
 
-          //Создать микропорограмму
-          ShaderProgram := TsgeGraphicOpenGLShaderProgram.Create(EventAddShader.ShaderName, EventAddShader.ShaderStream);
+        //Добавление нового слоя
+        Event_Graphic_LayerAdd:
+          ProcessEvent_LayerAdd(TsgeEventGraphicLayer(Event));
 
-          //Добавить в таблицу
-          OpenGLShaderProgramTable.Add(ShaderProgram);
-        end;
+        //Изменение слоя
+        Event_Graphic_LayerModify:
+          ProcessEvent_LayerModify(TsgeEventGraphicLayer(Event));
 
-        //Добавление нового затемнения
-        Event_GraphicNewFade:
-        begin
-          EventNewFade := TsgeEventGraphicNewFade(Event);
-          FFadeElement.Add(EventNewFade.Mode, EventNewFade.Color, EventNewFade.Time, EventNewFade.ID, EventNewFade.TimeProc);
-        end;
+        //Удаление слоя
+        Event_Graphic_LayerDelete:
+          ProcessEvent_LayerDelete(TsgeEventGraphicLayer(Event));
 
       end;
 
@@ -229,6 +231,73 @@ begin
     //Удалить первый элемент
     FEventList.Delete(0);
   end;
+end;
+
+
+procedure TsgeExtensionGraphic.ProcessEvent_WindowResize(Event: TsgeEventWindow);
+begin
+  //Запомнить размеры экрана
+  FScreenSize := sgeGetFloatPoint(Event.Width, Event.Height);
+
+  //Изменить область вывода
+  FGraphic.ChangeViewPort(Round(FScreenSize.X), Round(FScreenSize.Y));
+end;
+
+
+procedure TsgeExtensionGraphic.ProcessEvent_ShaderAdd(Event: TsgeEventGraphicShaderAdd);
+var
+  ShaderProgram: TsgeGraphicOpenGLShaderProgram;
+begin
+  //Создать микропорограмму
+  ShaderProgram := TsgeGraphicOpenGLShaderProgram.Create(Event.ShaderName, Event.ShaderStream);
+
+  //Добавить в таблицу
+  OpenGLShaderProgramTable.Add(ShaderProgram);
+end;
+
+
+procedure TsgeExtensionGraphic.ProcessEvent_FadeNew(Event: TsgeEventGraphicFadeNew);
+begin
+  FFadeElement.Add(Event.Mode, Event.Color, Event.Time, Event.ID, Event.TimeProc);
+end;
+
+
+procedure TsgeExtensionGraphic.ProcessEvent_LayerAdd(Event: TsgeEventGraphicLayer);
+var
+  Layer: TsgeGraphicElementLayer;
+begin
+  //Создать слой
+  Layer := TsgeGraphicElementLayer.Create(Event.Layer);
+
+  //Добавить слой в список слоев
+
+
+  //Добавить слой в хэштаблицу
+  OpenGLLayerTable.Add(Event.UniqueID, Layer);
+
+  //Удалить копию объекта
+  Event.Layer.Free;
+end;
+
+
+procedure TsgeExtensionGraphic.ProcessEvent_LayerModify(Event: TsgeEventGraphicLayer);
+var
+  Layer: TsgeGraphicElementLayer;
+begin
+  //Найти слой по ID
+  //Layer := TsgeGraphicLayerTable.Create(Event.Layer);
+
+  //Обновить слой
+  Layer.Update(Event.Layer);
+
+  //Удалить копию объекта
+  Event.Layer.Free;
+end;
+
+
+procedure TsgeExtensionGraphic.ProcessEvent_LayerDelete(Event: TsgeEventGraphicLayer);
+begin
+
 end;
 
 
@@ -277,9 +346,6 @@ begin
   if FDestroying then
     Exit;
 
-  //Обработать FPS
-  processFPS;
-
   //Стереть фон
   if FAutoEraseBG then
     FGraphic.EraseBG;
@@ -289,6 +355,9 @@ begin
 
   //Вывод затемнения
   FFadeElement.Draw(FGraphic);
+
+  //Обработать FPS
+  ProcessFPS;
 
   //Вывод FPS
   if FDrawFPS.Visible then
@@ -370,7 +439,7 @@ begin
 end;
 
 
-procedure TsgeExtensionGraphic.processFPS;
+procedure TsgeExtensionGraphic.ProcessFPS;
 begin
   //Увеличить счётчик
   FFPSCounter.Inc;
@@ -430,34 +499,35 @@ begin
   //Создать событие смены состояния затемнения
   Event := TsgeEventGraphicFade.Create(Event_GraphicFade, Time, ID);
 
-  //Добавить в очередь
+  //Опубликовать событие смены времени затемнения
   EventManager.Publish(Event);
 end;
 
 
-function TsgeExtensionGraphic.Event_WindowResize(Obj: TsgeEventWindow): TsgeEventHandlerResult;
+function TsgeExtensionGraphic.EventHandler_WindowResize(Obj: TsgeEventWindow): TsgeEventHandlerResult;
 begin
   Result := ehrNormal;
-
-  //Добавить событие в очередь
   FEventList.Add(Obj.Copy);
 end;
 
 
-function TsgeExtensionGraphic.Event_GraphicAddShader(Obj: TsgeEventGraphicAddShader): TsgeEventHandlerResult;
+function TsgeExtensionGraphic.EventHandler_ShaderAdd(Obj: TsgeEventGraphicShaderAdd): TsgeEventHandlerResult;
 begin
   Result := ehrNormal;
-
-  //Добавить событие в очередь самому себе
   FEventList.Add(Obj.Copy);
 end;
 
 
-function TsgeExtensionGraphic.Event_GraphicFadeNew(Obj: TsgeEventGraphicNewFade): TsgeEventHandlerResult;
+function TsgeExtensionGraphic.EventHandler_FadeNew(Obj: TsgeEventGraphicFadeNew): TsgeEventHandlerResult;
 begin
   Result := ehrNormal;
+  FEventList.Add(Obj.Copy);
+end;
 
-  //Добавить событие в очередь самому себе
+
+function TsgeExtensionGraphic.EventHandler_Layer(Obj: TsgeEventGraphicLayer): TsgeEventHandlerResult;
+begin
+  Result := ehrNormal;
   FEventList.Add(Obj.Copy);
 end;
 
@@ -471,9 +541,12 @@ end;
 procedure TsgeExtensionGraphic.RegisterEventHandlers;
 begin
   //Установить обработчики
-  EventManager.SubscriberGroupList.Subscribe(Event_WindowSize, TsgeEventHandler(@Event_WindowResize), Event_Priority_Max - 0, True);
-  EventManager.SubscriberGroupList.Subscribe(EVENT_GRAPHIC_ADD_SHADER, TsgeEventHandler(@Event_GraphicAddShader), Event_Priority_Max - 1, True);
-  EventManager.SubscriberGroupList.Subscribe(Event_GraphicNewFade, TsgeEventHandler(@Event_GraphicFadeNew), Event_Priority_Max - 2, True);
+  EventManager.SubscriberGroupList.Subscribe(Event_WindowSize, TsgeEventHandler(@EventHandler_WindowResize), Event_Priority_Max - 0, True);
+  EventManager.SubscriberGroupList.Subscribe(Event_GraphicShaderAdd, TsgeEventHandler(@EventHandler_ShaderAdd), Event_Priority_Max - 1, True);
+  EventManager.SubscriberGroupList.Subscribe(Event_GraphicFadeNew, TsgeEventHandler(@EventHandler_FadeNew), Event_Priority_Max - 2, True);
+  EventManager.SubscriberGroupList.Subscribe(Event_Graphic_LayerAdd, TsgeEventHandler(@EventHandler_Layer), Event_Priority_Max - 3, True);
+  EventManager.SubscriberGroupList.Subscribe(Event_Graphic_LayerModify, TsgeEventHandler(@EventHandler_Layer), Event_Priority_Max - 4, True);
+  EventManager.SubscriberGroupList.Subscribe(Event_Graphic_LayerDelete, TsgeEventHandler(@EventHandler_Layer), Event_Priority_Max - 5, True);
 end;
 
 
@@ -555,10 +628,10 @@ end;
 
 procedure TsgeExtensionGraphic.AddShader(ShaderName: String; ShaderStream: TsgeMemoryStream);
 var
-  Event: TsgeEventGraphicAddShader;
+  Event: TsgeEventGraphicShaderAdd;
 begin
   //Создать событие
-  Event := TsgeEventGraphicAddShader.Create(EVENT_GRAPHIC_ADD_SHADER, ShaderName, ShaderStream);
+  Event := TsgeEventGraphicShaderAdd.Create(Event_GraphicShaderAdd, ShaderName, ShaderStream);
 
   //Добавить в собственную очередь
   FEventList.Add(Event);
@@ -590,7 +663,7 @@ var
   Event: TsgeEventBase;
 begin
   //Создать событие
-  Event := TsgeEventGraphicNewFade.Create(Event_GraphicNewFade, Mode, Color, Time, ID, @FadeCallBackProc);
+  Event := TsgeEventGraphicFadeNew.Create(Event_GraphicFadeNew, Mode, Color, Time, ID, @FadeCallBackProc);
 
   //Добавить в очередь
   FEventList.Add(Event);
