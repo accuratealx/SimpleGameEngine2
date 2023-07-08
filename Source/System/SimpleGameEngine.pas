@@ -141,7 +141,7 @@ uses
   sgeErrors, sgeKeys, sgeMemoryStream,
   sgeOSPlatform, sgeDateUtils, sgeFileUtils, sgeShellCommands, sgeVariables,
   sgeResourceItem, sgeAnsiFont,
-  sgeEventWindow, sgeEventTimeEvent, sgeEventGraphic;
+  sgeEventWindow, sgeEventTimeEvent;
 
 
 const
