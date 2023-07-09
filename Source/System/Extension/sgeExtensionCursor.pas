@@ -17,9 +17,9 @@ interface
 uses
   sgeTypes,
   sgeExtensionBase, sgeExtensionWindow, sgeExtensionGraphic, sgeExtensionResourceList,
-  sgeGraphicElementAnimation,
-  sgeEventBase, sgeEventMouse,
-  sgeCursor;
+  {sgeGraphicElementAnimation,}
+  sgeEventBase, sgeEventMouse, sgeEventGraphic,
+  sgeDisplayLayer, sgeCursor;
 
 
 const
@@ -31,9 +31,9 @@ type
   private
     FExtWindow: TsgeExtensionWindow;                                //Ссылка на расширение окна
     FExtGraphic: TsgeExtensionGraphic;                              //Ссылка на расширение графики
-    FExtResList: TsgeExtensionResourceList;                         //Ссылка на рисширение ресурсов
 
-    FGUIElement: TsgeGraphicElementAnimation;                       //Отрисовка анимации
+    FDrawLayer: TsgeDisplayLayer;                                   //Объект управления слоем графики
+
     FShowCursor: Boolean;                                           //Показывать курсор
     FCursor: TsgeCursor;                                            //Текущий курсор
     FCursorPos: TsgeIntPoint;                                       //Последние координаты курсора
@@ -58,6 +58,7 @@ type
 
   public
     constructor Create; override;
+    destructor  Destroy; override;
 
     property ShowCursor: Boolean read FShowCursor write SetShowCursor;
     property Cursor: TsgeCursor read FCursor write SetCursor;
@@ -69,10 +70,13 @@ type
 implementation
 
 uses
-  sgeErrors, sgeGraphic;
+  sgeErrors;
 
 
 const
+  Layer_Name = 'System.Cursor';
+  Layer_Index = $FFFF;
+
   _UNITNAME = 'ExtensionCursors';
 
 
@@ -84,15 +88,15 @@ begin
   if FCursor = nil then
     Exit;
 
-  FGUIElement.Frames := FCursor.Frames;
-  FGUIElement.W := FCursor.Width;
-  FGUIElement.H := FCursor.Height;
-  FGUIElement.CoordType := gctNormal;
+  //FGUIElement.Frames := FCursor.Frames;
+  //FGUIElement.W := FCursor.Width;
+  //FGUIElement.H := FCursor.Height;
+  //FGUIElement.CoordType := gctNormal;
 
   X := FScale;
   if FLeftHand then
     X := -FScale;
-  FGUIElement.Scale := sgeGetFloatPoint(X, FScale);
+  //FGUIElement.Scale := sgeGetFloatPoint(X, FScale);
 
   CorrectCoordinate;
 end;
@@ -103,15 +107,15 @@ begin
   if FCursor = nil then
     Exit;
 
-  FGUIElement.X := FCursorPos.X - FCursor.HotPoint.X;
-  FGUIElement.Y := FCursorPos.Y - FCursor.HotPoint.Y;
-  FGUIElement.Update;
+  //FGUIElement.X := FCursorPos.X - FCursor.HotPoint.X;
+  //FGUIElement.Y := FCursorPos.Y - FCursor.HotPoint.Y;
+  //FGUIElement.Update;
 end;
 
 
 procedure TsgeExtensionCursor.CorrectVisible(Visible: Boolean);
 begin
-  case Visible of
+  {case Visible of
     True:
       if FCursor = nil then
       begin
@@ -129,7 +133,7 @@ begin
       FExtWindow.ShowCursor := False;
       FGUIElement.Visible := False;
     end;
-  end;
+  end;}
 end;
 
 
@@ -234,7 +238,6 @@ begin
     //Поиск указателей
     FExtWindow := TsgeExtensionWindow(GetExtension(Extension_Window));
     FExtGraphic := TsgeExtensionGraphic(GetExtension(Extension_Graphic));
-    FExtResList := TsgeExtensionResourceList(GetExtension(Extension_ResourceList));
 
     //Задать параметры
     FShowCursor := True;
@@ -242,19 +245,20 @@ begin
     FLeftHand := False;
 
     //Создать слой для вывода курсора
-    FExtGraphic.LayerList.Add(Graphic_Layer_System_Cursor, Graphic_LayerIndex_Cursor, True);
-
-    //Создать примитив отрисовки
-    FGUIElement := TsgeGraphicElementAnimation.Create(0, 0, 16, 16, FExtResList.Default.Frames);
-    FGUIElement.Visible := False;
-
-    //Добавить примитив в список отрисовки
-    FExtGraphic.LayerList.AddElement(FGUIElement, Graphic_Layer_System_Cursor);
+    FDrawLayer := TsgeDisplayLayer.Create(Layer_Name, Layer_Index, True);
+    FDrawLayer.Add;
 
   except
     on E: EsgeException do
       raise EsgeException.Create(_UNITNAME, Err_CantCreateExtension, '', E.Message);
   end;
+end;
+
+
+destructor TsgeExtensionCursor.Destroy;
+begin
+  FDrawLayer.Delete;
+  FDrawLayer.Free;
 end;
 
 
