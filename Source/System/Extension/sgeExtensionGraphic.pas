@@ -17,12 +17,9 @@ interface
 uses
   sgeTypes, sgeThread, sgeMemoryStream, sgeCounter, sgeWindow, sgeAnsiFont,
   sgeExtensionBase,
-  sgeGraphicColor, sgeGraphicOpenGL,
+  sgeGraphicColor, sgeGraphicOpenGL, sgeGraphicOpenGLLayerList,
   sgeGraphicOpenGLDrawObjectFade, sgeGraphicOpenGLDrawObjectFadeItem,
   sgeDisplayElementAnsiText, sgeGraphicOpenGLDrawObjectAnsiText,
-
-  sgeGraphicElementLayerList,
-
   sgeEventList, sgeEventBase, sgeEventWindow, sgeEventGraphic,
   sgeExtensionWindow;
 
@@ -50,10 +47,10 @@ type
     FFont: TsgeAnsiFont;                                            //ССылка на класс шрифта
 
     //Классы
-    //FLayerList: TsgeGraphicElementLayerList;                        //Класс слоёв отрисовки
     FGraphic: TsgeGraphicOpenGL;                                    //Класс графики для потока рендера сцены
     FThread: TsgeThread;                                            //Поток основного класса графики
     FEventList: TsgeEventList;                                      //Список объектов событий
+    FLayerList: TsgeGraphicOpenGLLayerList;                         //Список слоёв отрисовки
     FFadeElement: TsgeGraphicOpenGLDrawObjectFade;                  //Элемент затемнения
 
     FDisplayFPS: TsgeDisplayElementAnsiText;                        //Элемент рисования
@@ -150,7 +147,7 @@ uses
 const
   _UNITNAME = 'ExtensionGraphic';
 
-  ERR_EVENT_ERROR = 'EventError';
+  Err_EventError = 'EventError';
 
 
 procedure TsgeExtensionGraphic.InitGraphic;
@@ -224,7 +221,7 @@ begin
 
     except
       on E: EsgeException do
-        ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, ERR_EVENT_ERROR, Event.Name, E.Message));
+        ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_EventError, Event.Name, E.Message));
     end;
 
 
@@ -264,13 +261,13 @@ end;
 
 procedure TsgeExtensionGraphic.ProcessEvent_LayerAdd(Event: TsgeEventGraphicLayer);
 var
-  Layer: TsgeGraphicElementLayer;
+  Layer: TsgeGraphicOpenGLLayer;
 begin
   //Создать слой
-  Layer := TsgeGraphicElementLayer.Create(Event.Layer);
+  Layer := TsgeGraphicOpenGLLayer.Create(Event.Layer);
 
   //Добавить слой в список слоев
-
+  FLayerList.Add(Layer);
 
   //Добавить слой в хэштаблицу
   OpenGLLayerTable.Add(Event.UniqueID, Layer);
@@ -282,10 +279,10 @@ end;
 
 procedure TsgeExtensionGraphic.ProcessEvent_LayerModify(Event: TsgeEventGraphicLayer);
 var
-  Layer: TsgeGraphicElementLayer;
+  Layer: TsgeGraphicOpenGLLayer;
 begin
   //Найти слой по ID
-  //Layer := TsgeGraphicLayerTable.Create(Event.Layer);
+  Layer := OpenGLLayerTable.Get(Event.UniqueID);
 
   //Обновить слой
   Layer.Update(Event.Layer);
@@ -296,8 +293,17 @@ end;
 
 
 procedure TsgeExtensionGraphic.ProcessEvent_LayerDelete(Event: TsgeEventGraphicLayer);
+var
+  LayerName: String;
 begin
+  //Поучить имя удаляемого слоя
+  LayerName := OpenGLLayerTable.Get(Event.UniqueID).Name;
 
+  //Удалить слой из списка
+  FLayerList.Delete(LayerName);
+
+  //Удалить слой из таблицы
+  OpenGLLayerTable.Delete(Event.UniqueID);
 end;
 
 
@@ -372,7 +378,7 @@ procedure TsgeExtensionGraphic.DrawElements;
 {var
   I: Integer;
   El: TsgeGraphicElementBase;
-  Layer: TsgeGraphicElementLayer;}
+  Layer: TsgeGraphicOpenGLLayer;}
 begin
   (*
   //Заблокировать список
@@ -580,8 +586,7 @@ begin
       raise EsgeException.Create(FThread.Exception.Message);
 
     //Слои отрисовки
-    //FLayerList := TsgeGraphicElementLayerList.Create(True);
-    //FLayerList.Add(Graphic_Layer_System_Fade, Graphic_LayerIndex_Fade, True);
+    FLayerList := TsgeGraphicOpenGLLayerList.Create(False);
 
     //Создать объекты
     FFPSCounter := TsgeCounter.Create(1000);
@@ -605,6 +610,7 @@ begin
 
   //Удалить объекты
   FThread.Free;
+  FLayerList.Free;
   FEventList.Free;
   FGraphic.Free;
   FFPSCounter.Free;
