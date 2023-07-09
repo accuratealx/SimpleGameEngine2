@@ -65,7 +65,7 @@ type
     function GetCopy: TsgeDisplayLayer;
 
     procedure Add;
-    procedure Modify;
+    procedure Update;
     procedure Delete;
 
     property Data: TsgeDisplayLayerData read FData;
@@ -217,7 +217,7 @@ begin
 end;
 
 
-procedure TsgeDisplayLayer.Modify;
+procedure TsgeDisplayLayer.Update;
 var
   Event: TsgeEventGraphicLayer;
 begin

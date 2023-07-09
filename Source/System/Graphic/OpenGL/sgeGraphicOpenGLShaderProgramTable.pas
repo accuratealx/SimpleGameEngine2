@@ -27,9 +27,9 @@ type
     constructor Create;
     destructor  Destroy; override;
 
+    procedure Clear;
     procedure Add(ShaderProgram: TsgeGraphicOpenGLShaderProgram);
     procedure Delete(Name: String);
-    procedure Clear;
     function  Get(Name: String): TsgeGraphicOpenGLShaderProgram;
   end;
 
@@ -62,6 +62,12 @@ begin
 end;
 
 
+procedure TsgeGraphicOpenGLShaderProgramTable.Clear;
+begin
+  FTable.Clear;
+end;
+
+
 procedure TsgeGraphicOpenGLShaderProgramTable.Add(ShaderProgram: TsgeGraphicOpenGLShaderProgram);
 begin
   if ShaderProgram = nil then
@@ -86,12 +92,6 @@ begin
 
   //Удалить элемент
   FTable.Delete(Idx);
-end;
-
-
-procedure TsgeGraphicOpenGLShaderProgramTable.Clear;
-begin
-  FTable.Clear;
 end;
 
 

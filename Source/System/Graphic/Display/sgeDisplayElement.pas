@@ -34,7 +34,7 @@ type
     //События
     procedure Add;              //Добавление нового объекта
     procedure ChangeVisibility; //Изменение видимости
-    procedure Modify;           //Изменение объекта
+    procedure Update;           //Изменение объекта
     procedure Delete;           //Удаление объекта
 
     property ID: Integer read FID;
@@ -87,7 +87,7 @@ begin
 end;
 
 
-procedure TsgeDisplayElement.Modify;
+procedure TsgeDisplayElement.Update;
 begin
   //Изменился объект
 

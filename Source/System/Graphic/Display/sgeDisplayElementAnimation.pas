@@ -364,7 +364,7 @@ begin
     SetFrameIndex(FAnimation.CurrentFrameIndex);
 
     //Послать события изменения
-    Modify;
+    Update;
   end;
 end;
 

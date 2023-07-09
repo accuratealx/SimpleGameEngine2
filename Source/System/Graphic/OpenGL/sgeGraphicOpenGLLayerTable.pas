@@ -30,10 +30,10 @@ type
     //Удаление элементов с уничтожением
     procedure Clear;
 
-    procedure Add(UniqueID: Integer; Layer: TsgeGraphicElementLayer);
+    procedure Add(UniqueID: Integer; Layer: TsgeGraphicOpenGLLayer);
     procedure Delete(UniqueID: Integer);
 
-    function  Get(UniqueID: Integer): TsgeGraphicElementLayer;
+    function  Get(UniqueID: Integer): TsgeGraphicOpenGLLayer;
   end;
 
 
@@ -56,7 +56,7 @@ const
 
 constructor TsgeGraphicOpenGLLayerTable.Create;
 begin
-  FTable := TFPHashObjectList.Create(True);
+  FTable := TFPHashObjectList.Create;
 end;
 
 
@@ -72,7 +72,7 @@ begin
 end;
 
 
-procedure TsgeGraphicOpenGLLayerTable.Add(UniqueID: Integer; Layer: TsgeGraphicElementLayer);
+procedure TsgeGraphicOpenGLLayerTable.Add(UniqueID: Integer; Layer: TsgeGraphicOpenGLLayer);
 var
   ID: ShortString;
 begin
@@ -87,7 +87,7 @@ begin
     raise EsgeException.Create(_UNITNAME, Err_DuplicateLayer, Layer.Name);
 
   //Добавить
-  FTable.Add(sgeIntToStr(UniqueID), Layer);
+  FTable.Add(ID, Layer);
 end;
 
 
@@ -105,16 +105,17 @@ begin
 end;
 
 
-function TsgeGraphicOpenGLLayerTable.Get(UniqueID: Integer): TsgeGraphicElementLayer;
+function TsgeGraphicOpenGLLayerTable.Get(UniqueID: Integer): TsgeGraphicOpenGLLayer;
 var
   ID: ShortString;
 begin
   ID := sgeIntToStr(UniqueID);
-  Result := TsgeGraphicElementLayer(FTable.Find(ID));
+  Result := TsgeGraphicOpenGLLayer(FTable.Find(ID));
 
   if Result = nil then
     raise EsgeException.Create(_UNITNAME, Err_LayerNotFound, ID);
 end;
+
 
 
 initialization
@@ -127,6 +128,7 @@ finalization
 begin
   OpenGLLayerTable.Free;
 end;
+
 
 
 end.

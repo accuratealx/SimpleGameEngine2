@@ -1,6 +1,6 @@
 {
 Пакет             Simple Game Engine 2
-Файл              sgeGraphicElementLayer.pas
+Файл              sgeGraphicOpenGLLayer.pas
 Версия            1.2
 Создан            14.07.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
@@ -20,7 +20,7 @@ uses
 
 
 type
-  TsgeGraphicElementLayer = class
+  TsgeGraphicOpenGLLayer = class
   private
     FData: TsgeDisplayLayerData;
 
@@ -41,19 +41,19 @@ type
 implementation
 
 
-constructor TsgeGraphicElementLayer.Create(Layer: TsgeDisplayLayer);
+constructor TsgeGraphicOpenGLLayer.Create(Layer: TsgeDisplayLayer);
 begin
   Update(Layer);
 end;
 
 
-destructor TsgeGraphicElementLayer.Destroy;
+destructor TsgeGraphicOpenGLLayer.Destroy;
 begin
 
 end;
 
 
-procedure TsgeGraphicElementLayer.Update(Layer: TsgeDisplayLayer);
+procedure TsgeGraphicOpenGLLayer.Update(Layer: TsgeDisplayLayer);
 begin
   //Видимость
   if dlcsName in Layer.ChangeSet then
