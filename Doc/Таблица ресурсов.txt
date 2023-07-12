@@ -1,0 +1,33 @@
+Команды
+	SetParameter
+	DeleteParameter
+	ClearParameters
+	LoadResource
+	LoadTable
+
+Типы ресурсов
+	Stream
+    Shader
+    AnsiFont
+    Sprite
+	AnimationFrames
+	SoundBuffer
+    StringList
+    Parameters
+    Container
+    Cursor
+
+Метаинформация
+	Общая
+		Group - Имя группы ресурса
+	Ресурсы
+		Sprite
+			Cols - Количество плиток по горизонтали
+			Rows - Количество плиток по вертикали
+			MagFilter - Фильтрация при увеличении
+				Nearest - По сеседям
+				Linear - Градиент
+			MinFilter - Фильтрация при уменьшении
+				Nearest - По сеседям
+				Linear - Градиент
+		
