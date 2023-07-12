@@ -547,6 +547,7 @@ begin
   Result := sgeGetTickCount - AppStartTime;
 end;
 
+
 function sgeGetCPUFrequency: Int64;
 begin
   Windows.QueryPerformanceFrequency(Result);
