@@ -297,10 +297,9 @@ const
   SetAll = [defcsPosition, defcsSize, defcsScale, defcsOrigin, defcsAngle, defcsColor, defcsThickness,
     defcsStipple, defcsStippleScale];
 begin
-  FChangeSet := SetAll;
+  inherited Create;
 
-  //Сгенерировать уникальный ID
-  SetUniqueID;
+  FChangeSet := SetAll;
 
   //Записать параметры
   FData.Position := sgeGetFloatPoint(X1, Y1);

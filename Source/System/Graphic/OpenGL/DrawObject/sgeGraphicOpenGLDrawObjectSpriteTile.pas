@@ -17,7 +17,7 @@ interface
 uses
   sgeTypes,
   sgeDisplayElement, sgeDisplayElementSpriteTile,
-  sgeGraphicOpenGL, sgeGraphicOpenGLDrawObject, sgeGraphicOpenGLVertexArrayObject,
+  sgeGraphicOpenGL, sgeGraphicOpenGLTypes, sgeGraphicOpenGLDrawObject, sgeGraphicOpenGLVertexArrayObject,
   sgeGraphicOpenGLShaderProgram, sgeGraphicOpenGLBuffer, sgeGraphicOpenGLSprite;
 
 
@@ -36,7 +36,7 @@ type
     destructor  Destroy; override;
 
     procedure Update(AElement: TsgeDisplayElement); override;
-    procedure Draw(Graphic: TsgeGraphicOpenGL; ScreenSize: TsgeFloatPoint; LayerInfo: TsgeFloatRect); override;
+    procedure Draw(Graphic: TsgeGraphicOpenGL; ScreenSize: TsgeFloatPoint; LayerInfo: TsgeLayerInfo); override;
   end;
 
 
@@ -161,7 +161,7 @@ begin
 end;
 
 
-procedure TsgeGraphicOpenGLDrawObjectSpriteTile.Draw(Graphic: TsgeGraphicOpenGL; ScreenSize: TsgeFloatPoint; LayerInfo: TsgeFloatRect);
+procedure TsgeGraphicOpenGLDrawObjectSpriteTile.Draw(Graphic: TsgeGraphicOpenGL; ScreenSize: TsgeFloatPoint; LayerInfo: TsgeLayerInfo);
 begin
   //Выбрать объект
   FVAO.Attach;

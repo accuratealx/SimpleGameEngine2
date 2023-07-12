@@ -132,10 +132,9 @@ procedure TsgeDisplayElementAnimation.FillData(X, Y, Width, Height: Single);
 const
   SetAll = [deacsPosition, deacsSize, deacsScale, deacsOrigin, deacsAngle, deacsColor, deacsFrameIndex, deacsSprite, deacsFrames];
 begin
-  FChangeSet := SetAll;
+  inherited Create;
 
-  //Сгенерировать уникальный ID
-  SetUniqueID;
+  FChangeSet := SetAll;
 
   //Записать параметры
   FData.Position := sgeGetFloatPoint(X, Y);

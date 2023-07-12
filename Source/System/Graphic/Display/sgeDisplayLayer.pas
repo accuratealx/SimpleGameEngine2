@@ -208,11 +208,9 @@ procedure TsgeDisplayLayer.Add;
 var
   Event: TsgeEventGraphicLayer;
 begin
-  //Опубликовать событие
   Event := TsgeEventGraphicLayer.Create(Event_Graphic_LayerAdd, FID, Self.GetCopy);
   FEventManager.Publish(Event);
 
-  //Сбросить
   ResetChangeSet;
 end;
 
@@ -221,11 +219,9 @@ procedure TsgeDisplayLayer.Update;
 var
   Event: TsgeEventGraphicLayer;
 begin
-  //Опубликовать событие
-  Event := TsgeEventGraphicLayer.Create(Event_Graphic_LayerModify, FID, Self.GetCopy);
+  Event := TsgeEventGraphicLayer.Create(Event_Graphic_LayerUpdate, FID, Self.GetCopy);
   FEventManager.Publish(Event);
 
-  //Сбросить
   ResetChangeSet;
 end;
 
@@ -234,11 +230,9 @@ procedure TsgeDisplayLayer.Delete;
 var
   Event: TsgeEventGraphicLayer;
 begin
-  //Опубликовать событие
   Event := TsgeEventGraphicLayer.Create(Event_Graphic_LayerDelete, FID);
   FEventManager.Publish(Event);
 
-  //Сбросить
   ResetChangeSet;
 end;
 

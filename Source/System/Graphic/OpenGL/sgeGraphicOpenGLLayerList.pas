@@ -16,7 +16,7 @@ interface
 
 uses
   sgeTemplateCollection,
-  sgeGraphicOpenGLLayer;
+  sgeGraphicOpenGLLayer, sgeGraphicOpenGLDrawObject;
 
 
 type
@@ -24,24 +24,21 @@ type
   private
     procedure Sort;
 
-    function GetNamedItem(AName: String): TsgeGraphicOpenGLLayer;
   public
     function  IndexOf(Name: String): Integer;
 
     procedure Add(Layer: TsgeGraphicOpenGLLayer);
     procedure Delete(Name: String);
 
-    property NamedItem[Name: String]: TsgeGraphicOpenGLLayer read GetNamedItem;
-
-    //procedure AddElement(DrawElement: TsgeGraphicElementBase; LayerName: string = '');  //Добавить элемент
-    //procedure MoveElementToListEnd(DrawElement: TsgeGraphicElementBase; LayerName: string = '');  //Переместить элемент в конец списка
+    //Найти отображаемый объект на нужном слое и удалить, освободив память
+    procedure DeleteDrawObject(DrawObject: TsgeGraphicOpenGLDrawObject);
   end;
 
 
 implementation
 
 uses
-  sgeErrors, sgeSystemUtils;
+  sgeErrors;
 
 const
   _UNITNAME = 'GraphicElementLayerList';
@@ -65,18 +62,6 @@ begin
         FList[j] := FList[j + 1];
         FList[j + 1] := El;
       end;
-end;
-
-
-function TsgeGraphicOpenGLLayerList.GetNamedItem(AName: String): TsgeGraphicOpenGLLayer;
-var
-  Idx: Integer;
-begin
-  Idx := IndexOf(AName);
-  if Idx = -1 then
-    raise EsgeException.Create(_UNITNAME, Err_LayerNotFound);
-
-  Result := FList[Idx];
 end;
 
 
@@ -123,48 +108,13 @@ begin
 end;
 
 
-{procedure TsgeGraphicOpenGLLayerList.AddElement(DrawElement: TsgeGraphicElementBase; LayerName: string);
+procedure TsgeGraphicOpenGLLayerList.DeleteDrawObject(DrawObject: TsgeGraphicOpenGLDrawObject);
 var
-  Idx: Integer;
+  i: Integer;
 begin
-  FCS.Enter;
-  try
-    //Если нет слоя, то добавить в слой по умолчанию
-    Idx := IndexOf(LayerName);
-    if Idx = -1 then
-    begin
-      Idx := IndexOf('');
-      if Idx = -1 then
-      begin
-        Add('', 0, True);
-        Idx := IndexOf('');
-      end;
-    end;
-
-    //Добавить элемент в слой
-    //FList[Idx].Elements.Add(DrawElement);
-  finally
-    FCS.Leave;
-  end;
+  for i := 0 to FCount - 1 do
+    FList[i].Items.Delete(DrawObject, True);
 end;
-
-
-procedure TsgeGraphicOpenGLLayerList.MoveElementToListEnd(DrawElement: TsgeGraphicElementBase; LayerName: string);
-var
-  Idx: Integer;
-begin
-  FCS.Enter;
-  try
-    //Найти слой
-    Idx := IndexOf(LayerName);
-
-    //Подвинуть элемент в конец списка
-    //if Idx <> -1 then
-    //  FList[Idx].Elements.MoveToEnd(DrawElement);
-  finally
-    FCS.Leave;
-  end;
-end;}
 
 
 

@@ -262,11 +262,9 @@ constructor TsgeDisplayElementRect.Create(X1, Y1, X2, Y2: Single; Color: TsgeCol
 const
   SetAll = [dercsPosition, dercsSize, dercsScale, dercsOrigin, dercsAngle, dercsColor];
 begin
-  //Установить все флаги обновления
-  FChangeSet := SetAll;
+  inherited Create;
 
-  //Сгенерировать уникальный ID
-  SetUniqueID;
+  FChangeSet := SetAll;
 
   //Записать параметры
   FData.Position := sgeGetFloatPoint(X1, Y1);

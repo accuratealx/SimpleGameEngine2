@@ -282,10 +282,9 @@ constructor TsgeDisplayElementAnsiText.Create(X, Y: Single; Color: TsgeColor; Fo
 const
   SetAll = [deatcsPosition, deatcsScale, deatcsOrigin, deatcsAngle, deatcsColor, deatcsText, deatcsFont];
 begin
-  FChangeSet := SetAll;
+  inherited Create;
 
-  //Сгенерировать уникальный ID
-  SetUniqueID;
+  FChangeSet := SetAll;
 
   //Записать параметры
   FData.Position := sgeGetFloatPoint(X, Y);

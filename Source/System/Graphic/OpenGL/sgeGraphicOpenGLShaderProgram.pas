@@ -17,7 +17,7 @@ interface
 uses
   dglOpenGL,
   sgeTypes, sgeMemoryStream,
-  sgeGraphicColor,
+  sgeGraphicColor, sgeGraphicOpenGLTypes,
   sgeGraphicOpenGLShader;
 
 type
@@ -41,7 +41,7 @@ type
     procedure SetValue(Name: String; Value: Integer);
 
     procedure SetScreenSize(Value: TsgeFloatPoint);
-    procedure SetLayer(Value: TsgeFloatRect);
+    procedure SetLayer(Value: TsgeLayerInfo);
     procedure SetPos(Value: TsgeFloatPoint);
     procedure SetColor(Value: TsgeColor);
     procedure SetScale(Value: TsgeFloatPoint);
@@ -267,7 +267,7 @@ begin
 end;
 
 
-procedure TsgeGraphicOpenGLShaderProgram.SetLayer(Value: TsgeFloatRect);
+procedure TsgeGraphicOpenGLShaderProgram.SetLayer(Value: TsgeLayerInfo);
 begin
   glUniform4fv(GetParamIndex('Layer'), 1, @Value);
 end;

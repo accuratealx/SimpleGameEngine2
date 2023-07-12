@@ -16,7 +16,7 @@ interface
 
 uses
   sgeTypes,
-  sgeGraphicOpenGL,
+  sgeGraphicOpenGL, sgeGraphicOpenGLTypes,
   sgeDisplayElement;
 
 type
@@ -27,7 +27,7 @@ type
     constructor Create(Element: TsgeDisplayElement); virtual;
 
     procedure Update(Element: TsgeDisplayElement); virtual; abstract;
-    procedure Draw(Graphic: TsgeGraphicOpenGL; ScreenSize: TsgeFloatPoint; LayerInfo: TsgeFloatRect); virtual; abstract;
+    procedure Draw(Graphic: TsgeGraphicOpenGL; ScreenSize: TsgeFloatPoint; LayerInfo: TsgeLayerInfo); virtual; abstract;
 
     property Visible: Boolean read FVisible write FVisible;
   end;

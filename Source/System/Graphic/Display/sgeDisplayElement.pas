@@ -14,28 +14,31 @@ unit sgeDisplayElement;
 
 interface
 
+uses
+  sgeEventManager;
 
 type
   TsgeDisplayElement = class
   protected
-    FID: Integer;       //Уникальный номер элемента
-    FVisible: Boolean;  //Видимость элемента
+    FEventManager: TsgeEventManager;  //Ссылка на менеджер событий
+
+    FID: Integer;                     //Уникальный номер элемента
+    FVisible: Boolean;                //Видимость элемента
 
     procedure SetVisible(AVisible: Boolean);
 
     procedure ResetChangeSet; virtual; abstract;  //Сброс флагов изменения
-    procedure SetUniqueID;                        //Присвоить уникальный номер
 
   public
-    destructor Destroy; override;
+    constructor Create;
 
     function  GetCopy: TsgeDisplayElement; virtual; abstract; //Копирование объекта
 
     //События
-    procedure Add;              //Добавление нового объекта
-    procedure ChangeVisibility; //Изменение видимости
-    procedure Update;           //Изменение объекта
-    procedure Delete;           //Удаление объекта
+    procedure Add(LayerName: String); //Добавление нового объекта на слой
+    procedure ChangeVisibility;       //Изменение видимости
+    procedure Update;                 //Изменение объекта
+    procedure Delete;                 //Удаление объекта
 
     property ID: Integer read FID;
     property Visible: Boolean read FVisible write SetVisible;
@@ -45,7 +48,8 @@ type
 implementation
 
 uses
-  sgeUniqueID;
+  sgeUniqueID, sgeCorePointerUtils,
+  sgeEventGraphic;
 
 
 procedure TsgeDisplayElement.SetVisible(AVisible: Boolean);
@@ -60,44 +64,58 @@ begin
 end;
 
 
-procedure TsgeDisplayElement.SetUniqueID;
+constructor TsgeDisplayElement.Create;
 begin
+  //Сгенерировать уникальный ID
   FID := UniqueID.GetID;
+
+  //Получить ссылку на менеджер событий
+  FEventManager := sgeCorePointer_GetEventManager;
+
+  //Задать параметры
+  FVisible := True;
 end;
 
 
-destructor TsgeDisplayElement.Destroy;
+procedure TsgeDisplayElement.Add(LayerName: String);
+var
+  Event: TsgeEventGraphicElementAdd;
 begin
-  //При разрушении почистить объект
-  Delete;
-end;
-
-
-procedure TsgeDisplayElement.Add;
-begin
-  //Новый объект
+  Event := TsgeEventGraphicElementAdd.Create(FID, Self.GetCopy, LayerName);
+  FEventManager.Publish(Event);
 
   ResetChangeSet;
 end;
 
 
 procedure TsgeDisplayElement.ChangeVisibility;
+var
+  Event: TsgeEventGraphicElementVisible;
 begin
-  //Зименение видимости
+  Event := TsgeEventGraphicElementVisible.Create(FID, FVisible);
+  FEventManager.Publish(Event);
+
+  ResetChangeSet;
 end;
 
 
 procedure TsgeDisplayElement.Update;
+var
+  Event: TsgeEventGraphicElementUpdate;
 begin
-  //Изменился объект
+  Event := TsgeEventGraphicElementUpdate.Create(FID, Self.GetCopy);
+  FEventManager.Publish(Event);
 
   ResetChangeSet;
 end;
 
 
 procedure TsgeDisplayElement.Delete;
+var
+  Event: TsgeEventGraphicElementDelete;
 begin
-  //Удалить объект
+  Event := TsgeEventGraphicElementDelete.Create(FID);
+  FEventManager.Publish(Event);
 
   ResetChangeSet;
 end;
@@ -105,4 +123,3 @@ end;
 
 
 end.
-

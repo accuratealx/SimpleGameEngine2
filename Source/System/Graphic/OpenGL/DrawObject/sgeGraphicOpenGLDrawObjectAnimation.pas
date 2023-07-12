@@ -17,7 +17,7 @@ interface
 uses
   sgeTypes,
   sgeDisplayElement, sgeDisplayElementAnimation,
-  sgeGraphicOpenGL, sgeGraphicOpenGLDrawObject, sgeGraphicOpenGLVertexArrayObject,
+  sgeGraphicOpenGL, sgeGraphicOpenGLTypes, sgeGraphicOpenGLDrawObject, sgeGraphicOpenGLVertexArrayObject,
   sgeGraphicOpenGLShaderProgram, sgeGraphicOpenGLBuffer, sgeGraphicOpenGLSprite;
 
 
@@ -36,7 +36,7 @@ type
     destructor  Destroy; override;
 
     procedure Update(AElement: TsgeDisplayElement); override;
-    procedure Draw(Graphic: TsgeGraphicOpenGL; ScreenSize: TsgeFloatPoint; LayerInfo: TsgeFloatRect); override;
+    procedure Draw(Graphic: TsgeGraphicOpenGL; ScreenSize: TsgeFloatPoint; LayerInfo: TsgeLayerInfo); override;
   end;
 
 
@@ -173,7 +173,7 @@ begin
 end;
 
 
-procedure TsgeGraphicOpenGLDrawObjectAnimation.Draw(Graphic: TsgeGraphicOpenGL; ScreenSize: TsgeFloatPoint; LayerInfo: TsgeFloatRect);
+procedure TsgeGraphicOpenGLDrawObjectAnimation.Draw(Graphic: TsgeGraphicOpenGL; ScreenSize: TsgeFloatPoint; LayerInfo: TsgeLayerInfo);
 const
   ANIMATION_FRAME_VERTEX_COUNT = 6;
 begin

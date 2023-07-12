@@ -134,10 +134,9 @@ procedure TsgeDisplayElementSpriteNine.FillData(X, Y, Width, Height: Single; Off
 const
   SetAll = [desncsPosition, desncsSize, desncsScale, desncsOrigin, desncsAngle, desncsColor, desncsOffset, desncsSprite];
 begin
-  FChangeSet := SetAll;
+  inherited Create;
 
-  //Сгенерировать уникальный ID
-  SetUniqueID;
+  FChangeSet := SetAll;
 
   //Записать параметры
   FData.Position := sgeGetFloatPoint(X, Y);

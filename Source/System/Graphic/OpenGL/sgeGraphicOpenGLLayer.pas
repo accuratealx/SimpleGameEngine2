@@ -16,14 +16,16 @@ interface
 
 uses
   sgeTypes,
-  sgeDisplayLayer;
+  sgeDisplayLayer, sgeGraphicOpenGLTypes, sgeGraphicOpenGLDrawObjectList;
 
 
 type
   TsgeGraphicOpenGLLayer = class
   private
     FData: TsgeDisplayLayerData;
+    FItems: TsgeGraphicOpenGLDrawObjectList;
 
+    function GetLayerInfo: TsgeLayerInfo;
   public
     constructor Create(Layer: TsgeDisplayLayer);
     destructor  Destroy; override;
@@ -35,21 +37,37 @@ type
     property Visible: Boolean read FData.Visible;
     property Offset: TsgeFloatPoint read FData.Offset;
     property Scale: TsgeFloatPoint read FData.Scale;
+
+    property Items: TsgeGraphicOpenGLDrawObjectList read FItems;
+    property LayerInfo: TsgeLayerInfo read GetLayerInfo;
   end;
 
 
 implementation
 
 
+function TsgeGraphicOpenGLLayer.GetLayerInfo: TsgeLayerInfo;
+begin
+  Result.PosX := FData.Offset.X;
+  Result.PosY := FData.Offset.Y;
+  Result.ScaleX := FData.Scale.X;
+  Result.ScaleY := FData.Scale.Y;
+end;
+
+
 constructor TsgeGraphicOpenGLLayer.Create(Layer: TsgeDisplayLayer);
 begin
+  //Создать объекты
+  FItems := TsgeGraphicOpenGLDrawObjectList.Create(False);
+
   Update(Layer);
 end;
 
 
 destructor TsgeGraphicOpenGLLayer.Destroy;
 begin
-
+  //Почистить память
+  FItems.Free;
 end;
 
 

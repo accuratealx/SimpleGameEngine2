@@ -23,6 +23,16 @@ type
     vtTriangle    //Отдельные треугольники
   );
 
+
+  //Информация о слое
+  TsgeLayerInfo = record
+    PosX: Single;   //Положение по X
+    PosY: Single;   //Положение по Y
+    ScaleX: Single; //Масштаб по X
+    ScaleY: Single; //Масштаб по Y
+  end;
+
+
 implementation
 
 

@@ -56,7 +56,7 @@ const
 
 constructor TsgeGraphicOpenGLLayerTable.Create;
 begin
-  FTable := TFPHashObjectList.Create;
+  FTable := TFPHashObjectList.Create(False);
 end;
 
 

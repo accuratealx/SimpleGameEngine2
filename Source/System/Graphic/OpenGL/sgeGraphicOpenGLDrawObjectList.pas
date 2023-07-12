@@ -1,45 +1,45 @@
 {
 Пакет             Simple Game Engine 2
-Файл              sgeGraphicElementList.pas
-Версия            1.3
+Файл              sgeGraphicOpenGLDrawObjectList.pas
+Версия            1.4
 Создан            14.06.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
-Описание          Список элементов отисовки
+Описание          OpenGL: Список элементов отисовки
 }
 {$Include Defines.inc}
 
-unit sgeGraphicElementList;
+unit sgeGraphicOpenGLDrawObjectList;
 
 {$mode objfpc}{$H+}
 
 interface
 
 uses
-  {sgeGraphicElementBase,} sgeTemplateList;
+  sgeTemplateList,
+  sgeGraphicOpenGLDrawObject;
 
 
 type
-  TsgeGraphicElementBase = class
-  end;
-
-  TsgeGraphicElementList = class(specialize TsgeTemplateList<TsgeGraphicElementBase>)
+  TsgeGraphicOpenGLDrawObjectList = class(specialize TsgeTemplateList<TsgeGraphicOpenGLDrawObject>)
   private
     FIterator: PListItem;
 
   public
-    function  IndexOf(aItem: TsgeGraphicElementBase): PListItem;    //Найти элемент по Data
-    procedure MoveToEnd(Element: TsgeGraphicElementBase);           //Переместить элемент в конец списка
+    function  IndexOf(aItem: TsgeGraphicOpenGLDrawObject): PListItem; //Найти элемент по Data
+    //procedure MoveToEnd(Element: TsgeGraphicElementBase);             //Переместить элемент в конец списка
 
-    function  GetFirst: TsgeGraphicElementBase;                     //Взять первый элемент
-    function  GetNext: TsgeGraphicElementBase;                      //Следующий элемент
-    procedure DeleteCurrentElement;                                 //Удалить текущий элемент
+    procedure Delete(DrawObject: TsgeGraphicOpenGLDrawObject; FreeObject: Boolean); //Удалить объект из списка если есть
+
+    function  GetFirst: TsgeGraphicOpenGLDrawObject;                  //Взять первый элемент
+    function  GetNext: TsgeGraphicOpenGLDrawObject;                   //Следующий элемент
+    //procedure DeleteCurrentElement;                                   //Удалить текущий элемент
   end;
 
 
 implementation
 
 
-function TsgeGraphicElementList.IndexOf(aItem: TsgeGraphicElementBase): PListItem;
+function TsgeGraphicOpenGLDrawObjectList.IndexOf(aItem: TsgeGraphicOpenGLDrawObject): PListItem;
 var
   P: PListItem;
 begin
@@ -56,7 +56,17 @@ begin
 end;
 
 
-procedure TsgeGraphicElementList.MoveToEnd(Element: TsgeGraphicElementBase);
+procedure TsgeGraphicOpenGLDrawObjectList.Delete(DrawObject: TsgeGraphicOpenGLDrawObject; FreeObject: Boolean);
+var
+  AItem: PListItem;
+begin
+  AItem := IndexOf(DrawObject);
+  if AItem <> nil then
+    DeleteItemByPointer(AItem, FreeObject);
+end;
+
+
+{procedure TsgeGraphicOpenGLDrawObjectList.MoveToEnd(Element: TsgeGraphicElementBase);
 var
   PItem: PListItem;
   Data: TsgeGraphicElementBase;
@@ -88,10 +98,10 @@ begin
     //Добавить элемент в хвост
     Add(Data);
   end;
-end;
+end;}
 
 
-function TsgeGraphicElementList.GetFirst: TsgeGraphicElementBase;
+function TsgeGraphicOpenGLDrawObjectList.GetFirst: TsgeGraphicOpenGLDrawObject;
 begin
   //Результат по умолчанию
   Result := nil;
@@ -105,7 +115,7 @@ begin
 end;
 
 
-function TsgeGraphicElementList.GetNext: TsgeGraphicElementBase;
+function TsgeGraphicOpenGLDrawObjectList.GetNext: TsgeGraphicOpenGLDrawObject;
 begin
   //Результат по умолчанию
   Result := nil;
@@ -123,7 +133,7 @@ begin
 end;
 
 
-procedure TsgeGraphicElementList.DeleteCurrentElement;
+{procedure TsgeGraphicOpenGLDrawObjectList.DeleteCurrentElement;
 var
   P: PListItem;
 begin
@@ -139,7 +149,7 @@ begin
 
   //Удалить текущий элемент
   DeleteItemByPointer(P, FFreeObjects);
-end;
+end;}
 
 
 end.
