@@ -369,33 +369,36 @@ var
   LayerIdx: Integer;
   DrawObject: TsgeGraphicOpenGLDrawObject;
 begin
-  //Найти слой
-  LayerIdx := FLayerList.IndexOf(Event.LayerName);
-  if LayerIdx = -1 then
-  begin
-    ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_LayerNotFound, Event.LayerName));
-    Exit;
-  end;
-
-  //Создать объект
   try
-    DrawObject := CreateDrawObjectByDisplayElement(Event.Item);
-  except
-    on E: EsgeException do
+    //Найти слой
+    LayerIdx := FLayerList.IndexOf(Event.LayerName);
+    if LayerIdx = -1 then
     begin
-      ErrorManager.ProcessError(E.Message);
+      ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_LayerNotFound, Event.LayerName));
       Exit;
     end;
+
+    //Создать объект
+    try
+      DrawObject := CreateDrawObjectByDisplayElement(Event.Item);
+    except
+      on E: EsgeException do
+      begin
+        ErrorManager.ProcessError(E.Message);
+        Exit;
+      end;
+    end;
+
+    //Добавить объект на слой
+    FLayerList.Item[LayerIdx].Items.Add(DrawObject);
+
+    //Добавить объект в таблицу для быстрого поиска
+    OpenGLDrawObjectTable.Add(Event.UniqueID, DrawObject);
+
+  finally
+    //Удалить копию
+    Event.Item.Free;
   end;
-
-  //Добавить объект на слой
-  FLayerList.Item[LayerIdx].Items.Add(DrawObject);
-
-  //Добавить объект в таблицу для быстрого поиска
-  OpenGLDrawObjectTable.Add(Event.UniqueID, DrawObject);
-
-  //Удалить копию
-  Event.Item.Free;
 end;
 
 
