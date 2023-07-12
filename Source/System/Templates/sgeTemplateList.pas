@@ -18,21 +18,22 @@ type
   generic TsgeTemplateList<T> = class
   protected
     type
+      //Одна запись под хранение элемента
       PListItem = ^TListItem;
-      TListItem = record                                            //Одна запись под хранение элемента
+      TListItem = record
         Item: T;
         Prev: PListItem;
         Next: PListItem;
       end;
 
   protected
-    FFreeObjects: Boolean;                                          //Удалять объекты
-    FCount: Integer;                                                //Количество элементов
-    FFirst: PListItem;                                              //Первый элемент
-    FLast: PListItem;                                               //Последний элемент
+    FFreeObjects: Boolean;  //Удалять объекты
+    FCount: Integer;        //Количество элементов
+    FFirst: PListItem;      //Первый элемент
+    FLast: PListItem;       //Последний элемент
 
     //Вспомогательные методы
-    function  GetItemByIndex(Index: Integer): PListItem;            //Найти указатель на элемент по индексу
+    function  GetItemByIndex(Index: Integer): PListItem;
     procedure DeleteItemByPointer(Item: PListItem; FreeObject: Boolean);
 
     //Свойства
