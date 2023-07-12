@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeEventManager.pas
-Версия            1.4
+Версия            1.5
 Создан            22.03.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс системы событий
@@ -28,20 +28,20 @@ type
   TsgeEventManager = class
   private
     //Классы
-    FCS: TsgeCriticalSection;                                               //Критическая секция изменения списка
-    FEvent: TsgeSystemEvent;                                                //Событие добавления объекта
+    FCS: TsgeCriticalSection;                           //Критическая секция изменения списка
+    FEvent: TsgeSystemEvent;                            //Событие добавления объекта
 
-    FEventList: TsgeEventList;                                              //Список событий
-    FSubscriberGroupList: TsgeEventSubscriberGroupList;                     //Список подписчиков
-    FSubscriberForAll: TsgeEventSubscriberList;                             //Подписчики на все события
+    FEventList: TsgeEventList;                          //Список событий
+    FSubscriberGroupList: TsgeEventSubscriberGroupList; //Список подписчиков
+    FSubscriberForAll: TsgeEventSubscriberList;         //Подписчики на все события
 
-    FErrorHandler: TsgeErrorHandler;                                        //Внешний обрабочик ошибок
+    FErrorHandler: TsgeErrorHandler;                    //Внешний обрабочик ошибок
   public
     constructor Create;
     destructor  Destroy; override;
 
-    procedure Publish(EventObj: TsgeEventBase = nil);                       //Добавить событие в очередь
-    procedure DispatchEvents;                                               //Метод обработки событий
+    procedure Publish(EventObj: TsgeEventBase = nil);   //Добавить событие в очередь
+    procedure DispatchEvents;                           //Метод обработки событий
 
     property EventList: TsgeEventList read FEventList;
     property SubscriberGroupList: TsgeEventSubscriberGroupList read FSubscriberGroupList;
@@ -66,7 +66,7 @@ begin
   FEvent := TsgeSystemEvent.Create(True, False);
 
   FEventList := TsgeEventList.Create(True);
-  FSubscriberGroupList := TsgeEventSubscriberGroupList.Create(True);
+  FSubscriberGroupList := TsgeEventSubscriberGroupList.Create;
   FSubscriberForAll := TsgeEventSubscriberList.Create(True);
 end;
 
@@ -96,7 +96,7 @@ end;
 
 procedure TsgeEventManager.DispatchEvents;
 var
-  Idx, i: Integer;
+  i: Integer;
   EventObj: TsgeEventBase;
   SubscriberList: TsgeEventSubscriberList;
 begin
@@ -142,13 +142,10 @@ begin
     FSubscriberGroupList.Lock;
 
     //Найти группу
-    Idx := FSubscriberGroupList.IndexOf(EventObj.Name);
+    SubscriberList := FSubscriberGroupList.Subscribers[EventObj.Name];
 
-    if Idx <> -1 then
+    if Assigned(SubscriberList) then
     begin
-      //Ссылка на список
-      SubscriberList := FSubscriberGroupList.Item[Idx].Subscribers;
-
       //Доставить событие подписчикам
       for i := 0 to SubscriberList.Count - 1 do
       begin
