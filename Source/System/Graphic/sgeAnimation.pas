@@ -25,13 +25,14 @@ type
     FTimeOffset: Integer;               //Смещение времени для всех кадров
     FLastChangeTime: Int64;             //Время последней смены кадра
 
+    procedure SetFrameList(AFrameList: TsgeAnimationFrameList);
   public
     constructor Create(FrameList: TsgeAnimationFrameList);
 
     procedure Reset;
     function IsFrameChanged: Boolean;   //Функция определения смены кадра
 
-    property FrameList: TsgeAnimationFrameList read FFrameList;
+    property FrameList: TsgeAnimationFrameList read FFrameList write SetFrameList;
     property TimeOffset: Integer read FTimeOffset write FTimeOffset;
     property CurrentFrameIndex: Cardinal read FCurrentFrameIndex;
   end;
@@ -49,17 +50,23 @@ const
   Err_ZeroFrames = 'ZeroFrames';
 
 
-constructor TsgeAnimation.Create(FrameList: TsgeAnimationFrameList);
+procedure TsgeAnimation.SetFrameList(AFrameList: TsgeAnimationFrameList);
 begin
   //Проверить кадры анимации
-  if FrameList = nil then
+  if AFrameList = nil then
     raise EsgeException.Create(_UNITNAME, Err_EmptyFrameList);
 
   //Проверить количество кадров
-  if FrameList.Count < 1 then
+  if AFrameList.Count < 1 then
     raise EsgeException.Create(_UNITNAME, Err_ZeroFrames);
 
-  FFrameList := FrameList;
+  FFrameList := AFrameList;
+end;
+
+
+constructor TsgeAnimation.Create(FrameList: TsgeAnimationFrameList);
+begin
+  SetFrameList(FrameList);
 
   Reset;
 end;
