@@ -49,7 +49,7 @@ type
     FShaderName: String;
     FShaderStream: TsgeMemoryStream;
   public
-    constructor Create(Name: ShortString; ShaderName: String; Stream: TsgeMemoryStream);
+    constructor Create(ShaderName: String; Stream: TsgeMemoryStream);
 
     function Copy: TsgeEventBase; override;
 
@@ -64,7 +64,7 @@ type
     FPassedTime: TsgePassedTime;
     FID: Integer;
   public
-    constructor Create(Name: ShortString; PassedTime: TsgePassedTime; ID: Integer);
+    constructor Create(PassedTime: TsgePassedTime; ID: Integer);
 
     function Copy: TsgeEventBase; override;
 
@@ -81,7 +81,7 @@ type
     FID: Integer;
     FTimeProc: TsgeFadeProc;
   public
-    constructor Create(Name: ShortString; Mode: TsgeFadeMode; Color: TsgeColor; Time: Cardinal; ID: Integer; TimeProc: TsgeFadeProc);
+    constructor Create(Mode: TsgeFadeMode; Color: TsgeColor; Time: Cardinal; ID: Integer; TimeProc: TsgeFadeProc);
 
     function Copy: TsgeEventBase; override;
 
@@ -97,13 +97,43 @@ type
   TsgeEventGraphicLayer = class(TsgeEventBase)
   private
     FUniqueID: Integer;
-    FLayer: TsgeDisplayLayer;
   public
-    constructor Create(Name: ShortString; UniqueID: Integer; Layer: TsgeDisplayLayer = nil);
+    constructor Create(Name: ShortString; UniqueID: Integer);
 
     function Copy: TsgeEventBase; override;
 
     property UniqueID: Integer read FUniqueID;
+  end;
+
+
+  TsgeEventGraphicLayerDelete = class(TsgeEventGraphicLayer)
+  public
+    constructor Create(UniqueID: Integer);
+
+    function Copy: TsgeEventBase; override;
+  end;
+
+
+  TsgeEventGraphicLayerAdd = class(TsgeEventGraphicLayer)
+  private
+    FLayer: TsgeDisplayLayer;
+  public
+    constructor Create(UniqueID: Integer; Layer: TsgeDisplayLayer);
+
+    function Copy: TsgeEventBase; override;
+
+    property Layer: TsgeDisplayLayer read FLayer;
+  end;
+
+
+  TsgeEventGraphicLayerUpdate = class(TsgeEventGraphicLayer)
+  private
+    FLayer: TsgeDisplayLayer;
+  public
+    constructor Create(UniqueID: Integer; Layer: TsgeDisplayLayer);
+
+    function Copy: TsgeEventBase; override;
+
     property Layer: TsgeDisplayLayer read FLayer;
   end;
 
@@ -169,9 +199,9 @@ type
 implementation
 
 
-constructor TsgeEventGraphicShaderAdd.Create(Name: ShortString; ShaderName: String; Stream: TsgeMemoryStream);
+constructor TsgeEventGraphicShaderAdd.Create(ShaderName: String; Stream: TsgeMemoryStream);
 begin
-  inherited Create(Name);
+  inherited Create(Event_Graphic_ShaderAdd);
 
   FShaderName := ShaderName;
   FShaderStream := Stream;
@@ -180,14 +210,13 @@ end;
 
 function TsgeEventGraphicShaderAdd.Copy: TsgeEventBase;
 begin
-  Result := TsgeEventGraphicShaderAdd.Create(FName, FShaderName, FShaderStream);
+  Result := TsgeEventGraphicShaderAdd.Create(FShaderName, FShaderStream);
 end;
 
 
-
-constructor TsgeEventGraphicFade.Create(Name: ShortString; PassedTime: TsgePassedTime; ID: Integer);
+constructor TsgeEventGraphicFade.Create(PassedTime: TsgePassedTime; ID: Integer);
 begin
-  inherited Create(Name);
+  inherited Create(Event_Graphic_Fade);
 
   FPassedTime := PassedTime;
   FID := ID;
@@ -196,14 +225,13 @@ end;
 
 function TsgeEventGraphicFade.Copy: TsgeEventBase;
 begin
-  Result := TsgeEventGraphicFade.Create(FName, FPassedTime, FID);
+  Result := TsgeEventGraphicFade.Create(FPassedTime, FID);
 end;
 
 
-
-constructor TsgeEventGraphicFadeNew.Create(Name: ShortString; Mode: TsgeFadeMode; Color: TsgeColor; Time: Cardinal; ID: Integer; TimeProc: TsgeFadeProc);
+constructor TsgeEventGraphicFadeNew.Create(Mode: TsgeFadeMode; Color: TsgeColor; Time: Cardinal; ID: Integer; TimeProc: TsgeFadeProc);
 begin
-  inherited Create(Name);
+  inherited Create(Event_Graphic_FadeNew);
 
   FMode := Mode;
   FColor := Color;
@@ -215,29 +243,68 @@ end;
 
 function TsgeEventGraphicFadeNew.Copy: TsgeEventBase;
 begin
-  Result := TsgeEventGraphicFadeNew.Create(FName, FMode, FColor, FTime, FID, FTimeProc);
+  Result := TsgeEventGraphicFadeNew.Create(FMode, FColor, FTime, FID, FTimeProc);
 end;
 
 
-
-constructor TsgeEventGraphicLayer.Create(Name: ShortString; UniqueID: Integer; Layer: TsgeDisplayLayer);
+constructor TsgeEventGraphicLayer.Create(Name: ShortString; UniqueID: Integer);
 begin
   inherited Create(Name);
+
   FUniqueID := UniqueID;
-  FLayer := Layer;
 end;
 
 
 function TsgeEventGraphicLayer.Copy: TsgeEventBase;
 begin
-  Result := TsgeEventGraphicLayer.Create(FName, FUniqueID, FLayer);
+  Result := TsgeEventGraphicLayer.Create(FName, FUniqueID);
 end;
 
+
+constructor TsgeEventGraphicLayerDelete.Create(UniqueID: Integer);
+begin
+  inherited Create(Event_Graphic_LayerDelete, UniqueID);
+end;
+
+
+function TsgeEventGraphicLayerDelete.Copy: TsgeEventBase;
+begin
+  Result := TsgeEventGraphicElementDelete.Create(FUniqueID);
+end;
+
+
+constructor TsgeEventGraphicLayerAdd.Create(UniqueID: Integer; Layer: TsgeDisplayLayer);
+begin
+  inherited Create(Event_Graphic_LayerAdd, UniqueID);
+
+  FLayer := Layer;
+end;
+
+
+function TsgeEventGraphicLayerAdd.Copy: TsgeEventBase;
+begin
+  Result := TsgeEventGraphicLayerAdd.Create(FUniqueID, FLayer);
+end;
+
+
+constructor TsgeEventGraphicLayerUpdate.Create(UniqueID: Integer; Layer: TsgeDisplayLayer);
+begin
+  inherited Create(Event_Graphic_LayerUpdate, UniqueID);
+
+  FLayer := Layer;
+end;
+
+
+function TsgeEventGraphicLayerUpdate.Copy: TsgeEventBase;
+begin
+  Result := TsgeEventGraphicLayerUpdate.Create(FUniqueID, FLayer);
+end;
 
 
 constructor TsgeEventGraphicElement.Create(Name: ShortString; UniqueID: Integer);
 begin
   inherited Create(Name);
+
   FUniqueID := UniqueID;
 end;
 
@@ -257,6 +324,7 @@ end;
 constructor TsgeEventGraphicElementVisible.Create(UniqueID: Integer; Visible: Boolean);
 begin
   inherited Create(Event_Graphic_ItemVisible, UniqueID);
+
   FVisible := Visible;
 end;
 
@@ -270,6 +338,7 @@ end;
 constructor TsgeEventGraphicElementUpdate.Create(UniqueID: Integer; Item: TsgeDisplayElement);
 begin
   inherited Create(Event_Graphic_ItemUpdate, UniqueID);
+
   FItem := Item;
 end;
 
@@ -283,6 +352,7 @@ end;
 constructor TsgeEventGraphicElementAdd.Create(UniqueID: Integer; Item: TsgeDisplayElement; LayerName: String);
 begin
   inherited Create(Event_Graphic_ItemAdd, UniqueID);
+
   FItem := Item;
   FLayerName := LayerName;
 end;
