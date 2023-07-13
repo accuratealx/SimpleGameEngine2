@@ -15,7 +15,7 @@ unit sgeExtensionGraphic;
 interface
 
 uses
-  sgeTypes, sgeThread, sgeMemoryStream, sgeCounter, sgeWindow, sgeAnsiFont,
+  sgeTypes, sgeThread, sgeMemoryStream, sgeCounter, sgeAnsiFont,
   sgeExtensionBase,
   sgeGraphicColor, sgeGraphicOpenGL, sgeGraphicOpenGLLayerList,
   sgeGraphicOpenGLDrawObjectFade, sgeGraphicOpenGLDrawObjectFadeItem,
@@ -81,9 +81,9 @@ type
     procedure ProcessEvent_WindowResize(Event: TsgeEventWindow);
     procedure ProcessEvent_ShaderAdd(Event: TsgeEventGraphicShaderAdd);
     procedure ProcessEvent_FadeNew(Event: TsgeEventGraphicFadeNew);
-    procedure ProcessEvent_LayerAdd(Event: TsgeEventGraphicLayer);
-    procedure ProcessEvent_LayerUpdate(Event: TsgeEventGraphicLayer);
-    procedure ProcessEvent_LayerDelete(Event: TsgeEventGraphicLayer);
+    procedure ProcessEvent_LayerAdd(Event: TsgeEventGraphicLayerAdd);
+    procedure ProcessEvent_LayerUpdate(Event: TsgeEventGraphicLayerUpdate);
+    procedure ProcessEvent_LayerDelete(Event: TsgeEventGraphicLayerDelete);
     procedure ProcessEvent_ItemAdd(Event: TsgeEventGraphicElementAdd);
     procedure ProcessEvent_ItemUpdate(Event: TsgeEventGraphicElementUpdate);
     procedure ProcessEvent_ItemDelete(Event: TsgeEventGraphicElementDelete);
@@ -142,8 +142,13 @@ uses
   sgeGraphicOpenGLShaderProgram,
   sgeGraphicOpenGLShaderProgramTable, sgeGraphicOpenGLLayerTable, sgeGraphicOpenGLDrawObjectTable,
   sgeGraphicOpenGLLayer, sgeGraphicOpenGLTypes,
-
-  sgeDisplayElementRect, sgeGraphicOpenGLDrawObjectRect;
+  sgeDisplayElementRect, sgeGraphicOpenGLDrawObjectRect,
+  sgeDisplayElementFrame, sgeGraphicOpenGLDrawObjectFrame,
+  sgeDisplayElementSprite, sgeGraphicOpenGLDrawObjectSprite,
+  sgeDisplayElementSpritePart, sgeGraphicOpenGLDrawObjectSpritePart,
+  sgeDisplayElementSpriteTile, sgeGraphicOpenGLDrawObjectSpriteTile,
+  sgeDisplayElementSpriteNine, sgeGraphicOpenGLDrawObjectSpriteNine,
+  sgeDisplayElementAnimation, sgeGraphicOpenGLDrawObjectAnimation;
 
 
 const
@@ -248,15 +253,15 @@ begin
 
         //Добавление нового слоя
         Event_Graphic_LayerAdd:
-          ProcessEvent_LayerAdd(TsgeEventGraphicLayer(Event));
+          ProcessEvent_LayerAdd(TsgeEventGraphicLayerAdd(Event));
 
         //Изменение слоя
         Event_Graphic_LayerUpdate:
-          ProcessEvent_LayerUpdate(TsgeEventGraphicLayer(Event));
+          ProcessEvent_LayerUpdate(TsgeEventGraphicLayerUpdate(Event));
 
         //Удаление слоя
         Event_Graphic_LayerDelete:
-          ProcessEvent_LayerDelete(TsgeEventGraphicLayer(Event));
+          ProcessEvent_LayerDelete(TsgeEventGraphicLayerDelete(Event));
 
         //Добавление элемента
         Event_Graphic_ItemAdd:
@@ -316,7 +321,7 @@ begin
 end;
 
 
-procedure TsgeExtensionGraphic.ProcessEvent_LayerAdd(Event: TsgeEventGraphicLayer);
+procedure TsgeExtensionGraphic.ProcessEvent_LayerAdd(Event: TsgeEventGraphicLayerAdd);
 var
   Layer: TsgeGraphicOpenGLLayer;
 begin
@@ -334,7 +339,7 @@ begin
 end;
 
 
-procedure TsgeExtensionGraphic.ProcessEvent_LayerUpdate(Event: TsgeEventGraphicLayer);
+procedure TsgeExtensionGraphic.ProcessEvent_LayerUpdate(Event: TsgeEventGraphicLayerUpdate);
 var
   Layer: TsgeGraphicOpenGLLayer;
 begin
@@ -349,7 +354,7 @@ begin
 end;
 
 
-procedure TsgeExtensionGraphic.ProcessEvent_LayerDelete(Event: TsgeEventGraphicLayer);
+procedure TsgeExtensionGraphic.ProcessEvent_LayerDelete(Event: TsgeEventGraphicLayerDelete);
 var
   LayerName: String;
 begin
@@ -605,7 +610,7 @@ var
   Event: TsgeEventBase;
 begin
   //Создать событие смены состояния затемнения
-  Event := TsgeEventGraphicFade.Create(Event_Graphic_Fade, Time, ID);
+  Event := TsgeEventGraphicFade.Create(Time, ID);
 
   //Опубликовать событие смены времени затемнения
   EventManager.Publish(Event);
@@ -623,8 +628,39 @@ function TsgeExtensionGraphic.CreateDrawObjectByDisplayElement(DisplayElement: T
 begin
   Result := nil;
 
+
+  //Rect
   if DisplayElement is TsgeDisplayElementRect then
     Result := TsgeGraphicOpenGLDrawObjectRect.Create(DisplayElement);
+
+  //Frame
+  if DisplayElement is TsgeDisplayElementFrame then
+    Result := TsgeGraphicOpenGLDrawObjectFrame.Create(DisplayElement);
+
+  //Sprite
+  if DisplayElement is TsgeDisplayElementSprite then
+    Result := TsgeGraphicOpenGLDrawObjectSprite.Create(DisplayElement);
+
+  //SpritePart
+  if DisplayElement is TsgeDisplayElementSpritePart then
+    Result := TsgeGraphicOpenGLDrawObjectSpritePart.Create(DisplayElement);
+
+  //SpriteTile
+  if DisplayElement is TsgeDisplayElementSpriteTile then
+    Result := TsgeGraphicOpenGLDrawObjectSpriteTile.Create(DisplayElement);
+
+  //SpriteNine
+  if DisplayElement is TsgeDisplayElementSpriteNine then
+    Result := TsgeGraphicOpenGLDrawObjectSpriteNine.Create(DisplayElement);
+
+  //Animation
+  if DisplayElement is TsgeDisplayElementAnimation then
+    Result := TsgeGraphicOpenGLDrawObjectAnimation.Create(DisplayElement);
+
+  //Animation
+  if DisplayElement is TsgeDisplayElementAnsiText then
+    Result := TsgeGraphicOpenGLDrawObjectAnsiText.Create(DisplayElement);
+
 
   //Ошибка если не получилось создать
   if Result = nil then
@@ -735,7 +771,7 @@ var
   Event: TsgeEventGraphicShaderAdd;
 begin
   //Создать событие
-  Event := TsgeEventGraphicShaderAdd.Create(Event_Graphic_ShaderAdd, ShaderName, ShaderStream);
+  Event := TsgeEventGraphicShaderAdd.Create(ShaderName, ShaderStream);
 
   //Добавить в собственную очередь
   FEventList.Add(Event);
@@ -767,7 +803,7 @@ var
   Event: TsgeEventBase;
 begin
   //Создать событие
-  Event := TsgeEventGraphicFadeNew.Create(Event_Graphic_FadeNew, Mode, Color, Time, ID, @FadeCallBackProc);
+  Event := TsgeEventGraphicFadeNew.Create(Mode, Color, Time, ID, @FadeCallBackProc);
 
   //Добавить в очередь
   FEventList.Add(Event);
