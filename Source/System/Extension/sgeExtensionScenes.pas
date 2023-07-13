@@ -117,7 +117,7 @@ begin
     FSceneList := TsgeSceneList.Create(False);
 
     //Подписаться на затемнение
-    EventManager.SubscriberGroupList.Subscribe(Event_GraphicFade, TsgeEventHandler(@EventFadeHandler));
+    EventManager.SubscriberGroupList.Subscribe(Event_Graphic_Fade, TsgeEventHandler(@EventFadeHandler));
 
   except
     on E: EsgeException do
@@ -144,7 +144,7 @@ begin
   FFadeScene := Scene;
 
   //Запустить затемнение
-  FExtGraphic.Fade(efmColorToNormal, Color, Time, FADEID_START);
+  //FExtGraphic.Fade(efmColorToNormal, Color, Time, FADEID_START);
 end;
 
 
@@ -171,7 +171,7 @@ begin
   FFadeScene := Scene;
 
   //Запустить затемнение
-  FExtGraphic.Fade(Mode, Color, Time, FADEID_PUSH);
+  //FExtGraphic.Fade(Mode, Color, Time, FADEID_PUSH);
 end;
 
 
@@ -196,7 +196,7 @@ end;
 procedure TsgeExtensionScenes.Pop(Mode: TsgeExtensionFadeMode; Color: TsgeColor; Time: Cardinal);
 begin
   //Запустить затемнение
-  FExtGraphic.Fade(Mode, Color, Time, FADEID_POP);
+  //FExtGraphic.Fade(Mode, Color, Time, FADEID_POP);
 end;
 
 

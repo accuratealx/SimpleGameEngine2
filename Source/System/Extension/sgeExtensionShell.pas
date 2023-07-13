@@ -15,11 +15,11 @@ unit sgeExtensionShell;
 interface
 
 uses
-  sgeTypes, sgeThread, sgeSystemEvent, sgeSimpleCommand, sgeSimpleParameters, sgeGraphic, sgeGraphicColor,
-  sgeGraphicFont, sgeExtensionBase, sgeEventBase, sgeEventWindow, sgeEventKeyboard, sgeEventMouse, sgeEventSubscriber,
+  sgeTypes, sgeThread, sgeSystemEvent, sgeSimpleCommand, sgeSimpleParameters, {sgeGraphic,} sgeGraphicColor,
+  {sgeGraphicFont,} sgeExtensionBase, sgeEventBase, sgeEventWindow, sgeEventKeyboard, sgeEventMouse, sgeEventSubscriber,
   sgeShellCommandQueue, sgeShellScriptList, sgeShellCommandList, sgeLineEditor, sgeCommandHistory,
   sgeShellLineList, sgeExtensionGraphic, sgeShellCallStack, sgeExtensionVariables,
-  sgeGraphicSprite, sgeGraphicElementSpriteCashed, sgeCriticalSection;
+  {sgeGraphicSprite,} {sgeGraphicElementSpriteCashed,} sgeCriticalSection;
 
 
 const
@@ -38,7 +38,7 @@ type
     //Ссылки
     FExtGraphic: TsgeExtensionGraphic;                              //Указатель на графику
     FExtVariables: TsgeExtensionVariables;                          //Указатель на системные переменные
-    FElementSprite: TsgeGraphicElementSpriteCashed;                 //Указатель на элемент отрисовки
+    //FElementSprite: TsgeGraphicElementSpriteCashed;                 //Указатель на элемент отрисовки
 
     //Классы
     FThread: TsgeThread;                                            //Поток обработки команд
@@ -50,8 +50,8 @@ type
     FJournal: TsgeShellLineList;                                    //Журнал
     FEditor: TsgeLineEditor;                                        //Однострочный редактор
     FAliases: TsgeSimpleParameters;                                 //Псевдонимы
-    FCanvas: TsgeGraphicSprite;                                     //Холст для отрисовки оболочки
-    FFont: TsgeGraphicFont;                                         //Шрифт
+    //FCanvas: TsgeGraphicSprite;                                     //Холст для отрисовки оболочки
+    //FFont: TsgeGraphicFont;                                         //Шрифт
     FRepaintCS: TsgeCriticalSection;                                //Синхронизация перерисовки из разных потоков
     FLanguage: TsgeSimpleParameters;                                //Таблица с языком
 
@@ -66,7 +66,7 @@ type
     FJournalLines: Byte;                                            //Количество строк журнала
     FJournalPage: Byte;                                             //Размер страницы прокрутки
     FJournalOffset: Integer;                                        //Смещение журнала
-    FBGSprite: TsgeGraphicSprite;                                   //Фоновый спрайт
+    //FBGSprite: TsgeGraphicSprite;                                   //Фоновый спрайт
     FBGColor: TsgeColor;                                            //Цвет фона
     FEditorTextColor: TsgeColor;                                    //Цвет текста строки редактора
     FEditorSelectColor: TsgeColor;                                  //Цвет выделения строки редактора
@@ -102,15 +102,12 @@ type
     procedure RunCommand(Cmd: TsgeSimpleCommand);                   //Выполнение разобранной команды
     procedure ExecuteCommand(Command: String);                      //Разбор строки на алиасы и выполнение
     procedure RunScriptByCommand(Command: String);                  //Запустить выполнение сценария из команды
-    procedure PaintCanvas(Graphic: TsgeGraphic);                    //Перерисовать холст
+    //procedure PaintCanvas(Graphic: TsgeGraphic);                    //Перерисовать холст
     procedure RepaintInner;                                         //Перерисовать из основного потока
     procedure JournalUp(UsePage: Boolean = False);                  //Прокрутка журнала вверх
     procedure JournalDown(UsePage: Boolean = False);                //Прокрутка журнала вниз
 
     //Методы потока
-    procedure InitGraphic;                                          //Подготовить графику
-    procedure DoneGraphic;                                          //Освободить графику
-    procedure ChangeGraphicSize;                                    //Изменить размеры контекста
     procedure ProcessCommand;                                       //Функция разбора и выполнения команды
 
     //Обработчик ошибок для ErrorManager
@@ -118,7 +115,7 @@ type
 
     //Свойства
     procedure SetEnable(AEnable: Boolean);
-    procedure SetBGSprite(ASprite: TsgeGraphicSprite);
+    //procedure SetBGSprite(ASprite: TsgeGraphicSprite);
   protected
     //Специальные команды
     FStopExecuting: Boolean;                                        //Флаг прерывания работы скрипта
@@ -160,7 +157,7 @@ type
     property StrictSearch: Boolean read FStrictSearch write FStrictSearch;
     property IgnoreCase: Boolean read FIgnoreCase write FIgnoreCase;
 
-    property BGSprite: TsgeGraphicSprite read FBGSprite write SetBGSprite;
+    //property BGSprite: TsgeGraphicSprite read FBGSprite write SetBGSprite;
     property BGColor: TsgeColor read FBGColor write FBGColor;
     property EditorTextColor: TsgeColor read FEditorTextColor write FEditorTextColor;
     property EditorSelectColor: TsgeColor read FEditorSelectColor write FEditorSelectColor;
@@ -671,7 +668,7 @@ begin
 end;
 
 
-procedure TsgeExtensionShell.PaintCanvas(Graphic: TsgeGraphic);
+{procedure TsgeExtensionShell.PaintCanvas(Graphic: TsgeGraphic);
 const
   Indent = 5;
   JournalLineIndent = 1;
@@ -824,12 +821,12 @@ begin
   FElementSprite.W := W;
   FElementSprite.H := H;
   FElementSprite.Update;
-end;
+end;}
 
 
 procedure TsgeExtensionShell.RepaintInner;
 begin
-  PaintCanvas(FExtGraphic.Graphic);
+  //PaintCanvas(FExtGraphic.Graphic);
 end;
 
 
@@ -873,29 +870,6 @@ begin
 end;
 
 
-procedure TsgeExtensionShell.InitGraphic;
-begin
-  with TsgeExtensionGraphicHack(FExtGraphic).FGraphicShell do
-  begin
-    Init;
-    Activate;
-  end;
-end;
-
-
-procedure TsgeExtensionShell.DoneGraphic;
-begin
-  TsgeExtensionGraphicHack(FExtGraphic).FGraphicShell.Done;
-end;
-
-
-procedure TsgeExtensionShell.ChangeGraphicSize;
-begin
-  FChangeSize := False;
-  TsgeExtensionGraphicHack(FExtGraphic).FGraphicShell.ChangeViewArea(FNewWidth, FNewHeight);
-end;
-
-
 procedure TsgeExtensionShell.ProcessCommand;
 begin
   //Установить флаг выполнения команды
@@ -909,8 +883,8 @@ begin
       Break;
 
     //Проверить на изменение размеров контекста
-    if FChangeSize then
-      ChangeGraphicSize;
+    {if FChangeSize then
+      ChangeGraphicSize;}
 
     //Создать скрипт и выполнить команду
     RunScriptByCommand(FCommandQueue.PullFirstCommand);
@@ -957,7 +931,7 @@ begin
   FEnable := AEnable;
 
   //Поправить элемент отрисовки
-  FElementSprite.Visible := FEnable;
+  //FElementSprite.Visible := FEnable;
 
   //Поправить подписчиков событий
   for i := 0 to MAX_SUB_COUNT do
@@ -965,19 +939,19 @@ begin
 end;
 
 
-procedure TsgeExtensionShell.SetBGSprite(ASprite: TsgeGraphicSprite);
+{procedure TsgeExtensionShell.SetBGSprite(ASprite: TsgeGraphicSprite);
 begin
   //Сохранить спрайт
   FBGSprite := ASprite;
 
   //Перерисовать оболочку
   RepaintInner;
-end;
+end;}
 
 
 procedure TsgeExtensionShell.RepaintThread;
 begin
-  PaintCanvas(TsgeExtensionGraphicHack(FExtGraphic).FGraphicShell);
+  //PaintCanvas(TsgeExtensionGraphicHack(FExtGraphic).FGraphicShell);
 end;
 
 
@@ -1028,7 +1002,7 @@ begin
     FCommandList := TsgeShellCommandList.Create(True);
     FEditor := TsgeLineEditor.Create;
     FLanguage := TsgeSimpleParameters.Create;
-    FFont := TsgeGraphicFont.Create('Lucida Console', 14, [gfaBold]);
+    //FFont := TsgeGraphicFont.Create('Lucida Console', 14, [gfaBold]);
 
     //Задать параметры
     FEnable := False;
@@ -1048,25 +1022,21 @@ begin
     FTextColor          := sgeRGBAToColor(255, 255, 255, 255);
     FNoteColor          := sgeRGBAToColor(128, 128, 128, 255);
 
-
-    //Активировать графику
-    FThread.RunProcAndWait(@InitGraphic, tpemSuspend);
-
     //Установить обработчик ошибок
     ErrorManager.ShellHandler := @ErrorHandler;
 
     //Создать холст
-    FCanvas := TsgeGraphicSprite.Create(500, 300);
+    //FCanvas := TsgeGraphicSprite.Create(500, 300);
 
     //Создать слой отрисовки
-    FExtGraphic.LayerList.Add(Graphic_Layer_System_Shell, Graphic_LayerIndex_Shell, True);
+    //FExtGraphic.LayerList.Add(Graphic_Layer_System_Shell, Graphic_LayerIndex_Shell, True);
 
     //Создать элемент отрисовки
-    FElementSprite := TsgeGraphicElementSpriteCashed.Create(0, 0, FCanvas.Width, FCanvas.Height, FCanvas);
-    FElementSprite.Visible := False;
+    //FElementSprite := TsgeGraphicElementSpriteCashed.Create(0, 0, FCanvas.Width, FCanvas.Height, FCanvas);
+    //FElementSprite.Visible := False;
 
     //Добавить элемент в список отрисовки
-    FExtGraphic.LayerList.AddElement(FElementSprite, Graphic_Layer_System_Shell);
+    //FExtGraphic.LayerList.AddElement(FElementSprite, Graphic_Layer_System_Shell);
 
     //Перерисовать оболочку
     RepaintInner;
@@ -1086,16 +1056,13 @@ begin
   StopCommand;
 
   //Удалить элемент отрисовки
-  FElementSprite.Delete;
+  //FElementSprite.Delete;
 
   //Удалить шрифт
-  FFont.Free;
+  //FFont.Free;
 
   //Удалить холст
-  FCanvas.Free;
-
-  //Освободить графику
-  FThread.RunProcAndWait(@DoneGraphic);
+  //FCanvas.Free;
 
   //Удалить объекты
   FThread.Free;
