@@ -69,7 +69,7 @@ type
 
   protected
     procedure ResetChangeSet; override;
-
+    function  IsNeedUpdate: Boolean; override;
   public
     constructor Create;
     constructor Create(X1, Y1, X2, Y2: Single; Color: TsgeColor);
@@ -249,6 +249,12 @@ end;
 procedure TsgeDisplayElementRect.ResetChangeSet;
 begin
   FChangeSet := [];
+end;
+
+
+function TsgeDisplayElementRect.IsNeedUpdate: Boolean;
+begin
+  Result := FChangeSet <> [];
 end;
 
 

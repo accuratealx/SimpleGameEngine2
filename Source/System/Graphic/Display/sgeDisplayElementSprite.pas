@@ -74,7 +74,7 @@ type
 
   protected
     procedure ResetChangeSet; override;
-
+    function  IsNeedUpdate: Boolean; override;
   public
     constructor Create;
     constructor Create(X, Y, Width, Height: Single; Sprite: TsgeSprite);
@@ -291,6 +291,12 @@ end;
 procedure TsgeDisplayElementSprite.ResetChangeSet;
 begin
   FChangeSet := [];
+end;
+
+
+function TsgeDisplayElementSprite.IsNeedUpdate: Boolean;
+begin
+  Result := FChangeSet <> [];
 end;
 
 

@@ -75,12 +75,14 @@ type
     procedure SetColorAlpha(AAlpha: Single);
     procedure SetFrameIndex(AFrameIndex: Word);
     procedure SetSprite(ASprite: TsgeSprite);
+    procedure SetFrameList(AFrameList: TsgeAnimationFrameList);
+    function  GetFrameList: TsgeAnimationFrameList;
 
     procedure FillData(X, Y, Width, Height: Single);
 
   protected
     procedure ResetChangeSet; override;
-
+    function  IsNeedUpdate: Boolean; override;
   public
     constructor Create;
     constructor Create(X, Y, Width, Height: Single; Sprite: TsgeSprite; AnimationFrames: TsgeAnimationFrameList);
@@ -113,6 +115,7 @@ type
     property ColorA: Single read FData.Color.Alpha write SetColorAlpha;
     property FrameIndex: Word read FData.FrameIndex write SetFrameIndex;
     property Sprite: TsgeSprite read FData.Sprite write SetSprite;
+    property Frames: TsgeAnimationFrameList read GetFrameList write SetFrameList;
   end;
 
 
@@ -128,28 +131,15 @@ const
   Err_EmptyAnimationFrames = 'EmptyAnimationFrames';
 
 
-procedure TsgeDisplayElementAnimation.FillData(X, Y, Width, Height: Single);
-const
-  SetAll = [deacsPosition, deacsSize, deacsScale, deacsOrigin, deacsAngle, deacsColor, deacsFrameIndex, deacsSprite, deacsFrames];
-begin
-  inherited Create;
-
-  FChangeSet := SetAll;
-
-  //Записать параметры
-  FData.Position := sgeGetFloatPoint(X, Y);
-  FData.Size := sgeGetFloatPoint(Width, Height);
-  FData.Scale := sgeGetFloatPoint(1, 1);
-  FData.Origin := sgeGetFloatPoint(0, 0);
-  FData.Angle := 0;
-  FData.Color := cWhite;
-  FData.FrameIndex := 0;
-end;
-
-
 procedure TsgeDisplayElementAnimation.ResetChangeSet;
 begin
   FChangeSet := [];
+end;
+
+
+function TsgeDisplayElementAnimation.IsNeedUpdate: Boolean;
+begin
+  Result := FChangeSet <> [];
 end;
 
 
@@ -309,6 +299,43 @@ begin
 
   FData.Sprite := ASprite;
   Include(FChangeSet, deacsSprite);
+end;
+
+
+procedure TsgeDisplayElementAnimation.SetFrameList(AFrameList: TsgeAnimationFrameList);
+begin
+  FAnimation.FrameList := AFrameList;
+  FAnimation.Reset;
+
+  Include(FChangeSet, deacsFrames);
+  Include(FChangeSet, deacsFrameIndex);
+
+  SetFrameIndex(FAnimation.CurrentFrameIndex);
+end;
+
+
+function TsgeDisplayElementAnimation.GetFrameList: TsgeAnimationFrameList;
+begin
+  Result := FAnimation.FrameList;
+end;
+
+
+procedure TsgeDisplayElementAnimation.FillData(X, Y, Width, Height: Single);
+const
+  SetAll = [deacsPosition, deacsSize, deacsScale, deacsOrigin, deacsAngle, deacsColor, deacsFrameIndex, deacsSprite, deacsFrames];
+begin
+  inherited Create;
+
+  FChangeSet := SetAll;
+
+  //Записать параметры
+  FData.Position := sgeGetFloatPoint(X, Y);
+  FData.Size := sgeGetFloatPoint(Width, Height);
+  FData.Scale := sgeGetFloatPoint(1, 1);
+  FData.Origin := sgeGetFloatPoint(0, 0);
+  FData.Angle := 0;
+  FData.Color := cWhite;
+  FData.FrameIndex := 0;
 end;
 
 

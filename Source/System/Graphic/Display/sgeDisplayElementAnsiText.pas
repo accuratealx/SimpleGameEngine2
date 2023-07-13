@@ -71,7 +71,7 @@ type
 
   protected
     procedure ResetChangeSet; override;
-
+    function  IsNeedUpdate: Boolean; override;
   public
     constructor Create;
     constructor Create(X, Y: Single; Color: TsgeColor; Font: TsgeAnsiFont; Text: String);
@@ -269,6 +269,12 @@ end;
 procedure TsgeDisplayElementAnsiText.ResetChangeSet;
 begin
   FChangeSet := [];
+end;
+
+
+function TsgeDisplayElementAnsiText.IsNeedUpdate: Boolean;
+begin
+  Result := FChangeSet <> [];
 end;
 
 

@@ -27,7 +27,8 @@ type
 
     procedure SetVisible(AVisible: Boolean);
 
-    procedure ResetChangeSet; virtual; abstract;  //Сброс флагов изменения
+    procedure ResetChangeSet; virtual; abstract;        //Сброс флагов изменения
+    function  IsNeedUpdate: Boolean; virtual; abstract; //Проверить необходимость обновления
 
   public
     constructor Create;
@@ -103,6 +104,10 @@ procedure TsgeDisplayElement.Update;
 var
   Event: TsgeEventGraphicElementUpdate;
 begin
+  //Не посылать событие, если нечего менять
+  if not IsNeedUpdate then
+    Exit;
+
   Event := TsgeEventGraphicElementUpdate.Create(FID, Self.GetCopy);
   FEventManager.Publish(Event);
 
