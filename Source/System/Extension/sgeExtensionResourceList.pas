@@ -237,8 +237,8 @@ begin
     //Прочитать параметры из файла
     Width := Params.GetValue('Width', 16);
     Height := Params.GetValue('Height', 16);
-    HotX := Params.GetValue('HotX', 0);
-    HotY := Params.GetValue('HotY', 0);
+    HotX := Params.GetValue('HotPointX', 0);
+    HotY := Params.GetValue('HotPointY', 0);
     SpriteName := Params.GetValue('Sprite', '');
     FrameName := Params.GetValue('AnimationFrames', '');
 
