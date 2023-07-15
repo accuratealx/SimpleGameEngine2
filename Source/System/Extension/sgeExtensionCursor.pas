@@ -32,7 +32,7 @@ type
     FExtGraphic: TsgeExtensionGraphic;            //Ссылка на расширение графики
 
     FDrawLayer: TsgeDisplayLayer;                 //Объект управления слоем графики
-    FDIsplayElement: TsgeDisplayElementAnimationUnmanaged;  //Объект управления анимацией
+    FDisplayElement: TsgeDisplayElementAnimationUnmanaged;  //Объект управления анимацией
 
     FShowCursor: Boolean;                         //Показывать курсор
     FCursor: TsgeCursor;                          //Текущий курсор
@@ -40,10 +40,10 @@ type
     FScale: Single;                               //Масштаб курсора
     FLeftHand: Boolean;                           //Курсор для левшей
 
-    //procedure UpdateCursor;                       //Поправить параметры курсора
     procedure CorrectCoordinate;                  //Поправить координаты
     procedure CorrectVisible(AVisible: Boolean);  //Поправить видимость курсора
     procedure SetDisplayElementVisible(AVisible: Boolean);
+    procedure CorrectLeftHand(ALeftHand: Boolean; X: Integer);
 
     function Handler_MouseMove(EventObj: TsgeEventMouse): TsgeEventHandlerResult;
     function Handler_MouseEnter(EventObj: TsgeEventMouse): TsgeEventHandlerResult;
@@ -52,7 +52,7 @@ type
     procedure SetCursor(ACursor: TsgeCursor);
     procedure SetShowCursor(AShow: Boolean);
     procedure SetScale(AScale: Single);
-    //procedure SetLeftHanded(ALeft: Boolean);
+    procedure SetLeftHanded(ALeft: Boolean);
   protected
     function  GetName: String; override;
     procedure RegisterEventHandlers; override;
@@ -64,7 +64,7 @@ type
     property ShowCursor: Boolean read FShowCursor write SetShowCursor;
     property Cursor: TsgeCursor read FCursor write SetCursor;
     property Scale: Single read FScale write SetScale;
-    //property LeftHanded: Boolean read FLeftHand write SetLeftHanded;
+    property LeftHanded: Boolean read FLeftHand write SetLeftHanded;
   end;
 
 
@@ -82,38 +82,16 @@ const
 
 
 
-{procedure TsgeExtensionCursor.UpdateCursor;
-var
-  X: Single;
-begin
-  if FCursor = nil then
-    Exit;
-
-
-  //FGUIElement.Frames := FCursor.Frames;
-  //FGUIElement.W := FCursor.Width;
-  //FGUIElement.H := FCursor.Height;
-  //FGUIElement.CoordType := gctNormal;
-
-  X := FScale;
-  if FLeftHand then
-    X := -FScale;
-  //FGUIElement.Scale := sgeGetFloatPoint(X, FScale);
-
-  CorrectCoordinate;
-end;}
-
-
 procedure TsgeExtensionCursor.CorrectCoordinate;
 begin
   if FCursor = nil then
     Exit;
 
   //Изменить положение
-  FDIsplayElement.Position := sgeGetFloatPoint(FCursorPos.X, FCursorPos.Y);
+  FDisplayElement.Position := sgeGetFloatPoint(FCursorPos.X, FCursorPos.Y);
 
   //Обновить
-  FDIsplayElement.Update;
+  FDisplayElement.Update;
 end;
 
 
@@ -143,11 +121,27 @@ end;
 
 procedure TsgeExtensionCursor.SetDisplayElementVisible(AVisible: Boolean);
 begin
-  if FDIsplayElement = nil then
+  if FDisplayElement = nil then
     Exit;
 
-  FDIsplayElement.Visible := AVisible;
-  FDIsplayElement.Update;
+  FDisplayElement.Visible := AVisible;
+  FDisplayElement.Update;
+end;
+
+
+procedure TsgeExtensionCursor.CorrectLeftHand(ALeftHand: Boolean; X: Integer);
+begin
+  //Поправить параметры
+  if ALeftHand then
+  begin
+    FDisplayElement.Reflect := [rHorizontal];
+    FDisplayElement.OriginX := FDisplayElement.Width - X;
+  end
+  else
+  begin
+    FDisplayElement.Reflect := [];
+    FDisplayElement.OriginX := X;
+  end;
 end;
 
 
@@ -193,7 +187,7 @@ begin
   //Создать новый объект отображения
   if (FCursor = nil) and (ACursor <> nil) then
   begin
-    FDIsplayElement := TsgeDisplayElementAnimationUnmanaged.Create(
+    FDisplayElement := TsgeDisplayElementAnimationUnmanaged.Create(
       FCursorPos.X,
       FCursorPos.Y,
       ACursor.Width,
@@ -203,13 +197,16 @@ begin
     );
 
     //Поправить смещение для горячей точки
-    FDIsplayElement.Origin := sgeGetFloatPoint(ACursor.HotPoint.X, ACursor.HotPoint.Y);
+    FDisplayElement.Origin := sgeGetFloatPoint(ACursor.HotPoint.X, ACursor.HotPoint.Y);
+
+    //Поправить отражение
+    CorrectLeftHand(FLeftHand, ACursor.HotPoint.X);
 
     //Поправить масштаб
-    FDIsplayElement.Scale := FScale;
+    FDisplayElement.Scale := FScale;
 
     //Добавить в графику
-    FDIsplayElement.Add(Layer_Name);
+    FDisplayElement.Add(Layer_Name);
   end;
 
 
@@ -217,19 +214,30 @@ begin
   if (FCursor <> nil) and (ACursor <> nil) then
   begin
     //Изменить поля
-    FDIsplayElement.Sprite := ACursor.Sprite;
-    FDIsplayElement.Frames := ACursor.Frames;
+    FDisplayElement.Width := ACursor.Width;
+    FDisplayElement.Height := ACursor.Height;
+    FDisplayElement.Sprite := ACursor.Sprite;
+    FDisplayElement.Frames := ACursor.Frames;
+
+    //Поправить смещение для горячей точки
+    FDisplayElement.Origin := sgeGetFloatPoint(ACursor.HotPoint.X, ACursor.HotPoint.Y);
+
+    //Поправить отражение
+    CorrectLeftHand(FLeftHand, ACursor.HotPoint.X);
+
+    //Поправить масштаб
+    FDisplayElement.Scale := FScale;
 
     //Обновить
-    FDIsplayElement.Update;
+    FDisplayElement.Update;
   end;
 
 
   //Удалить объект отображения
   if (FCursor <> nil) and (ACursor = nil) then
   begin
-    FDIsplayElement.Delete;
-    sgeFreeAndNil(FDIsplayElement);
+    FDisplayElement.Delete;
+    sgeFreeAndNil(FDisplayElement);
   end;
 
 
@@ -259,33 +267,33 @@ begin
   FScale := AScale;
 
   //Проверить на пустой объект
-  if FDIsplayElement = nil then
+  if FDisplayElement = nil then
     Exit;
 
   //Изменить параметры
-  FDIsplayElement.Scale := FScale;
+  FDisplayElement.Scale := FScale;
 
   //Обновить
-  FDIsplayElement.Update;
+  FDisplayElement.Update;
 end;
 
 
-{procedure TsgeExtensionCursor.SetLeftHanded(ALeft: Boolean);
-var
-  X: Single;
+procedure TsgeExtensionCursor.SetLeftHanded(ALeft: Boolean);
 begin
   if FLeftHand = ALeft then
     Exit;
 
   FLeftHand := ALeft;
 
-  X := FScale;
-  if FLeftHand then
-    X := -FScale;
+  //Поправить отражение, если установлен курсор
+  if Assigned(FCursor) then
+  begin
+    CorrectLeftHand(FLeftHand, FCursor.HotPoint.X);
 
-  FDIsplayElement.ScaleX := X;
-  FDIsplayElement.Update;
-end;}
+    //Обновить
+    FDisplayElement.Update;
+  end;
+end;
 
 
 function TsgeExtensionCursor.GetName: String;
@@ -329,10 +337,9 @@ end;
 
 destructor TsgeExtensionCursor.Destroy;
 begin
-  if FDIsplayElement <> nil then
-    FDIsplayElement.Free;
+  if FDisplayElement <> nil then
+    FDisplayElement.Free;
 
-  FDrawLayer.Delete;
   FDrawLayer.Free;
 end;
 
