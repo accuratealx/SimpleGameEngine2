@@ -61,6 +61,9 @@ begin
     raise EsgeException.Create(_UNITNAME, Err_ZeroFrames);
 
   FFrameList := AFrameList;
+
+  //Сбросить
+  Reset;
 end;
 
 
@@ -74,7 +77,11 @@ end;
 
 procedure TsgeAnimation.Reset;
 begin
+  //На первый кадр
   FCurrentFrameIndex := 0;
+
+  //Сбросить время последней смены
+  FLastChangeTime := sgeGetTickCount;
 end;
 
 
