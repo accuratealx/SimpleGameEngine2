@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeDisplayElementAnimation.pas
-Версия            1.2
+Версия            1.3
 Создан            16.01.2023
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Элемент рисования: Анимация
@@ -76,7 +76,6 @@ type
     procedure SetFrameIndex(AFrameIndex: Word);
     procedure SetSprite(ASprite: TsgeSprite);
     procedure SetFrameList(AFrameList: TsgeAnimationFrameList);
-    function  GetFrameList: TsgeAnimationFrameList;
 
     procedure FillData(X, Y, Width, Height: Single);
 
@@ -115,7 +114,7 @@ type
     property ColorA: Single read FData.Color.Alpha write SetColorAlpha;
     property FrameIndex: Word read FData.FrameIndex write SetFrameIndex;
     property Sprite: TsgeSprite read FData.Sprite write SetSprite;
-    property Frames: TsgeAnimationFrameList read GetFrameList write SetFrameList;
+    property Frames: TsgeAnimationFrameList read FData.Frames write SetFrameList;
   end;
 
 
@@ -304,19 +303,23 @@ end;
 
 procedure TsgeDisplayElementAnimation.SetFrameList(AFrameList: TsgeAnimationFrameList);
 begin
+  //Проверить кадры анимации
+  if AFrameList = nil then
+    raise EsgeException.Create(_UNITNAME, Err_EmptyAnimationFrames);
+
+  //Сохранить указатель на кадры
+  FData.Frames := AFrameList;
+
+  //Обновить анимацию
   FAnimation.FrameList := AFrameList;
   FAnimation.Reset;
 
+  //Установить флаги изменений
   Include(FChangeSet, deacsFrames);
   Include(FChangeSet, deacsFrameIndex);
 
+  //Обновить номер карда
   SetFrameIndex(FAnimation.CurrentFrameIndex);
-end;
-
-
-function TsgeDisplayElementAnimation.GetFrameList: TsgeAnimationFrameList;
-begin
-  Result := FAnimation.FrameList;
 end;
 
 
@@ -347,12 +350,8 @@ end;
 
 constructor TsgeDisplayElementAnimation.Create(X, Y, Width, Height: Single; Sprite: TsgeSprite; AnimationFrames: TsgeAnimationFrameList);
 begin
-  //Проверить кадры анимации
-  if AnimationFrames = nil then
-    raise EsgeException.Create(_UNITNAME, Err_EmptyAnimationFrames);
-
-  //Сохранить указатель на кадры
-  FData.Frames := AnimationFrames;
+  //Установить список кадров
+  SetFrameList(AnimationFrames);
 
   //Создать анимацию из кадров
   FAnimation := TsgeAnimation.Create(FData.Frames);
