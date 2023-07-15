@@ -148,7 +148,8 @@ uses
   sgeDisplayElementSpritePart, sgeGraphicOpenGLDrawObjectSpritePart,
   sgeDisplayElementSpriteTile, sgeGraphicOpenGLDrawObjectSpriteTile,
   sgeDisplayElementSpriteNine, sgeGraphicOpenGLDrawObjectSpriteNine,
-  sgeDisplayElementAnimation, sgeGraphicOpenGLDrawObjectAnimation;
+  sgeDisplayElementAnimation, sgeGraphicOpenGLDrawObjectAnimation,
+  sgeDisplayElementAnimationUnmanaged, sgeGraphicOpenGLDrawObjectAnimationUnamnaged;
 
 
 const
@@ -660,6 +661,10 @@ begin
   //Animation
   if DisplayElement is TsgeDisplayElementAnsiText then
     Result := TsgeGraphicOpenGLDrawObjectAnsiText.Create(DisplayElement);
+
+  //AnimationUnmanaged
+  if DisplayElement is TsgeDisplayElementAnimationUnmanaged then
+    Result := TsgeGraphicOpenGLDrawObjectAnimationUnamnaged.Create(DisplayElement);
 
 
   //Ошибка если не получилось создать
