@@ -18,7 +18,7 @@ uses
   sgeTypes,
   sgeExtensionBase, sgeExtensionWindow, sgeExtensionGraphic, sgeExtensionResourceList,
   sgeEventBase, sgeEventMouse, sgeEventGraphic,
-  sgeDisplayLayer, sgeDisplayElementAnimation, sgeCursor;
+  sgeDisplayLayer, sgeDisplayElementAnimationUnmanaged, sgeCursor;
 
 
 const
@@ -32,7 +32,7 @@ type
     FExtGraphic: TsgeExtensionGraphic;            //Ссылка на расширение графики
 
     FDrawLayer: TsgeDisplayLayer;                 //Объект управления слоем графики
-    FDIsplayElement: TsgeDisplayElementAnimation; //Объект управления анимацией
+    FDIsplayElement: TsgeDisplayElementAnimationUnmanaged;  //Объект управления анимацией
 
     FShowCursor: Boolean;                         //Показывать курсор
     FCursor: TsgeCursor;                          //Текущий курсор
@@ -111,7 +111,6 @@ begin
 
   //Изменить положение
   FDIsplayElement.Position := sgeGetFloatPoint(FCursorPos.X, FCursorPos.Y);
-  //FDIsplayElement.UpdateAnimation;
 
   //Обновить
   FDIsplayElement.Update;
@@ -194,7 +193,7 @@ begin
   //Создать новый объект отображения
   if (FCursor = nil) and (ACursor <> nil) then
   begin
-    FDIsplayElement := TsgeDisplayElementAnimation.Create(
+    FDIsplayElement := TsgeDisplayElementAnimationUnmanaged.Create(
       FCursorPos.X,
       FCursorPos.Y,
       ACursor.Width,
@@ -202,6 +201,9 @@ begin
       ACursor.Sprite,
       ACursor.Frames
     );
+
+    //Поправить смещение для горячей точки
+    FDIsplayElement.Origin := sgeGetFloatPoint(ACursor.HotPoint.X, ACursor.HotPoint.Y);
 
     //Поправить масштаб
     FDIsplayElement.Scale := FScale;
