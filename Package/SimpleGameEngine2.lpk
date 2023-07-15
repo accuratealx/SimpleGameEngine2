@@ -825,8 +825,8 @@
         <Type Value="Include"/>
       </Item202>
       <Item203>
-        <Filename Value="..\Source\System\Graphic\Display\sgeDisplayElementAnimation.pas"/>
-        <UnitName Value="sgeDisplayElementAnimation"/>
+        <Filename Value="..\Source\System\Graphic\Display\sgeDisplayElementAnimationUnmanaged.pas"/>
+        <UnitName Value="sgeDisplayElementAnimationUnmanaged"/>
       </Item203>
       <Item204>
         <Filename Value="..\Source\System\Graphic\Display\sgeDisplayElementAnsiText.pas"/>
@@ -905,8 +905,8 @@
         <Type Value="Include"/>
       </Item222>
       <Item223>
-        <Filename Value="..\Source\System\Graphic\OpenGL\DrawObject\sgeGraphicOpenGLDrawObjectAnimation.pas"/>
-        <UnitName Value="sgeGraphicOpenGLDrawObjectAnimation"/>
+        <Filename Value="..\Source\System\Graphic\OpenGL\DrawObject\sgeGraphicOpenGLDrawObjectAnimationUnamnaged.pas"/>
+        <UnitName Value="sgeGraphicOpenGLDrawObjectAnimationUnamnaged"/>
       </Item223>
       <Item224>
         <Filename Value="..\Source\System\Graphic\OpenGL\DrawObject\sgeGraphicOpenGLDrawObjectAnsiText.pas"/>
