@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeDisplayElementSprite.pas
-Версия            1.1
+Версия            1.2
 Создан            16.01.2023
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Элемент рисования: Спрайт
@@ -28,7 +28,8 @@ type
     descsOrigin,    //Точка поворота
     descsAngle,     //Угол в радианах
     descsColor,     //Цвет
-    descsSprite     //Спрайт
+    descsSprite,    //Спрайт
+    descsReflect    //Отражение
   );
 
 
@@ -41,6 +42,7 @@ type
     Angle: Single;            //Угол в радианах
     Color: TsgeColor;         //Цвет
     Sprite: TsgeSprite;       //Спрайт
+    Reflect: TsgeReflectSet;  //Отражение
   end;
 
 
@@ -69,6 +71,7 @@ type
     procedure SetColorBlue(ABlue: Single);
     procedure SetColorAlpha(AAlpha: Single);
     procedure SetSprite(ASprite: TsgeSprite);
+    procedure SetReflect(AReflect: TsgeReflectSet);
 
     procedure FillData(X, Y, Width, Height: Single);
 
@@ -104,6 +107,7 @@ type
     property ColorB: Single read FData.Color.Blue write SetColorBlue;
     property ColorA: Single read FData.Color.Alpha write SetColorAlpha;
     property Sprite: TsgeSprite read FData.Sprite write SetSprite;
+    property Reflect: TsgeReflectSet read FData.Reflect write SetReflect;
   end;
 
 
@@ -141,7 +145,7 @@ end;
 
 procedure TsgeDisplayElementSprite.SetWidth(AWidth: Single);
 begin
-  FData.Size.Y := AWidth;
+  FData.Size.X := AWidth;
   Include(FChangeSet, descsSize);
 end;
 
@@ -270,9 +274,19 @@ begin
 end;
 
 
+procedure TsgeDisplayElementSprite.SetReflect(AReflect: TsgeReflectSet);
+begin
+  if FData.Reflect = AReflect then
+    Exit;
+
+  FData.Reflect := AReflect;
+  Include(FChangeSet, descsReflect);
+end;
+
+
 procedure TsgeDisplayElementSprite.FillData(X, Y, Width, Height: Single);
 const
-  SetAll = [descsPosition, descsSize, descsScale, descsOrigin, descsAngle, descsColor, descsSprite];
+  SetAll = [descsPosition, descsSize, descsScale, descsOrigin, descsAngle, descsColor, descsSprite, descsReflect];
 begin
   inherited Create;
 
@@ -285,6 +299,7 @@ begin
   FData.Origin := sgeGetFloatPoint(0, 0);
   FData.Angle := 0;
   FData.Color := cWhite;
+  FData.Reflect := [];
 end;
 
 

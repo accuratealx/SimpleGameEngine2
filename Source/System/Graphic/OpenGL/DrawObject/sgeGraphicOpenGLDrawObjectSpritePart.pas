@@ -104,6 +104,10 @@ begin
   if despcsPosition in Element.ChangeSet then
     FData.Position := Element.Data.Position;
 
+  //Отражение
+  if despcsReflect in Element.ChangeSet then
+    FData.Reflect := Element.Data.Reflect;
+
   //Размеры
   if despcsSize in Element.ChangeSet then
   begin
@@ -147,12 +151,17 @@ begin
   end;
 
   //Координаты спрайта
-  if despcsSpriteRect in Element.ChangeSet then
+  if (despcsSpriteRect in Element.ChangeSet) or (despcsReflect in Element.ChangeSet) then
   begin
     FData.SpriteRect := Element.Data.SpriteRect;
 
     Buff := TsgeGraphicOpenGLCoordBuffer.Create;
     Rect := sgeGetTextureRect(FGLSprite.GLPixelWidth, FGLSprite.GLPixelHeight, FData.SpriteRect);
+
+    //Проверить на отражение
+    if FData.Reflect <> [] then
+      Rect := sgeGetReflectRect(Rect, FData.Reflect);
+
     Buff.AddQuad(Rect);
     FTextureBuffer.SetData(Buff);
     Buff.Free;

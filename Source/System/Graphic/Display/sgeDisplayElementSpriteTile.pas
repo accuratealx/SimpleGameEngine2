@@ -29,7 +29,8 @@ type
     destcsAngle,    //Угол в радианах
     destcsColor,    //Цвет
     destcsTile,     //Координаты тайла
-    destcsSprite    //Спрайт
+    destcsSprite,   //Спрайт
+    destcsReflect   //Отражение
   );
 
 
@@ -44,6 +45,7 @@ type
     Column: Word;             //Номер столбца плитки
     Row: Word;                //Номер строки плитки
     Sprite: TsgeSprite;       //Спрайт
+    Reflect: TsgeReflectSet;  //Отражение
   end;
 
 
@@ -74,6 +76,7 @@ type
     procedure SetColum(AColumn: Word);
     procedure SetRow(ARow: Word);
     procedure SetSprite(ASprite: TsgeSprite);
+    procedure SetReflect(AReflect: TsgeReflectSet);
 
     procedure FillData(X, Y, Width, Height: Single; Column, Row: Word);
 
@@ -111,6 +114,7 @@ type
     property Column: Word read FData.Column write SetColum;
     property Row: Word read FData.Row write SetRow;
     property Sprite: TsgeSprite read FData.Sprite write SetSprite;
+    property Reflect: TsgeReflectSet read FData.Reflect write SetReflect;
   end;
 
 
@@ -148,7 +152,7 @@ end;
 
 procedure TsgeDisplayElementSpriteTile.SetWidth(AWidth: Single);
 begin
-  FData.Size.Y := AWidth;
+  FData.Size.X := AWidth;
   Include(FChangeSet, destcsSize);
 end;
 
@@ -291,9 +295,20 @@ begin
 end;
 
 
+procedure TsgeDisplayElementSpriteTile.SetReflect(AReflect: TsgeReflectSet);
+begin
+  if FData.Reflect = AReflect then
+    Exit;
+
+  FData.Reflect := AReflect;
+  Include(FChangeSet, destcsReflect);
+end;
+
+
 procedure TsgeDisplayElementSpriteTile.FillData(X, Y, Width, Height: Single; Column, Row: Word);
 const
-  SetAll = [destcsPosition, destcsSize, destcsScale, destcsOrigin, destcsAngle, destcsColor, destcsTile, destcsSprite];
+  SetAll = [destcsPosition, destcsSize, destcsScale, destcsOrigin, destcsAngle, destcsColor, destcsTile,
+     destcsSprite, destcsReflect];
 begin
   inherited Create;
 
@@ -308,6 +323,7 @@ begin
   FData.Color := cWhite;
   FData.Column := Column;
   FData.Row := Row;
+  FData.Reflect := [];
 end;
 
 

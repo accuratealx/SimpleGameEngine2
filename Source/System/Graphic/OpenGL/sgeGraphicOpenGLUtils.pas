@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGraphicUtils.pas
-Версия            1.1
+Версия            1.2
 Создан            25.06.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          OpenGL: Вспомогательные функции
@@ -26,6 +26,9 @@ function sgeGetTextureTileRect(GLTileWidth, GLTileHeight: Single; const Col, Row
 
 //Вернуть координаты прямоугольника по количеству плиток в координатах OpenGL
 function sgeGetTextureTileRect(ColCount, RowCount, Col, Row: Word): TsgeFloatRect;
+
+//Вернуть отраженные координаты
+function sgeGetReflectRect(Rect: TsgeFloatRect; Reflect: TsgeReflectSet): TsgeFloatRect;
 
 
 implementation
@@ -62,6 +65,30 @@ begin
   Result.Y1 := 1 - Row * dH;
   Result.X2 := Result.X1 + dW;
   Result.Y2 := Result.Y1 - dH;
+end;
+
+
+function sgeGetReflectRect(Rect: TsgeFloatRect; Reflect: TsgeReflectSet): TsgeFloatRect;
+var
+  d: Single;
+begin
+  Result := Rect;
+
+  //По горизонтали
+  if rHorizontal in Reflect then
+  begin
+    d := Result.X1;
+    Result.X1 := Result.X2;
+    Result.X2 := d;
+  end;
+
+  //По вертикали
+  if rVertical in Reflect then
+  begin
+    d := Result.Y1;
+    Result.Y1 := Result.Y2;
+    Result.Y2 := d;
+  end;
 end;
 
 

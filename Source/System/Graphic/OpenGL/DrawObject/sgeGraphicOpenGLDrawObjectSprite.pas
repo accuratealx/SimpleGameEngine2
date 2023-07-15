@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGraphicOpenGLDrawObjectSprite.pas
-Версия            1.2
+Версия            1.3
 Создан            29.01.2023
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          OpenGL: Элемент отрисовки: Спрайт
@@ -43,14 +43,13 @@ type
 implementation
 
 uses
+  sgeGraphicOpenGLUtils,
   sgeGraphicOpenGLShaderProgramTable, sgeGraphicOpenGLSpriteTable, sgeGraphicOpenGLCoordBuffer;
 
 
 constructor TsgeGraphicOpenGLDrawObjectSprite.Create(Element: TsgeDisplayElement);
 const
   SHADER_NAME = 'Sprite';
-var
-  Buff: TsgeGraphicOpenGLCoordBuffer;
 begin
   //Найти шейдерную программу в таблице
   FShaderProgram := OpenGLShaderProgramTable.Get(SHADER_NAME);
@@ -72,12 +71,6 @@ begin
   //Привязать буфер координат
   FTextureBuffer.Attach;
   FVAO.BindTextureCoord(FTextureBuffer);
-
-  //Залить текстурные координаты
-  Buff := TsgeGraphicOpenGLCoordBuffer.Create;
-  Buff.AddQuad(0, 1, 1, 0);
-  FTextureBuffer.SetData(Buff);
-  Buff.Free;
 
   //Обнулим указатель на спрайт
   FData.Sprite := nil;
@@ -106,12 +99,28 @@ end;
 
 procedure TsgeGraphicOpenGLDrawObjectSprite.Update(AElement: TsgeDisplayElement);
 var
-  Buff: TsgeGraphicOpenGLCoordBuffer;
   Element: TsgeDisplayElementSprite absolute AElement;
+  Buff: TsgeGraphicOpenGLCoordBuffer;
+  Rect: TsgeFloatRect;
 begin
   //Положение
   if descsPosition in Element.ChangeSet then
     FData.Position := Element.Data.Position;
+
+  //Отражение
+  if descsReflect in Element.ChangeSet then
+  begin
+    FData.Reflect := Element.Data.Reflect;
+
+    //Залить текстурные координаты
+    Rect := sgeGetFloatRect(0, 1, 1, 0);
+    Rect := sgeGetReflectRect(Rect, FData.Reflect);
+
+    Buff := TsgeGraphicOpenGLCoordBuffer.Create;
+    Buff.AddQuad(Rect);
+    FTextureBuffer.SetData(Buff);
+    Buff.Free;
+  end;
 
   //Размеры
   if descsSize in Element.ChangeSet then

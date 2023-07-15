@@ -137,6 +137,14 @@ type
   );
 
 
+  //Тип отражения
+  TsgeReflect = (
+    rHorizontal,  //По горизонтали
+    rVertical     //По вертикали
+  );
+  TsgeReflectSet = set of TsgeReflect;
+
+
   TsgeIntPoint = record
     X: Integer;
     Y: Integer;

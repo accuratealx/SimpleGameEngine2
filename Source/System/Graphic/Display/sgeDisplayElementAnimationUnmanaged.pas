@@ -29,6 +29,7 @@ type
     deaucsAngle,       //Угол в радианах
     deaucsColor,       //Цвет
     deaucsSprite,      //Спрайт
+    deaucsReflect,     //Отражение
     deaucsFrames       //Кадры анимации
   );
 
@@ -42,6 +43,7 @@ type
     Angle: Single;                  //Угол в радианах
     Color: TsgeColor;               //Цвет
     Sprite: TsgeSprite;             //Спрайт
+    Reflect: TsgeReflectSet;        //Отражение
     Frames: TsgeAnimationFrameList; //Список кадров анимации
   end;
 
@@ -71,6 +73,7 @@ type
     procedure SetColorBlue(ABlue: Single);
     procedure SetColorAlpha(AAlpha: Single);
     procedure SetSprite(ASprite: TsgeSprite);
+    procedure SetReflect(AReflect: TsgeReflectSet);
     procedure SetFrameList(AFrameList: TsgeAnimationFrameList);
 
     procedure FillData(X, Y, Width, Height: Single);
@@ -106,6 +109,7 @@ type
     property ColorB: Single read FData.Color.Blue write SetColorBlue;
     property ColorA: Single read FData.Color.Alpha write SetColorAlpha;
     property Sprite: TsgeSprite read FData.Sprite write SetSprite;
+    property Reflect: TsgeReflectSet read FData.Reflect write SetReflect;
     property Frames: TsgeAnimationFrameList read FData.Frames write SetFrameList;
   end;
 
@@ -157,7 +161,7 @@ end;
 
 procedure TsgeDisplayElementAnimationUnmanaged.SetWidth(AWidth: Single);
 begin
-  FData.Size.Y := AWidth;
+  FData.Size.X := AWidth;
   Include(FChangeSet, deaucsSize);
 end;
 
@@ -286,6 +290,16 @@ begin
 end;
 
 
+procedure TsgeDisplayElementAnimationUnmanaged.SetReflect(AReflect: TsgeReflectSet);
+begin
+  if FData.Reflect = AReflect then
+    Exit;
+
+  FData.Reflect := AReflect;
+  Include(FChangeSet, deaucsReflect);
+end;
+
+
 procedure TsgeDisplayElementAnimationUnmanaged.SetFrameList(AFrameList: TsgeAnimationFrameList);
 begin
   //Проверить кадры анимации
@@ -300,7 +314,8 @@ end;
 
 procedure TsgeDisplayElementAnimationUnmanaged.FillData(X, Y, Width, Height: Single);
 const
-  SetAll = [deaucsPosition, deaucsSize, deaucsScale, deaucsOrigin, deaucsAngle, deaucsColor, deaucsSprite, deaucsFrames];
+  SetAll = [deaucsPosition, deaucsSize, deaucsScale, deaucsOrigin, deaucsAngle, deaucsColor,
+    deaucsSprite, deaucsReflect, deaucsFrames];
 begin
   inherited Create;
 
@@ -313,6 +328,7 @@ begin
   FData.Origin := sgeGetFloatPoint(0, 0);
   FData.Angle := 0;
   FData.Color := cWhite;
+  FData.Reflect := [];
 end;
 
 

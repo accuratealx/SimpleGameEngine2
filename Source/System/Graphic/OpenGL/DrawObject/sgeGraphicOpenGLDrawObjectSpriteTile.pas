@@ -104,6 +104,10 @@ begin
   if destcsPosition in Element.ChangeSet then
     FData.Position := Element.Data.Position;
 
+  //Отражение
+  if destcsReflect in Element.ChangeSet then
+    FData.Reflect := Element.Data.Reflect;
+
   //Размеры
   if destcsSize in Element.ChangeSet then
   begin
@@ -154,6 +158,11 @@ begin
 
     Buff := TsgeGraphicOpenGLCoordBuffer.Create;
     Rect := sgeGetTextureTileRect(FGLSprite.GLTileWidth, FGLSprite.GLTileHeight, FData.Column, FData.Row);
+
+    //Проверить на отражение
+    if FData.Reflect <> [] then
+      Rect := sgeGetReflectRect(Rect, FData.Reflect);
+
     Buff.AddQuad(Rect);
     FTextureBuffer.SetData(Buff);
     Buff.Free;

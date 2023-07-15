@@ -112,6 +112,10 @@ begin
   if deaucsPosition in Element.ChangeSet then
     FData.Position := Element.Data.Position;
 
+  //Отражение
+  if deaucsReflect in Element.ChangeSet then
+    FData.Reflect := Element.Data.Reflect;
+
   //Спрайт
   if deaucsSprite in Element.ChangeSet then
   begin
@@ -128,7 +132,7 @@ begin
   end;
 
   //Кадры анимации
-  if deaucsFrames in Element.ChangeSet then
+  if (deaucsFrames in Element.ChangeSet) or (deaucsReflect in Element.ChangeSet) then
   begin
     FData.Frames := Element.Data.Frames;
 
@@ -141,6 +145,11 @@ begin
         FData.Frames.Item[i].Column,
         FData.Frames.Item[i].Row
       );
+
+      //Проверить на отражение
+      if FData.Reflect <> [] then
+        Rect := sgeGetReflectRect(Rect, FData.Reflect);
+
       Buff.AddQuad(Rect);
     end;
     FTextureBuffer.SetData(Buff);

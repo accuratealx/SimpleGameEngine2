@@ -29,7 +29,8 @@ type
     despcsAngle,        //Угол в радианах
     despcsColor,        //Цвет
     despcsSpriteRect,   //Координаты части спрайта
-    despcsSprite        //Спрайт
+    despcsSprite,       //Спрайт
+    despcsReflect       //Отражение
   );
 
 
@@ -43,6 +44,7 @@ type
     Color: TsgeColor;           //Цвет
     SpriteRect: TsgeFloatRect;  //Координаты части спрайта
     Sprite: TsgeSprite;         //Спрайт
+    Reflect: TsgeReflectSet;    //Отражение
   end;
 
 
@@ -76,6 +78,7 @@ type
     procedure SetSpriteRectX2(ASpriteRectX2: Single);
     procedure SetSpriteRectY2(ASpriteRectY2: Single);
     procedure SetSprite(ASprite: TsgeSprite);
+    procedure SetReflect(AReflect: TsgeReflectSet);
 
     procedure FillData(X, Y, Width, Height: Single; SpriteRect: TsgeFloatRect);
 
@@ -116,6 +119,7 @@ type
     property SpriteRectX2: Single read FData.SpriteRect.X2 write SetSpriteRectX2;
     property SpriteRectY2: Single read FData.SpriteRect.Y2 write SetSpriteRectY2;
     property Sprite: TsgeSprite read FData.Sprite write SetSprite;
+    property Reflect: TsgeReflectSet read FData.Reflect write SetReflect;
   end;
 
 
@@ -132,7 +136,8 @@ const
 
 procedure TsgeDisplayElementSpritePart.FillData(X, Y, Width, Height: Single; SpriteRect: TsgeFloatRect);
 const
-  SetAll = [despcsPosition, despcsSize, despcsScale, despcsOrigin, despcsAngle, despcsColor, despcsSpriteRect, despcsSprite];
+  SetAll = [despcsPosition, despcsSize, despcsScale, despcsOrigin, despcsAngle, despcsColor, despcsSpriteRect,
+    despcsSprite, despcsReflect];
 begin
   inherited Create;
 
@@ -146,6 +151,7 @@ begin
   FData.Angle := 0;
   FData.Color := cWhite;
   FData.SpriteRect := SpriteRect;
+  FData.Reflect := [];
 end;
 
 
@@ -190,7 +196,7 @@ end;
 
 procedure TsgeDisplayElementSpritePart.SetWidth(AWidth: Single);
 begin
-  FData.Size.Y := AWidth;
+  FData.Size.X := AWidth;
   Include(FChangeSet, despcsSize);
 end;
 
@@ -351,6 +357,16 @@ begin
 
   FData.Sprite := ASprite;
   Include(FChangeSet, despcsSprite);
+end;
+
+
+procedure TsgeDisplayElementSpritePart.SetReflect(AReflect: TsgeReflectSet);
+begin
+  if FData.Reflect = AReflect then
+    Exit;
+
+  FData.Reflect := AReflect;
+  Include(FChangeSet, despcsReflect);
 end;
 
 

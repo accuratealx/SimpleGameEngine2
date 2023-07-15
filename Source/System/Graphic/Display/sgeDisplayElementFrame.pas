@@ -141,7 +141,7 @@ end;
 
 procedure TsgeDisplayElementFrame.SetWidth(AWidth: Single);
 begin
-  FData.Size.Y := AWidth;
+  FData.Size.X := AWidth;
   Include(FChangeSet, defcsSize);
 end;
 

@@ -30,6 +30,7 @@ type
     deacsColor,       //Цвет
     deacsFrameIndex,  //Номер кадра
     deacsSprite,      //Спрайт
+    deacsReflect,     //Отражение
     deacsFrames       //Кадры анимации
   );
 
@@ -44,6 +45,7 @@ type
     Color: TsgeColor;               //Цвет
     FrameIndex: Word;               //Номер кадра
     Sprite: TsgeSprite;             //Спрайт
+    Reflect: TsgeReflectSet;        //Отражение
     Frames: TsgeAnimationFrameList; //Список кадров анимации
   end;
 
@@ -75,6 +77,7 @@ type
     procedure SetColorAlpha(AAlpha: Single);
     procedure SetFrameIndex(AFrameIndex: Word);
     procedure SetSprite(ASprite: TsgeSprite);
+    procedure SetReflect(AReflect: TsgeReflectSet);
     procedure SetFrameList(AFrameList: TsgeAnimationFrameList);
 
     procedure FillData(X, Y, Width, Height: Single);
@@ -114,6 +117,7 @@ type
     property ColorA: Single read FData.Color.Alpha write SetColorAlpha;
     property FrameIndex: Word read FData.FrameIndex write SetFrameIndex;
     property Sprite: TsgeSprite read FData.Sprite write SetSprite;
+    property Reflect: TsgeReflectSet read FData.Reflect write SetReflect;
     property Frames: TsgeAnimationFrameList read FData.Frames write SetFrameList;
   end;
 
@@ -165,7 +169,7 @@ end;
 
 procedure TsgeDisplayElementAnimation.SetWidth(AWidth: Single);
 begin
-  FData.Size.Y := AWidth;
+  FData.Size.X := AWidth;
   Include(FChangeSet, deacsSize);
 end;
 
@@ -301,6 +305,16 @@ begin
 end;
 
 
+procedure TsgeDisplayElementAnimation.SetReflect(AReflect: TsgeReflectSet);
+begin
+  if FData.Reflect = AReflect then
+    Exit;
+
+  FData.Reflect := AReflect;
+  Include(FChangeSet, deacsReflect);
+end;
+
+
 procedure TsgeDisplayElementAnimation.SetFrameList(AFrameList: TsgeAnimationFrameList);
 begin
   //Проверить кадры анимации
@@ -325,7 +339,8 @@ end;
 
 procedure TsgeDisplayElementAnimation.FillData(X, Y, Width, Height: Single);
 const
-  SetAll = [deacsPosition, deacsSize, deacsScale, deacsOrigin, deacsAngle, deacsColor, deacsFrameIndex, deacsSprite, deacsFrames];
+  SetAll = [deacsPosition, deacsSize, deacsScale, deacsOrigin, deacsAngle, deacsColor, deacsFrameIndex,
+    deacsSprite, deacsReflect, deacsFrames];
 begin
   inherited Create;
 
@@ -338,6 +353,7 @@ begin
   FData.Origin := sgeGetFloatPoint(0, 0);
   FData.Angle := 0;
   FData.Color := cWhite;
+  FData.Reflect := [];
   FData.FrameIndex := 0;
 end;
 
@@ -350,11 +366,11 @@ end;
 
 constructor TsgeDisplayElementAnimation.Create(X, Y, Width, Height: Single; Sprite: TsgeSprite; AnimationFrames: TsgeAnimationFrameList);
 begin
+  //Создать анимацию из кадров
+  FAnimation := TsgeAnimation.Create(AnimationFrames);
+
   //Установить список кадров
   SetFrameList(AnimationFrames);
-
-  //Создать анимацию из кадров
-  FAnimation := TsgeAnimation.Create(FData.Frames);
 
   //Установить спрайт
   SetSprite(Sprite);
