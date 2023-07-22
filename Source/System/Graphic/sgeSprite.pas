@@ -40,11 +40,11 @@ type
 
   //Заворачивание текстуры
   TsgeSpriteWrapMode = (
-     swmRepeat,                 //Повтор
-     swmMirroredRepeat,         //Повтор через отражение
-     swmClampToEdge,            //Координаты от 0..1, за пределами цвет границы текстуры (По умолчанию)
-     swmClampToBorder,          //Координаты от 0..1, за пределами заранее определенный цвет
-     swmMirrorClampToEdge       //Отражается один раз, при выходе за пределы цвет границы текстуры
+     swmRepeat,           //Повтор
+     swmMirroredRepeat,   //Повтор через отражение
+     swmClampToEdge,      //Координаты от 0..1, за пределами цвет границы текстуры (По умолчанию)
+     swmClampToBorder,    //Координаты от 0..1, за пределами заранее определенный цвет
+     swmMirrorClampToEdge //Отражается один раз, при выходе за пределы цвет границы текстуры
   );
 
 
@@ -53,22 +53,22 @@ type
   private
     FData: Pointer;
     FSize: Int64;
-    FWidth: Integer;                                                //Ширина спрайта в пикселях
-    FHeight: Integer;                                               //Высота спрайта в пикселях
-    FMagFilter: TsgeSpriteMagFilter;                                //Фильтрация увеличения
-    FMinFilter: TsgeSpriteMinFilter;                                //Фильтрация уменьшения
-    FWrapModeHorizontal: TsgeSpriteWrapMode;                        //Горизонтальное заворачивание
-    FWrapModeVertical: TsgeSpriteWrapMode;                          //Вертикальное заворачивание
-    FWrapModeColor: TsgeColor;                                      //Цвет границы заворачивания текстуры
-    FTileCols: Word;                                                //Плиток по X
-    FTileRows: Word;                                                //Плиток по Y
-    FTileWidth: Word;                                               //Ширина одной плитки в пикселях
-    FTileHeight: Word;                                              //Высота одной плитки в пикселях
+    FWidth: Integer;                                    //Ширина спрайта в пикселях
+    FHeight: Integer;                                   //Высота спрайта в пикселях
+    FMagFilter: TsgeSpriteMagFilter;                    //Фильтрация увеличения
+    FMinFilter: TsgeSpriteMinFilter;                    //Фильтрация уменьшения
+    FWrapModeHorizontal: TsgeSpriteWrapMode;            //Горизонтальное заворачивание
+    FWrapModeVertical: TsgeSpriteWrapMode;              //Вертикальное заворачивание
+    FWrapModeColor: TsgeColor;                          //Цвет границы заворачивания текстуры
+    FTileCols: Word;                                    //Плиток по X
+    FTileRows: Word;                                    //Плиток по Y
+    FTileWidth: Word;                                   //Ширина одной плитки в пикселях
+    FTileHeight: Word;                                  //Высота одной плитки в пикселях
 
-    procedure Data_ChangeSize(Width, Height: Integer);              //Выделить память
-    procedure Data_Free;                                            //Освободить память
+    procedure Data_ChangeSize(Width, Height: Integer);  //Выделить память
+    procedure Data_Free;                                //Освободить память
 
-    procedure CalcTiles;                                            //Пересчитать ширину и высоту плиток
+    procedure CalcTiles;                                //Пересчитать ширину и высоту плиток
     procedure SetTiles(ATileCols, ATileRows: Word);
 
     procedure SetTileCols(ACols: Word);

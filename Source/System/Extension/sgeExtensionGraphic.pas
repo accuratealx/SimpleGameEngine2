@@ -15,7 +15,7 @@ unit sgeExtensionGraphic;
 interface
 
 uses
-  sgeTypes, sgeThread, sgeMemoryStream, sgeCounter, sgeAnsiFont,
+  sgeTypes, sgeThread, sgeMemoryStream, sgeCounter, sgeAnsiFont, sgeSprite,
   sgeExtensionBase,
   sgeGraphicColor, sgeGraphicOpenGL, sgeGraphicOpenGLLayerList,
   sgeGraphicOpenGLDrawObjectFade, sgeGraphicOpenGLDrawObjectFadeItem,
@@ -45,30 +45,33 @@ type
   private
     //Ссылки на объекты
     FExtWindow: TsgeExtensionWindow;
-    FFont: TsgeAnsiFont;                                            //Ссылка на класс шрифта
+    FFont: TsgeAnsiFont;                            //Ссылка на класс шрифта
 
     //Классы
-    FGraphic: TsgeGraphicOpenGL;                                    //Класс графики для потока рендера сцены
-    FThread: TsgeThread;                                            //Поток основного класса графики
-    FEventList: TsgeEventList;                                      //Список объектов событий
-    FLayerList: TsgeGraphicOpenGLLayerList;                         //Список слоёв отрисовки
-    FFadeElement: TsgeGraphicOpenGLDrawObjectFade;                  //Элемент затемнения
+    FGraphic: TsgeGraphicOpenGL;                    //Класс графики для потока рендера сцены
+    FThread: TsgeThread;                            //Поток основного класса графики
+    FEventList: TsgeEventList;                      //Список объектов событий
+    FLayerList: TsgeGraphicOpenGLLayerList;         //Список слоёв отрисовки
+    FFadeElement: TsgeGraphicOpenGLDrawObjectFade;  //Элемент затемнения
 
-    FDisplayFPS: TsgeDisplayElementAnsiText;                        //Элемент рисования
-    FDrawFPS: TsgeGraphicOpenGLDrawObjectAnsiText;                  //Элемент рендера
-    FFPSCounter: TsgeCounter;                                       //Счётчик FPS
+    FDisplayFPS: TsgeDisplayElementAnsiText;        //Элемент рисования
+    FDrawFPS: TsgeGraphicOpenGLDrawObjectAnsiText;  //Элемент рендера
+    FFPSCounter: TsgeCounter;                       //Счётчик FPS
 
     //Перменные
-    FScreenSize: TsgeFloatPoint;                                    //Размеры экрана
-    FDrawControl: TsgeExtensionGraphicDrawControl;                  //Способ ограничения кадров
-    FMaxFPS: Word;                                                  //Максимальное количество кадров в секунду
-    FAutoEraseBG: Boolean;                                          //Автостирание фона перед выводом кадра
+    FScreenSize: TsgeFloatPoint;                    //Размеры экрана
+    FDrawControl: TsgeExtensionGraphicDrawControl;  //Способ ограничения кадров
+    FMaxFPS: Word;                                  //Максимальное количество кадров в секунду
+    FAutoEraseBG: Boolean;                          //Автостирание фона перед выводом кадра
 
     //Вспомогательные параметры
     FDrawLastTime: Int64;
     FDrawCurrentTime: Int64;
     FDrawDelay: Int64;
-    //FScreenshotStream: TsgeMemoryStream;                            //Ссылка на память
+
+    FScreenDataStream: TsgeMemoryStream;            //Ссылка на память для точек
+    FScreenDataWidth: Integer;                      //Ширина скриншота
+    FScreenDataHeight: Integer;                     //Высота скриншота
 
     //Методы потока
     procedure InitGraphic;
@@ -90,7 +93,7 @@ type
     procedure ProcessEvent_ItemVisible(Event: TsgeEventGraphicElementVisible);
 
     procedure ChangeDrawControl;
-    //procedure GetScreenshot;
+    procedure GetScreenData;
 
     procedure SystemDraw;
     procedure Draw;
@@ -126,7 +129,7 @@ type
     procedure StartRender;                                                    //Запуск потока рендерера
 
     procedure Fade(Mode: TsgeExtensionFadeMode; Color: TsgeColor; Time: Cardinal; ID: Integer = -1);
-    //procedure ScreenShot(Stream: TsgeMemoryStream);
+    procedure Screenshot(Sprite: TsgeSprite);
 
     //Параметры
     property MaxFPS: Word read FMaxFPS write SetMaxFPS;
@@ -155,9 +158,10 @@ uses
 const
   _UNITNAME = 'ExtensionGraphic';
 
-  Err_EventError = 'EventError';
-  Err_LayerNotFound = 'LayerNotFound';
+  Err_EventError           = 'EventError';
+  Err_LayerNotFound        = 'LayerNotFound';
   Err_CantCreateDrawObject = 'CantCreateDrawObject';
+  Err_EmptySprite          = 'EmptySprite';
 
 
 procedure TsgeExtensionGraphic.InitGraphic;
@@ -456,10 +460,10 @@ begin
 end;
 
 
-{procedure TsgeExtensionGraphic.GetScreenshot;
+procedure TsgeExtensionGraphic.GetScreenData;
 begin
-  FGraphic.ScreenShot(FScreenshotStream);
-end;}
+  FGraphic.GetScreenData(FScreenDataStream, FScreenDataWidth, FScreenDataHeight);
+end;
 
 
 procedure TsgeExtensionGraphic.SystemDraw;
@@ -629,7 +633,6 @@ function TsgeExtensionGraphic.CreateDrawObjectByDisplayElement(DisplayElement: T
 begin
   Result := nil;
 
-
   //Rect
   if DisplayElement is TsgeDisplayElementRect then
     Result := TsgeGraphicOpenGLDrawObjectRect.Create(DisplayElement);
@@ -658,13 +661,13 @@ begin
   if DisplayElement is TsgeDisplayElementAnimation then
     Result := TsgeGraphicOpenGLDrawObjectAnimation.Create(DisplayElement);
 
-  //Animation
-  if DisplayElement is TsgeDisplayElementAnsiText then
-    Result := TsgeGraphicOpenGLDrawObjectAnsiText.Create(DisplayElement);
-
   //AnimationUnmanaged
   if DisplayElement is TsgeDisplayElementAnimationUnmanaged then
     Result := TsgeGraphicOpenGLDrawObjectAnimationUnamnaged.Create(DisplayElement);
+
+  //AnsiText
+  if DisplayElement is TsgeDisplayElementAnsiText then
+    Result := TsgeGraphicOpenGLDrawObjectAnsiText.Create(DisplayElement);
 
 
   //Ошибка если не получилось создать
@@ -814,12 +817,34 @@ begin
   FEventList.Add(Event);
 end;
 
-{procedure TsgeExtensionGraphic.ScreenShot(Stream: TsgeMemoryStream);
-begin
-  FScreenshotStream := Stream;
 
-  FThread.RunProcAndWait(@GetScreenshot);
-end;}
+procedure TsgeExtensionGraphic.Screenshot(Sprite: TsgeSprite);
+var
+  Stream: TsgeMemoryStream;
+begin
+  if not Assigned(Sprite) then
+    raise EsgeException.Create(_UNITNAME, Err_EmptySprite);
+
+  Stream := TsgeMemoryStream.Create;
+  try
+    //Установить ссылку на стрим
+    FScreenDataStream := Stream;
+
+    //Получить данные из переднего буфера
+    FThread.RunProcAndWait(@GetScreenData);
+
+    //Изменить рамер спрайта
+    Sprite.SetSize(FScreenDataWidth, FScreenDataHeight);
+
+    //Скопировать данные в спрайт
+    Move(Stream.Data^, Sprite.Data^, Stream.Size);
+
+  finally
+    FScreenDataStream := nil;
+    Stream.Free;
+  end;
+end;
+
 
 
 end.

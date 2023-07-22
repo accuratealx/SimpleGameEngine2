@@ -16,8 +16,8 @@ interface
 
 uses
   sgeTypes,
-  sgeExtensionBase, sgeExtensionWindow, sgeExtensionGraphic, sgeExtensionResourceList,
-  sgeEventBase, sgeEventMouse, sgeEventGraphic,
+  sgeExtensionBase, sgeExtensionWindow, sgeExtensionGraphic,
+  sgeEventBase, sgeEventMouse,
   sgeDisplayLayer, sgeDisplayElementAnimationUnmanaged, sgeCursor;
 
 
@@ -40,8 +40,8 @@ type
     FScale: Single;                               //Масштаб курсора
     FLeftHand: Boolean;                           //Курсор для левшей
 
-    procedure CorrectCoordinate;                  //Поправить координаты
-    procedure CorrectVisible(AVisible: Boolean);  //Поправить видимость курсора
+    procedure CorrectCoordinate;
+    procedure CorrectVisible(AVisible: Boolean);
     procedure SetDisplayElementVisible(AVisible: Boolean);
     procedure CorrectLeftHand(ALeftHand: Boolean; X: Integer);
 
@@ -79,7 +79,6 @@ const
   Layer_Index = $FFFF;
 
   _UNITNAME = 'ExtensionCursors';
-
 
 
 procedure TsgeExtensionCursor.CorrectCoordinate;

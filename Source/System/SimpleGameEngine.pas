@@ -140,7 +140,7 @@ implementation
 uses
   sgeErrors, sgeKeys, sgeMemoryStream,
   sgeOSPlatform, sgeDateUtils, sgeFileUtils, sgeShellCommands, sgeVariables,
-  sgeResourceItem, sgeAnsiFont,
+  sgeResourceItem, sgeAnsiFont, sgeSprite, sgeSpriteSaverBmp,
   sgeEventWindow, sgeEventTimeEvent;
 
 
@@ -443,6 +443,8 @@ const
 var
   s: String;
   MS: TsgeMemoryStream;
+  Sprite: TsgeSprite;
+  SpriteSaver: TsgeSpriteSaverBmp;
 begin
   //Подготовить имя файла
   if FileName = '' then
@@ -455,19 +457,27 @@ begin
   sgeForceDirectories(FExtensionFileSystem.ScreenshotDir);
 
   MS := TsgeMemoryStream.Create;
+  Sprite := TsgeSprite.Create;
+  SpriteSaver := TsgeSpriteSaverBmp.Create;
   try
     try
       //Запросить снимок экрана
-      //FExtensionGraphic.ScreenShot(MS);
+      FExtensionGraphic.Screenshot(Sprite);
 
-      //Сохранить в файл
+      //Получить BMP из спрайта
+      SpriteSaver.ToMemoryStream(MS, Sprite);
+
+      //Сохранить спрайт в файл
       MS.SaveToFile(FExtensionFileSystem.ScreenshotDir + s);
+
     except
       on E: EsgeException do
         raise EsgeException.Create(_UNITNAME, Err_CantCreateScreenShot, '', E.Message);
     end;
 
   finally
+    SpriteSaver.Free;
+    Sprite.Free;
     MS.Free;
   end;
 end;

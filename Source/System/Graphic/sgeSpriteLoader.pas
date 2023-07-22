@@ -27,12 +27,10 @@ type
     FHeight: DWord;
 
   public
-    constructor Create(FileName: String);
     constructor Create(Stream: TsgeMemoryStream);
     destructor  Destroy; override;
 
     procedure FromMemoryStream(Stream: TsgeMemoryStream); virtual abstract;
-    procedure LoadFromFile(FileName: String);
 
     property Data: Pointer read FData;
     property Size: Int64 read FSize;
@@ -42,21 +40,6 @@ type
 
 
 implementation
-
-uses
-  sgeErrors;
-
-const
-  _UNITNAME = 'SpriteLoader';
-
-  Err_CantReadFile = 'CantReadFile';
-
-
-
-constructor TsgeSpriteLoader.Create(FileName: String);
-begin
-  LoadFromFile(FileName);
-end;
 
 
 constructor TsgeSpriteLoader.Create(Stream: TsgeMemoryStream);
@@ -69,31 +52,6 @@ destructor TsgeSpriteLoader.Destroy;
 begin
   //Почистить память
   Freemem(FData, FSize);
-end;
-
-
-procedure TsgeSpriteLoader.LoadFromFile(FileName: String);
-var
-  Ms: TsgeMemoryStream;
-begin
-  try
-    Ms := TsgeMemoryStream.Create;
-
-    try
-      //Чтение из файла
-      Ms.LoadFromFile(FileName);
-
-      //Загрузка из потока
-      FromMemoryStream(Ms);
-
-    except
-      on E:EsgeException do
-        raise EsgeException.Create(_UNITNAME, Err_CantReadFile, FileName, E.Message);
-    end;
-
-  finally
-    Ms.Free;
-  end;
 end;
 
 

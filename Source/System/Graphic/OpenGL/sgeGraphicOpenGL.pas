@@ -16,28 +16,28 @@ interface
 
 uses
   dglOpenGL, Windows,
-  sgeGraphicColor,
+  sgeMemoryStream, sgeGraphicColor,
   sgeGraphicOpenGLTypes;
 
 
 type
   //Информация о драйвере
   TsgeGraphicInfo = (
-    giVendor,       //Производитель
-    giRenderer,     //Название видеокарты
-    giVersion,      //Версия OpenGL
-    giExtensions,   //Расширения
-    giShading       //Версия шейдеров
+    giVendor,     //Производитель
+    giRenderer,   //Название видеокарты
+    giVersion,    //Версия OpenGL
+    giExtensions, //Расширения
+    giShading     //Версия шейдеров
   );
 
 
   //Возможности
   TsgeGraphicCapabilities = (
-    gcVerticalSync,   //Вертикальная синхронизация
-    gcColorBlend,     //Смешивание цветов
-    gcTexturing,      //Текстурирование
-    gcLineSmooth,     //Сглаживание линий
-    gcScissor         //Ножницы
+    gcVerticalSync, //Вертикальная синхронизация
+    gcColorBlend,   //Смешивание цветов
+    gcTexturing,    //Текстурирование
+    gcLineSmooth,   //Сглаживание линий
+    gcScissor       //Ножницы
   );
 
 
@@ -72,7 +72,7 @@ type
     destructor Destroy; override;
 
     //Системные функции
-    procedure ChangeViewPort(AWidth, AHeight: Integer);             //Изменить область вывода
+    procedure ChangeViewPort(AWidth, AHeight: Integer);
     procedure Activate;
     procedure Deactivate;
     procedure SwapBuffers;
@@ -92,6 +92,10 @@ type
     procedure SetLineWidth(Width: Single);
     procedure SetScissor(X, Y, Width, Height: Integer);
 
+    //Получить сырые данные из переднего буфера кадра
+    procedure GetScreenData(Stream: TsgeMemoryStream; out Width, Height: Integer);
+
+    //Вывод вершин
     procedure DrawArray(VertexType: TsgeGraphicOpenGLVertexType; VertexStart, VertexCount: Integer);
 
     //Свойства
@@ -437,6 +441,34 @@ procedure TsgeGraphicOpenGL.SetScissor(X, Y, Width, Height: Integer);
 begin
   Y := FHeight - Y - Height;
   glScissor(X, Y, Width, Height);
+end;
+
+
+procedure TsgeGraphicOpenGL.GetScreenData(Stream: TsgeMemoryStream; out Width, Height: Integer);
+var
+  Size: Integer;
+  Dt: array[0..3] of GLint;
+begin
+  //Запросить размеры контекста
+  glGetIntegerv(GL_VIEWPORT, @Dt[0]);
+
+  //Ширина контекста
+  Width := Dt[2];
+
+  //Высота контекста
+  Height := Dt[3];
+
+  //Размер блока
+  Size := Width * Height * 4;
+
+  //Выделить память
+  Stream.Size := Size;
+
+  //Указать передний буфер кадра
+  glReadBuffer(GL_FRONT);
+
+  //Прочесть в буфер цвета точек
+  glReadPixels(0, 0, Width, Height, GL_BGRA, GL_UNSIGNED_BYTE, Stream.Data);
 end;
 
 
