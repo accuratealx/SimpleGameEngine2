@@ -29,8 +29,7 @@ type
     desncsAngle,    //Угол в радианах
     desncsColor,    //Цвет
     desncsOffset,   //Смещение от краев спрайта в пикселях
-    desncsSprite,   //Спрайт
-    desncsReflect   //Отражение
+    desncsSprite    //Спрайт
   );
 
 
@@ -44,7 +43,6 @@ type
     Color: TsgeColor;         //Цвет
     Offset: TsgeFloatRect;    //Смещение от краев спрайта в пикселях
     Sprite: TsgeSprite;       //Спрайт
-    Reflect: TsgeReflectSet;  //Отражение
   end;
 
 
@@ -78,7 +76,6 @@ type
     procedure SetOffsetX2(AOffsetX2: Single);
     procedure SetOffsetY2(AOffsetY2: Single);
     procedure SetSprite(ASprite: TsgeSprite);
-    procedure SetReflect(AReflect: TsgeReflectSet);
 
     procedure FillData(X, Y, Width, Height: Single; Offset: TsgeFloatRect);
 
@@ -119,7 +116,6 @@ type
     property OffsetX2: Single read FData.Offset.X2 write SetOffsetX2;
     property OffsetY2: Single read FData.Offset.Y2 write SetOffsetY2;
     property Sprite: TsgeSprite read FData.Sprite write SetSprite;
-    property Reflect: TsgeReflectSet read FData.Reflect write SetReflect;
   end;
 
 
@@ -137,7 +133,7 @@ const
 procedure TsgeDisplayElementSpriteNine.FillData(X, Y, Width, Height: Single; Offset: TsgeFloatRect);
 const
   SetAll = [desncsPosition, desncsSize, desncsScale, desncsOrigin, desncsAngle, desncsColor, desncsOffset,
-    desncsSprite, desncsReflect];
+    desncsSprite{, desncsReflect}];
 begin
   inherited Create;
 
@@ -151,7 +147,7 @@ begin
   FData.Angle := 0;
   FData.Color := cWhite;
   FData.Offset := Offset;
-  FData.Reflect := [];
+  //FData.Reflect := [];
 end;
 
 
@@ -357,16 +353,6 @@ begin
 
   FData.Sprite := ASprite;
   Include(FChangeSet, desncsSprite);
-end;
-
-
-procedure TsgeDisplayElementSpriteNine.SetReflect(AReflect: TsgeReflectSet);
-begin
-  if FData.Reflect = AReflect then
-    Exit;
-
-  FData.Reflect := AReflect;
-  Include(FChangeSet, desncsReflect);
 end;
 
 

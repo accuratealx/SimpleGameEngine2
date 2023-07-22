@@ -102,10 +102,6 @@ begin
   if desncsPosition in Element.ChangeSet then
     FData.Position := Element.Data.Position;
 
-  //Отражение
-  if desncsReflect in Element.ChangeSet then
-    FData.Reflect := Element.Data.Reflect;
-
   //Спрайт
   if desncsSprite in Element.ChangeSet then
   begin
@@ -122,7 +118,7 @@ begin
   end;
 
   //Координаты спрайта
-  if (desncsOffset in Element.ChangeSet) or (desncsReflect in Element.ChangeSet) then
+  if (desncsOffset in Element.ChangeSet) then
   begin
     FData.Offset := Element.Data.Offset;
 
