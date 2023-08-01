@@ -40,7 +40,7 @@ type
     constructor Create;
     destructor  Destroy; override;
 
-    procedure Publish(EventObj: TsgeEventBase = nil);   //Добавить событие в очередь
+    procedure Publish(EventObj: TsgeEventBase);         //Добавить событие в очередь
     procedure DispatchEvents;                           //Метод обработки событий
 
     property EventList: TsgeEventList read FEventList;
