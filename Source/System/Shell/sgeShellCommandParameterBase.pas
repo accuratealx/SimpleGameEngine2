@@ -30,7 +30,7 @@ type
     FParamType: TsgeShellCommandParameterType;
     FName: ShortString;
   	FRequired: Boolean;
-	  FPrefixRequired: Boolean;
+	FPrefixRequired: Boolean;
   	FPrefixList: TsgeStringList;
   public
     constructor Create(ParamType: TsgeShellCommandParameterType; Name: ShortString; Required: Boolean; PrefixRequired: Boolean; PrefixList: String; Separator: String);
@@ -58,7 +58,7 @@ begin
   //Разобрать на строки
   FPrefixList.FromString(PrefixList);
 
-  //Оnпилить лишнее
+  //Отпилить лишнее
   FPrefixList.Trim;
 
   //Записать параметры
