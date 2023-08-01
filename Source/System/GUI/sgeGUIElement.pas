@@ -1,8 +1,8 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGUIElement.pas
-Версия            1.1
-Создан            04.09.2021
+Версия            1.0
+Создан            25.07.2023
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          GUI: Базовый элемент
 }
@@ -10,31 +10,28 @@
 
 unit sgeGUIElement;
 
-{$mode objfpc}{$H+}
+{$mode ObjFPC}{$H+}
 
 interface
 
 uses
-  sgeSystemUtils,
-  sgeTypes, sgeSimpleParameters, sgeSimpleContainer, sgeTemplateCollection,
-  sgeGraphicSprite, sgeGraphicColor,
-  sgeEventBase, sgeEventKeyboard, sgeEventMouse,
-  sgeGUIPropertyConstrains;
+  sgeTypes, sgeTemplateCollection,
+  sgeEventBase, sgeEventMouse, sgeEventKeyboard;
+
+const
+  Layer_GUI_Name = 'System.GUI';
 
 
 type
-  TsgeGUIElementList = class;
   TsgeGUIElement = class;
+  TsgeGUIElementList = class;
 
-  //Обработчики
+
+  //Обработчики событий
   TsgeGUIProcEvent = procedure(Obj: TsgeGUIElement) of Object;
   TsgeGUIProcMouseEvent = procedure(Obj: TsgeGUIElement; Mouse: TsgeEventMouse) of object;
   TsgeGUIProcButtonEvent = procedure(Obj: TsgeGUIElement; Keyboard: TsgeEventKeyboard) of object;
   TsgeGUIProcButtonCharEvent = procedure(Obj: TsgeGUIElement; Keyboard: TsgeEventKeyboardChar) of object;
-
-
-  //Состояние элемента
-  TsgeGUIElementState = set of (esLockUpdate, esCorrectSize, esRepaint, esRepaintParent);
 
 
   //Тип обработчика мыши
@@ -45,54 +42,45 @@ type
   TsgeGUIElementButtonEventType = (ebetDown, ebetUp, ebetChar);
 
 
-  //Элемент
+  //Базовый элемент
   TsgeGUIElement = class
   protected
-    //Классы
-    FCanvas: TsgeGraphicSprite;                                     //Холст для рисования
-    FChildList: TsgeGUIElementList;                                 //Список детей
-
-    //Ссылки
-    FParent: TsgeGUIElement;                                        //Ссылка на родителя
-
     //Параметры
-    FState: TsgeGUIElementState;                                    //Состояние элемента
-    FName: ShortString;                                             //Имя элемента
-    FVisible: Boolean;                                              //Видимость элемента
-    FEnable: Boolean;                                               //Реагирование на действия пользователя
-    FFocused: Boolean;                                              //Флаг активности
-    FLeft: Integer;                                                 //X относительно родителя
-    FTop: Integer;                                                  //Y относительно родителя
-    FWidth: Integer;                                                //Ширина
-    FHeight: Integer;                                               //Высота
-    FAutoSize: Boolean;                                             //Авторазмер
-    FScale: Single;                                                 //Масштаб элемента
-    FClickButton: TsgeMouseButton;                                  //Кнопка мыши для Click
-    FConstrains: TsgeGUIPropertyConstrainsExt;                      //Ограничение размеров
-    FStyle: ShortString;                                            //Имя стиля
-    FEnableDoubleClick: Boolean;                                    //Доступность двойного клика
+    FParent: TsgeGUIElement;
+    FChildList: TsgeGUIElementList;
+
+    FName: String;
+    FEnable: Boolean;               //Флаг обработки событий пользователя
+    FFocused: Boolean;              //Фокус ввода
+    FLeft: Integer;
+    FTop: Integer;
+    FWidth: Integer;
+    FHeight: Integer;
+    FVisible: Boolean;
+    FAutoSize: Boolean;             //Авторазмер элемента, для компонентов с текстом
+    FScale: Single;
+    FClickButton: TsgeMouseButton;  //Кнопка мыши для Click
+    FEnableDoubleClick: Boolean;    //Доступность двойного клика
 
     //Вспомогательные параметры
-    FPressed: Boolean;                                              //Флаг нажатия для Click
+    FPressed: Boolean;
 
     //Обработчики событий
-    FOnDrawBefore       : TsgeGUIProcEvent;
-    FOnDrawAfter        : TsgeGUIProcEvent;
-    FOnShow             : TsgeGUIProcEvent;
-    FOnHide             : TsgeGUIProcEvent;
-    FOnSetFocus         : TsgeGUIProcEvent;
-    FOnLostFocus        : TsgeGUIProcEvent;
-    FOnMouseClick       : TsgeGUIProcMouseEvent;
-    FOnMouseDoubleClick : TsgeGUIProcMouseEvent;
-    FOnMouseMove        : TsgeGUIProcMouseEvent;
-    FOnMouseDown        : TsgeGUIProcMouseEvent;
-    FOnMouseUp          : TsgeGUIProcMouseEvent;
-    FOnMouseLeave       : TsgeGUIProcMouseEvent;
-    FOnMouseEnter       : TsgeGUIProcMouseEvent;
-    FOnMouseScroll      : TsgeGUIProcMouseEvent;
-    FOnButtonDown       : TsgeGUIProcButtonEvent;
-    FOnButtonUp         : TsgeGUIProcButtonEvent;
-    FOnButtonChar       : TsgeGUIProcButtonCharEvent;
+    FOnShow: TsgeGUIProcEvent;
+    FOnHide: TsgeGUIProcEvent;
+    FOnSetFocus: TsgeGUIProcEvent;
+    FOnLostFocus: TsgeGUIProcEvent;
+    FOnMouseClick: TsgeGUIProcMouseEvent;
+    FOnMouseDoubleClick: TsgeGUIProcMouseEvent;
+    FOnMouseMove: TsgeGUIProcMouseEvent;
+    FOnMouseDown: TsgeGUIProcMouseEvent;
+    FOnMouseUp: TsgeGUIProcMouseEvent;
+    FOnMouseLeave: TsgeGUIProcMouseEvent;
+    FOnMouseEnter: TsgeGUIProcMouseEvent;
+    FOnMouseScroll: TsgeGUIProcMouseEvent;
+    FOnButtonDown: TsgeGUIProcButtonEvent;
+    FOnButtonUp: TsgeGUIProcButtonEvent;
+    FOnButtonChar: TsgeGUIProcButtonCharEvent;
 
     procedure Handler_Show; virtual;
     procedure Handler_Hide; virtual;
@@ -111,88 +99,67 @@ type
     procedure Handler_ButtonChar(Keyboard: TsgeEventKeyboardChar); virtual;
 
     //Вспомогательные методы
-    procedure GetPrefferedSize(var NewWidth, NewHeight: Integer); virtual;  //Взять предпочтительный размер элемента
-    procedure CalculateAutosize(var NewWidth, NewHeight: Integer); virtual; //Расчёт авторазмер
+    function  GetGlobalPos: TsgeIntPoint;                                   //Получить глобальные координаты
+    procedure ChangeSize(NewWidth, NewHeight: Integer);                     //Изменить размеры элемента
+    function  GetTopParent: TsgeGUIElement;                                 //Получить ссылку на форму
+    procedure CalculateAutosize(var NewWidth, NewHeight: Integer); virtual; //Расчёт авторазмера
     procedure CheckMinimalSize(var NewWidth, NewHeight: Integer); virtual;  //Проверка наименьших размеров
-    procedure Notify(Action: TsgeGUIElementState); virtual;         //Вызвать уведомление
-    procedure DrawChild; virtual;                                   //Нарисовать детей
-    class function GetParameterSectionName: String; virtual;        //Вернуть имя секции (У каждого класса своё имя)
-    procedure LoadData(Data: TsgeSimpleParameters); virtual;        //Загрузить параметры из массива
-    procedure LockUpdate;                                           //Запретить перерисовку
-    procedure UnLockUpdate;                                         //Разрешить перерисовку
 
-    //Отрисовка
-    procedure GraphicPrepare; virtual;                              //Подготовить графику
-    procedure GraphicRestore; virtual;                              //Восстановить графику
-    procedure DrawBefore; virtual;
-    procedure DrawAfter; virtual;
+    //Управление отображением
+    procedure CorrectDisplayElementSizeAndPosition;
+    procedure CorrectDisplayElementPosition; virtual;
+    procedure CorrectDisplayElementSize; virtual;
+    procedure DisplayElement_CorrectPosition(RealLeft, RealTop: Integer); virtual;
+    procedure DisplayElement_CorrectSize(Width, Height: Integer); virtual;
+    procedure DisplayElement_CorrectVisible(Visible: Boolean); virtual;
 
-    //Свойства
-    procedure SetLeft(ALeft: Integer); virtual;
-    procedure SetTop(ATop: Integer); virtual;
-    procedure SetWidth(AWidth: Integer); virtual;
-    procedure SetHeight(AHeight: Integer); virtual;
-    procedure SetDrawAfter(ADrawAfter: TsgeGUIProcEvent);
-    procedure SetDrawBefore(ADrawBefore: TsgeGUIProcEvent);
-    procedure SetBounds(ABounds: TsgeFloatRect); virtual;
-    function  GetBounds: TsgeFloatRect; virtual;
-    procedure SetParent(AParent: TsgeGUIElement);
-    procedure SetEnable(AEnabled: Boolean); virtual;
-    procedure SetVisible(AVisible: Boolean); virtual;
-    procedure SetFocused(AFocused: Boolean); virtual;
-    procedure SetAutoSize(AAutoSize: Boolean); virtual;
-    procedure SetStyle(AStyle: ShortString); virtual;
-    function  GetScaleWidth: Integer; virtual;
-    function  GetScaleHeight: Integer; virtual;
-    procedure SetScale(AScale: Single); virtual;
-    function  GetScale: Single; virtual;
-
-    function  GetConstrains: TsgeGUIPropertyConstrains;
-
-    //Методы Parent
+    //Дети
     procedure AddChild(Element: TsgeGUIElement);
     procedure DeleteChild(Element: TsgeGUIElement);
     procedure DestroyChild;
+    procedure CorrectChildSizeAndPos;
+    procedure CorrectChildPos;
+    procedure CorrectChildSize;
+    procedure CorrectChildVisible(AVisible: Boolean); //Переделать по человечески
+
+    //Свойства
+    procedure SetParent(AParent: TsgeGUIElement); virtual;
+    procedure SetEnable(AEnabled: Boolean); virtual;
+    procedure SetFocused(AFocused: Boolean); virtual;
+    procedure SetLeft(ALeft: Integer); virtual;
+    procedure SetTop(ATop: Integer); virtual;
+    procedure SetPos(APos: TsgeIntPoint); virtual;
+    function  GetPos: TsgeIntPoint; virtual;
+    procedure SetWidth(AWidth: Integer); virtual;
+    procedure SetHeight(AHeight: Integer); virtual;
+    procedure SetVisible(AVisible: Boolean); virtual;
+    procedure SetAutoSize(AAutoSize: Boolean); virtual;
+    procedure SetScale(AScale: Single); virtual;
+    function  GetScale: Single; virtual;
   public
-    constructor Create(Name: String; Left, Top, Width, Height: Integer; Parent: TsgeGUIElement = nil); virtual;
+    constructor Create(Name: String; Left, Top, Width, Height: Integer; Visible: Boolean = True; Parent: TsgeGUIElement = nil);
     destructor  Destroy; override;
 
-    //Обработчики событий
     procedure MouseHandler(EventType: TsgeGUIElementMouseEventType; Mouse: TsgeEventMouse); virtual;
     function  ButtonHandler(EventType: TsgeGUIElementButtonEventType; Keyboard: TsgeEventBase): Boolean; virtual;
+    function  PointInElement(X, Y: Integer): Boolean;
 
-    procedure Repaint;
-    procedure Resize;
-    procedure Draw; virtual;
-    procedure LoadParameters(Params: TsgeSimpleContainer);          //Загрузить параметры
-
-    //Вспомогательные методы
-    function  PointInElement(X, Y: Integer): Boolean;               //Проверить нахождение точки внутри элемента
-    function  GetTopParent: TsgeGUIElement;                         //Вернуть родителя верхнего уровня
-    function  GetGlobalPos: TsgeIntPoint;                           //Узнать глобальные координаты элемента
-
-    //Параметры
-    property Canvas: TsgeGraphicSprite read FCanvas;
-    property Name: ShortString read FName;
-    property Enable: Boolean read FEnable write SetEnable;
-    property Visible: Boolean read FVisible write SetVisible;
-    property Focused: Boolean read FFocused write SetFocused;
-    property AutoSize: Boolean read FAutoSize write SetAutoSize;
+    //Свойства
     property Parent: TsgeGUIElement read FParent write SetParent;
-    property Bounds: TsgeFloatRect read GetBounds write SetBounds;
+    property Enable: Boolean read FEnable write SetEnable;
+    property Focused: Boolean read FFocused write SetFocused;
+    property Name: String read FName write FName;
     property Left: Integer read FLeft write SetLeft;
     property Top: Integer read FTop write SetTop;
+    property Pos: TsgeIntPoint read GetPos write SetPos;
     property Width: Integer read FWidth write SetWidth;
     property Height: Integer read FHeight write SetHeight;
-    property Constrains: TsgeGUIPropertyConstrains read GetConstrains;
+    property Visible: Boolean read FVisible write SetVisible;
+    property AutoSize: Boolean read FAutoSize write SetAutoSize;
+    property Scale: Single read GetScale write SetScale;
     property ClickButton: TsgeMouseButton read FClickButton write FClickButton;
-    property Style: ShortString read FStyle write SetStyle;
-    property ScaleWidth: Integer read GetScaleWidth;
-    property ScaleHeight: Integer read GetScaleHeight;
 
     //Обработчики
-    property OnDrawBefore: TsgeGUIProcEvent read FOnDrawBefore write SetDrawBefore;
-    property OnDrawAfter: TsgeGUIProcEvent read FOnDrawAfter write SetDrawAfter;
     property OnShow: TsgeGUIProcEvent read FOnShow write FOnShow;
     property OnHide: TsgeGUIProcEvent read FOnHide write FOnHide;
     property OnSetFocus: TsgeGUIProcEvent read FOnSetFocus write FOnSetFocus;
@@ -220,211 +187,10 @@ type
   end;
 
 
-
 implementation
 
 uses
-  sgeCorePointerUtils,
-  sgeGraphic, sgeGUIUtils;
-
-
-function TsgeGUIElementList.IndexOf(Element: TsgeGUIElement): Integer;
-var
-  i: Integer;
-begin
-  Result := -1;
-
-  for i := 0 to FCount - 1 do
-    if FList[i] = Element then
-      Exit(i);
-end;
-
-
-procedure TsgeGUIElementList.Delete(Index: Integer);
-begin
-  inherited Delete(Index);
-end;
-
-
-procedure TsgeGUIElementList.Delete(Element: TsgeGUIElement);
-var
-  Idx: Integer;
-begin
-  Idx := IndexOf(Element);
-  if Idx <> -1 then
-    Delete(Idx);
-end;
-
-
-
-
-
-//////////////////////////////////TsgeGUIElement//////////////////////////////////
-procedure TsgeGUIElement.SetParent(AParent: TsgeGUIElement);
-const
-  mNewParent = 1;
-  mChangeParent = 2;
-  mClearParent = 3;
-var
-  Mode: Byte;
-begin
-  if FParent = AParent then
-    Exit;
-
-  Mode := 0;
-  if (FParent = nil) and (AParent <> nil) then
-    Mode := mNewParent;
-  if (FParent <> nil) and (AParent <> nil) then
-    Mode := mChangeParent;
-  if (FParent <> nil) and (AParent = nil) then
-    Mode := mClearParent;
-
-  case Mode of
-    mNewParent:
-    begin
-      FParent := AParent;
-      FParent.AddChild(Self);
-    end;
-
-    mChangeParent:
-    begin
-      FParent.DeleteChild(Self);
-      FParent := AParent;
-      AParent.AddChild(Self);
-    end;
-
-    mClearParent:
-    begin
-      FParent.DeleteChild(Self);
-      FParent := nil;
-    end;
-  end;
-end;
-
-
-procedure TsgeGUIElement.SetEnable(AEnabled: Boolean);
-begin
-  if FEnable = AEnabled then
-    Exit;
-  FEnable := AEnabled;
-
-  //Если элемент неактивен, то убрать монопольный захват мыши
-  if not FEnable then
-    sgeCorePointer_GetSGE.ExtGUI.ReleaseMouse(Self);
-
-  Repaint;
-end;
-
-
-procedure TsgeGUIElement.SetVisible(AVisible: Boolean);
-begin
-  if FVisible = AVisible then
-    Exit;
-
-  FVisible := AVisible;
-
-  //Выполнить обработчик
-  if FVisible then
-    Handler_Show
-  else
-    Handler_Hide;
-
-  Notify([esRepaintParent]);
-end;
-
-
-procedure TsgeGUIElement.SetFocused(AFocused: Boolean);
-begin
-  if FFocused = AFocused then
-    Exit;
-
-  FFocused := AFocused;
-
-  if FFocused then
-    Handler_SetFocus
-  else
-    Handler_LostFocus;
-end;
-
-
-procedure TsgeGUIElement.SetAutoSize(AAutoSize: Boolean);
-begin
-  if FAutoSize = AAutoSize then
-    Exit;
-
-  FAutoSize := AAutoSize;
-
-  Notify([esCorrectSize]);
-end;
-
-
-procedure TsgeGUIElement.SetStyle(AStyle: ShortString);
-begin
-  FStyle := AStyle;
-end;
-
-
-function TsgeGUIElement.GetScaleWidth: Integer;
-begin
-  Result := Round(FWidth * GetScale);
-end;
-
-
-function TsgeGUIElement.GetScaleHeight: Integer;
-begin
-  Result := Round(FHeight * GetScale);
-end;
-
-
-procedure TsgeGUIElement.SetScale(AScale: Single);
-begin
-  FScale := AScale;
-end;
-
-
-function TsgeGUIElement.GetScale: Single;
-begin
-  //Масштаб по умолчанию
-  Result := FScale;
-
-  //Масштаб можно менять только у формы
-  if FParent <> nil then
-    Result := FParent.GetScale;
-end;
-
-
-function TsgeGUIElement.GetConstrains: TsgeGUIPropertyConstrains;
-begin
-  Result := FConstrains;
-end;
-
-
-procedure TsgeGUIElement.AddChild(Element: TsgeGUIElement);
-begin
-  FChildList.Add(Element);
-  Repaint;
-end;
-
-
-procedure TsgeGUIElement.DeleteChild(Element: TsgeGUIElement);
-begin
-  FChildList.Delete(Element);
-  Repaint;
-end;
-
-
-procedure TsgeGUIElement.DestroyChild;
-begin
-  if FChildList.Count = 0 then
-    Exit;
-
-  //Удалить объекты
-  while FChildList.Count > 0 do
-    FChildList.Item[0].Free;
-
-  //Перерисовать
-  Repaint;
-end;
+  sgeCorePointerUtils;
 
 
 procedure TsgeGUIElement.Handler_Show;
@@ -532,210 +298,267 @@ begin
 end;
 
 
-procedure TsgeGUIElement.GetPrefferedSize(var NewWidth, NewHeight: Integer);
+function TsgeGUIElement.GetGlobalPos: TsgeIntPoint;
+var
+  Pt: TsgeIntPoint;
+  FormScale: Single;
+  E, P: TsgeGUIElement;
+begin
+  if FParent = nil then
+    Result := sgeGetIntPoint(FLeft, FTop)
+  else
+  begin
+    //Координаты текущего элемента
+    Pt := sgeGetIntPoint(FLeft, FTop);
+
+    //Ссылка на родителя
+    E := FParent;
+    while E <> nil do
+    begin
+      //Прибавить смещение родителя
+      Pt.X := Pt.X + E.Left;
+      Pt.Y := Pt.Y + E.Top;
+
+      //Следующий родитель
+      E := E.FParent;
+    end;
+
+    //Отнять смещение формы
+    P := GetTopParent;
+    Pt.X := Pt.X - P.Left;
+    Pt.Y := Pt.Y - P.Top;
+
+    //Масштаб
+    FormScale := GetScale;
+
+    //Результат
+    Result.X := P.Left + Round(Pt.X * FormScale);
+    Result.Y := P.Top + Round(Pt.Y * FormScale);
+  end;
+end;
+
+
+procedure TsgeGUIElement.ChangeSize(NewWidth, NewHeight: Integer);
 begin
   //Проверить авторазмер
   if FAutoSize then
     CalculateAutosize(NewWidth, NewHeight);
 
   //Проверить ограничение размера
-  FConstrains.Check(NewWidth, NewHeight);
+  //FConstrains.Check(NewWidth, NewHeight);
 
   //Проверку на наименьший размер
   CheckMinimalSize(NewWidth, NewHeight);
+
+  //Сохранить новые размеры
+  FWidth := NewWidth;
+  FHeight := NewHeight;
+
+  //Поправить размеры
+  CorrectDisplayElementSize;
+end;
+
+
+function TsgeGUIElement.GetTopParent: TsgeGUIElement;
+begin
+  Result := Self;
+  if FParent <> nil then
+    Result := FParent.GetTopParent;
 end;
 
 
 procedure TsgeGUIElement.CalculateAutosize(var NewWidth, NewHeight: Integer);
 begin
-  //Заглушка. Тут код определения авторазмеров элемента
-  //для компонентов, использующих шрифт
+  //Заглушка, переопределяется в потомке
 end;
 
 
 procedure TsgeGUIElement.CheckMinimalSize(var NewWidth, NewHeight: Integer);
 begin
-  //Заглушка. Тут код проверки на наименьший возможный размер
+  //Заглушка, переопределяется в потомке
 end;
 
 
-procedure TsgeGUIElement.Notify(Action: TsgeGUIElementState);
+procedure TsgeGUIElement.CorrectDisplayElementSizeAndPosition;
 begin
-  //Если запрет обновления, то выход
-  if esLockUpdate in FState then
+  CorrectDisplayElementPosition;
+  CorrectDisplayElementSize;
+end;
+
+
+procedure TsgeGUIElement.CorrectDisplayElementPosition;
+var
+  RealPos: TsgeIntPoint;
+begin
+  RealPos := GetGlobalPos;
+
+  DisplayElement_CorrectPosition(RealPos.X, RealPos.Y);
+end;
+
+
+procedure TsgeGUIElement.CorrectDisplayElementSize;
+var
+  RealWidth, RealHeight: Integer;
+  FormScale: Single;
+begin
+  //Масштаб формы
+  FormScale := GetScale;
+
+  //Реальные размеры
+  RealWidth := Round(FWidth * FormScale);
+  RealHeight := Round(FHeight * FormScale);
+
+  //Поправить размеры DisplayElement
+  DisplayElement_CorrectSize(RealWidth, RealHeight);
+end;
+
+
+procedure TsgeGUIElement.DisplayElement_CorrectPosition(RealLeft, RealTop: Integer);
+begin
+  //Заглушка, переопределяется в потомке
+end;
+
+
+procedure TsgeGUIElement.DisplayElement_CorrectSize(Width, Height: Integer);
+begin
+  //Заглушка, переопределяется в потомке
+end;
+
+
+procedure TsgeGUIElement.DisplayElement_CorrectVisible(Visible: Boolean);
+begin
+  //Заглушка, переопределяется в потомке
+end;
+
+
+procedure TsgeGUIElement.AddChild(Element: TsgeGUIElement);
+begin
+  FChildList.Add(Element);
+end;
+
+
+procedure TsgeGUIElement.DeleteChild(Element: TsgeGUIElement);
+begin
+  FChildList.Delete(Element);
+end;
+
+
+procedure TsgeGUIElement.DestroyChild;
+begin
+  if FChildList.Count = 0 then
     Exit;
 
-  //Добавить новое состояние
-  FState := FState + Action;
-
-  //Поправить размеры
-  if esCorrectSize in FState then
+  //Удалить объекты
+  while FChildList.Count > 0 do
   begin
-    Exclude(FState, esCorrectSize);                                 //Удалить флаг изменения размеров
-    GetPrefferedSize(FWidth, FHeight);                              //Взять предпочтительный размер
-
-    //Изменить размеры канваса если они отличаются
-    if (FWidth <> FCanvas.Width) or (FHeight <> FCanvas.Height) then
-      FCanvas.SetSize(FWidth, FHeight);
-
-    Include(FState, esRepaint);                                     //Дбавить флаг перерисовки
-  end;
-
-  //Проверить перерисовку
-  if esRepaint in FState then
-  begin
-    Exclude(FState, esRepaint);                                     //Удалить флаг собственной отрисовки
-    Draw;                                                           //Перерисовать себя и элементы
-    Include(FState, esRepaintParent);                               //Добавить флаг для родителя о перерисовке
-  end;
-
-  //Проверить перерисовку родителя
-  if esRepaintParent in FState then
-  begin
-    Exclude(FState, esRepaintParent);                               //Удалить флаг перерисовки родителя
-    if FParent <> nil then                                          //Перерисовать родителя
-      FParent.Repaint;
+    FChildList.Item[0].Free;
   end;
 end;
 
 
-procedure TsgeGUIElement.DrawChild;
+procedure TsgeGUIElement.CorrectChildSizeAndPos;
+begin
+  CorrectChildPos;
+  CorrectChildSize;
+end;
+
+
+procedure TsgeGUIElement.CorrectChildPos;
 var
   i: Integer;
-  El: TsgeGUIElement;
+  Item: TsgeGUIElement;
 begin
   for i := 0 to FChildList.Count - 1 do
   begin
-    //Указатель на элемент
-    El := FChildList.Item[i];
+    //Изменить положение ребенка
+    Item := FChildList.Item[i];
+    Item.CorrectDisplayElementPosition;
 
-    //Пропуск невидимых
-    if not El.Visible then
-      Continue;
-
-    //Вывод спрайтов детей
-    with sgeCorePointer_GetSGE.ExtGraphic.Graphic do
-    begin
-      ResetDrawOptions;
-      DrawSprite(El.Left, El.Top, El.Width, El.Height, El.Canvas);
-    end;
+    //Изменить положение детей ребенка
+    Item.CorrectChildPos;
   end;
 end;
 
 
-class function TsgeGUIElement.GetParameterSectionName: String;
-begin
-  Result := '';
-end;
-
-
-procedure TsgeGUIElement.LoadData(Data: TsgeSimpleParameters);
+procedure TsgeGUIElement.CorrectChildSize;
 var
-  ParamName, s: String;
+  i: Integer;
+  Item: TsgeGUIElement;
 begin
-  //ClickButton
-  ParamName := 'ClickButton';
-  if Data.Exist[ParamName] then
+  for i := 0 to FChildList.Count - 1 do
   begin
-    s := LowerCase(Data.GetValue(ParamName, ''));
-    case s of
-      'left':
-        FClickButton := mbLeft;
+    //Изменить положение ребенка
+    Item := FChildList.Item[i];
+    Item.CorrectDisplayElementSize;
 
-      'middle':
-        FClickButton := mbMiddle;
-
-      'right':
-        FClickButton := mbRight;
-
-      'extra1':
-        FClickButton := mbExtra1;
-
-      'extra2':
-        FClickButton := mbExtra2;
-    end;
-  end;
-
-  //Constrains
-  FConstrains.LoadParameters(Data, 'Constrains.');
-
-  //Left
-  sgeGUISetValue(Data, 'Left', FLeft);
-
-  //Top
-  sgeGUISetValue(Data, 'Top', FTop);
-
-  //Width
-  sgeGUISetValue(Data, 'Width', FWidth, 100);
-
-  //Height
-  sgeGUISetValue(Data, 'Height', FHeight, 100);
-
-  //AutoSize
-  sgeGUISetValue(Data, 'AutoSize', FAutoSize, False);
-
-  //Enable
-  sgeGUISetValue(Data, 'Enable', FEnable, True);
-
-  //Visible
-  ParamName := 'Visible';
-  if Data.Exist[ParamName] then
-    SetVisible(Data.GetValue(ParamName, True));
-end;
-
-
-procedure TsgeGUIElement.LockUpdate;
-begin
-  Include(FState, esLockUpdate);
-end;
-
-
-procedure TsgeGUIElement.UnLockUpdate;
-begin
-  Exclude(FState, esLockUpdate);
-  Notify([esCorrectSize]);
-end;
-
-
-procedure TsgeGUIElement.GraphicPrepare;
-begin
-  with sgeCorePointer_GetSGE.ExtGraphic.Graphic do
-  begin
-    PushAttrib;
-    Reset;
-    ResetDrawOptions;
-    RenderSprite := FCanvas;
-    RenderPlace := grpSprite;
-    ColorBlend := True;
-
-    //Стереть фон холста
-    BGColor := cTransparentWhite;
-    EraseBG;
+    //Изменить положение детей ребенка
+    Item.CorrectChildSize;
   end;
 end;
 
 
-procedure TsgeGUIElement.GraphicRestore;
+procedure TsgeGUIElement.CorrectChildVisible(AVisible: Boolean);
+var
+  i: Integer;
+  Item: TsgeGUIElement;
 begin
-  with sgeCorePointer_GetSGE.ExtGraphic.Graphic do
+  for i := 0 to FChildList.Count - 1 do
   begin
-    RenderSprite := nil;
-    RenderPlace := grpScreen;
-    PopAttrib;
-    Finish;
+    //Изменить положение ребенка
+    Item := FChildList.Item[i];
+    Item.DisplayElement_CorrectVisible(AVisible);
+
+    //Изменить положение детей ребенка
+    Item.CorrectChildVisible(AVisible);
   end;
 end;
 
 
-procedure TsgeGUIElement.DrawBefore;
+procedure TsgeGUIElement.SetParent(AParent: TsgeGUIElement);
 begin
-  //Отрисовка перед выводом детей
+  if FParent = AParent then
+    Exit;
+
+  if FParent <> nil then
+    FParent.DeleteChild(Self);
+
+  FParent := AParent;
+
+  if FParent <> nil then
+    FParent.AddChild(Self);
+
+  //Поправить себя
+  CorrectDisplayElementSizeAndPosition;
+
+  //Поправить детей
+  CorrectChildSizeAndPos;
 end;
 
 
-procedure TsgeGUIElement.DrawAfter;
+procedure TsgeGUIElement.SetEnable(AEnabled: Boolean);
 begin
-  //Отрисовка после вывода детей
+  if FEnable = AEnabled then
+    Exit;
+
+  FEnable := AEnabled;
+
+  //Если элемент неактивен, то убрать монопольный захват мыши
+  if not FEnable then
+    sgeCorePointer_GetSGE.ExtGUI.ReleaseMouse(Self);
+end;
+
+
+procedure TsgeGUIElement.SetFocused(AFocused: Boolean);
+begin
+  if FFocused = AFocused then
+    Exit;
+
+  FFocused := AFocused;
+
+  if FFocused then
+    Handler_SetFocus
+  else
+    Handler_LostFocus;
 end;
 
 
@@ -746,7 +569,9 @@ begin
 
   FLeft := ALeft;
 
-  Notify([esRepaintParent]);
+  CorrectDisplayElementPosition;
+
+  CorrectChildPos;
 end;
 
 
@@ -757,150 +582,154 @@ begin
 
   FTop := ATop;
 
-  Notify([esRepaintParent]);
+  CorrectDisplayElementPosition;
+
+  CorrectChildPos;
+end;
+
+
+procedure TsgeGUIElement.SetPos(APos: TsgeIntPoint);
+begin
+  if (FLeft = APos.X) and (FTop = APos.Y) then
+    Exit;
+
+  FLeft := APos.X;
+  FTop := APos.Y;
+
+  CorrectDisplayElementPosition;
+
+  CorrectChildPos;
+end;
+
+
+function TsgeGUIElement.GetPos: TsgeIntPoint;
+begin
+  Result := sgeGetIntPoint(FLeft, FTop);
 end;
 
 
 procedure TsgeGUIElement.SetWidth(AWidth: Integer);
 begin
-  if AWidth <= 0 then
+  if AWidth < 0 then
     AWidth := 0;
   if FWidth = AWidth then
     Exit;
 
-  FWidth := AWidth;
-
-  Notify([esCorrectSize]);
+  ChangeSize(AWidth, FHeight);
 end;
 
 
 procedure TsgeGUIElement.SetHeight(AHeight: Integer);
 begin
-  if AHeight <= 0 then
+  if AHeight < 0 then
     AHeight := 0;
   if FHeight = AHeight then
     Exit;
 
   FHeight := AHeight;
-
-  Notify([esCorrectSize]);
+  ChangeSize(FWidth, AHeight);
 end;
 
 
-procedure TsgeGUIElement.SetDrawAfter(ADrawAfter: TsgeGUIProcEvent);
+procedure TsgeGUIElement.SetVisible(AVisible: Boolean);
 begin
-  if FOnDrawBefore = ADrawAfter then
+  if FVisible = AVisible then
     Exit;
 
-  FOnDrawAfter := ADrawAfter;
-  Repaint;
+  FVisible := AVisible;
+
+  //Выполнить обработчики
+  if FVisible then
+    Handler_Show
+  else
+    Handler_Hide;
+
+  //Поправить себя
+  DisplayElement_CorrectVisible(FVisible);
+
+  //Поправить детей
+  CorrectChildVisible(FVisible);
 end;
 
 
-procedure TsgeGUIElement.SetDrawBefore(ADrawBefore: TsgeGUIProcEvent);
+procedure TsgeGUIElement.SetAutoSize(AAutoSize: Boolean);
 begin
-  if FOnDrawBefore = ADrawBefore then
+  if FAutoSize = AAutoSize then
     Exit;
 
-  FOnDrawBefore := ADrawBefore;
-  Repaint;
+  FAutoSize := AAutoSize;
+
+  ChangeSize(FWidth, FHeight);
 end;
 
 
-procedure TsgeGUIElement.SetBounds(ABounds: TsgeFloatRect);
-var
-  W, H: Single;
+procedure TsgeGUIElement.SetScale(AScale: Single);
 begin
-  //Определить размеры
-  W := ABounds.X2 - ABounds.X1;
-  H := ABounds.Y2 - ABounds.Y1;
+  FScale := AScale;
 
-  //Поправить размеры
-  if W <= 0 then
-    W := 0;
-  if H <= 0 then
-    H := 0;
+  //Поправить размеры отображаемого элемента
+  CorrectDisplayElementSize;
 
-  //Запомнить положение и размеры
-  FLeft := Round(ABounds.X1);
-  FTop := Round(ABounds.Y1);
-  FWidth := Round(W);
-  FHeight := Round(H);
-
-  //Внести изменения
-  Notify([esCorrectSize]);
+  //Поправить детей
+  CorrectChildSizeAndPos;
 end;
 
 
-function TsgeGUIElement.GetBounds: TsgeFloatRect;
+function TsgeGUIElement.GetScale: Single;
 begin
-  with Result do
-  begin
-    X1 := FLeft;
-    Y1 := FTop;
-    X2 := FLeft + FWidth;
-    Y2 := FTop + FHeight;
-  end;
+  Result := FScale;
+
+  if FParent <> nil then
+    Result := FParent.GetScale;
 end;
 
 
-constructor TsgeGUIElement.Create(Name: String; Left, Top, Width, Height: Integer; Parent: TsgeGUIElement);
+constructor TsgeGUIElement.Create(Name: String; Left, Top, Width, Height: Integer; Visible: Boolean; Parent: TsgeGUIElement);
 begin
-  //Установить флаг создания
-  FState := [esLockUpdate];
+  //Создать объекты
+  FChildList := TsgeGUIElementList.Create(False);
 
-  //Установить параметры
+  //Запомнить параметры
   FName := Name;
-  FVisible := True;
-  FEnable := True;
-  FFocused := False;
+  FLeft := Left;
+  FTop := Top;
+  FVisible := False;
   FAutoSize := False;
   FScale := 1;
+  FEnable := True;
+  FFocused := False;
   FClickButton := mbLeft;
-  FStyle := '';
   FEnableDoubleClick := True;
 
-  //Создать объекты
-  FCanvas := TsgeGraphicSprite.Create(Width, Height, cTransparentWhite);
-  FChildList := TsgeGUIElementList.Create(False);
-  FConstrains := TsgeGUIPropertyConstrainsExt.Create(Self);
-
-  //Изменить размеры
-  SetBounds(sgeGetFloatRect(Left, Top, Left + Width, Top + Height));
-
-  //Установить Родителя
+  //Установить родителя
   SetParent(Parent);
 
-  //Убрать флаг создания
-  Exclude(FState, esLockUpdate);
+  //Поправить размеры
+  ChangeSize(Width, Height);
+
+  //Поправить положение
+  //CorrectPosition;
+
+  //Поправить видимость
+  SetVisible(Visible);
 end;
 
 
 destructor TsgeGUIElement.Destroy;
 begin
-  //Установить флаг уничтожения объекта
-  Include(FState, esLockUpdate);
-
   //Отключить захват мыши
   sgeCorePointer_GetSGE.ExtGUI.ReleaseMouse(Self);
 
   //Убрать фокус с элемента
   sgeCorePointer_GetSGE.ExtGUI.LostFocus(Self);
 
-  //Удалить детей
+  //Почистить детей
   DestroyChild;
-
-  //Удалить объекты
-  FConstrains.Free;
   FChildList.Free;
-  FCanvas.Free;
 
   //Удалить себя у родителя
   if FParent <> nil then
     FParent.DeleteChild(Self);
-
-  //Убрать флаг уничтожения объекта
-  Exclude(FState, esLockUpdate);
 end;
 
 
@@ -909,7 +738,7 @@ var
   LocalMouse: TsgeEventMouse;
   Pt: TsgeIntPoint;
   X, Y: Integer;
-  Scale: Single;
+  FormScale: Single;
 begin
   //Если неактивен, то выход
   if not FVisible or not FEnable then
@@ -918,7 +747,7 @@ begin
   //Реальное положение на экране
   Pt := GetGlobalPos;
 
-  //Изменить координаты мыши под текущий элемент
+  //Изменить координаты мыши под текущим элементом
   if FParent = nil then
   begin
     X := Mouse.X - Pt.X;
@@ -926,9 +755,9 @@ begin
   end
   else
   begin
-    Scale := GetScale;
-    X := Round((Mouse.X - Pt.X) / Scale);
-    Y := Round((Mouse.Y - Pt.Y) / Scale);
+    FormScale := GetScale;
+    X := Round((Mouse.X - Pt.X) / FormScale);
+    Y := Round((Mouse.Y - Pt.Y) / FormScale);
   end;
 
   //Локальный объект события мыши
@@ -1004,8 +833,9 @@ end;
 function TsgeGUIElement.ButtonHandler(EventType: TsgeGUIElementButtonEventType; Keyboard: TsgeEventBase): Boolean;
 begin
   Result := False;
-  if not FVisible or not FEnable then
+  if (not FVisible) or (not FEnable) then
     Exit;
+
   Result := True;
 
   case EventType of
@@ -1021,159 +851,56 @@ begin
 end;
 
 
-procedure TsgeGUIElement.Repaint;
-begin
-  Notify([esRepaint]);
-end;
-
-
-procedure TsgeGUIElement.Resize;
-begin
-  Notify([esCorrectSize]);
-end;
-
-
-procedure TsgeGUIElement.Draw;
-begin
-  //Проверка на запрет обновления
-  if (esLockUpdate in FState) then
-    Exit;
-
-  //Подготовить графику
-  GraphicPrepare;
-
-  //Вывод перед отрисовкой детей
-  if Assigned(FOnDrawBefore) then
-    FOnDrawBefore(Self)
-  else
-    DrawBefore;
-
-  //Отрисовка детей
-  DrawChild;
-
-  //Вывод после отрисовки детей
-  if Assigned(FOnDrawAfter) then
-    FOnDrawAfter(Self)
-  else
-    DrawAfter;
-
-  //Вывод рамки элемента
-  {$IfDef SGE_GUI_Bounds}
-  with sgeCorePointer_GetSGE.ExtGraphic.Graphic do
-  begin
-    ColorBlend := False;
-    PoligonMode := gpmLine;
-    Color := cRed;
-    DrawRect(1, 0, FWidth - 1, FHeight - 1);
-  end;
-  {$EndIf}
-
-  //Восстановить графику
-  GraphicRestore;
-end;
-
-
-procedure TsgeGUIElement.LoadParameters(Params: TsgeSimpleContainer);
-const
-  Separartor = ':';
-var
-  Data: TsgeSimpleParameters;
-  SectionName: String;
-begin
-  Data := TsgeSimpleParameters.Create;
-  try
-    //Определить имя секции
-    SectionName := GetParameterSectionName;
-    if FStyle <> '' then
-      SectionName := SectionName + Separartor + FStyle;
-
-    //Разобрать секцию на параметры
-    Data.FromString(Params.GetSection(SectionName));
-
-    //Заблокировать отрисовку
-    LockUpdate;
-
-    //Загрузить параметры
-    LoadData(Data);
-
-    //Разблокировать отрисовку
-    UnLockUpdate;
-  finally
-    Data.Free;
-  end;
-end;
-
-
 function TsgeGUIElement.PointInElement(X, Y: Integer): Boolean;
 var
   Pt: TsgeIntPoint;
-  Scale: Single;
+  FormScale: Single;
   W, H: Integer;
 begin
   //Глобальные координаты c учётом масштаба
   Pt := GetGlobalPos;
 
   //Масштаб
-  Scale := GetScale;
+  FormScale := GetScale;
 
   //Размеры элементы
-  W := Round(FWidth * Scale);
-  H := Round(FHeight * Scale);
+  W := Round(FWidth * FormScale);
+  H := Round(FHeight * FormScale);
 
   //Проверить попадание
   Result := (X >= Pt.X) and (X <= Pt.X + W) and (Y >= Pt.Y) and (Y <= Pt.Y + H);
 end;
 
 
-function TsgeGUIElement.GetTopParent: TsgeGUIElement;
-begin
-  Result := Self;
-  if FParent <> nil then
-    Result := FParent.GetTopParent;
-end;
-
-
-function TsgeGUIElement.GetGlobalPos: TsgeIntPoint;
+{$Region TsgeGUIElementList}
+function TsgeGUIElementList.IndexOf(Element: TsgeGUIElement): Integer;
 var
-  Pt: TsgeIntPoint;
-  Scale: Single;
-  E, P: TsgeGUIElement;
+  i: Integer;
 begin
-  if FParent = nil then
-    Result := sgeGetIntPoint(FLeft, FTop)
-  else
-  begin
-    //Координаты текущего элемента
-    Pt := sgeGetIntPoint(FLeft, FTop);
+  Result := -1;
 
-    //Ссылка на родителя
-    E := FParent;
-    while E <> nil do
-    begin
-      //Прибавить смещение родителя
-      Pt.X := Pt.X + E.Left;
-      Pt.Y := Pt.Y + E.Top;
-
-      //Следующий родитель
-      E := E.FParent;
-    end;
-
-    //Отнять смещение формы
-    P := GetTopParent;
-    Pt.X := Pt.X - P.Left;
-    Pt.Y := Pt.Y - P.Top;
-
-    //Масштаб
-    Scale := GetScale;
-
-    //Результат
-    Result.X := P.Left + Round(Pt.X * Scale);
-    Result.Y := P.Top + Round(Pt.Y * Scale);
-  end;
+  for i := 0 to FCount - 1 do
+    if FList[i] = Element then
+      Exit(i);
 end;
 
+
+procedure TsgeGUIElementList.Delete(Index: Integer);
+begin
+  inherited Delete(Index);
+end;
+
+
+procedure TsgeGUIElementList.Delete(Element: TsgeGUIElement);
+var
+  Idx: Integer;
+begin
+  Idx := IndexOf(Element);
+  if Idx <> -1 then
+    Delete(Idx);
+end;
+{$EndRegion TsgeGUIElementList}
 
 
 end.
-
 
