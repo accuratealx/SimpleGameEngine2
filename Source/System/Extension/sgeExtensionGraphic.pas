@@ -109,7 +109,7 @@ type
     procedure FadeCallBackProc(Time: TsgePassedTime; ID: Integer);
 
     //Подписка на события
-    function EventHandler(Obj: TsgeEventWindow): TsgeEventHandlerResult;
+    function EventHandler(Obj: TsgeEventBase): TsgeEventHandlerResult;
 
     //Вспомогательные методы
     function CreateDrawObjectByDisplayElement(DisplayElement: TsgeDisplayElement): TsgeGraphicOpenGLDrawObject;
@@ -551,9 +551,7 @@ begin
     begin
       //Вывести элемент, если он видимый
       if DrawObject.Visible then
-      begin
         DrawObject.Draw(FGraphic, FScreenSize, LayerInfo);
-      end;
 
       //Следующий элемент
       DrawObject := Layer.Items.GetNext;
@@ -622,7 +620,7 @@ begin
 end;
 
 
-function TsgeExtensionGraphic.EventHandler(Obj: TsgeEventWindow): TsgeEventHandlerResult;
+function TsgeExtensionGraphic.EventHandler(Obj: TsgeEventBase): TsgeEventHandlerResult;
 begin
   Result := ehrNormal;
   FEventList.Add(Obj.Copy);
