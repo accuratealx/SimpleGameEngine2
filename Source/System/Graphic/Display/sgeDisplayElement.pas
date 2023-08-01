@@ -74,7 +74,7 @@ begin
   FEventManager := sgeCorePointer_GetEventManager;
 
   //Задать параметры
-  FVisible := True;
+  FVisible := False;
 end;
 
 

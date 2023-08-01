@@ -44,7 +44,7 @@ uses
   sgeErrors, sgeSystemUtils;
 
 const
-  _UNITNAME = 'GraphicOpenGLLayerTable';
+  _UNITNAME = 'GraphicOpenGLDrawObjectTable';
 
   Err_EmptyLayer = 'EmptyLayer';
   Err_DuplicateObject = 'DuplicateObject';
