@@ -101,7 +101,6 @@ type
     //Вспомогательные методы
     function  GetGlobalPos: TsgeIntPoint;                                   //Получить глобальные координаты
     procedure ChangeSize(NewWidth, NewHeight: Integer);                     //Изменить размеры элемента
-    function  GetTopParent: TsgeGUIElement;                                 //Получить ссылку на форму
     procedure CalculateAutosize(var NewWidth, NewHeight: Integer); virtual; //Расчёт авторазмера
     procedure CheckMinimalSize(var NewWidth, NewHeight: Integer); virtual;  //Проверка наименьших размеров
 
@@ -112,6 +111,7 @@ type
     procedure DisplayElement_CorrectPosition(RealLeft, RealTop: Integer); virtual;
     procedure DisplayElement_CorrectSize(Width, Height: Integer); virtual;
     procedure DisplayElement_CorrectVisible(Visible: Boolean); virtual;
+    function  DisplayElement_GetVisible: Boolean; virtual;
 
     //Дети
     procedure AddChild(Element: TsgeGUIElement);
@@ -120,7 +120,7 @@ type
     procedure CorrectChildSizeAndPos;
     procedure CorrectChildPos;
     procedure CorrectChildSize;
-    procedure CorrectChildVisible(AVisible: Boolean); //Переделать по человечески
+    procedure CorrectChildVisible;
 
     //Свойства
     procedure SetParent(AParent: TsgeGUIElement); virtual;
@@ -143,6 +143,7 @@ type
     procedure MouseHandler(EventType: TsgeGUIElementMouseEventType; Mouse: TsgeEventMouse); virtual;
     function  ButtonHandler(EventType: TsgeGUIElementButtonEventType; Keyboard: TsgeEventBase): Boolean; virtual;
     function  PointInElement(X, Y: Integer): Boolean;
+    function  GetTopParent: TsgeGUIElement;
 
     //Свойства
     property Parent: TsgeGUIElement read FParent write SetParent;
@@ -193,6 +194,7 @@ uses
   sgeCorePointerUtils;
 
 
+{$Region TsgeGUIElement}
 procedure TsgeGUIElement.Handler_Show;
 begin
   if Assigned(FOnShow) then
@@ -359,14 +361,6 @@ begin
 end;
 
 
-function TsgeGUIElement.GetTopParent: TsgeGUIElement;
-begin
-  Result := Self;
-  if FParent <> nil then
-    Result := FParent.GetTopParent;
-end;
-
-
 procedure TsgeGUIElement.CalculateAutosize(var NewWidth, NewHeight: Integer);
 begin
   //Заглушка, переопределяется в потомке
@@ -428,6 +422,13 @@ end;
 procedure TsgeGUIElement.DisplayElement_CorrectVisible(Visible: Boolean);
 begin
   //Заглушка, переопределяется в потомке
+end;
+
+
+function TsgeGUIElement.DisplayElement_GetVisible: Boolean;
+begin
+  //Заглушка, переопределяется в потомке
+  Result := False;
 end;
 
 
@@ -497,19 +498,19 @@ begin
 end;
 
 
-procedure TsgeGUIElement.CorrectChildVisible(AVisible: Boolean);
+procedure TsgeGUIElement.CorrectChildVisible;
 var
   i: Integer;
   Item: TsgeGUIElement;
 begin
   for i := 0 to FChildList.Count - 1 do
   begin
-    //Изменить положение ребенка
+    //Изменить видимость ребенка
     Item := FChildList.Item[i];
-    Item.DisplayElement_CorrectVisible(AVisible);
+    Item.DisplayElement_CorrectVisible(Item.FVisible and DisplayElement_GetVisible);
 
     //Изменить положение детей ребенка
-    Item.CorrectChildVisible(AVisible);
+    Item.CorrectChildVisible;
   end;
 end;
 
@@ -632,6 +633,8 @@ end;
 
 
 procedure TsgeGUIElement.SetVisible(AVisible: Boolean);
+var
+  vis: Boolean;
 begin
   if FVisible = AVisible then
     Exit;
@@ -644,11 +647,16 @@ begin
   else
     Handler_Hide;
 
+  //Определить физическую видимость
+  vis := FVisible;
+  if FParent <> nil then
+    vis := vis and FParent.Visible;
+
   //Поправить себя
-  DisplayElement_CorrectVisible(FVisible);
+  DisplayElement_CorrectVisible(vis);
 
   //Поправить детей
-  CorrectChildVisible(FVisible);
+  CorrectChildVisible;
 end;
 
 
@@ -707,9 +715,6 @@ begin
   //Поправить размеры
   ChangeSize(Width, Height);
 
-  //Поправить положение
-  //CorrectPosition;
-
   //Поправить видимость
   SetVisible(Visible);
 end;
@@ -741,7 +746,7 @@ var
   FormScale: Single;
 begin
   //Если неактивен, то выход
-  if not FVisible or not FEnable then
+  if (not FVisible) or (not FEnable) then
     Exit;
 
   //Реальное положение на экране
@@ -833,6 +838,7 @@ end;
 function TsgeGUIElement.ButtonHandler(EventType: TsgeGUIElementButtonEventType; Keyboard: TsgeEventBase): Boolean;
 begin
   Result := False;
+
   if (not FVisible) or (not FEnable) then
     Exit;
 
@@ -870,6 +876,15 @@ begin
   //Проверить попадание
   Result := (X >= Pt.X) and (X <= Pt.X + W) and (Y >= Pt.Y) and (Y <= Pt.Y + H);
 end;
+
+
+function TsgeGUIElement.GetTopParent: TsgeGUIElement;
+begin
+  Result := Self;
+  if FParent <> nil then
+    Result := FParent.GetTopParent;
+end;
+{$EndRegion TsgeGUIElement}
 
 
 {$Region TsgeGUIElementList}

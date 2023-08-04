@@ -28,6 +28,7 @@ type
     procedure DisplayElement_CorrectPosition(RealLeft, RealTop: Integer); override;
     procedure DisplayElement_CorrectSize(Width, Height: Integer); override;
     procedure DisplayElement_CorrectVisible(Visible: Boolean); override;
+    function  DisplayElement_GetVisible: Boolean; override;
 
   public
     constructor Create(Name: String; Left, Top, Width, Height: Integer; Visible: Boolean = True);
@@ -39,6 +40,7 @@ type
 implementation
 
 uses
+  sgeCorePointerUtils,
   sgeGraphicColor;
 
 
@@ -64,17 +66,30 @@ begin
 end;
 
 
+function TsgeGUIForm.DisplayElement_GetVisible: Boolean;
+begin
+  Result := FDisplayElement.Visible;
+end;
+
+
 constructor TsgeGUIForm.Create(Name: String; Left, Top, Width, Height: Integer; Visible: Boolean);
 begin
-  FDisplayElement := TsgeDisplayElementRect.Create(Left, Top, Left + Width, Top + Height, cPurple);
+  FDisplayElement := TsgeDisplayElementRect.Create(Left, Top, Left + Width, Top + Height, cBlack);
   FDisplayElement.Add(Layer_GUI_Name);
 
   inherited Create(Name, Left, Top, Width, Height, Visible);
+
+  //Добавить себя в список форм
+  sgeCorePointer_GetSGE.ExtGUI.FormList.Add(Self);
 end;
 
 
 destructor TsgeGUIForm.Destroy;
 begin
+  //Удалить себя из списка форм
+  sgeCorePointer_GetSGE.ExtGUI.FormList.Delete(Self);
+
+  //Удалить элемент отображения
   FDisplayElement.Delete;
   FDisplayElement.Free;
 

@@ -15,9 +15,8 @@ unit sgeExtensionGUI;
 interface
 
 uses
-  sgeTypes,
   sgeExtensionBase, sgeEventBase, sgeEventKeyboard, sgeEventMouse, sgeEventSubscriber,
-  sgeGraphicElementLayer, sgeExtensionGraphic, sgeGUIFormList, sgeGUIElement;
+  sgeDisplayLayer, sgeGUIElement, sgeGUIFormList;
 
 const
   Extension_GUI = 'GUI';
@@ -29,16 +28,15 @@ type
     MAX_SUB_COUNT = 8;
   private
     //Ссылки
-    FExtGraphic: TsgeExtensionGraphic;
-    FGUILayer: TsgeGraphicElementLayer;                             //Ссылка на слой GUI
+    FDrawLayer: TsgeDisplayLayer;         //Объект управления слоем графики
 
     //Объекты
-    FFormList: TsgeGUIFormList;
+    FFormList: TsgeGUIFormList;           //Список форм
 
     //Вспомогательные параметры
-    FCapturedElement: TsgeGUIElement;                               //Ссылка на элемент, захвативший события мыши
-    FFocusedElement: TsgeGUIElement;                                //Элемент имеющий фокус ввода
-    FLastElementAtCursor: TsgeGUIElement;                           //Последний элемент под курсором
+    FCapturedElement: TsgeGUIElement;     //Ссылка на элемент, захвативший события мыши
+    FFocusedElement: TsgeGUIElement;      //Элемент имеющий фокус ввода
+    FLastElementAtCursor: TsgeGUIElement; //Последний элемент под курсором
 
     //Параметры
     FEnable: Boolean;
@@ -51,7 +49,7 @@ type
     procedure SetEnable(AEnable: Boolean);
     procedure SetVisible(AVisible: Boolean);
 
-    //Обработчики событий
+    //Подписчики на события
     function  Handler_KeyDown(EventObj: TsgeEventKeyboard): TsgeEventHandlerResult;
     function  Handler_KeyUp(EventObj: TsgeEventKeyboard): TsgeEventHandlerResult;
     function  Handler_KeyChar(EventObj: TsgeEventKeyboardChar): TsgeEventHandlerResult;
@@ -63,6 +61,7 @@ type
     function  Handler_MouseWheel(EventObj: TsgeEventMouse): TsgeEventHandlerResult;
     function  Handler_MouseDblClick(EventObj: TsgeEventMouse): TsgeEventHandlerResult;
 
+    //Обработчики событий
     function  MouseHandler(EventType: TsgeGUIElementMouseEventType; Mouse: TsgeEventMouse): TsgeEventHandlerResult;
     function  ButtonHandler(EventType: TsgeGUIElementButtonEventType; Keyboard: TsgeEventBase): TsgeEventHandlerResult;
 
@@ -78,8 +77,6 @@ type
     constructor Create; override;
     destructor  Destroy; override;
 
-    procedure RepaintForms;                                         //Перерисовать формы
-
     //Мышь
     procedure MouseCapture(Element: TsgeGUIElement);                //Установить захват мыши
     procedure ReleaseMouse(Element: TsgeGUIElement);                //Отменить захват мыши
@@ -94,7 +91,6 @@ type
     property Visible: Boolean read FVisible write SetVisible;
 
     property FormList: TsgeGUIFormList read FFormList;
-    property GUILayer: TsgeGraphicElementLayer read FGUILayer;
   end;
 
 
@@ -108,6 +104,9 @@ type
   TsgeGUIElementExt = class(TsgeGUIElement);
 
 const
+  Layer_Name = 'System.GUI';
+  Layer_Index = $FFFE;
+
   _UNITNAME = 'ExtensionGSUI';
 
 
@@ -133,7 +132,8 @@ begin
   FVisible := AVisible;
 
   //Поправить слой отрисовки
-  FGUILayer.Visible := FVisible;
+  FDrawLayer.Visible := FVisible;
+  FDrawLayer.Update;
 end;
 
 
@@ -260,7 +260,11 @@ function TsgeExtensionGUI.ButtonHandler(EventType: TsgeGUIElementButtonEventType
 begin
   Result := ehrNormal;
 
-  if FFocusedElement <> nil then
+  //Проверить на видимость слоя
+  if not FVisible then
+    Exit;
+
+  if (FFocusedElement <> nil) and (FFocusedElement.Visible) and (TsgeGUIElementExt(FFocusedElement).DisplayElement_GetVisible) then
     if FFocusedElement.ButtonHandler(EventType, Keyboard) then
       Result := ehrBreak;
 end;
@@ -271,7 +275,7 @@ begin
   if FFormList.Count = 0 then
     Exit;
 
-  //Удалить объекты
+  //Удалить формы
   while FFormList.Count > 0 do
     FFormList.Item[0].Free;
 end;
@@ -287,7 +291,7 @@ function TsgeExtensionGUI.ElementAtCursor(X, Y: Integer): TsgeGUIElement;
     Result := nil;
 
     //Если элемент неактивен, то выход
-    if not Element.Visible or not Element.Enable then
+    if (not Element.Visible) or (not Element.Enable) or (not TsgeGUIElementExt(Element).DisplayElement_GetVisible) then
       Exit;
 
     //Проверить нахождение координат в текущем элементе
@@ -350,9 +354,6 @@ begin
   try
     inherited Create;
 
-    //Поиск указателей
-    FExtGraphic := TsgeExtensionGraphic(GetExtension(Extension_Graphic));
-
     //Создать классы
     FFormList := TsgeGUIFormList.Create(False);
 
@@ -360,10 +361,10 @@ begin
     RegisterEventHandlers;
 
     //Создать слой отрисовки GUI
-    FGUILayer := FExtGraphic.LayerList.Add(Graphic_Layer_System_GUI, Graphic_LayerIndex_GUI, True);
+    FDrawLayer := TsgeDisplayLayer.Create(Layer_Name, Layer_Index, True);
+    FDrawLayer.Add;
 
     //Установить параметры
-    FVisible := True;
     FVisible := True;
     FLastElementAtCursor := nil;
 
@@ -374,25 +375,16 @@ begin
 end;
 
 
-
 destructor TsgeExtensionGUI.Destroy;
 begin
   //Удалить формы
   DestroyForms;
 
   //Удалить объекты
+  FDrawLayer.Free;
   FFormList.Free;
 
   inherited Destroy;
-end;
-
-
-procedure TsgeExtensionGUI.RepaintForms;
-var
-  i: Integer;
-begin
-  for i := 0 to FFormList.Count - 1 do
-    FFormList.Item[i].Repaint;
 end;
 
 

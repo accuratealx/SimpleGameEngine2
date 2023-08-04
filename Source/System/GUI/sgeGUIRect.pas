@@ -25,18 +25,36 @@ type
   private
     FDisplayElement: TsgeDisplayElementRect;
 
+    procedure SetColor(AColor: TsgeColor);
+    function  GetColor: TsgeColor;
   protected
     procedure DisplayElement_CorrectPosition(RealLeft, RealTop: Integer); override;
     procedure DisplayElement_CorrectSize(Width, Height: Integer); override;
     procedure DisplayElement_CorrectVisible(Visible: Boolean); override;
+    function  DisplayElement_GetVisible: Boolean; override;
 
   public
     constructor Create(Name: String; Left, Top, Width, Height: Integer; Color: TsgeColor; Visible: Boolean = True; Parent: TsgeGUIElement = nil);
     destructor  Destroy; override;
+
+    property Color: TsgeColor read GetColor write SetColor;
   end;
 
 
 implementation
+
+
+procedure TsgeGUIRect.SetColor(AColor: TsgeColor);
+begin
+  FDisplayElement.Color := AColor;
+  FDisplayElement.Update;
+end;
+
+
+function TsgeGUIRect.GetColor: TsgeColor;
+begin
+  Result := FDisplayElement.Color;
+end;
 
 
 procedure TsgeGUIRect.DisplayElement_CorrectPosition(RealLeft, RealTop: Integer);
@@ -58,6 +76,12 @@ end;
 procedure TsgeGUIRect.DisplayElement_CorrectVisible(Visible: Boolean);
 begin
   FDisplayElement.Visible := Visible;
+end;
+
+
+function TsgeGUIRect.DisplayElement_GetVisible: Boolean;
+begin
+  Result := FDisplayElement.Visible;
 end;
 
 
