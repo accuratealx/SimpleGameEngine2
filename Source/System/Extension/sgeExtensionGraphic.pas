@@ -91,6 +91,7 @@ type
     procedure ProcessEvent_ItemUpdate(Event: TsgeEventGraphicElementUpdate);
     procedure ProcessEvent_ItemDelete(Event: TsgeEventGraphicElementDelete);
     procedure ProcessEvent_ItemVisible(Event: TsgeEventGraphicElementVisible);
+    procedure ProcessEvent_ItemClipRect(Event: TsgeEventGraphicElementClipRect);
 
     procedure ChangeDrawControl;
     procedure GetScreenData;
@@ -283,6 +284,10 @@ begin
         //Изменение видимости элемента
         Event_Graphic_ItemVisible:
           ProcessEvent_ItemVisible(TsgeEventGraphicElementVisible(Event));
+
+        //Режим обрезки
+        Event_Graphic_ItemClipRect:
+          ProcessEvent_ItemClipRect(TsgeEventGraphicElementClipRect(Event));
       end;
 
 
@@ -454,6 +459,19 @@ begin
 end;
 
 
+procedure TsgeExtensionGraphic.ProcessEvent_ItemClipRect(Event: TsgeEventGraphicElementClipRect);
+var
+  DrawObject: TsgeGraphicOpenGLDrawObject;
+begin
+  //Найти объект по ID
+  DrawObject := OpenGLDrawObjectTable.Get(Event.UniqueID);
+
+  //Изменить обрезку
+  DrawObject.Clipped := Event.Clipped;
+  DrawObject.ClipRect := Event.ClipRect;
+end;
+
+
 procedure TsgeExtensionGraphic.ChangeDrawControl;
 begin
   FGraphic.VerticalSync := FDrawControl = gdcSync;
@@ -551,7 +569,28 @@ begin
     begin
       //Вывести элемент, если он видимый
       if DrawObject.Visible then
+      begin
+
+        //Проверить режим обрезки
+        if DrawObject.Clipped then
+        begin
+          FGraphic.Enable(gcScissor);
+          FGraphic.SetScissor(
+            DrawObject.ClipRect.X,
+            DrawObject.ClipRect.Y,
+            DrawObject.ClipRect.Width,
+            DrawObject.ClipRect.Height
+          );
+        end;
+
+        //Вывод элемента
         DrawObject.Draw(FGraphic, FScreenSize, LayerInfo);
+
+        //Отключить обрезку
+        if DrawObject.Clipped then
+          FGraphic.Disable(gcScissor);
+
+      end;
 
       //Следующий элемент
       DrawObject := Layer.Items.GetNext;
@@ -693,6 +732,7 @@ begin
   EventManager.SubscriberGroupList.Subscribe(Event_Graphic_ItemUpdate, TsgeEventHandler(@EventHandler), Event_Priority_Max - 7, True);
   EventManager.SubscriberGroupList.Subscribe(Event_Graphic_ItemDelete, TsgeEventHandler(@EventHandler), Event_Priority_Max - 8, True);
   EventManager.SubscriberGroupList.Subscribe(Event_Graphic_ItemVisible, TsgeEventHandler(@EventHandler), Event_Priority_Max - 9, True);
+  EventManager.SubscriberGroupList.Subscribe(Event_Graphic_ItemClipRect, TsgeEventHandler(@EventHandler), Event_Priority_Max - 10, True);
 end;
 
 

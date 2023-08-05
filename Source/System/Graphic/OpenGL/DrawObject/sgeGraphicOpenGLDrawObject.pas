@@ -22,7 +22,9 @@ uses
 type
   TsgeGraphicOpenGLDrawObject = class
   private
-    FVisible: Boolean;
+    FVisible: Boolean;        //Видимость
+    FClipped: Boolean;        //Режим обрезания :)
+    FClipRect: TsgeClipRect;  //Прямоугольник ограничивающий вывод
   public
     constructor Create(Element: TsgeDisplayElement); virtual;
 
@@ -30,6 +32,8 @@ type
     procedure Draw(Graphic: TsgeGraphicOpenGL; ScreenSize: TsgeFloatPoint; LayerInfo: TsgeLayerInfo); virtual; abstract;
 
     property Visible: Boolean read FVisible write FVisible;
+    property Clipped: Boolean read FClipped write FClipped;
+    property ClipRect: TsgeClipRect read FClipRect write FClipRect;
   end;
 
 
@@ -39,6 +43,7 @@ implementation
 constructor TsgeGraphicOpenGLDrawObject.Create(Element: TsgeDisplayElement);
 begin
   FVisible := True;
+  FClipped := False;
 
   Update(Element);
 end;

@@ -11,6 +11,7 @@
 unit sgeDisplayElement;
 
 {$mode ObjFPC}{$H+}
+{$ModeSwitch advancedrecords}
 
 interface
 
@@ -18,15 +19,34 @@ uses
   sgeEventManager;
 
 type
+  //Ограничивающий вывод прямоугольник
+  TsgeClipRect = record
+    X: Integer;
+    Y: Integer;
+    Width: Integer;
+    Height: Integer;
+
+    class operator = (A, B: TsgeClipRect): Boolean;
+  end;
+
+
+  //Базовый елемент вывода
   TsgeDisplayElement = class
   protected
     FEventManager: TsgeEventManager;  //Ссылка на менеджер событий
 
     FID: Integer;                     //Уникальный номер элемента
     FVisible: Boolean;                //Видимость элемента
+    FClipped: Boolean;                //Флаг ограничения вывода
+    FClipRect: TsgeClipRect;          //Ораничивающий прямоугольник
 
+    //Свойства
     procedure SetVisible(AVisible: Boolean);
+    procedure SetClipped(AClipped: Boolean);
+    procedure SetClipRect(AClipRect: TsgeClipRect);
 
+    //Вспомогательные методы
+    procedure SendClipRectEvent;                        //Послать событие изменения ограничения вывода
     procedure ResetChangeSet; virtual; abstract;        //Сброс флагов изменения
     function  IsNeedUpdate: Boolean; virtual; abstract; //Проверить необходимость обновления
 
@@ -37,13 +57,18 @@ type
 
     //События
     procedure Add(LayerName: String); //Добавление нового объекта на слой
-    procedure ChangeVisibility;       //Изменение видимости
     procedure Update;                 //Изменение объекта
     procedure Delete;                 //Удаление объекта
 
+    //Свойства
     property ID: Integer read FID;
     property Visible: Boolean read FVisible write SetVisible;
+    property Clipped: Boolean read FClipped write SetClipped;
+    property ClipRect: TsgeClipRect read FClipRect write SetClipRect;
   end;
+
+
+function sgeGetClipRect(X, Y, Width, Height: Integer): TsgeClipRect;
 
 
 implementation
@@ -53,7 +78,24 @@ uses
   sgeEventGraphic;
 
 
+class operator TsgeClipRect. = (A, B: TsgeClipRect): Boolean;
+begin
+  Result := (A.X = B.X) and (A.Y = B.Y) and (A.Width = B.Width) and (A.Height = B.Height);
+end;
+
+
+function sgeGetClipRect(X, Y, Width, Height: Integer): TsgeClipRect;
+begin
+  Result.X := X;
+  Result.Y := Y;
+  Result.Width := Width;
+  Result.Height := Height;
+end;
+
+
 procedure TsgeDisplayElement.SetVisible(AVisible: Boolean);
+var
+  Event: TsgeEventGraphicElementVisible;
 begin
   if FVisible = AVisible then
     Exit;
@@ -61,7 +103,42 @@ begin
   FVisible := AVisible;
 
   //Послать событие изменения видимости
-  ChangeVisibility;
+  Event := TsgeEventGraphicElementVisible.Create(FID, FVisible);
+  FEventManager.Publish(Event);
+end;
+
+
+procedure TsgeDisplayElement.SetClipped(AClipped: Boolean);
+begin
+  if FClipped = AClipped then
+    Exit;
+
+  FClipped := AClipped;
+
+  //Послать событие изменения границы вывода
+  SendClipRectEvent;
+end;
+
+
+procedure TsgeDisplayElement.SetClipRect(AClipRect: TsgeClipRect);
+begin
+  if FClipRect = AClipRect then
+    Exit;
+
+  FClipRect := AClipRect;
+
+  //Послать событие изменения границы вывода если включено обрезние
+  if FClipped then
+    SendClipRectEvent;
+end;
+
+
+procedure TsgeDisplayElement.SendClipRectEvent;
+var
+  Event: TsgeEventGraphicElementClipRect;
+begin
+  Event := TsgeEventGraphicElementClipRect.Create(FID, FClipped, FClipRect);
+  FEventManager.Publish(Event);
 end;
 
 
@@ -75,6 +152,7 @@ begin
 
   //Задать параметры
   FVisible := False;
+  FClipped := False;
 end;
 
 
@@ -83,17 +161,6 @@ var
   Event: TsgeEventGraphicElementAdd;
 begin
   Event := TsgeEventGraphicElementAdd.Create(FID, Self.GetCopy, LayerName);
-  FEventManager.Publish(Event);
-
-  ResetChangeSet;
-end;
-
-
-procedure TsgeDisplayElement.ChangeVisibility;
-var
-  Event: TsgeEventGraphicElementVisible;
-begin
-  Event := TsgeEventGraphicElementVisible.Create(FID, FVisible);
   FEventManager.Publish(Event);
 
   ResetChangeSet;

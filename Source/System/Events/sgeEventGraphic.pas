@@ -24,22 +24,23 @@ uses
 
 const
   //Шейдеры
-  Event_Graphic_ShaderAdd   = 'Graphic.ShaderAdd';
+  Event_Graphic_ShaderAdd    = 'Graphic.ShaderAdd';
 
   //Затемнение
-  Event_Graphic_Fade        = 'Graphic.Fade';
-  Event_Graphic_FadeNew     = 'Graphic.FadeNew';
+  Event_Graphic_Fade         = 'Graphic.Fade';
+  Event_Graphic_FadeNew      = 'Graphic.FadeNew';
 
   //Слои
-  Event_Graphic_LayerAdd    = 'Graphic.LayerAdd';
-  Event_Graphic_LayerUpdate = 'Graphic.LayerUpdate';
-  Event_Graphic_LayerDelete = 'Graphic.LayerDelete';
+  Event_Graphic_LayerAdd     = 'Graphic.LayerAdd';
+  Event_Graphic_LayerUpdate  = 'Graphic.LayerUpdate';
+  Event_Graphic_LayerDelete  = 'Graphic.LayerDelete';
 
   //Элементы
-  Event_Graphic_ItemAdd     = 'Graphic.ItemAdd';
-  Event_Graphic_ItemUpdate  = 'Graphic.ItemUpdate';
-  Event_Graphic_ItemDelete  = 'Graphic.ItemDelete';
-  Event_Graphic_ItemVisible = 'Graphic.ItemVisible';
+  Event_Graphic_ItemAdd      = 'Graphic.ItemAdd';
+  Event_Graphic_ItemUpdate   = 'Graphic.ItemUpdate';
+  Event_Graphic_ItemDelete   = 'Graphic.ItemDelete';
+  Event_Graphic_ItemVisible  = 'Graphic.ItemVisible';
+  Event_Graphic_ItemClipRect = 'Graphic.ItemClipRect';
 
 
 type
@@ -166,6 +167,19 @@ type
     function Copy: TsgeEventBase; override;
 
     property Visible: Boolean read FVisible;
+  end;
+
+  TsgeEventGraphicElementClipRect = class(TsgeEventGraphicElement)
+  private
+    FClipped: Boolean;
+    FClipRect: TsgeClipRect;
+  public
+    constructor Create(UniqueID: Integer; Clipped: Boolean; ClipRect: TsgeClipRect);
+
+    function Copy: TsgeEventBase; override;
+
+    property Clipped: Boolean read FClipped;
+    property ClipRect: TsgeClipRect read FClipRect;
   end;
 
 
@@ -332,6 +346,21 @@ end;
 function TsgeEventGraphicElementVisible.Copy: TsgeEventBase;
 begin
   Result := TsgeEventGraphicElementVisible.Create(FUniqueID, FVisible);
+end;
+
+
+constructor TsgeEventGraphicElementClipRect.Create(UniqueID: Integer; Clipped: Boolean; ClipRect: TsgeClipRect);
+begin
+  inherited Create(Event_Graphic_ItemClipRect, UniqueID);
+
+  FClipped := Clipped;
+  FClipRect := ClipRect;
+end;
+
+
+function TsgeEventGraphicElementClipRect.Copy: TsgeEventBase;
+begin
+  Result := TsgeEventGraphicElementClipRect.Create(FUniqueID, FClipped, FClipRect);
 end;
 
 
