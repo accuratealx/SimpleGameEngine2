@@ -17,7 +17,7 @@ interface
 
 uses
   sgeGUIElement,
-  sgeDisplayElementRect;
+  sgeDisplayElement, sgeDisplayElementRect;
 
 type
   TsgeGUIForm = class(TsgeGUIElement)

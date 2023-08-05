@@ -16,7 +16,8 @@ interface
 
 uses
   sgeTypes, sgeTemplateCollection,
-  sgeEventBase, sgeEventMouse, sgeEventKeyboard;
+  sgeEventBase, sgeEventMouse, sgeEventKeyboard,
+  sgeGUIPropertyConstrains;
 
 const
   Layer_GUI_Name = 'System.GUI';
@@ -50,17 +51,18 @@ type
     FChildList: TsgeGUIElementList;
 
     FName: String;
-    FEnable: Boolean;               //Флаг обработки событий пользователя
-    FFocused: Boolean;              //Фокус ввода
+    FEnable: Boolean;                           //Флаг обработки событий пользователя
+    FFocused: Boolean;                          //Фокус ввода
     FLeft: Integer;
     FTop: Integer;
     FWidth: Integer;
     FHeight: Integer;
     FVisible: Boolean;
-    FAutoSize: Boolean;             //Авторазмер элемента, для компонентов с текстом
+    FAutoSize: Boolean;                         //Авторазмер элемента, для компонентов с текстом
     FScale: Single;
-    FClickButton: TsgeMouseButton;  //Кнопка мыши для Click
-    FEnableDoubleClick: Boolean;    //Доступность двойного клика
+    FClickButton: TsgeMouseButton;              //Кнопка мыши для Click
+    FEnableDoubleClick: Boolean;                //Доступность двойного клика
+    FConstrains: TsgeGUIPropertyConstrainsExt;  //Ограничение размеров
 
     //Вспомогательные параметры
     FPressed: Boolean;
@@ -136,6 +138,7 @@ type
     procedure SetAutoSize(AAutoSize: Boolean); virtual;
     procedure SetScale(AScale: Single); virtual;
     function  GetScale: Single; virtual;
+    function  GetConstrains: TsgeGUIPropertyConstrains;
   public
     constructor Create(Name: String; Left, Top, Width, Height: Integer; Visible: Boolean = True; Parent: TsgeGUIElement = nil);
     destructor  Destroy; override;
@@ -159,6 +162,7 @@ type
     property AutoSize: Boolean read FAutoSize write SetAutoSize;
     property Scale: Single read GetScale write SetScale;
     property ClickButton: TsgeMouseButton read FClickButton write FClickButton;
+    property Constrains: TsgeGUIPropertyConstrains read GetConstrains;
 
     //Обработчики
     property OnShow: TsgeGUIProcEvent read FOnShow write FOnShow;
@@ -347,7 +351,7 @@ begin
     CalculateAutosize(NewWidth, NewHeight);
 
   //Проверить ограничение размера
-  //FConstrains.Check(NewWidth, NewHeight);
+  FConstrains.Check(NewWidth, NewHeight);
 
   //Проверку на наименьший размер
   CheckMinimalSize(NewWidth, NewHeight);
@@ -692,10 +696,17 @@ begin
 end;
 
 
+function TsgeGUIElement.GetConstrains: TsgeGUIPropertyConstrains;
+begin
+  Result := FConstrains;
+end;
+
+
 constructor TsgeGUIElement.Create(Name: String; Left, Top, Width, Height: Integer; Visible: Boolean; Parent: TsgeGUIElement);
 begin
   //Создать объекты
   FChildList := TsgeGUIElementList.Create(False);
+  FConstrains := TsgeGUIPropertyConstrainsExt.Create(Self);
 
   //Запомнить параметры
   FName := Name;
@@ -728,8 +739,11 @@ begin
   //Убрать фокус с элемента
   sgeCorePointer_GetSGE.ExtGUI.LostFocus(Self);
 
-  //Почистить детей
+  //Удалить детей
   DestroyChild;
+
+  //Удалить объекты
+  FConstrains.Free;
   FChildList.Free;
 
   //Удалить себя у родителя

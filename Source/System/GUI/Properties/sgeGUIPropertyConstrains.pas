@@ -15,7 +15,6 @@ unit sgeGUIPropertyConstrains;
 interface
 
 uses
-  sgeSimpleParameters,
   sgeGUIProperty;
 
 
@@ -31,6 +30,8 @@ type
     procedure SetMinWidth(AMinWidth: Integer);
     procedure SetMaxHeight(AMaxHeight: Integer);
     procedure SetMaxWidth(AMaxWidth: Integer);
+
+    procedure ChangeParent;
   public
     property MinWidth: Integer read FMinWidth write SetMinWidth;
     property MaxWidth: Integer read FMaxWidth write SetMaxWidth;
@@ -41,13 +42,17 @@ type
 
   TsgeGUIPropertyConstrainsExt = class(TsgeGUIPropertyConstrains)
   public
-    procedure LoadParameters(Parameters: TsgeSimpleParameters; Prefix: String = '');
     procedure Check(var NewWidth, NewHeight: Integer);
   end;
 
 
 implementation
 
+uses
+  sgeGUIElement;
+
+type
+  TsgeGUIElementExtended = class(TsgeGUIElement);
 
 
 procedure TsgeGUIPropertyConstrains.SetMinHeight(AMinHeight: Integer);
@@ -63,7 +68,7 @@ begin
     FMaxHeight := FMinHeight;
 
   //Внести изменения
-  UpdateParent;
+  ChangeParent;
 end;
 
 
@@ -80,7 +85,7 @@ begin
     FMaxWidth := FMinWidth;
 
   //Внести изменения
-  UpdateParent;
+  ChangeParent;
 end;
 
 
@@ -97,7 +102,7 @@ begin
     FMinHeight := FMaxHeight;
 
   //Внести изменения
-  UpdateParent;
+  ChangeParent;
 end;
 
 
@@ -114,39 +119,13 @@ begin
     FMinWidth := FMaxWidth;
 
   //Внести изменения
-  UpdateParent;
+  ChangeParent;
 end;
 
 
-procedure TsgeGUIPropertyConstrainsExt.LoadParameters(Parameters: TsgeSimpleParameters; Prefix: String);
-var
-  ParamName: String;
+procedure TsgeGUIPropertyConstrains.ChangeParent;
 begin
-  //Заблокировать изменение
-  LockUpdate;
-
-  //MinWidth
-  ParamName := Prefix + 'MinWidth';
-  if Parameters.Exist[ParamName] then
-    SetMinWidth(Parameters.GetValue(ParamName, 0));
-
-  //MaxWidth
-  ParamName := Prefix + 'MaxWidth';
-  if Parameters.Exist[ParamName] then
-    SetMaxWidth(Parameters.GetValue(ParamName, 0));
-
-  //MinHeight
-  ParamName := Prefix + 'MinHeight';
-  if Parameters.Exist[ParamName] then
-    SetMinHeight(Parameters.GetValue(ParamName, 0));
-
-  //MaxHeight
-  ParamName := Prefix + 'MaxHeight';
-  if Parameters.Exist[ParamName] then
-    SetMaxHeight(Parameters.GetValue(ParamName, 0));
-
-  //Разблокировать изменение
-  UnlockUpdate;
+  TsgeGUIElementExtended(FOwner).ChangeSize(TsgeGUIElementExtended(FOwner).FWidth, TsgeGUIElementExtended(FOwner).FHeight);
 end;
 
 
@@ -161,6 +140,7 @@ begin
   if (FMaxHeight <> 0) and (NewHeight > FMaxHeight) then
     NewHeight := FMaxHeight;
 end;
+
 
 
 end.
