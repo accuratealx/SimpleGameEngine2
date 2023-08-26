@@ -11,25 +11,13 @@
 unit sgeDisplayElement;
 
 {$mode ObjFPC}{$H+}
-{$ModeSwitch advancedrecords}
 
 interface
 
 uses
-  sgeEventManager;
+  sgeTypes, sgeEventManager;
 
 type
-  //Ограничивающий вывод прямоугольник
-  TsgeClipRect = record
-    X: Integer;
-    Y: Integer;
-    Width: Integer;
-    Height: Integer;
-
-    class operator = (A, B: TsgeClipRect): Boolean;
-  end;
-
-
   //Базовый елемент вывода
   TsgeDisplayElement = class
   protected
@@ -68,29 +56,11 @@ type
   end;
 
 
-function sgeGetClipRect(X, Y, Width, Height: Integer): TsgeClipRect;
-
-
 implementation
 
 uses
   sgeUniqueID, sgeCorePointerUtils,
   sgeEventGraphic;
-
-
-class operator TsgeClipRect. = (A, B: TsgeClipRect): Boolean;
-begin
-  Result := (A.X = B.X) and (A.Y = B.Y) and (A.Width = B.Width) and (A.Height = B.Height);
-end;
-
-
-function sgeGetClipRect(X, Y, Width, Height: Integer): TsgeClipRect;
-begin
-  Result.X := X;
-  Result.Y := Y;
-  Result.Width := Width;
-  Result.Height := Height;
-end;
 
 
 procedure TsgeDisplayElement.SetVisible(AVisible: Boolean);
