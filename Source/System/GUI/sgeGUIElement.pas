@@ -103,6 +103,7 @@ type
     //Вспомогательные методы
     function  GetGlobalPos: TsgeIntPoint;                                   //Получить глобальные координаты
     procedure ChangeSize(NewWidth, NewHeight: Integer);                     //Изменить размеры элемента
+    procedure CorrectClipRect;                                              //Поправить ограничивающий прямоугольник
     procedure CalculateAutosize(var NewWidth, NewHeight: Integer); virtual; //Расчёт авторазмера
     procedure CheckMinimalSize(var NewWidth, NewHeight: Integer); virtual;  //Проверка наименьших размеров
 
@@ -114,6 +115,8 @@ type
     procedure DisplayElement_CorrectSize(Width, Height: Integer); virtual;
     procedure DisplayElement_CorrectVisible(Visible: Boolean); virtual;
     function  DisplayElement_GetVisible: Boolean; virtual;
+    procedure DisplayElement_CorrectClipRect(Rect: TsgeClipRect); virtual;
+    function  DisplayElement_GetClipRect: TsgeClipRect; virtual;
 
     //Дети
     procedure AddChild(Element: TsgeGUIElement);
@@ -125,6 +128,8 @@ type
     procedure CorrectChildVisible;
 
     //Свойства
+    procedure PropertyChanged; virtual; //Для подчиненных классов
+
     procedure SetParent(AParent: TsgeGUIElement); virtual;
     procedure SetEnable(AEnabled: Boolean); virtual;
     procedure SetFocused(AFocused: Boolean); virtual;
@@ -139,6 +144,7 @@ type
     procedure SetScale(AScale: Single); virtual;
     function  GetScale: Single; virtual;
     function  GetConstrains: TsgeGUIPropertyConstrains;
+    function  GetScaleSize: TsgeIntPoint;
   public
     constructor Create(Name: String; Left, Top, Width, Height: Integer; Visible: Boolean = True; Parent: TsgeGUIElement = nil);
     destructor  Destroy; override;
@@ -163,6 +169,7 @@ type
     property Scale: Single read GetScale write SetScale;
     property ClickButton: TsgeMouseButton read FClickButton write FClickButton;
     property Constrains: TsgeGUIPropertyConstrains read GetConstrains;
+    property ScaleSize: TsgeIntPoint read GetScaleSize;
 
     //Обработчики
     property OnShow: TsgeGUIProcEvent read FOnShow write FOnShow;
@@ -362,6 +369,52 @@ begin
 
   //Поправить размеры
   CorrectDisplayElementSize;
+
+  //Поправить ограничивающий прямоугольник
+  CorrectClipRect;
+end;
+
+
+procedure TsgeGUIElement.CorrectClipRect;
+
+  function GetElementRect(Element: TsgeGUIElement): TsgeClipRect;
+  var
+    Ps: TsgeIntPoint;
+    Scl: Single;
+  begin
+    //Масштаб
+    Scl := Element.GetScale;
+
+    //Определить прямоугольник
+    Ps := Element.GetGlobalPos;
+    Result.X := Ps.X;
+    Result.Y := Ps.Y;
+    Result.Width := Round(Element.FWidth * Scl);
+    Result.Height := Round(Element.FHeight * Scl);
+  end;
+
+var
+  Rect, ParentRect: TsgeClipRect;
+  i: Integer;
+begin
+  //Собственный прямоугольник
+  Rect := GetElementRect(Self);
+
+  if FParent <> nil then
+  begin
+    //Определить ограничение родителя
+    ParentRect := FParent.DisplayElement_GetClipRect;
+
+    //Подрезать по родителю
+    Rect := sgeRestrictClipRect(Rect, ParentRect);
+  end;
+
+  //Поправить ограничение
+  DisplayElement_CorrectClipRect(Rect);
+
+  //Поправить ограничение у детей
+  for i := 0 to FChildList.Count - 1 do
+    FChildList.Item[i].CorrectClipRect;
 end;
 
 
@@ -436,9 +489,25 @@ begin
 end;
 
 
+procedure TsgeGUIElement.DisplayElement_CorrectClipRect(Rect: TsgeClipRect);
+begin
+  //Заглушка, переопределяется в потомке
+end;
+
+
+function TsgeGUIElement.DisplayElement_GetClipRect: TsgeClipRect;
+begin
+  //Заглушка, переопределяется в потомке
+end;
+
+
 procedure TsgeGUIElement.AddChild(Element: TsgeGUIElement);
 begin
+  //Добавить в список
   FChildList.Add(Element);
+
+  //Поправить ораничивающий приямоугольник
+  Element.CorrectClipRect;
 end;
 
 
@@ -519,6 +588,13 @@ begin
 end;
 
 
+procedure TsgeGUIElement.PropertyChanged;
+begin
+  //Заглушка, переопределяется в потомке.
+  //Нужна для обработки изменения свойств из классов Property*
+end;
+
+
 procedure TsgeGUIElement.SetParent(AParent: TsgeGUIElement);
 begin
   if FParent = AParent then
@@ -577,6 +653,8 @@ begin
   CorrectDisplayElementPosition;
 
   CorrectChildPos;
+
+  CorrectClipRect;
 end;
 
 
@@ -590,6 +668,8 @@ begin
   CorrectDisplayElementPosition;
 
   CorrectChildPos;
+
+  CorrectClipRect;
 end;
 
 
@@ -604,6 +684,8 @@ begin
   CorrectDisplayElementPosition;
 
   CorrectChildPos;
+
+  CorrectClipRect;
 end;
 
 
@@ -684,6 +766,9 @@ begin
 
   //Поправить детей
   CorrectChildSizeAndPos;
+
+  //Поправить ограничивающий прямоугольник
+  CorrectClipRect;
 end;
 
 
@@ -702,6 +787,17 @@ begin
 end;
 
 
+function TsgeGUIElement.GetScaleSize: TsgeIntPoint;
+var
+  Scl: Single;
+begin
+  Scl := GetScale;
+
+  Result.X := Round(FWidth * Scl);
+  Result.Y := Round(FHeight * Scl);
+end;
+
+
 constructor TsgeGUIElement.Create(Name: String; Left, Top, Width, Height: Integer; Visible: Boolean; Parent: TsgeGUIElement);
 begin
   //Создать объекты
@@ -712,6 +808,8 @@ begin
   FName := Name;
   FLeft := Left;
   FTop := Top;
+  FWidth := Width;
+  FHeight := Height;
   FVisible := False;
   FAutoSize := False;
   FScale := 1;

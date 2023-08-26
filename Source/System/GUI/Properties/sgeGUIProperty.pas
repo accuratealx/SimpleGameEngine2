@@ -19,12 +19,25 @@ type
   protected
     FOwner: TObject;
 
+    procedure UpdateParent;
   public
     constructor Create(AOwner: TObject); virtual;
   end;
 
 
 implementation
+
+uses
+  sgeGUIElement;
+
+type
+  TsgeGUIElementExt = class(TsgeGUIElement);
+
+
+procedure TsgeGUIProperty.UpdateParent;
+begin
+  TsgeGUIElementExt(FOwner).PropertyChanged;
+end;
 
 
 constructor TsgeGUIProperty.Create(AOwner: TObject);

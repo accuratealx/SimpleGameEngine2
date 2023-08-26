@@ -16,6 +16,7 @@ unit sgeGUIForm;
 interface
 
 uses
+  sgeTypes,
   sgeGUIElement,
   sgeDisplayElement, sgeDisplayElementRect;
 
@@ -29,6 +30,8 @@ type
     procedure DisplayElement_CorrectSize(Width, Height: Integer); override;
     procedure DisplayElement_CorrectVisible(Visible: Boolean); override;
     function  DisplayElement_GetVisible: Boolean; override;
+    procedure DisplayElement_CorrectClipRect(Rect: TsgeClipRect); override;
+    function  DisplayElement_GetClipRect: TsgeClipRect; override;
 
   public
     constructor Create(Name: String; Left, Top, Width, Height: Integer; Visible: Boolean = True);
@@ -72,10 +75,24 @@ begin
 end;
 
 
+procedure TsgeGUIForm.DisplayElement_CorrectClipRect(Rect: TsgeClipRect);
+begin
+  FDisplayElement.ClipRect := Rect;
+end;
+
+
+function TsgeGUIForm.DisplayElement_GetClipRect: TsgeClipRect;
+begin
+  Result := FDisplayElement.ClipRect;
+end;
+
+
 constructor TsgeGUIForm.Create(Name: String; Left, Top, Width, Height: Integer; Visible: Boolean);
 begin
   FDisplayElement := TsgeDisplayElementRect.Create(Left, Top, Left + Width, Top + Height, cBlack);
   FDisplayElement.Add(Layer_GUI_Name);
+  FDisplayElement.ClipRect := sgeGetClipRect(Left, Top, Width, Height);
+  FDisplayElement.Clipped := True;
 
   inherited Create(Name, Left, Top, Width, Height, Visible);
 

@@ -1,8 +1,8 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGUIPropertySprite.pas
-Версия            1.1
-Создан            23.09.2021
+Версия            1.0
+Создан            26.08.2023
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          GUI: Свойство: Спрайт
 }
@@ -10,199 +10,166 @@
 
 unit sgeGUIPropertySprite;
 
-{$mode objfpc}{$H+}
+{$mode ObjFPC}{$H+}
 
 interface
 
 uses
-  sgeTypes, sgeSimpleParameters,
-  sgeGraphicSprite,
-  sgeGUIProperty, sgeGUIPropertyScaleXY, sgeGUIPropertyHorizontalAlign, sgeGUIPropertyVerticalAlign,
-  sgeGUIPropertySpriteRect, sgeGUIPropertyDrawMethod;
-
+  sgeTypes, sgeSprite,
+  sgeGraphicColor,
+  sgeGUIProperty, sgeGUIPropertyScale,
+  sgeDisplayElementSprite;
 
 type
   TsgeGUIPropertySprite = class(TsgeGUIProperty)
   private
-    FSprite: TsgeGraphicSprite;                                     //Ссылка на спрайт
+    FScale: TsgeGUIPropertyScaleExt;
+    FVerticalAlign: TsgeVerticalAlign;
+    FHorizontalAlign: TsgeHorizontalAlign;
 
-    FScale: TsgeGUIPropertyScaleXYExt;                              //Масштаб
-    FHorizontalAlign: TsgeGUIPropertyHorizontalAlignExt;            //Выравнивание по X
-    FVerticalAlign: TsgeGUIPropertyVerticalAlignExt;                //Выравнивание по Y
-    FDrawMode: TsgeGUIPropertySpriteRectExt;                        //Часть спрайта
-    FDrawMethod: TsgeGUIPropertyDrawMethodExt;                      //Метод вывода спрайта
+    FDisplaySprite: TsgeDisplayElementSprite;
 
-    procedure SetSprite(ASprite: TsgeGraphicSprite);
+    function GetScale: TsgeGUIPropertyScale;
 
-    function  GetScale: TsgeGUIPropertyScaleXY;
-    function  GetHorizontalAlign: TsgeGUIPropertyHorizontalAlign;
-    function  GetVerticalAlign: TsgeGUIPropertyVerticalAlign;
-    function  GetDrawMode: TsgeGUIPropertySpriteRect;
-    function  GetDrawMethod: TsgeGUIPropertyDrawMethod;
+    procedure SetVerticalAlign(AAlign: TsgeVerticalAlign);
+    procedure SetHorizontalAlign(AAlign: TsgeHorizontalAlign);
+    procedure SetReflect(AReflect: TsgeReflectSet);
+    function  GetReflect: TsgeReflectSet;
+    procedure SetColor(AColor: TsgeColor);
+    function  GetColor: TsgeColor;
+    procedure SetSprite(ASprite: TsgeSprite);
+    function  GetSprite: TsgeSprite;
   public
-    constructor Create(AOwner: TObject); override;
-    destructor  Destroy; override;
+    constructor Create(AOwner: TObject; DisplaySprite: TsgeDisplayElementSprite); reintroduce;
 
-    property Scale: TsgeGUIPropertyScaleXY read GetScale;
-    property HorizontalAlign: TsgeGUIPropertyHorizontalAlign read GetHorizontalAlign;
-    property VerticalAlign: TsgeGUIPropertyVerticalAlign read GetVerticalAlign;
-    property DrawMode: TsgeGUIPropertySpriteRect read GetDrawMode;
-    property DrawMethod: TsgeGUIPropertyDrawMethod read GetDrawMethod;
-
-    property Sprite: TsgeGraphicSprite read FSprite write SetSprite;
+    property Scale: TsgeGUIPropertyScale read GetScale;
+    property Sprite: TsgeSprite read GetSprite write SetSprite;
+    property VerticalAlign: TsgeVerticalAlign read FVerticalAlign write SetVerticalAlign;
+    property HorizontalAlign: TsgeHorizontalAlign read FHorizontalAlign write SetHorizontalAlign;
+    property Reflect: TsgeReflectSet read GetReflect write SetReflect;
+    property Color: TsgeColor read GetColor write SetColor;
   end;
 
 
-  TsgeGUIPropertySpriteExt = class(TsgeGUIPropertySprite)
+  TsgeGUIPropertySpriteEx = class(TsgeGUIPropertySprite)
   public
-    procedure LoadParameters(Parameters: TsgeSimpleParameters; Prefix: String = '');
-    procedure Draw(Rect: TsgeFloatRect);
+    function GetRealPosAndSize: TsgeIntRect;
   end;
+
 
 
 implementation
 
 uses
-  sgeCorePointerUtils,
-  sgeGraphic;
+  sgeGUIElement;
+
+type
+  TsgeGUIElementExt = class(TsgeGUIElement);
 
 
-procedure TsgeGUIPropertySprite.SetSprite(ASprite: TsgeGraphicSprite);
-begin
-  if FSprite = ASprite then
-    Exit;
-
-  FSprite := ASprite;
-  UpdateParent;
-end;
-
-
-function TsgeGUIPropertySprite.GetScale: TsgeGUIPropertyScaleXY;
+function TsgeGUIPropertySprite.GetScale: TsgeGUIPropertyScale;
 begin
   Result := FScale;
 end;
 
 
-function TsgeGUIPropertySprite.GetHorizontalAlign: TsgeGUIPropertyHorizontalAlign;
+procedure TsgeGUIPropertySprite.SetVerticalAlign(AAlign: TsgeVerticalAlign);
 begin
-  Result := FHorizontalAlign;
+  if FVerticalAlign = AAlign then
+    Exit;
+
+  FVerticalAlign := AAlign;
+  UpdateParent;
 end;
 
 
-function TsgeGUIPropertySprite.GetVerticalAlign: TsgeGUIPropertyVerticalAlign;
+procedure TsgeGUIPropertySprite.SetHorizontalAlign(AAlign: TsgeHorizontalAlign);
 begin
-  Result := FVerticalAlign;
+  if FHorizontalAlign = AAlign then
+    Exit;
+
+  FHorizontalAlign := AAlign;
+  UpdateParent;
 end;
 
 
-function TsgeGUIPropertySprite.GetDrawMode: TsgeGUIPropertySpriteRect;
+procedure TsgeGUIPropertySprite.SetReflect(AReflect: TsgeReflectSet);
 begin
-  Result := FDrawMode;
+  if FDisplaySprite.Reflect = AReflect then
+    Exit;
+
+  FDisplaySprite.Reflect := AReflect;
+  FDisplaySprite.Update;
 end;
 
 
-function TsgeGUIPropertySprite.GetDrawMethod: TsgeGUIPropertyDrawMethod;
+function TsgeGUIPropertySprite.GetReflect: TsgeReflectSet;
 begin
-  Result := FDrawMethod;
+  Result := FDisplaySprite.Reflect;
 end;
 
 
-constructor TsgeGUIPropertySprite.Create(AOwner: TObject);
+procedure TsgeGUIPropertySprite.SetColor(AColor: TsgeColor);
+begin
+  FDisplaySprite.Color := AColor;
+  FDisplaySprite.Update;
+end;
+
+
+function TsgeGUIPropertySprite.GetColor: TsgeColor;
+begin
+  Result := FDisplaySprite.Color;
+end;
+
+
+procedure TsgeGUIPropertySprite.SetSprite(ASprite: TsgeSprite);
+begin
+  FDisplaySprite.Sprite := ASprite;
+  FDisplaySprite.Update;
+end;
+
+
+function TsgeGUIPropertySprite.GetSprite: TsgeSprite;
+begin
+  Result := FDisplaySprite.Sprite;
+end;
+
+
+constructor TsgeGUIPropertySprite.Create(AOwner: TObject; DisplaySprite: TsgeDisplayElementSprite);
 begin
   inherited Create(AOwner);
 
-  //Создать свойства
-  FScale := TsgeGUIPropertyScaleXYExt.Create(AOwner);
-  FHorizontalAlign := TsgeGUIPropertyHorizontalAlignExt.Create(AOwner);
-  FVerticalAlign := TsgeGUIPropertyVerticalAlignExt.Create(AOwner);
-  FDrawMode := TsgeGUIPropertySpriteRectExt.Create(AOwner);
-  FDrawMethod := TsgeGUIPropertyDrawMethodExt.Create(AOwner);
+  FScale := TsgeGUIPropertyScaleExt.Create(AOwner);
+  FVerticalAlign := vaBottom;
+  FHorizontalAlign := haCenter;
 
-  //Задать параметры
-  FSprite := nil;
+  FDisplaySprite := DisplaySprite;
 end;
 
 
-destructor TsgeGUIPropertySprite.Destroy;
-begin
-  FDrawMethod.Free;
-  FDrawMode.Free;
-  FVerticalAlign.Free;
-  FHorizontalAlign.Free;
-  FScale.Free;
-
-  inherited Destroy;
-end;
-
-
-procedure TsgeGUIPropertySpriteExt.LoadParameters(Parameters: TsgeSimpleParameters; Prefix: String);
+function TsgeGUIPropertySpriteEx.GetRealPosAndSize: TsgeIntRect;
 var
-  ParamName: String;
+  SpriteSize, ElementSize, ElementPos: TsgeIntPoint;
+  Element: TsgeGUIElement;
 begin
-  //Sprite
-  ParamName := Prefix + 'Name';
-  if Parameters.Exist[ParamName] then
-    FSprite := sgeCorePointer_GetSGE.ExtResourceList.GetSprite(Parameters.GetValue(ParamName, 'Sprite'));
+  //Ссылка на родителя
+  Element := TsgeGUIElement(FOwner);
 
-  //Scale
-  FScale.LoadParameters(Parameters, Prefix + 'Scale.');
+  //Реальный размер элемента
+  ElementSize := Element.ScaleSize;
 
-  //HorizontalAlign
-  FHorizontalAlign.LoadParameters(Parameters, Prefix + 'HorizontalAlign.');
+  //Реальное положение элемента
+  ElementPos := TsgeGUIElementExt(Element).GetGlobalPos;
 
-  //VerticalAlign
-  FVerticalAlign.LoadParameters(Parameters, Prefix + 'VerticalAlign.');
+  //Получить размеры спрайта
+  SpriteSize := FScale.GetSize(ElementSize.X, ElementSize.Y, FDisplaySprite.Sprite.Width, FDisplaySprite.Sprite.Height);
 
-  //DrawMode
-  FDrawMode.LoadParameters(Parameters, Prefix + 'DrawMode.');
-
-  //DrawMethod
-  FDrawMethod.LoadParameters(Parameters, Prefix + 'DrawMethod.');
+  //Размеры и положение
+  Result.X2 := SpriteSize.X;
+  Result.Y2 := SpriteSize.Y;
+  Result.X1 := ElementPos.X + sgeGetHorizontalAlignOffset(FHorizontalAlign, ElementSize.X, SpriteSize.X);
+  Result.Y1 := ElementPos.Y + sgeGetVerticaAlignOffset(FVerticalAlign, ElementSize.Y, SpriteSize.Y);
 end;
-
-
-procedure TsgeGUIPropertySpriteExt.Draw(Rect: TsgeFloatRect);
-var
-  DrawOpt: TsgeGraphicDrawOptions;
-  BaseWidth, BaseHeight: Integer;
-  Size: TsgeIntPoint;
-begin
-  if FSprite = nil then
-    Exit;
-
-  //Определить размеры элемента
-  BaseWidth := Round(Rect.X2 - Rect.X1);
-  BaseHeight := Round(Rect.Y2 - Rect.Y1);
-
-  //Подготовить стандартные настройки вывода
-  DrawOpt := DefaultDrawOptions;
-
-  //Установить спрайт
-  DrawOpt.Sprite := FSprite;
-  DrawOpt.CoordinateType := gctClassic;
-
-  //Определить размеры вывода
-  Size := FScale.GetSize(BaseWidth, BaseHeight, FSprite.Width, FSprite.Height);
-
-  //Поправить область вывода
-  DrawOpt.Rect.X1 := Rect.X1 + FHorizontalAlign.GetOffset(BaseWidth, Size.X);
-  DrawOpt.Rect.Y1 := Rect.Y1 + FVerticalAlign.GetOffset(BaseHeight, Size.Y);
-  DrawOpt.Rect.X2 := DrawOpt.Rect.X1 + Size.X;
-  DrawOpt.Rect.Y2 := DrawOpt.Rect.Y1 + Size.Y;
-
-  //Поправить область вывода спрайта
-  DrawOpt.SpriteRect := FDrawMode.GetRect(FSprite);
-
-  //Вывод в зависимости от метода
-  case FDrawMethod.Mode of
-    dmmNormal:
-      sgeCorePointer_GetSGE.ExtGraphic.Graphic.DrawSprite(DrawOpt);
-
-    dmmSegment:
-      sgeCorePointer_GetSGE.ExtGraphic.Graphic.DrawSpriteSegment(DrawOpt, FDrawMethod.Offset.Rect);
-  end;
-end;
-
 
 
 end.

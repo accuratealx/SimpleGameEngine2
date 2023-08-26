@@ -15,7 +15,6 @@ unit sgeGUIPropertyFloatPoint;
 interface
 
 uses
-  sgeSimpleParameters,
   sgeGUIProperty;
 
 type
@@ -27,21 +26,14 @@ type
     procedure SetX(AX: Single);
     procedure SetY(AY: Single);
   public
+    constructor Create(AOwner: TObject; X: Single = 1; Y: Single = 1);
+
     property X: Single read FX write SetX;
     property Y: Single read FY write SetY;
   end;
 
 
-  TsgeGUIPropertyFloatPointExt = class(TsgeGUIPropertyFloatPoint)
-  public
-    procedure LoadParameters(Parameters: TsgeSimpleParameters; Prefix: String = '');
-  end;
-
-
 implementation
-
-uses
-  sgeGUIUtils;
 
 
 procedure TsgeGUIPropertyFloatPoint.SetX(AX: Single);
@@ -58,13 +50,12 @@ begin
 end;
 
 
-procedure TsgeGUIPropertyFloatPointExt.LoadParameters(Parameters: TsgeSimpleParameters; Prefix: String);
+constructor TsgeGUIPropertyFloatPoint.Create(AOwner: TObject; X: Single; Y: Single);
 begin
-  //X
-  sgeGUISetValue(Parameters, Prefix + 'X', FX);
+  inherited Create(AOwner);
 
-  //Y
-  sgeGUISetValue(Parameters, Prefix + 'Y', FY);
+  FX := X;
+  FY := Y;
 end;
 
 

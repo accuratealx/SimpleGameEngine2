@@ -16,7 +16,7 @@ unit sgeGUIRect;
 interface
 
 uses
-  sgeGraphicColor,
+  sgeTypes, sgeGraphicColor,
   sgeGUIElement,
   sgeDisplayElementRect;
 
@@ -32,6 +32,8 @@ type
     procedure DisplayElement_CorrectSize(Width, Height: Integer); override;
     procedure DisplayElement_CorrectVisible(Visible: Boolean); override;
     function  DisplayElement_GetVisible: Boolean; override;
+    procedure DisplayElement_CorrectClipRect(Rect: TsgeClipRect); override;
+    function  DisplayElement_GetClipRect: TsgeClipRect; override;
 
   public
     constructor Create(Name: String; Left, Top, Width, Height: Integer; Color: TsgeColor; Visible: Boolean = True; Parent: TsgeGUIElement = nil);
@@ -85,10 +87,24 @@ begin
 end;
 
 
+procedure TsgeGUIRect.DisplayElement_CorrectClipRect(Rect: TsgeClipRect);
+begin
+  FDisplayElement.ClipRect := Rect;
+end;
+
+
+function TsgeGUIRect.DisplayElement_GetClipRect: TsgeClipRect;
+begin
+  Result := FDisplayElement.ClipRect;
+end;
+
+
 constructor TsgeGUIRect.Create(Name: String; Left, Top, Width, Height: Integer; Color: TsgeColor; Visible: Boolean; Parent: TsgeGUIElement);
 begin
   FDisplayElement := TsgeDisplayElementRect.Create(Left, Top, Left + Width, Top + Height, Color);
   FDisplayElement.Add(Layer_GUI_Name);
+  FDisplayElement.ClipRect := sgeGetClipRect(Left, Top, Width, Height);
+  FDisplayElement.Clipped := True;
 
   inherited Create(Name, Left, Top, Width, Height, Visible, Parent);
 end;
