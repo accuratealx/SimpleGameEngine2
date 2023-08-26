@@ -11,6 +11,7 @@
 unit sgeTypes;
 
 {$mode objfpc}{$H+}
+{$ModeSwitch advancedrecords}
 
 interface
 
@@ -132,6 +133,17 @@ type
   TsgeReflectSet = set of TsgeReflect;
 
 
+  //Ограничивающий вывод прямоугольник
+  TsgeClipRect = record
+    X: Integer;
+    Y: Integer;
+    Width: Integer;
+    Height: Integer;
+
+    class operator = (A, B: TsgeClipRect): Boolean;
+  end;
+
+
   TsgeIntPoint = record
     X: Integer;
     Y: Integer;
@@ -187,22 +199,61 @@ type
   PsgeFloatRect = ^TsgeFloatRect;
 
 
-function  sgeGetIntPoint(X, Y: Integer): TsgeIntPoint;
-function  sgeGetFloatPoint(X, Y: Single): TsgeFloatPoint;
-function  sgeGetSmallPoint(X, Y: SmallInt): TsgeSmallPoint;
+function sgeGetClipRect(X, Y, Width, Height: Integer): TsgeClipRect;
+function sgeRestrictClipRect(Source, Parent: TsgeClipRect): TsgeClipRect;
 
-function  sgeGetFloatTriple(X, Y, Z: Single): TsgeFloatTriple;
-function  sgeGetIntTriple(X, Y, Z: Integer): TsgeIntTriple;
+function sgeGetIntPoint(X, Y: Integer): TsgeIntPoint;
+function sgeGetFloatPoint(X, Y: Single): TsgeFloatPoint;
+function sgeGetSmallPoint(X, Y: SmallInt): TsgeSmallPoint;
 
-function  sgeGetIntRect(X1, Y1, X2, Y2: Integer): TsgeIntRect;
-function  sgeGetFloatRect(X1, Y1, X2, Y2: Single): TsgeFloatRect;
+function sgeGetFloatTriple(X, Y, Z: Single): TsgeFloatTriple;
+function sgeGetIntTriple(X, Y, Z: Integer): TsgeIntTriple;
 
-function  sgeFitRectIn(BaseW, BaseH, RectW, RectH: Integer): TsgeIntPoint;
-function  sgeFitRectOut(BaseW, BaseH, RectW, RectH: Integer): TsgeIntPoint;
+function sgeGetIntRect(X1, Y1, X2, Y2: Integer): TsgeIntRect;
+function sgeGetFloatRect(X1, Y1, X2, Y2: Single): TsgeFloatRect;
 
-function  sgeGetKeyboardShiftsFromKeboardButtons(KeyboardButtons: TsgeKeyboardButtons): TsgeKeyboardShifts;
+function sgeFitRectIn(BaseW, BaseH, RectW, RectH: Integer): TsgeIntPoint;
+function sgeFitRectOut(BaseW, BaseH, RectW, RectH: Integer): TsgeIntPoint;
+
+function sgeGetKeyboardShiftsFromKeboardButtons(KeyboardButtons: TsgeKeyboardButtons): TsgeKeyboardShifts;
+
+function sgeGetVerticaAlignOffset(Mode: TsgeVerticalAlign; BaseHeight, ElementHeight: Integer): Integer;
+function sgeGetHorizontalAlignOffset(Mode: TsgeHorizontalAlign; BaseWidth, ElementWidth: Integer): Integer;
 
 implementation
+
+
+class operator TsgeClipRect. = (A, B: TsgeClipRect): Boolean;
+begin
+  Result := (A.X = B.X) and (A.Y = B.Y) and (A.Width = B.Width) and (A.Height = B.Height);
+end;
+
+
+function sgeGetClipRect(X, Y, Width, Height: Integer): TsgeClipRect;
+begin
+  Result.X := X;
+  Result.Y := Y;
+  Result.Width := Width;
+  Result.Height := Height;
+end;
+
+
+function sgeRestrictClipRect(Source, Parent: TsgeClipRect): TsgeClipRect;
+begin
+  Result := Source;
+
+  if Result.X < Parent.X then
+    Result.X := Parent.X;
+
+  if Result.Y < Parent.Y then
+    Result.Y := Parent.Y;
+
+  if Result.X + Result.Width > Parent.X + Parent.Width then
+    Result.Width := Parent.Width - (Source.X - Parent.X);
+
+  if Result.Y + Result.Height > Parent.Y + Parent.Height then
+    Result.Height := Parent.Height - (Source.Y - Parent.Y);
+end;
 
 
 function sgeGetIntPoint(X, Y: Integer): TsgeIntPoint;
@@ -308,6 +359,36 @@ begin
 
   if (kbRightShift in KeyboardButtons) then
     Include(Result, ksRightShift);
+end;
+
+
+function sgeGetVerticaAlignOffset(Mode: TsgeVerticalAlign; BaseHeight, ElementHeight: Integer): Integer;
+begin
+  case Mode of
+    vaTop:
+      Result := 0;
+
+    vaCenter:
+      Result := Round((BaseHeight - ElementHeight) / 2);
+
+    vaBottom:
+      Result := BaseHeight - ElementHeight;
+  end;
+end;
+
+
+function sgeGetHorizontalAlignOffset(Mode: TsgeHorizontalAlign; BaseWidth, ElementWidth: Integer): Integer;
+begin
+  case Mode of
+    haLeft:
+      Result := 0;
+
+    haCenter:
+      Result := Round((BaseWidth - ElementWidth) / 2);
+
+    haRight:
+      Result := BaseWidth - ElementWidth;
+  end;
 end;
 
 
