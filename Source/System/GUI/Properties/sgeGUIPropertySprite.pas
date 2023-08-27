@@ -16,7 +16,7 @@ interface
 
 uses
   sgeTypes, sgeSprite,
-  sgeGraphicColor,
+  sgeColor,
   sgeGUIProperty, sgeGUIPropertyScale,
   sgeDisplayElementSprite;
 
@@ -41,6 +41,7 @@ type
     function  GetSprite: TsgeSprite;
   public
     constructor Create(AOwner: TObject; DisplaySprite: TsgeDisplayElementSprite); reintroduce;
+    destructor  Destroy; override;
 
     property Scale: TsgeGUIPropertyScale read GetScale;
     property Sprite: TsgeSprite read GetSprite write SetSprite;
@@ -144,6 +145,14 @@ begin
   FHorizontalAlign := haCenter;
 
   FDisplaySprite := DisplaySprite;
+end;
+
+
+destructor TsgeGUIPropertySprite.Destroy;
+begin
+  FScale.Free;
+
+  inherited Destroy;
 end;
 
 
