@@ -2,19 +2,9 @@
 
 layout (location = 0) in vec2 aPos;
 
-const vec4 points[] = vec4[]
-(
-    vec4(-1.0, 1.0, 0.0, 1.0),
-    vec4(-1.0, -1.0, 0.0, 1.0),
-    vec4(1.0, -1.0, 0.0, 1.0),
-    vec4(-1.0, 1.0, 0.0, 1.0),
-    vec4(1.0, -1.0, 0.0, 1.0),
-    vec4(1.0,  1.0, 0.0, 1.0)
-);
-
 void main()
 {
-    gl_Position = points[gl_VertexID];
+    gl_Position = vec4(aPos.xy, 0.0, 0.0);
 }
 
 
