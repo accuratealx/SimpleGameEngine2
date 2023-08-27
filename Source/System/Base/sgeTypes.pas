@@ -105,6 +105,15 @@ type
   );
 
 
+  //Виды затемнения
+  TsgeFadeMode = (
+    fmNormalToColor,          //Экран - цвет
+    fmColorToNormal,          //Цвет - Экран
+    fmNormalToColorToNormal,  //Экран - Цвет - Экран
+    fmColorToNormalToColor    //Цвет - Экран - Цвет
+  );
+
+
   //Тип прошедшего времени
   TsgePassedTime = (
     ptBegin,  //Начало

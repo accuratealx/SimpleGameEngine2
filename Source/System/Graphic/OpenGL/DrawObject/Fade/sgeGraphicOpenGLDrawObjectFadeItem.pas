@@ -19,15 +19,6 @@ uses
   sgeColor;
 
 type
-  //Виды затемнения
-  TsgeFadeMode = (
-    fmNormalToColor,          //Экран - цвет
-    fmColorToNormal,          //Цвет - Экран
-    fmNormalToColorToNormal,  //Экран - Цвет - Экран
-    fmColorToNormalToColor    //Цвет - Экран - Цвет
-  );
-
-
   //Функция обработчик прошедшего времени
   TsgeFadeProc = procedure(Time: TsgePassedTime; ID: Integer) of Object;
 

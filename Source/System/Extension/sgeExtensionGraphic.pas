@@ -30,10 +30,6 @@ const
 
 
 type
-  //Тип перехода затемнения
-  TsgeExtensionFadeMode = sgeGraphicOpenGLDrawObjectFadeItem.TsgeFadeMode;
-
-
   //Режим ограничения кадров
   TsgeExtensionGraphicDrawControl = (
     gdcSync,    //Вертикальная синхронизация
@@ -129,7 +125,7 @@ type
     procedure SetSystemFont(Font: TsgeAnsiFont);                              //Установить системный шрифт
     procedure StartRender;                                                    //Запуск потока рендерера
 
-    procedure Fade(Mode: TsgeExtensionFadeMode; Color: TsgeColor; Time: Cardinal; ID: Integer = -1);
+    procedure Fade(Mode: TsgeFadeMode; Color: TsgeColor; Time: Cardinal; ID: Integer = -1);
     procedure Screenshot(Sprite: TsgeSprite);
 
     //Параметры
@@ -844,7 +840,7 @@ begin
 end;
 
 
-procedure TsgeExtensionGraphic.Fade(Mode: TsgeExtensionFadeMode; Color: TsgeColor; Time: Cardinal; ID: Integer);
+procedure TsgeExtensionGraphic.Fade(Mode: TsgeFadeMode; Color: TsgeColor; Time: Cardinal; ID: Integer);
 var
   Event: TsgeEventBase;
 begin

@@ -15,7 +15,7 @@ unit sgeExtensionScenes;
 interface
 
 uses
-  sgeColor,
+  sgeTypes, sgeColor,
   sgeExtensionBase, sgeExtensionGraphic,
   sgeEventBase, sgeEventGraphic,
   sgeSceneList, sgeSceneBase;
@@ -46,9 +46,9 @@ type
     procedure Start(Scene: TsgeSceneBase; Color: TsgeColor; Time: Cardinal);
 
     procedure Push(Scene: TsgeSceneBase);
-    procedure Push(Scene: TsgeSceneBase; Mode: TsgeExtensionFadeMode; Color: TsgeColor; Time: Cardinal);
+    procedure Push(Scene: TsgeSceneBase; Mode: TsgeFadeMode; Color: TsgeColor; Time: Cardinal);
     procedure Pop;
-    procedure Pop(Mode: TsgeExtensionFadeMode; Color: TsgeColor; Time: Cardinal);
+    procedure Pop(Mode: TsgeFadeMode; Color: TsgeColor; Time: Cardinal);
 
     property SceneList: TsgeSceneList read FSceneList;
   end;
@@ -57,7 +57,7 @@ type
 implementation
 
 uses
-  sgeErrors, sgeTypes, sgeCorePointerUtils;
+  sgeErrors, sgeCorePointerUtils;
 
 const
   _UNITNAME = 'ExtensionScenes';
@@ -144,7 +144,7 @@ begin
   FFadeScene := Scene;
 
   //Запустить затемнение
-  //FExtGraphic.Fade(efmColorToNormal, Color, Time, FADEID_START);
+  FExtGraphic.Fade(fmColorToNormal, Color, Time, FADEID_START);
 end;
 
 
@@ -165,13 +165,13 @@ begin
 end;
 
 
-procedure TsgeExtensionScenes.Push(Scene: TsgeSceneBase; Mode: TsgeExtensionFadeMode; Color: TsgeColor; Time: Cardinal);
+procedure TsgeExtensionScenes.Push(Scene: TsgeSceneBase; Mode: TsgeFadeMode; Color: TsgeColor; Time: Cardinal);
 begin
   //Запомнить указатель на сцену
   FFadeScene := Scene;
 
   //Запустить затемнение
-  //FExtGraphic.Fade(Mode, Color, Time, FADEID_PUSH);
+  FExtGraphic.Fade(Mode, Color, Time, FADEID_PUSH);
 end;
 
 
@@ -193,10 +193,10 @@ begin
 end;
 
 
-procedure TsgeExtensionScenes.Pop(Mode: TsgeExtensionFadeMode; Color: TsgeColor; Time: Cardinal);
+procedure TsgeExtensionScenes.Pop(Mode: TsgeFadeMode; Color: TsgeColor; Time: Cardinal);
 begin
   //Запустить затемнение
-  //FExtGraphic.Fade(Mode, Color, Time, FADEID_POP);
+  FExtGraphic.Fade(Mode, Color, Time, FADEID_POP);
 end;
 
 
