@@ -17,7 +17,7 @@ interface
 uses
   dglOpenGL,
   sgeTypes, sgeMemoryStream,
-  sgeGraphicColor, sgeGraphicOpenGLTypes,
+  sgeColor, sgeGraphicOpenGLTypes,
   sgeGraphicOpenGLShader;
 
 type

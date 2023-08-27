@@ -16,7 +16,7 @@ interface
 
 uses
   sgeMemoryStream,
-  sgeGraphicColor;
+  sgeColor;
 
 
 type

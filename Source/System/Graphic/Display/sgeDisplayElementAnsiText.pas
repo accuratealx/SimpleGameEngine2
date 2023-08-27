@@ -15,7 +15,7 @@ unit sgeDisplayElementAnsiText;
 interface
 
 uses
-  sgeTypes, sgeAnsiFont, sgeGraphicColor,
+  sgeTypes, sgeAnsiFont, sgeColor,
   sgeDisplayElement;
 
 type

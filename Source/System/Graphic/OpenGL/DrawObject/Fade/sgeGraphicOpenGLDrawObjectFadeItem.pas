@@ -16,7 +16,7 @@ interface
 
 uses
   sgeTypes,
-  sgeGraphicColor;
+  sgeColor;
 
 type
   //Виды затемнения

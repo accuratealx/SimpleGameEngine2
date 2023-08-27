@@ -16,7 +16,7 @@ interface
 
 uses
   sgeTemplateCollection,
-  sgeGraphicColor,
+  sgeColor,
   sgeShellLine;
 
 

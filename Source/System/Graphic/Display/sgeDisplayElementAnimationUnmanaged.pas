@@ -16,7 +16,7 @@ unit sgeDisplayElementAnimationUnmanaged;
 interface
 
 uses
-  sgeTypes, sgeSprite, sgeGraphicColor, sgeAnimationFrameList,
+  sgeTypes, sgeSprite, sgeColor, sgeAnimationFrameList,
   sgeDisplayElement;
 
 type

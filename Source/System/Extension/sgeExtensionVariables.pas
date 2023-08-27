@@ -17,7 +17,7 @@ interface
 
 uses
   sgeExtensionFileSystem,
-  sgeExtensionBase, sgeVariableList, sgeGraphicColor,
+  sgeExtensionBase, sgeVariableList, sgeColor,
   sgeVariableIntegerNormal, sgeVariableIntegerClass, sgeVariableIntegerProc,
   sgeVariableSingleNormal, sgeVariableSingleClass, sgeVariableSingleProc,
   sgeVariableStringNormal, sgeVariableStringClass, sgeVariableStringProc,
@@ -95,7 +95,7 @@ type
 implementation
 
 uses
-  sgeErrors, sgeSimpleParameters, sgeSystemUtils, sgeGraphicColorUtils;
+  sgeErrors, sgeSimpleParameters, sgeSystemUtils, sgeColorUtils;
 
 
 const

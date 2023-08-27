@@ -15,7 +15,7 @@ unit sgeExtensionScenes;
 interface
 
 uses
-  sgeGraphicColor,
+  sgeColor,
   sgeExtensionBase, sgeExtensionGraphic,
   sgeEventBase, sgeEventGraphic,
   sgeSceneList, sgeSceneBase;

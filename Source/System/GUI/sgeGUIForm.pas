@@ -44,7 +44,7 @@ implementation
 
 uses
   sgeCorePointerUtils,
-  sgeGraphicColor;
+  sgeColor;
 
 
 procedure TsgeGUIForm.DisplayElement_CorrectPosition(RealLeft, RealTop: Integer);

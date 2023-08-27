@@ -26,7 +26,7 @@ type
     procedure SetX(AX: Single);
     procedure SetY(AY: Single);
   public
-    constructor Create(AOwner: TObject; X: Single = 1; Y: Single = 1);
+    constructor Create(AOwner: TObject; X: Single = 1; Y: Single = 1); reintroduce;
 
     property X: Single read FX write SetX;
     property Y: Single read FY write SetY;

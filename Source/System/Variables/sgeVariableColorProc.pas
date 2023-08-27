@@ -16,7 +16,7 @@ unit sgeVariableColorProc;
 interface
 
 uses
-  sgeVariableColorBase, sgeGraphicColor;
+  sgeVariableColorBase, sgeColor;
 
 
 type

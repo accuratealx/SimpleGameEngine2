@@ -16,7 +16,7 @@ unit sgeDisplayElementSpriteTile;
 interface
 
 uses
-  sgeTypes, sgeSprite, sgeGraphicColor,
+  sgeTypes, sgeSprite, sgeColor,
   sgeDisplayElement;
 
 type

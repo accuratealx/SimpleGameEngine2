@@ -15,7 +15,7 @@ unit sgeGraphicOpenGLDrawObjectFade;
 interface
 
 uses
-  sgeGraphicColor, sgeGraphicOpenGLDrawObjectFadeItemList, sgeGraphicOpenGLDrawObjectFadeItem,
+  sgeColor, sgeGraphicOpenGLDrawObjectFadeItemList, sgeGraphicOpenGLDrawObjectFadeItem,
   sgeGraphicOpenGL, sgeGraphicOpenGLShaderProgram, sgeGraphicOpenGLVertexArrayObject, sgeGraphicOpenGLBuffer;
 
 type

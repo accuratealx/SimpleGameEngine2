@@ -16,7 +16,7 @@ unit sgeDisplayElementAnimation;
 interface
 
 uses
-  sgeTypes, sgeSprite, sgeGraphicColor, sgeAnimation, sgeAnimationFrameList,
+  sgeTypes, sgeSprite, sgeColor, sgeAnimation, sgeAnimationFrameList,
   sgeDisplayElement;
 
 type

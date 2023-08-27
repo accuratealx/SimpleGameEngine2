@@ -16,7 +16,7 @@ unit sgeDisplayElementFrame;
 interface
 
 uses
-  sgeTypes, sgeGraphicColor,
+  sgeTypes, sgeColor,
   sgeDisplayElement;
 
 type

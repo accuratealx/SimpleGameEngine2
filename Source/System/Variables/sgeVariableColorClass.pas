@@ -16,7 +16,7 @@ unit sgeVariableColorClass;
 interface
 
 uses
-  sgeVariableColorBase, sgeGraphicColor;
+  sgeVariableColorBase, sgeColor;
 
 
 type

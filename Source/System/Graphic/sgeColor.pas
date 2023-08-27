@@ -1,6 +1,6 @@
 {
 Пакет             Simple Game Engine 2
-Файл              sgeGraphicColors.pas
+Файл              sgeColors.pas
 Версия            1.2
 Создан            27.04.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
@@ -8,7 +8,7 @@
 }
 {$Include Defines.inc}
 
-unit sgeGraphicColor;
+unit sgeColor;
 
 {$mode objfpc}{$H+}
 

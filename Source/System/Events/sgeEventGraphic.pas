@@ -17,7 +17,7 @@ interface
 
 uses
   sgeTypes, sgeMemoryStream, sgeEventBase,
-  sgeGraphicColor,
+  sgeColor,
   sgeDisplayElement, sgeDisplayLayer,
   sgeGraphicOpenGLDrawObjectFadeItem;
 

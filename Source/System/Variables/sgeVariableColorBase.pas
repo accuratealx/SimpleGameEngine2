@@ -16,7 +16,7 @@ unit sgeVariableColorBase;
 interface
 
 uses
-  sgeVariableBase, sgeGraphicColor;
+  sgeVariableBase, sgeColor;
 
 
 type
@@ -41,7 +41,7 @@ type
 implementation
 
 uses
-  sgeGraphicColorUtils;
+  sgeColorUtils;
 
 
 procedure TsgeVariableColorBase.SetStrValue(Str: String);

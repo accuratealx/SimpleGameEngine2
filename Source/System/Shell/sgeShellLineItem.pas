@@ -15,7 +15,7 @@ unit sgeShellLineItem;
 interface
 
 uses
-  sgeGraphicColor;
+  sgeColor;
 
 
 type

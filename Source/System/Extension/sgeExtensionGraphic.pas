@@ -17,7 +17,7 @@ interface
 uses
   sgeTypes, sgeThread, sgeMemoryStream, sgeCounter, sgeAnsiFont, sgeSprite,
   sgeExtensionBase,
-  sgeGraphicColor, sgeGraphicOpenGL, sgeGraphicOpenGLLayerList,
+  sgeColor, sgeGraphicOpenGL, sgeGraphicOpenGLLayerList,
   sgeGraphicOpenGLDrawObjectFade, sgeGraphicOpenGLDrawObjectFadeItem,
   sgeDisplayElementAnsiText, sgeGraphicOpenGLDrawObjectAnsiText,
   sgeDisplayElement, sgeGraphicOpenGLDrawObject,

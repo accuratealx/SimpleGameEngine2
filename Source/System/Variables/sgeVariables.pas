@@ -21,7 +21,7 @@ procedure sgeVariables_Init(SGEObject: TObject);
 implementation
 
 uses
-  SimpleGameEngine, sgeGraphicColor,
+  SimpleGameEngine, sgeColor,
   sgeExtensionMusicPlayer;
 
 

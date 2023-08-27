@@ -15,7 +15,7 @@ unit sgeDisplayElementRect;
 interface
 
 uses
-  sgeTypes, sgeGraphicColor,
+  sgeTypes, sgeColor,
   sgeDisplayElement;
 
 type

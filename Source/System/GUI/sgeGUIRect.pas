@@ -16,7 +16,7 @@ unit sgeGUIRect;
 interface
 
 uses
-  sgeTypes, sgeGraphicColor,
+  sgeTypes, sgeColor,
   sgeGUIElement,
   sgeDisplayElementRect;
 

@@ -497,6 +497,7 @@ end;
 
 function TsgeGUIElement.DisplayElement_GetClipRect: TsgeClipRect;
 begin
+  Result := sgeGetClipRect(0, 0, 0, 0);
   //Заглушка, переопределяется в потомке
 end;
 
