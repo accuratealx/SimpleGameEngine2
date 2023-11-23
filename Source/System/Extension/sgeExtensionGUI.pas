@@ -301,7 +301,7 @@ function TsgeExtensionGUI.ElementAtCursor(X, Y: Integer): TsgeGUIElement;
       Result := Element;
 
       //Проверить детей
-      for i := 0 to TsgeGUIElementExt(Element).FChildList.Count - 1 do
+      for i := TsgeGUIElementExt(Element).FChildList.Count - 1 downto 0 do
       begin
         E := ProcessElement(TsgeGUIElementExt(Element).FChildList.Item[i]);
         if E <> nil then
