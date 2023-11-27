@@ -23,11 +23,11 @@ uses
 
 type
   TsgeGUISpriteButton = class(TsgeGUIElement)
-  private
+  protected
     type
       TButtonState = (bsDisable, bsNormal, bsActive, bsPressed);
 
-  private
+  protected
     FDisplayElement: TsgeDisplayElementSpriteTile;
     FButtonState: TButtonState;
 
@@ -173,6 +173,7 @@ begin
 
   FButtonState := bsNormal;
   FEnableDoubleClick := False;
+  FClickButton := mbLeft;
 
   inherited Create(Name, Left, Top, Width, Height, Visible, Parent);
 end;
