@@ -319,7 +319,7 @@ end;
 
 function TsgeAnsiFont.GetTextHeight(Text: String): Single;
 begin
-  Result := FLineSpace;
+  Result := FHeight;
 end;
 
 
