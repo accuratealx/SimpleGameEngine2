@@ -314,6 +314,7 @@ procedure TsgeDisplayElementSpriteNine.SetOffset(AOffset: TsgeFloatRect);
 begin
   FData.Offset := AOffset;
   Include(FChangeSet, desncsOffset);
+  Include(FChangeSet, desncsSize);
 end;
 
 
@@ -321,6 +322,7 @@ procedure TsgeDisplayElementSpriteNine.SetOffsetX1(AOffsetX1: Single);
 begin
   FData.Offset.X1 := AOffsetX1;
   Include(FChangeSet, desncsOffset);
+  Include(FChangeSet, desncsSize);
 end;
 
 
@@ -328,6 +330,7 @@ procedure TsgeDisplayElementSpriteNine.SetOffsetY1(AOffsetY1: Single);
 begin
   FData.Offset.Y1 := AOffsetY1;
   Include(FChangeSet, desncsOffset);
+  Include(FChangeSet, desncsSize);
 end;
 
 
@@ -335,6 +338,7 @@ procedure TsgeDisplayElementSpriteNine.SetOffsetX2(AOffsetX2: Single);
 begin
   FData.Offset.X2 := AOffsetX2;
   Include(FChangeSet, desncsOffset);
+  Include(FChangeSet, desncsSize);
 end;
 
 
@@ -342,6 +346,7 @@ procedure TsgeDisplayElementSpriteNine.SetOffsetY2(AOffsetY2: Single);
 begin
   FData.Offset.Y2 := AOffsetY2;
   Include(FChangeSet, desncsOffset);
+  Include(FChangeSet, desncsSize);
 end;
 
 
