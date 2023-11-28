@@ -17,21 +17,25 @@ interface
 
 uses
   sgeTypes, sgeAnsiFont, sgeColor,
-  sgeDisplayElementAnsiText, sgeDisplayElementRect,
+  sgeDisplayElementAnsiText,
   sgeGUIElement;
 
 type
   TsgeGUILabel = class(TsgeGUIElement)
   protected
-    FBGRect: TsgeDisplayElementRect;
     FText: TsgeDisplayElementAnsiText;
     FVerticalAlign: TsgeVerticalAlign;
     FHorizontalAlign: TsgeHorizontalAlign;
 
-
     procedure GetTextSize(out Width, Height: Integer);
     procedure CorrectTextPosition;
 
+    function  GetColor: TsgeColor;
+    procedure Setcolor(AColor: TsgeColor);
+    function  GetFont: TsgeAnsiFont;
+    procedure SetFont(AFont: TsgeAnsiFont);
+    function  GetText: String;
+    procedure SetText(AText: String);
     procedure SetVerticalAlign(AAlign: TsgeVerticalAlign);
     procedure SetHorizontalAlign(AAlign: TsgeHorizontalAlign);
 
@@ -50,6 +54,9 @@ type
 
     property VerticalAlign: TsgeVerticalAlign read FVerticalAlign write SetVerticalAlign;
     property HorizontalAlign: TsgeHorizontalAlign read FHorizontalAlign write SetHorizontalAlign;
+    property Color: TsgeColor read GetColor write Setcolor;
+    property Text: String read GetText write SetText;
+    property Font: TsgeAnsiFont read GetFont write SetFont;
   end;
 
 
@@ -81,6 +88,45 @@ begin
   FText.PositionX := GlobalPos.X + sgeGetHorizontalAlignOffset(FHorizontalAlign, Size.X, W);
   FText.PositionY := GlobalPos.Y + sgeGetVerticaAlignOffset(FVerticalAlign, Size.Y, H);
   FText.Scale := GetScale;
+  FText.Update;
+end;
+
+
+function TsgeGUILabel.GetColor: TsgeColor;
+begin
+  Result := FText.Color;
+end;
+
+
+procedure TsgeGUILabel.Setcolor(AColor: TsgeColor);
+begin
+  FText.Color := AColor;
+  FText.Update;
+end;
+
+
+function TsgeGUILabel.GetFont: TsgeAnsiFont;
+begin
+  Result := FText.Font;
+end;
+
+
+procedure TsgeGUILabel.SetFont(AFont: TsgeAnsiFont);
+begin
+  FText.Font := AFont;
+  FText.Update;
+end;
+
+
+function TsgeGUILabel.GetText: String;
+begin
+  Result := FText.Text;
+end;
+
+
+procedure TsgeGUILabel.SetText(AText: String);
+begin
+  FText.Text := AText;
   FText.Update;
 end;
 
