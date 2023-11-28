@@ -61,6 +61,13 @@ type
   );
 
 
+  //Ориантация
+  TsgeOrientation = (
+    oHorizontal,  //Горизонтальная
+    oVertical     //Вертикальная
+  );
+
+
   //Горизонтальное выравнивание
   TsgeHorizontalAlign = (
     haLeft,   //По левому краю
