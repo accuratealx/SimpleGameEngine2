@@ -172,6 +172,7 @@ function sgeDisableIME(IdThread: Cardinal): Boolean;
 
 //Кодировки
 function sgeUtf8ToAnsiBytes(Str: String): TsgeByteArray;
+function sgeUtf8ToAnsi(Str: String): String;
 
 
 var
@@ -772,6 +773,12 @@ end;
 function sgeUtf8ToAnsiBytes(Str: String): TsgeByteArray;
 begin
   Result := TEncoding.ANSI.GetAnsiBytes(Str);
+end;
+
+
+function sgeUtf8ToAnsi(Str: String): String;
+begin
+  Result := Utf8ToAnsi(Str);
 end;
 
 
