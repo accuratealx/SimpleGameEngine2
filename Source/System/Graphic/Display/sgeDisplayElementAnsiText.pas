@@ -258,7 +258,7 @@ begin
     Exit;
 
   //Запомнить текст
-  FText := AText;
+  FText := sgeUtf8ToAnsi(AText);
 
   //Шрифт не понимает utf-8, только Ansi. Поэтому переведем тут
   FData.TextBytes := sgeUtf8ToAnsiBytes(FText);
