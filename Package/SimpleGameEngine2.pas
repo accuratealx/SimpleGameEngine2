@@ -20,7 +20,7 @@ uses
   sgeExtensionFileSystem, sgeExtensionGraphic, sgeExtensionList, 
   sgeExtensionGUI, sgeExtensionResourceList, sgeExtensionShell, 
   sgeExtensionSound, sgeExtensionStartParameters, sgeExtensionVariables, 
-  sgeExtensionWindow, sgeGraphicColor, sgePackFileList, sgePackFileReader, 
+  sgeExtensionWindow, sgeColor, sgePackFileList, sgePackFileReader, 
   sgePackFileWriter, sgeSoundBuffer, sgeSoundBufferLoader, 
   sgeSoundBufferWavLoader, sgeSoundSource, sgeTemplateCollection, 
   sgeTemplateThreadSafeList, sgeSystemCursor, sgeSystemIcon, 
@@ -69,7 +69,7 @@ uses
   sgeKeyCommandMouseActionList, sgeKeyCommandKeyboardAction, 
   sgeKeyCommandKeyboardActionList, sgeWindowsVersion, sgeMatch, sgeMatchMask, 
   sgeShellCommand_System_Stop, sgeCorePointerUtils, sgeExtensionScenes, 
-  sgeSceneBase, sgeSceneList, sgeViewBox, sgeGraphicColorUtils, sgeAnimation, 
+  sgeSceneBase, sgeSceneList, sgeViewBox, sgeColorUtils, sgeAnimation, 
   sgeAnimationFrame, sgeAnimationFrameList, sgeSprite, sgeSpriteLoader, 
   sgeSpriteLoaderGDIP, sgeDisplayElementAnimationUnmanaged, 
   sgeDisplayElementAnsiText, sgeDisplayElementFrame, sgeDisplayElementRect, 
@@ -86,7 +86,11 @@ uses
   sgeGraphicOpenGLDrawObjectSpriteNine, sgeGraphicOpenGLDrawObjectSpritePart, 
   sgeGraphicOpenGLDrawObjectSpriteTile, sgeGraphicOpenGLDrawObjectFadeItem, 
   sgeGraphicOpenGLDrawObjectFadeItemList, sgeGraphicOpenGLLayer, 
-  sgeAnsiFontGlyph, sgeResourceItem, sgeDisplayLayer;
+  sgeAnsiFontGlyph, sgeResourceItem, sgeDisplayLayer, sgeSpriteSaver, 
+  sgeSpriteSaverBmp, sgeGUIElement, sgeGUIForm, sgeGUIRect, 
+  sgeGUIPropertyConstrains, sgeGUIProperty, sgeGUIToggleSpriteButton, 
+  sgeGUIPropertySprite, sgeGUISprite, sgeGUISpriteButton, sgeGUILabel, 
+  sgeGUISpriteScrollbar;
 
 implementation
 

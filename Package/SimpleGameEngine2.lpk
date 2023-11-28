@@ -8,14 +8,14 @@
       <Version Value="11"/>
       <PathDelim Value="\"/>
       <SearchPaths>
-        <IncludeFiles Value="..\Source\System;..\Source\System\Graphic\Display;..\Source\System\Graphic\OpenGL;..\Source\System\Graphic\OpenGL\DrawObject;..\Source\System\Graphic\OpenGL\DrawObject\Fade;..\Source\System\Font"/>
-        <OtherUnitFiles Value="..\Source\ThirdParty\GDIPlus;..\Source\ThirdParty\OpenAL;..\Source\ThirdParty\OpenGL;..\Source\System;..\Source\System\Base;..\Source\System\Controllers;..\Source\System\Events;..\Source\System\Extension;..\Source\System\Graphic;..\Source\System\PackFiles;..\Source\System\Shell;..\Source\System\Sound;..\Source\System\Templates;..\Source\System\Utils;..\Source\System\Variables;..\Source\System\KeyCommand;..\Source\System\ShellCommands;..\Source\System\TimeEvent;..\Source\System\GUI;..\Source\System\GUI\Properties;..\Source\System\GUI\Components;..\Source\System\MusicPlayer;..\Source\System\Scenes;..\Source\System\Graphic\Display;..\Source\System\Graphic\OpenGL;..\Source\System\Graphic\OpenGL\DrawObject;..\Source\System\Graphic\OpenGL\DrawObject\Fade;..\Source\System\Font"/>
+        <IncludeFiles Value="..\Source\System"/>
+        <OtherUnitFiles Value="..\Source\ThirdParty\GDIPlus;..\Source\ThirdParty\OpenAL;..\Source\ThirdParty\OpenGL;..\Source\System;..\Source\System\Base;..\Source\System\Controllers;..\Source\System\Events;..\Source\System\Extension;..\Source\System\Graphic;..\Source\System\PackFiles;..\Source\System\Shell;..\Source\System\Sound;..\Source\System\Templates;..\Source\System\Utils;..\Source\System\Variables;..\Source\System\KeyCommand;..\Source\System\ShellCommands;..\Source\System\TimeEvent;..\Source\System\GUI;..\Source\System\GUI\Properties;..\Source\System\GUI\Components;..\Source\System\MusicPlayer;..\Source\System\Scenes;..\Source\System\Graphic\Display;..\Source\System\Graphic\OpenGL;..\Source\System\Graphic\OpenGL\DrawObject;..\Source\System\Graphic\OpenGL\DrawObject\Fade;..\Source\System\Font;..\Source\System\Network"/>
         <UnitOutputDirectory Value="..\~Tmp\Package\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
     </CompilerOptions>
     <Description Value="Simple Game Engine 2"/>
     <Version Major="1"/>
-    <Files Count="238">
+    <Files Count="251">
       <Item1>
         <Filename Value="..\Source\ThirdParty\GDIPlus\GDIPAPI.pas"/>
         <UnitName Value="GDIPAPI"/>
@@ -233,8 +233,8 @@
         <UnitName Value="sgeExtensionWindow"/>
       </Item54>
       <Item55>
-        <Filename Value="..\Source\System\Graphic\sgeGraphicColor.pas"/>
-        <UnitName Value="sgeGraphicColor"/>
+        <Filename Value="..\Source\System\Graphic\sgeColor.pas"/>
+        <UnitName Value="sgeColor"/>
       </Item55>
       <Item56>
         <Filename Value="..\Source\System\PackFiles\sgePackFile.pas"/>
@@ -793,8 +793,8 @@
         <UnitName Value="sgeViewBox"/>
       </Item194>
       <Item195>
-        <Filename Value="..\Source\System\Graphic\sgeGraphicColorUtils.pas"/>
-        <UnitName Value="sgeGraphicColorUtils"/>
+        <Filename Value="..\Source\System\Graphic\sgeColorUtils.pas"/>
+        <UnitName Value="sgeColorUtils"/>
       </Item195>
       <Item196>
         <Filename Value="..\Source\System\Graphic\sgeAnimation.pas"/>
@@ -968,6 +968,58 @@
         <Filename Value="..\Source\System\Graphic\Display\sgeDisplayLayer.pas"/>
         <UnitName Value="sgeDisplayLayer"/>
       </Item238>
+      <Item239>
+        <Filename Value="..\Source\System\Graphic\sgeSpriteSaver.pas"/>
+        <UnitName Value="sgeSpriteSaver"/>
+      </Item239>
+      <Item240>
+        <Filename Value="..\Source\System\Graphic\sgeSpriteSaverBmp.pas"/>
+        <UnitName Value="sgeSpriteSaverBmp"/>
+      </Item240>
+      <Item241>
+        <Filename Value="..\Source\System\GUI\sgeGUIElement.pas"/>
+        <UnitName Value="sgeGUIElement"/>
+      </Item241>
+      <Item242>
+        <Filename Value="..\Source\System\GUI\sgeGUIForm.pas"/>
+        <UnitName Value="sgeGUIForm"/>
+      </Item242>
+      <Item243>
+        <Filename Value="..\Source\System\GUI\sgeGUIRect.pas"/>
+        <UnitName Value="sgeGUIRect"/>
+      </Item243>
+      <Item244>
+        <Filename Value="..\Source\System\GUI\Properties\sgeGUIPropertyConstrains.pas"/>
+        <UnitName Value="sgeGUIPropertyConstrains"/>
+      </Item244>
+      <Item245>
+        <Filename Value="..\Source\System\GUI\Properties\sgeGUIProperty.pas"/>
+        <UnitName Value="sgeGUIProperty"/>
+      </Item245>
+      <Item246>
+        <Filename Value="..\Source\System\GUI\sgeGUIToggleSpriteButton.pas"/>
+        <UnitName Value="sgeGUIToggleSpriteButton"/>
+      </Item246>
+      <Item247>
+        <Filename Value="..\Source\System\GUI\Properties\sgeGUIPropertySprite.pas"/>
+        <UnitName Value="sgeGUIPropertySprite"/>
+      </Item247>
+      <Item248>
+        <Filename Value="..\Source\System\GUI\sgeGUISprite.pas"/>
+        <UnitName Value="sgeGUISprite"/>
+      </Item248>
+      <Item249>
+        <Filename Value="..\Source\System\GUI\sgeGUISpriteButton.pas"/>
+        <UnitName Value="sgeGUISpriteButton"/>
+      </Item249>
+      <Item250>
+        <Filename Value="..\Source\System\GUI\sgeGUILabel.pas"/>
+        <UnitName Value="sgeGUILabel"/>
+      </Item250>
+      <Item251>
+        <Filename Value="..\Source\System\GUI\sgeGUISpriteScrollbar.pas"/>
+        <UnitName Value="sgeGUISpriteScrollbar"/>
+      </Item251>
     </Files>
     <CompatibilityMode Value="True"/>
     <UsageOptions>
