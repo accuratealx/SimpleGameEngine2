@@ -256,7 +256,7 @@ end;
 
 function sgeRestrictClipRect(Source, Parent: TsgeClipRect): TsgeClipRect;
 begin
-  Result := Source;
+  Result := Parent;
 
   if Result.X < Parent.X then
     Result.X := Parent.X;
