@@ -28,7 +28,7 @@ const
 type
   TsgeExtensionScenes = class(TsgeExtensionBase)
   private
-    FFadeScene: TsgeSceneBase;                                      //Временный указатель на сцену, для перехода
+    FFadeScene: TsgeSceneBase;  //Временный указатель на сцену, для перехода
 
   private
     FExtGraphic: TsgeExtensionGraphic;

@@ -15,7 +15,7 @@ unit sgeExtensionShell;
 interface
 
 uses
-  sgeTypes, sgeThread, sgeSystemEvent, sgeSimpleCommand, sgeSimpleParameters, {sgeGraphic,} sgeGraphicColor,
+  sgeTypes, sgeThread, sgeSystemEvent, sgeSimpleCommand, sgeSimpleParameters, {sgeGraphic,} sgeColor,
   {sgeGraphicFont,} sgeExtensionBase, sgeEventBase, sgeEventWindow, sgeEventKeyboard, sgeEventMouse, sgeEventSubscriber,
   sgeShellCommandQueue, sgeShellScriptList, sgeShellCommandList, sgeLineEditor, sgeCommandHistory,
   sgeShellLineList, sgeExtensionGraphic, sgeShellCallStack, sgeExtensionVariables,
@@ -176,6 +176,9 @@ uses
   sgeVariableBase, sgeShellCommand, sgeKeys, sgeShellLine, sgeShellLineItem, sgeShellScript, sgeShellCallStackItem;
 
 const
+  Layer_Name = 'System.Shell';
+  Layer_Index = $0000;
+
   _UNITNAME = 'ExtensionShell';
 
   Err_CommandStillRunning = 'CommandStillRunning';
