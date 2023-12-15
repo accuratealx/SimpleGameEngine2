@@ -42,7 +42,7 @@ implementation
 
 constructor TsgeGraphicOpenGLDrawObject.Create(Element: TsgeDisplayElement);
 begin
-  FVisible := True;
+  FVisible := Element.Visible;
   FClipped := False;
 
   Update(Element);
