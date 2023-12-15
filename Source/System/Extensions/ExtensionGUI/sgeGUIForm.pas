@@ -16,7 +16,7 @@ unit sgeGUIForm;
 interface
 
 uses
-  sgeTypes,
+  sgeTypes, sgeColor,
   sgeGUIElement,
   sgeDisplayElement, sgeDisplayElementRect;
 
@@ -25,6 +25,8 @@ type
   private
     FDisplayElement: TsgeDisplayElementRect;
 
+    procedure SetBGColor(AColor: TsgeColor);
+    function  GetBGColor: TsgeColor;
   protected
     procedure DisplayElement_CorrectPosition(RealLeft, RealTop: Integer); override;
     procedure DisplayElement_CorrectSize(Width, Height: Integer); override;
@@ -36,6 +38,8 @@ type
   public
     constructor Create(Name: String; Left, Top, Width, Height: Integer; Visible: Boolean = True);
     destructor  Destroy; override;
+
+    property BGColor: TsgeColor read GetBGColor write SetBGColor;
   end;
 
 
@@ -43,8 +47,20 @@ type
 implementation
 
 uses
-  sgeCorePointerUtils,
-  sgeColor;
+  sgeCorePointerUtils;
+
+
+procedure TsgeGUIForm.SetBGColor(AColor: TsgeColor);
+begin
+  FDisplayElement.Color := AColor;
+  FDisplayElement.Update;
+end;
+
+
+function TsgeGUIForm.GetBGColor: TsgeColor;
+begin
+  Result := FDisplayElement.Color;
+end;
 
 
 procedure TsgeGUIForm.DisplayElement_CorrectPosition(RealLeft, RealTop: Integer);
@@ -91,6 +107,7 @@ constructor TsgeGUIForm.Create(Name: String; Left, Top, Width, Height: Integer; 
 begin
   FDisplayElement := TsgeDisplayElementRect.Create(Left, Top, Left + Width, Top + Height, cBlack);
   FDisplayElement.Add(Layer_GUI_Name);
+  FDisplayElement.ColorA := 0;
   FDisplayElement.ClipRect := sgeGetClipRect(Left, Top, Width, Height);
   FDisplayElement.Clipped := True;
 
