@@ -27,15 +27,16 @@ type
   TsgeExtensionTimeEvent = class(TsgeExtensionBase)
   private
     FThread: TsgeThread;
-    FTimeEventList: TsgeTimeEventList;                              //Список таймеров
+    FTimeEventList: TsgeTimeEventList;  //Список таймеров
 
-    FDelay: Cardinal;                                               //Задержка между опросами элементов
+    FDelay: Cardinal;                   //Задержка между опросами элементов
+    FDestroying: Boolean;               //Флаг разрушения объекта
 
     //Функции потока
-    procedure ThreadProc;                                           //Функция опроса таймеров
+    procedure ThreadProc;               //Функция опроса таймеров
 
     //Вспомогательные функции
-    procedure ClearEventList;                                       //Освободить память объектов
+    procedure ClearEventList;           //Освободить память объектов
   protected
     function GetName: String; override;
 

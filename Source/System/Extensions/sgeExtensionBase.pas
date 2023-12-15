@@ -25,13 +25,11 @@ type
   TsgeExtensionBase = class
   private
     //Ссылки
-    FExtensionList: TObject;                                        //Указатель на список расширений
-    FEventManager: TsgeEventManager;                                //Менеджер событий
-    FErrorManager: TsgeErrorManager;                                //Менеджер ошибок
+    FExtensionList: TObject;                      //Указатель на список расширений
+    FEventManager: TsgeEventManager;              //Менеджер событий
+    FErrorManager: TsgeErrorManager;              //Менеджер ошибок
 
   protected
-    FDestroying: Boolean;                                           //Флаг разрушения объект
-
     function GetName: String; virtual; abstract;
 
     //Список объектов
