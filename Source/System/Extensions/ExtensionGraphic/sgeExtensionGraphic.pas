@@ -59,6 +59,7 @@ type
     FDrawControl: TsgeExtensionGraphicDrawControl;  //Способ ограничения кадров
     FMaxFPS: Word;                                  //Максимальное количество кадров в секунду
     FAutoEraseBG: Boolean;                          //Автостирание фона перед выводом кадра
+    FDestroying: Boolean;                           //Флаг уничтожения объекта
 
     //Вспомогательные параметры
     FDrawLastTime: Int64;
@@ -101,6 +102,8 @@ type
     //Свойства
     procedure SetDrawControl(AMetod: TsgeExtensionGraphicDrawControl);
     procedure SetMaxFPS(AMaxFPS: Word);
+    procedure SetEnableFPS(AEnable: Boolean);
+    function  GetEnableFPS: Boolean;
 
     //Затемнение
     procedure FadeCallBackProc(Time: TsgePassedTime; ID: Integer);
@@ -129,6 +132,7 @@ type
     procedure Screenshot(Sprite: TsgeSprite);
 
     //Параметры
+    property EnableFPS: Boolean read GetEnableFPS write SetEnableFPS;
     property MaxFPS: Word read FMaxFPS write SetMaxFPS;
     property DrawControl: TsgeExtensionGraphicDrawControl read FDrawControl write SetDrawControl;
     property AutoEraseBG: Boolean read FAutoEraseBG write FAutoEraseBG;
@@ -165,7 +169,6 @@ procedure TsgeExtensionGraphic.InitGraphic;
 begin
   FGraphic.Activate;
   FGraphic.ChangeViewPort(0, 0);
-  FGraphic.SetBGColor(cDarkGray);
 end;
 
 
@@ -640,6 +643,21 @@ begin
 
   FMaxFPS := AMaxFPS;
   FDrawDelay := Round(OneSecFrequency / FMaxFPS);
+end;
+
+
+procedure TsgeExtensionGraphic.SetEnableFPS(AEnable: Boolean);
+begin
+  if FDrawFPS.Visible = AEnable then
+    Exit;
+
+  FDrawFPS.Visible := AEnable;
+end;
+
+
+function TsgeExtensionGraphic.GetEnableFPS: Boolean;
+begin
+  Result := FDrawFPS.Visible;
 end;
 
 
