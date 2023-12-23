@@ -34,10 +34,11 @@ function  sgeIsFullPath(const FileName: String): Boolean;                       
 function  sgeCheckPathDelimiter(Path: String): String;
 function  sgeChangeFileExt(const FileName: String; Ext: String = ''): String;               //Изменить расширение файла
 
-procedure sgeFindFilesInFolder(Path: String; List: TsgeStringList);                         //Поиск всех файлов каталоге
-procedure sgeFindFilesInFolderByExt(Path: String; List: TsgeStringList; Ext: String = '');  //Поиск всех файлов каталоге по маске
+procedure sgeFindFoldersInFolder(Path: String; List: TsgeStringList);                       //Рекурсивный поиск всех каталогов в каталоге
+procedure sgeFindFilesInFolder(Path: String; List: TsgeStringList);                         //Рекурсивный поиск всех файлов в каталоге
+procedure sgeFindFilesInFolderByExt(Path: String; List: TsgeStringList; Ext: String = '');  //Поиск всех файлов в каталоге по маске
 procedure sgeGetFileListInFolder(Path: String; List: TsgeStringList);                       //Поиск файлов в каталоге
-procedure sgeGetDirectoryListInFolder(Path: String; List: TsgeStringList);                  //Поиск файлов в каталоге
+procedure sgeGetDirectoryListInFolder(Path: String; List: TsgeStringList);                  //Поиск каталогов в каталоге
 
 
 implementation
@@ -165,6 +166,30 @@ begin
       Break;
     end;
   end;
+end;
+
+
+//Рекурсивный поиск каталогов в каталоге
+procedure sgeFindFoldersInFolder(Path: String; List: TsgeStringList);
+var
+  o: TsgeSearchRec;
+  Idx: Integer;
+begin
+  Path := sgeCheckPathDelimiter(Path);
+
+  Idx := sgeFindFirst(Path + '*', FileAttribAnyFile, o);
+  while Idx = 0 do
+  begin
+    if (o.Name <> '.') and (o.Name <> '..') then
+    begin
+      if (o.Attr and FileAttribDirectory) = FileAttribDirectory then
+        sgeFindFilesInFolder(Path + o.Name, List)
+    end;
+
+    Idx := sgeFindNext(o);
+  end;
+
+  sgeFindClose(o);
 end;
 
 
