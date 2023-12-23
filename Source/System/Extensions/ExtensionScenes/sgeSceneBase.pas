@@ -6,7 +6,7 @@
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Базовый класс сцены
 }
-//{$Include Defines.inc}
+{$Include Defines.inc}
 
 unit sgeSceneBase;
 
