@@ -38,15 +38,16 @@ type
 
     function  GetFirstSeparator: Char;
     function  IsSeparator(Symbol: Char): Boolean;
-    procedure AddSymbolToLastPart(S: Char);
 
     procedure Parse;
   public
     constructor Create(Command: String = ''; WeakSeparator: Boolean = True; Separators: ShortString = #32#9; Staple: Char = #39; Control: Char = '`');
     destructor  Destroy; override;
 
-    function GetTail(StartPart: Integer): String;                   //Возврат сырой части команды начиная со StartPart
-    function GetPartSafe(Index: Integer; DefValue: String = ''): String;  //Безопасный возврат части
+    procedure Clear;                                                      //Очистить части
+    procedure AddPart(Part: String);                                      //Добавить часть
+    function  GetTail(StartPart: Integer): String;                        //Возврат сырой части команды начиная со StartPart
+    function  GetPartSafe(Index: Integer; DefValue: String = ''): String; //Безопасный возврат части
 
     property Command: String read FCommand write SetCommand;
     property SecuredCommand: String read GetSecuredCommand;
@@ -233,24 +234,22 @@ begin
 end;
 
 
-procedure TsgeSimpleCommand.AddSymbolToLastPart(S: Char);
-var
-  c, Idx: Integer;
-begin
-  c := Length(FPartList);
-  Idx := c - 1;
+procedure TsgeSimpleCommand.Parse;
 
-  if c = 0 then
+  procedure AddSymbolToLastPart(S: Char);
+  var
+    c, Idx: Integer;
   begin
-    SetLength(FPartList, 1);
-    Idx := 0;
+    c := Length(FPartList);
+    Idx := c - 1;
+    if c = 0 then
+    begin
+      SetLength(FPartList, 1);
+      Idx := 0;
+    end;
+    FPartList[Idx] := FPartList[Idx] + S;
   end;
 
-  FPartList[Idx] := FPartList[Idx] + S;
-end;
-
-
-procedure TsgeSimpleCommand.Parse;
 const
   sNormal = 0;
   sSeparator = 1;
@@ -375,7 +374,22 @@ end;
 
 destructor TsgeSimpleCommand.Destroy;
 begin
+  Clear;
+end;
+
+
+procedure TsgeSimpleCommand.Clear;
+begin
   SetLength(FPartList, 0);
+  FCount := 0;
+end;
+
+
+procedure TsgeSimpleCommand.AddPart(Part: String);
+begin
+  SetLength(FPartList, FCount + 1);
+  FPartList[FCount] := Part;
+  Inc(FCount);
 end;
 
 
