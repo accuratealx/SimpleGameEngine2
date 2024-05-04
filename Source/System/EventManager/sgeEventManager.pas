@@ -128,7 +128,7 @@ begin
       except
         on E: EsgeException do
           if Assigned(FErrorHandler)
-            then FErrorHandler(sgeCreateErrorString(_UNITNAME, Err_DispatchError, '', E.Message));
+            then FErrorHandler(sgeCreateErrorString(_UNITNAME, Err_DispatchError, EventObj.Name, E.Message));
       end;
     end;
 
@@ -161,7 +161,7 @@ begin
         except
           on E: EsgeException do
             if Assigned(FErrorHandler)
-              then FErrorHandler(sgeCreateErrorString(_UNITNAME, Err_DispatchError, '', E.Message));
+              then FErrorHandler(sgeCreateErrorString(_UNITNAME, Err_DispatchError, EventObj.Name, E.Message));
         end;
       end;
     end;
