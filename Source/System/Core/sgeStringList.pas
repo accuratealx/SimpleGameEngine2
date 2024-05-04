@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeStringList.pas
-Версия            1.0
+Версия            1.1
 Создан            06.05.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Массив строк
@@ -22,15 +22,16 @@ type
   //Список строк
   TsgeStringList = class
   private
+    FCount: Integer;
     FStringList: array of String;                     //Список строк
     FSearchOptions: TsgeSearchOptions;                //Модификаторы поиска
     FSortMode: TsgeSortMode;                          //Метод сортировки
     FSortDirection: TsgeDirection;                    //Направление сортировки
     FSeparator: String;                               //Разделитель
 
-    function  GetCount: Integer;
     procedure SetPart(Index: Integer; Part: String);
     function  GetPart(Index: Integer): String;
+    procedure SetCount(Count: Integer);
   public
     constructor Create;
     destructor  Destroy; override;
@@ -60,7 +61,7 @@ type
     procedure Trim(Method: TsgeTrimSide = tsBoth);
     procedure Sort;
 
-    property Count: Integer read GetCount;
+    property Count: Integer read FCount write SetCount;
     property SearchOptions: TsgeSearchOptions read FSearchOptions write FSearchOptions;
     property SortMode: TsgeSortMode read FSortMode write FSortMode;
     property SortDirection: TsgeDirection read FSortDirection write FSortDirection;
@@ -85,24 +86,28 @@ const
   Err_FileNotFound      = 'FileNotFound';
 
 
-function TsgeStringList.GetCount: Integer;
-begin
-  Result := Length(FStringList);
-end;
-
-
 function TsgeStringList.GetPart(Index: Integer): String;
 begin
-  if (Index < 0) or (Index > GetCount - 1) then
+  if (Index < 0) or (Index > FCount - 1) then
     raise EsgeException.Create(_UNITNAME, Err_IndexOutOfBounds, sgeIntToStr(Index));
 
   Result := FStringList[Index];
 end;
 
 
+procedure TsgeStringList.SetCount(Count: Integer);
+begin
+  if Count < 0 then
+    Count := 0;
+
+  FCount := Count;
+  SetLength(FStringList, FCount);
+end;
+
+
 procedure TsgeStringList.SetPart(Index: Integer; Part: String);
 begin
-  if (Index < 0) or (Index > GetCount - 1) then
+  if (Index < 0) or (Index > FCount - 1) then
     raise EsgeException.Create(_UNITNAME, Err_IndexOutOfBounds, sgeIntToStr(Index));
 
   FStringList[Index] := Part;
@@ -111,6 +116,7 @@ end;
 
 constructor TsgeStringList.Create;
 begin
+  FCount := 0;
   FSearchOptions := [];
   FSeparator := #13#10;
   FSortMode := smBubble;
@@ -126,7 +132,8 @@ end;
 
 procedure TsgeStringList.Clear;
 begin
-  SetLength(FStringList, 0);
+  FCount := 0;
+  SetLength(FStringList, FCount);
 end;
 
 
@@ -142,7 +149,7 @@ begin
     Part := LowerCase(Part);
 
 
-  c := Length(FStringList) - 1;
+  c := FCount - 1;
   for i := 0 to c do
   begin
     //Проверить модификатор поиска
@@ -159,36 +166,32 @@ end;
 
 
 procedure TsgeStringList.Add(Part: String);
-var
-  c: Integer;
 begin
   //Проверить модификаторы поиска
   if (soUnique in FSearchOptions) and (IndexOf(Part) <> -1) then
     Exit;
 
   //Добавить часть
-  c := GetCount;
-  SetLength(FStringList, c + 1);
-  FStringList[c] := Part;
+  Inc(FCount);
+  SetLength(FStringList, FCount);
+  FStringList[FCount - 1] := Part;
 end;
 
 
 procedure TsgeStringList.Add(List: TsgeStringList);
 var
-  i, c: Integer;
+  i: Integer;
 begin
-  c := List.Count - 1;
-  for i := 0 to c do
+  for i := 0 to List.Count - 1 do
     Add(List.Part[i]);
 end;
 
 
 procedure TsgeStringList.Insert(Index: Integer; Part: String);
 var
-  c, i: Integer;
+  i: Integer;
 begin
-  c := GetCount;
-  if (Index < 0) or (Index > GetCount) then
+  if (Index < 0) or (Index > FCount) then
     raise EsgeException.Create(_UNITNAME, Err_IndexOutOfBounds, sgeIntToStr(Index));
 
   //Проверить модификаторы поиска
@@ -196,8 +199,9 @@ begin
     Exit;
 
   //Раздвинуть
-  SetLength(FStringList, c + 1);
-  for i := c downto Index + 1 do
+  Inc(FCount);
+  SetLength(FStringList, FCount);
+  for i := FCount - 1 downto Index + 1 do
     FStringList[i] := FStringList[i - 1];
 
   //Вставить
@@ -207,10 +211,9 @@ end;
 
 procedure TsgeStringList.Insert(Index: Integer; List: TsgeStringList);
 var
-  i, c: Integer;
+  i: Integer;
 begin
-  c := List.Count - 1;
-  for i := 0 to c do
+  for i := 0 to List.Count - 1 do
   begin
     Insert(Index, List.Part[i]);
     Inc(Index);
@@ -220,18 +223,18 @@ end;
 
 procedure TsgeStringList.Delete(Index: Integer);
 var
-  c, i: Integer;
+  i: Integer;
 begin
-  c := GetCount - 1;
-  if (Index < 0) or (Index > c) then
+  if (Index < 0) or (Index > FCount - 1) then
     raise EsgeException.Create(_UNITNAME, Err_IndexOutOfBounds, sgeIntToStr(Index));
 
   //Сдвинуть хвост
-  for i := Index to c - 1 do
+  Dec(FCount);
+  for i := Index to FCount - 1 do
     FStringList[i] := FStringList[i + 1];
 
   //Удалить последний элемент
-  SetLength(FStringList, c);
+  SetLength(FStringList, FCount);
 end;
 
 
@@ -243,10 +246,9 @@ end;
 
 procedure TsgeStringList.Delete(List: TsgeStringList);
 var
-  i, c, Idx: Integer;
+  i, Idx: Integer;
 begin
-  c := List.Count - 1;
-  for i := 0 to c do
+  for i := 0 to List.Count - 1 do
   begin
     Idx := IndexOf(List.Part[i]);
     if Idx <> -1 then
@@ -260,7 +262,7 @@ var
   c, i: Integer;
 begin
   Result := '';
-  c := GetCount - 1;
+  c := FCount - 1;
   for i := 0 to c do
   begin
     Result := Result + FStringList[i];
@@ -309,28 +311,26 @@ end;
 
 procedure TsgeStringList.CopyFrom(List: TsgeStringList);
 var
-  i, c: Integer;
+  i: Integer;
 begin
   //Почистить список
   Clear;
 
   //Скопировать строчки
-  c := List.Count - 1;
-  for i := 0 to c do
+  for i := 0 to List.Count - 1 do
     Add(List.Part[i]);
 end;
 
 
 procedure TsgeStringList.CopyTo(List: TsgeStringList);
 var
-  i, c: Integer;
+  i: Integer;
 begin
   //Почистить выходной список
   List.Clear;
 
   //Скопировать строчки
-  c := Count - 1;
-  for i := 0 to c do
+  for i := 0 to FCount - 1 do
     List.Add(FStringList[i]);
 end;
 
@@ -428,19 +428,18 @@ end;
 
 procedure TsgeStringList.Remix(Count: Integer);
 var
-  Idx1, Idx2, c, i: Integer;
+  Idx1, Idx2, i: Integer;
   s: String;
 begin
   //Определить количество перемешиваний
-  c := GetCount;
   if Count = -1 then
-    Count := c div 2;
+    Count := FCount div 2;
 
   //Перемешивать строки
   for i := 0 to Count do
   begin
-    Idx1 := Random(c);
-    Idx2 := Random(c);
+    Idx1 := Random(FCount);
+    Idx2 := Random(FCount);
     s := FStringList[Idx1];
     FStringList[Idx1] := FStringList[Idx2];
     FStringList[Idx2] := s;
@@ -450,11 +449,9 @@ end;
 
 procedure TsgeStringList.Trim(Method: TsgeTrimSide);
 var
-  i, c: Integer;
+  i: Integer;
 begin
-  c := GetCount - 1;
-
-  for i := 0 to c do
+  for i := 0 to FCount - 1 do
     case Method of
       tsBoth:
         FStringList[i] := sgeTrim(FStringList[i]);
@@ -479,7 +476,7 @@ begin
     //Пузырьковая
     smBubble:
     begin
-      ci := GetCount - 1;
+      ci := FCount - 1;
       cj := ci - 1;
       for i := 0 to ci do
         for j := 0 to cj - i do
@@ -495,7 +492,7 @@ begin
 
 
   //Отразить сверху вниз
-  ci := GetCount - 1;
+  ci := FCount - 1;
   if (FSortDirection = dBackward) and (ci > 0) then
   begin
     cj := ci div 2;
