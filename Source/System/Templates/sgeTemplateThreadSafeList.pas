@@ -22,7 +22,7 @@ type
   protected
     type
       PListItem = ^TListItem;
-      TListItem = record                                            //Одна запись под хранение элемента
+      TListItem = record  //Одна запись под хранение элемента
         Item: T;
         Prev: PListItem;
         Next: PListItem;
@@ -30,13 +30,13 @@ type
 
   protected
     FCS: TsgeCriticalSection;
-    FFreeObjects: Boolean;                                          //Удалять объекты
-    FCount: Integer;                                                //Количество элементов
-    FFirst: PListItem;                                              //Первый элемент
-    FLast: PListItem;                                               //Последний элемент
+    FFreeObjects: Boolean;    //Удалять объекты
+    FCount: Integer;          //Количество элементов
+    FFirst: PListItem;        //Первый элемент
+    FLast: PListItem;         //Последний элемент
 
     //Вспомогательные методы
-    function  GetItemByIndex(Index: Integer): PListItem;            //Найти указатель на элемент по индексу
+    function  GetItemByIndex(Index: Integer): PListItem;  //Найти указатель на элемент по индексу
     procedure DeleteItemByPointer(Item: PListItem; FreeObject: Boolean);
 
     //Свойства
@@ -62,8 +62,8 @@ type
 const
   _UNITNAME = 'TemplateList';
 
-  Err_IndexOutOfBounds  = 'IndexOutOfBounds';
-  Err_ItemNotFund       = 'ItemNotFund';
+  Err_IndexOutOfBounds = 'IndexOutOfBounds';
+  Err_ItemNotFund      = 'ItemNotFund';
 
 
 implementation
