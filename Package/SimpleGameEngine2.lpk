@@ -9,7 +9,7 @@
       <PathDelim Value="\"/>
       <SearchPaths>
         <IncludeFiles Value="..\Source\System"/>
-        <OtherUnitFiles Value="..\Source\System;..\Source\System\Core;..\Source\System\ErrorManager;..\Source\System\EventManager;..\Source\System\EventManager\Events;..\Source\System\Extensions;..\Source\System\Extensions\ExtensionControllers;..\Source\System\Extensions\ExtensionCursor;..\Source\System\Extensions\ExtensionFileSystem;..\Source\System\Extensions\ExtensionGraphic;..\Source\System\Extensions\ExtensionGraphic\Display;..\Source\System\Extensions\ExtensionGraphic\Objects\Animation;..\Source\System\Extensions\ExtensionGraphic\Objects\AnsiFont;..\Source\System\Extensions\ExtensionGraphic\Objects\Sprite;..\Source\System\Extensions\ExtensionGraphic\Platform\OpenGL;..\Source\System\Extensions\ExtensionGraphic\Platform\OpenGL\DrawObject;..\Source\System\Extensions\ExtensionGraphic\Platform\OpenGL\DrawObject\Fade;..\Source\System\Extensions\ExtensionGUI;..\Source\System\Extensions\ExtensionGUI\Components;..\Source\System\Extensions\ExtensionGUI\Properties;..\Source\System\Extensions\ExtensionKeyCommand;..\Source\System\Extensions\ExtensionKeyCommand\Joystick;..\Source\System\Extensions\ExtensionKeyCommand\Keyboard;..\Source\System\Extensions\ExtensionKeyCommand\Mouse;..\Source\System\Extensions\ExtensionMusicPlayer;..\Source\System\Extensions\ExtensionMusicPlayer\Task;..\Source\System\Extensions\ExtensionPackList;..\Source\System\Extensions\ExtensionResourceList;..\Source\System\Extensions\ExtensionScenes;..\Source\System\Extensions\ExtensionShell;..\Source\System\Extensions\ExtensionShell\Commands\CommandParameters;..\Source\System\Extensions\ExtensionShell\Commands;..\Source\System\Extensions\ExtensionSound;..\Source\System\Extensions\ExtensionSound\Buffer;..\Source\System\Extensions\ExtensionStartParameters;..\Source\System\Extensions\ExtensionTimeEvent;..\Source\System\Extensions\ExtensionVariables;..\Source\System\Extensions\ExtensionVariables\Boolean;..\Source\System\Extensions\ExtensionVariables\Color;..\Source\System\Extensions\ExtensionVariables\Enum;..\Source\System\Extensions\ExtensionVariables\Integer;..\Source\System\Extensions\ExtensionVariables\Single;..\Source\System\Extensions\ExtensionVariables\String;..\Source\System\Extensions\ExtensionWindow;..\Source\System\Templates;..\Source\ThirdParty\GDIPlus;..\Source\ThirdParty\OpenAL;..\Source\ThirdParty\OpenGL"/>
+        <OtherUnitFiles Value="..\Source\System;..\Source\System\Core;..\Source\System\ErrorManager;..\Source\System\EventManager;..\Source\System\EventManager\Events;..\Source\System\Extensions;..\Source\System\Extensions\ExtensionControllers;..\Source\System\Extensions\ExtensionCursor;..\Source\System\Extensions\ExtensionFileSystem;..\Source\System\Extensions\ExtensionGraphic;..\Source\System\Extensions\ExtensionGraphic\Display;..\Source\System\Extensions\ExtensionGraphic\Objects\Animation;..\Source\System\Extensions\ExtensionGraphic\Objects\AnsiFont;..\Source\System\Extensions\ExtensionGraphic\Objects\Sprite;..\Source\System\Extensions\ExtensionGraphic\Platform\OpenGL;..\Source\System\Extensions\ExtensionGraphic\Platform\OpenGL\DrawObject;..\Source\System\Extensions\ExtensionGraphic\Platform\OpenGL\DrawObject\Fade;..\Source\System\Extensions\ExtensionGUI;..\Source\System\Extensions\ExtensionGUI\Components;..\Source\System\Extensions\ExtensionGUI\Properties;..\Source\System\Extensions\ExtensionKeyCommand;..\Source\System\Extensions\ExtensionKeyCommand\Joystick;..\Source\System\Extensions\ExtensionKeyCommand\Keyboard;..\Source\System\Extensions\ExtensionKeyCommand\Mouse;..\Source\System\Extensions\ExtensionMusicPlayer;..\Source\System\Extensions\ExtensionMusicPlayer\Task;..\Source\System\Extensions\ExtensionPackList;..\Source\System\Extensions\ExtensionResourceList;..\Source\System\Extensions\ExtensionScenes;..\Source\System\Extensions\ExtensionShell;..\Source\System\Extensions\ExtensionShell\Commands\CommandParameters;..\Source\System\Extensions\ExtensionShell\Commands;..\Source\System\Extensions\ExtensionSound;..\Source\System\Extensions\ExtensionSound\Buffer;..\Source\System\Extensions\ExtensionStartParameters;..\Source\System\Extensions\ExtensionTimeEvent;..\Source\System\Extensions\ExtensionVariables;..\Source\System\Extensions\ExtensionVariables\Boolean;..\Source\System\Extensions\ExtensionVariables\Color;..\Source\System\Extensions\ExtensionVariables\Enum;..\Source\System\Extensions\ExtensionVariables\Integer;..\Source\System\Extensions\ExtensionVariables\Single;..\Source\System\Extensions\ExtensionVariables\String;..\Source\System\Extensions\ExtensionWindow;..\Source\System\Templates;..\Source\ThirdParty\GDIPlus;..\Source\ThirdParty\OpenAL;..\Source\ThirdParty\OpenGL;..\Source\System\EventManager\Events\Window;..\Source\System\EventManager\Events\Keyboard;..\Source\System\EventManager\Events\Mouse;..\Source\System\EventManager\Events\Graphic;..\Source\System\EventManager\Events\Graphic\Shader;..\Source\System\EventManager\Events\Graphic\Fade;..\Source\System\EventManager\Events\Graphic\Layer;..\Source\System\EventManager\Events\Graphic\Item;..\Source\System\EventManager\Events\Controller;..\Source\System\EventManager\Events\Time;..\Source\System\EventManager\Events\MusicPlayer"/>
         <UnitOutputDirectory Value="..\~Tmp\Package\$(TargetCPU)-$(TargetOS)"/>
       </SearchPaths>
     </CompilerOptions>
@@ -190,34 +190,6 @@
         <Filename Value="..\Source\System\EventManager\Events\sgeEventBase.pas"/>
         <AddToUsesPkgSection Value="False"/>
         <UnitName Value="sgeEventBase"/>
-      </Item>
-      <Item>
-        <Filename Value="..\Source\System\EventManager\Events\sgeEventControllers.pas"/>
-        <UnitName Value="sgeEventControllers"/>
-      </Item>
-      <Item>
-        <Filename Value="..\Source\System\EventManager\Events\sgeEventGraphic.pas"/>
-        <UnitName Value="sgeEventGraphic"/>
-      </Item>
-      <Item>
-        <Filename Value="..\Source\System\EventManager\Events\sgeEventKeyboard.pas"/>
-        <UnitName Value="sgeEventKeyboard"/>
-      </Item>
-      <Item>
-        <Filename Value="..\Source\System\EventManager\Events\sgeEventMouse.pas"/>
-        <UnitName Value="sgeEventMouse"/>
-      </Item>
-      <Item>
-        <Filename Value="..\Source\System\EventManager\Events\sgeEventMusicPlayer.pas"/>
-        <UnitName Value="sgeEventMusicPlayer"/>
-      </Item>
-      <Item>
-        <Filename Value="..\Source\System\EventManager\Events\sgeEventTimeEvent.pas"/>
-        <UnitName Value="sgeEventTimeEvent"/>
-      </Item>
-      <Item>
-        <Filename Value="..\Source\System\EventManager\Events\sgeEventWindow.pas"/>
-        <UnitName Value="sgeEventWindow"/>
       </Item>
       <Item>
         <Filename Value="..\Source\System\Extensions\sgeExtensionBase.pas"/>
@@ -1108,6 +1080,203 @@
       <Item>
         <Filename Value="..\Source\System\Extensions\ExtensionGUI\Components\sgeGUILabel.pas"/>
         <UnitName Value="sgeGUILabel"/>
+      </Item>
+      <Item>
+        <Filename Value="..\Source\System\EventManager\Events\Window\sgeEventWindowSize.pas"/>
+        <UnitName Value="sgeEventWindowSize"/>
+      </Item>
+      <Item>
+        <Filename Value="..\Source\System\EventManager\Events\Window\sgeEventWindowMaximize.pas"/>
+        <UnitName Value="sgeEventWindowMaximize"/>
+      </Item>
+      <Item>
+        <Filename Value="..\Source\System\EventManager\Events\Window\sgeEventWindowMinimize.pas"/>
+        <UnitName Value="sgeEventWindowMinimize"/>
+      </Item>
+      <Item>
+        <Filename Value="..\Source\System\EventManager\Events\Window\sgeEventWindowRestore.pas"/>
+        <UnitName Value="sgeEventWindowRestore"/>
+      </Item>
+      <Item>
+        <Filename Value="..\Source\System\EventManager\Events\Window\sgeEventWindowClose.pas"/>
+        <UnitName Value="sgeEventWindowClose"/>
+      </Item>
+      <Item>
+        <Filename Value="..\Source\System\EventManager\Events\Window\sgeEventWindowSetFocus.pas"/>
+        <UnitName Value="sgeEventWindowSetFocus"/>
+      </Item>
+      <Item>
+        <Filename Value="..\Source\System\EventManager\Events\Window\sgeEventWindowLostFocus.pas"/>
+        <UnitName Value="sgeEventWindowLostFocus"/>
+      </Item>
+      <Item>
+        <Filename Value="..\Source\System\EventManager\Events\Window\sgeEventWindowShow.pas"/>
+        <UnitName Value="sgeEventWindowShow"/>
+      </Item>
+      <Item>
+        <Filename Value="..\Source\System\EventManager\Events\Window\sgeEventWindowHide.pas"/>
+        <UnitName Value="sgeEventWindowHide"/>
+      </Item>
+      <Item>
+        <Filename Value="..\Source\System\EventManager\Events\Window\sgeEventWindowActivate.pas"/>
+        <UnitName Value="sgeEventWindowActivate"/>
+      </Item>
+      <Item>
+        <Filename Value="..\Source\System\EventManager\Events\Window\sgeEventWindowDeactivate.pas"/>
+        <UnitName Value="sgeEventWindowDeactivate"/>
+      </Item>
+      <Item>
+        <Filename Value="..\Source\System\EventManager\Events\Keyboard\sgeEventKeyboardChar.pas"/>
+        <UnitName Value="sgeEventKeyboardChar"/>
+      </Item>
+      <Item>
+        <Filename Value="..\Source\System\EventManager\Events\Keyboard\sgeEventKeyboardKeyDown.pas"/>
+        <AddToUsesPkgSection Value="False"/>
+        <UnitName Value="sgeEventKeyboardKeyDown"/>
+      </Item>
+      <Item>
+        <Filename Value="..\Source\System\EventManager\Events\Keyboard\sgeEventKeyboardKeyUp.pas"/>
+        <UnitName Value="sgeEventKeyboardKeyUp"/>
+      </Item>
+      <Item>
+        <Filename Value="..\Source\System\EventManager\Events\Mouse\sgeEventMouse.pas"/>
+        <UnitName Value="sgeEventMouse"/>
+      </Item>
+      <Item>
+        <Filename Value="..\Source\System\EventManager\Events\Mouse\sgeEventMouseDown.pas"/>
+        <UnitName Value="sgeEventMouseDown"/>
+      </Item>
+      <Item>
+        <Filename Value="..\Source\System\EventManager\Events\Mouse\sgeEventMouseDoubleClick.pas"/>
+        <UnitName Value="sgeEventMouseDoubleClick"/>
+      </Item>
+      <Item>
+        <Filename Value="..\Source\System\EventManager\Events\Mouse\sgeEventMouseUp.pas"/>
+        <UnitName Value="sgeEventMouseUp"/>
+      </Item>
+      <Item>
+        <Filename Value="..\Source\System\EventManager\Events\Mouse\sgeEventMouseEnter.pas"/>
+        <UnitName Value="sgeEventMouseEnter"/>
+      </Item>
+      <Item>
+        <Filename Value="..\Source\System\EventManager\Events\Mouse\sgeEventMouseScroll.pas"/>
+        <UnitName Value="sgeEventMouseScroll"/>
+      </Item>
+      <Item>
+        <Filename Value="..\Source\System\EventManager\Events\Mouse\sgeEventMouseMove.pas"/>
+        <UnitName Value="sgeEventMouseMove"/>
+      </Item>
+      <Item>
+        <Filename Value="..\Source\System\EventManager\Events\Mouse\sgeEventMouseLeave.pas"/>
+        <UnitName Value="sgeEventMouseLeave"/>
+      </Item>
+      <Item>
+        <Filename Value="..\Source\System\EventManager\Events\Graphic\Shader\sgeEventGraphicShaderAdd.pas"/>
+        <UnitName Value="sgeEventGraphicShaderAdd"/>
+      </Item>
+      <Item>
+        <Filename Value="..\Source\System\EventManager\Events\Graphic\Fade\sgeEventGraphicFade.pas"/>
+        <UnitName Value="sgeEventGraphicFade"/>
+      </Item>
+      <Item>
+        <Filename Value="..\Source\System\EventManager\Events\Graphic\Fade\sgeEventGraphicFadeAdd.pas"/>
+        <UnitName Value="sgeEventGraphicFadeAdd"/>
+      </Item>
+      <Item>
+        <Filename Value="..\Source\System\EventManager\Events\Graphic\Layer\sgeEventGraphicLayer.pas"/>
+        <UnitName Value="sgeEventGraphicLayer"/>
+      </Item>
+      <Item>
+        <Filename Value="..\Source\System\EventManager\Events\Graphic\Layer\sgeEventGraphicLayerAdd.pas"/>
+        <UnitName Value="sgeEventGraphicLayerAdd"/>
+      </Item>
+      <Item>
+        <Filename Value="..\Source\System\EventManager\Events\Graphic\Layer\sgeEventGraphicLayerDelete.pas"/>
+        <UnitName Value="sgeEventGraphicLayerDelete"/>
+      </Item>
+      <Item>
+        <Filename Value="..\Source\System\EventManager\Events\Graphic\Layer\sgeEventGraphicLayerUpdate.pas"/>
+        <UnitName Value="sgeEventGraphicLayerUpdate"/>
+      </Item>
+      <Item>
+        <Filename Value="..\Source\System\EventManager\Events\Graphic\Item\sgeEventGraphicElement.pas"/>
+        <UnitName Value="sgeEventGraphicElement"/>
+      </Item>
+      <Item>
+        <Filename Value="..\Source\System\EventManager\Events\Graphic\Item\sgeEventGraphicElementDelete.pas"/>
+        <UnitName Value="sgeEventGraphicElementDelete"/>
+      </Item>
+      <Item>
+        <Filename Value="..\Source\System\EventManager\Events\Graphic\Item\sgeEventGraphicElementVisible.pas"/>
+        <UnitName Value="sgeEventGraphicElementVisible"/>
+      </Item>
+      <Item>
+        <Filename Value="..\Source\System\EventManager\Events\Graphic\Item\sgeEventGraphicElementClipRect.pas"/>
+        <UnitName Value="sgeEventGraphicElementClipRect"/>
+      </Item>
+      <Item>
+        <Filename Value="..\Source\System\EventManager\Events\Graphic\Item\sgeEventGraphicElementUpdate.pas"/>
+        <UnitName Value="sgeEventGraphicElementUpdate"/>
+      </Item>
+      <Item>
+        <Filename Value="..\Source\System\EventManager\Events\Graphic\Item\sgeEventGraphicElementAdd.pas"/>
+        <UnitName Value="sgeEventGraphicElementAdd"/>
+      </Item>
+      <Item>
+        <Filename Value="..\Source\System\EventManager\Events\Controller\sgeEventController.pas"/>
+        <UnitName Value="sgeEventController"/>
+      </Item>
+      <Item>
+        <Filename Value="..\Source\System\EventManager\Events\Controller\sgeEventControllerAttach.pas"/>
+        <UnitName Value="sgeEventControllerAttach"/>
+      </Item>
+      <Item>
+        <Filename Value="..\Source\System\EventManager\Events\Controller\sgeEventControllerButtonUp.pas"/>
+        <UnitName Value="sgeEventControllerButtonUp"/>
+      </Item>
+      <Item>
+        <Filename Value="..\Source\System\EventManager\Events\Controller\sgeEventControllerDetach.pas"/>
+        <UnitName Value="sgeEventControllerDetach"/>
+      </Item>
+      <Item>
+        <Filename Value="..\Source\System\EventManager\Events\Controller\sgeEventControllerButtonDown.pas"/>
+        <UnitName Value="sgeEventControllerButtonDown"/>
+      </Item>
+      <Item>
+        <Filename Value="..\Source\System\EventManager\Events\Controller\sgeEventControllerPovUp.pas"/>
+        <UnitName Value="sgeEventControllerPovUp"/>
+      </Item>
+      <Item>
+        <Filename Value="..\Source\System\EventManager\Events\Controller\sgeEventControllerPovDown.pas"/>
+        <UnitName Value="sgeEventControllerPovDown"/>
+      </Item>
+      <Item>
+        <Filename Value="..\Source\System\EventManager\Events\Controller\sgeEventControllerAxisUp.pas"/>
+        <UnitName Value="sgeEventControllerAxisUp"/>
+      </Item>
+      <Item>
+        <Filename Value="..\Source\System\EventManager\Events\Controller\sgeEventControllerAxisDown.pas"/>
+        <UnitName Value="sgeEventControllerAxisDown"/>
+      </Item>
+      <Item>
+        <Filename Value="..\Source\System\EventManager\Events\Controller\sgeEventControllerAxisValue.pas"/>
+        <UnitName Value="sgeEventControllerAxisValue"/>
+      </Item>
+      <Item>
+        <Filename Value="..\Source\System\EventManager\Events\Time\sgeEventTime.pas"/>
+        <UnitName Value="sgeEventTime"/>
+      </Item>
+      <Item>
+        <Filename Value="..\Source\System\EventManager\Events\MusicPlayer\sgeEventMusicPlayer.pas"/>
+        <UnitName Value="sgeEventMusicPlayer"/>
+      </Item>
+      <Item>
+        <Filename Value="..\Source\System\EventManager\Events\MusicPlayer\sgeEventMusicPlayerStart.pas"/>
+        <UnitName Value="sgeEventMusicPlayerStart"/>
+      </Item>
+      <Item>
+        <Filename Value="..\Source\System\EventManager\Events\MusicPlayer\sgeEventMusicPlayerStop.pas"/>
+        <UnitName Value="sgeEventMusicPlayerStop"/>
       </Item>
     </Files>
     <UsageOptions>
