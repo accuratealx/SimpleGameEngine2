@@ -63,7 +63,7 @@ var
   I: Cardinal;
 begin
   Addr := Pointer(Sprite);
-  I := UIntPtr(Addr);
+  I := PtrUInt(Addr);
   Result := sgeIntToHEX(I, 16);
 end;
 

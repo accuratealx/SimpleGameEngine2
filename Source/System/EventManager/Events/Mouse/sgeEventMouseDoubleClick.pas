@@ -15,7 +15,7 @@ unit sgeEventMouseDoubleClick;
 interface
 
 uses
-  sgeTypes, sgeEventBase, sgeEventMouse;
+  sgeEventBase, sgeEventMouse;
 
 
 const

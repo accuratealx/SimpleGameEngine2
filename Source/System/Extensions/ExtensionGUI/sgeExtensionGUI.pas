@@ -27,8 +27,9 @@ const
 
 type
   TsgeExtensionGUI = class(TsgeExtensionBase)
-  const
-    MAX_SUB_COUNT = 8;
+  private
+    const
+      MAX_SUB_COUNT = 8;
   private
     //Ссылки
     FDrawLayer: TsgeDisplayLayer;         //Объект управления слоем графики
@@ -81,13 +82,13 @@ type
     destructor  Destroy; override;
 
     //Мышь
-    procedure MouseCapture(Element: TsgeGUIElement);                //Установить захват мыши
-    procedure ReleaseMouse(Element: TsgeGUIElement);                //Отменить захват мыши
+    procedure MouseCapture(Element: TsgeGUIElement);  //Установить захват мыши
+    procedure ReleaseMouse(Element: TsgeGUIElement);  //Отменить захват мыши
 
     //Активный элемент
-    procedure SetFocus(Element: TsgeGUIElement);                    //Установить фокус ввода на элемент
-    procedure LostFocus(Element: TsgeGUIElement);                   //Убрать фокус с элемента
-    procedure ClearFocus;                                           //Очистить фокус
+    procedure SetFocus(Element: TsgeGUIElement);      //Установить фокус ввода на элемент
+    procedure LostFocus(Element: TsgeGUIElement);     //Убрать фокус с элемента
+    procedure ClearFocus;                             //Очистить фокус
 
     //Свойства
     property Enable: Boolean read FEnable write SetEnable;
@@ -110,7 +111,7 @@ const
   Layer_Name = 'System.GUI';
   Layer_Index = $FFFE;
 
-  _UNITNAME = 'ExtensionGSUI';
+  _UNITNAME = 'ExtensionGUI';
 
 
 procedure TsgeExtensionGUI.SetEnable(AEnable: Boolean);

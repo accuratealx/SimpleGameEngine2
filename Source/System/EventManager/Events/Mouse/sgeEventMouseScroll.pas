@@ -30,7 +30,7 @@ type
 
     function GetName: ShortString; override;
   public
-    constructor Create(X, Y: Integer; MouseButtons: TsgeMouseButtons; KeyboardButtons: TsgeKeyboardButtons; Delta: Integer); reintroduce;
+    constructor Create(X, Y: Integer; MouseButtons: TsgeMouseButtons; KeyboardButtons: TsgeKeyboardButtons; Delta: Integer);
 
     function Copy: TsgeEventBase; override;
 

@@ -17,7 +17,7 @@ interface
 
 uses
   sgeTypes, sgeSprite,
-  sgeEventMouse,
+  sgeEventMouseEnter, sgeEventMouseLeave, sgeEventMouseDown, sgeEventMouseUp,
   sgeGUIElement,
   sgeDisplayElementSpriteTile;
 
@@ -45,10 +45,10 @@ type
 
     //Свойства
     procedure SetEnable(AEnabled: Boolean); override;
-    procedure Handler_MouseEnter(Mouse: TsgeEventMouse); override;
-    procedure Handler_MouseLeave(Mouse: TsgeEventMouse); override;
-    procedure Handler_MouseDown(Mouse: TsgeEventMouse); override;
-    procedure Handler_MouseUp(Mouse: TsgeEventMouse); override;
+    procedure Handler_MouseEnter(Mouse: TsgeEventMouseEnter); override;
+    procedure Handler_MouseLeave(Mouse: TsgeEventMouseLeave); override;
+    procedure Handler_MouseDown(Mouse: TsgeEventMouseDown); override;
+    procedure Handler_MouseUp(Mouse: TsgeEventMouseUp); override;
   public
     constructor Create(Name: String; Left, Top, Width, Height: Integer; Sprite: TsgeSprite; Visible: Boolean = True; Parent: TsgeGUIElement = nil);
     destructor  Destroy; override;
@@ -134,28 +134,28 @@ begin
 end;
 
 
-procedure TsgeGUISpriteButton.Handler_MouseEnter(Mouse: TsgeEventMouse);
+procedure TsgeGUISpriteButton.Handler_MouseEnter(Mouse: TsgeEventMouseEnter);
 begin
   SetButtonState(bsActive);
   inherited Handler_MouseEnter(Mouse);
 end;
 
 
-procedure TsgeGUISpriteButton.Handler_MouseLeave(Mouse: TsgeEventMouse);
+procedure TsgeGUISpriteButton.Handler_MouseLeave(Mouse: TsgeEventMouseLeave);
 begin
   SetButtonState(bsNormal);
   inherited Handler_MouseLeave(Mouse);
 end;
 
 
-procedure TsgeGUISpriteButton.Handler_MouseDown(Mouse: TsgeEventMouse);
+procedure TsgeGUISpriteButton.Handler_MouseDown(Mouse: TsgeEventMouseDown);
 begin
   SetButtonState(bsPressed);
   inherited Handler_MouseDown(Mouse);
 end;
 
 
-procedure TsgeGUISpriteButton.Handler_MouseUp(Mouse: TsgeEventMouse);
+procedure TsgeGUISpriteButton.Handler_MouseUp(Mouse: TsgeEventMouseUp);
 begin
   SetButtonState(bsActive);
   inherited Handler_MouseUp(Mouse);

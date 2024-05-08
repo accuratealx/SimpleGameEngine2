@@ -15,7 +15,7 @@ unit sgeEventMouseUp;
 interface
 
 uses
-  sgeTypes, sgeEventBase, sgeEventMouse;
+  sgeEventBase, sgeEventMouse;
 
 
 const

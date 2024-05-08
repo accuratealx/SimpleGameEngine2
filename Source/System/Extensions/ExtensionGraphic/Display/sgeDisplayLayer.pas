@@ -88,7 +88,7 @@ implementation
 
 uses
   sgeUniqueID, sgeCorePointerUtils,
-  sgeEventGraphic;
+  sgeEventGraphicLayerAdd, sgeEventGraphicLayerUpdate, sgeEventGraphicLayerDelete;
 
 
 procedure TsgeDisplayLayer.SetName(AName: String);
@@ -206,7 +206,7 @@ end;
 
 procedure TsgeDisplayLayer.Add;
 var
-  Event: TsgeEventGraphicLayer;
+  Event: TsgeEventGraphicLayerAdd;
 begin
   Event := TsgeEventGraphicLayerAdd.Create(FID, Self.GetCopy);
   FEventManager.Publish(Event);
@@ -217,7 +217,7 @@ end;
 
 procedure TsgeDisplayLayer.Update;
 var
-  Event: TsgeEventGraphicLayer;
+  Event: TsgeEventGraphicLayerUpdate;
 begin
   Event := TsgeEventGraphicLayerUpdate.Create(FID, Self.GetCopy);
   FEventManager.Publish(Event);
@@ -228,7 +228,7 @@ end;
 
 procedure TsgeDisplayLayer.Delete;
 var
-  Event: TsgeEventGraphicLayer;
+  Event: TsgeEventGraphicLayerDelete;
 begin
   Event := TsgeEventGraphicLayerDelete.Create(FID);
   FEventManager.Publish(Event);

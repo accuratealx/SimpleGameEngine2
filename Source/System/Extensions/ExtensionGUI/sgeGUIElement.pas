@@ -217,6 +217,8 @@ implementation
 uses
   sgeCorePointerUtils, sgeEventMouse;
 
+type
+  TsgeEventMouseHack = class(TsgeEventMouse);
 
 {$Region TsgeGUIElement}
 procedure TsgeGUIElement.Handler_Show;
@@ -866,8 +868,7 @@ end;
 
 procedure TsgeGUIElement.MouseHandler(EventType: TsgeGUIElementMouseEventType; Mouse: TsgeEventBase);
 var
-  EventMouse: TsgeEventMouse;
-  LocalMouse: TsgeEventMouse;
+  LocalMouse, MouseEvent: TsgeEventMouse;
   Pt: TsgeIntPoint;
   X, Y: Integer;
   FormScale: Single;
@@ -880,40 +881,42 @@ begin
   Pt := GetGlobalPos;
 
   //Приведем тип к базовому для мыши
-  EventMouse := Mouse as TsgeEventMouse;
+  MouseEvent := Mouse as TsgeEventMouse;
 
   //Изменить координаты мыши под текущим элементом
   if FParent = nil then
   begin
-    X := Mouse.X - Pt.X;
-    Y := Mouse.Y - Pt.Y;
+    X := MouseEvent.X - Pt.X;
+    Y := MouseEvent.Y - Pt.Y;
   end
   else
   begin
     FormScale := GetScale;
-    X := Round((Mouse.X - Pt.X) / FormScale);
-    Y := Round((Mouse.Y - Pt.Y) / FormScale);
+    X := Round((MouseEvent.X - Pt.X) / FormScale);
+    Y := Round((MouseEvent.Y - Pt.Y) / FormScale);
   end;
 
-  //Локальный объект события мыши
-  LocalMouse := TsgeEventMouse.Create(Mouse.Name, X, Y, Mouse.MouseButtons, Mouse.KeyboardButtons, Mouse.Delta);
+  //Тут страшное колдунство, сделаем копию текущего события и подменим X и Y
+  LocalMouse := TsgeEventMouse(Mouse.Copy);
+  TsgeEventMouseHack(LocalMouse).FX := X;
+  TsgeEventMouseHack(LocalMouse).FY := Y;
 
   try
     //Обработать событие
     case EventType of
       emetDown:
       begin
-        if PointInElement(Mouse.X, Mouse.Y) then
+        if PointInElement(MouseEvent.X, MouseEvent.Y) then
         begin
           //Запомнить флаг нажатия, если нужная кнопка
-          if FClickButton in Mouse.MouseButtons then
+          if FClickButton in MouseEvent.MouseButtons then
           begin
             FPressed := True;
             sgeCorePointer_GetSGE.ExtGUI.MouseCapture(Self);
           end;
 
           //Обработчик нажатия мыши
-          Handler_MouseDown(LocalMouse);
+          Handler_MouseDown(TsgeEventMouseDown(LocalMouse));
 
           //Установить фокус ввода
           sgeCorePointer_GetSGE.ExtGUI.SetFocus(Self);
@@ -922,15 +925,15 @@ begin
 
       emetUp:
       begin
-        if PointInElement(Mouse.X, Mouse.Y) then
+        if PointInElement(MouseEvent.X, MouseEvent.Y) then
         begin
           //Событие OnClick
           if FPressed then
-            Handler_MouseClick(LocalMouse);
+            Handler_MouseClick(TsgeEventMouseDown(LocalMouse));
         end;
 
         //Обработчик отпускания мыши
-        Handler_MouseUp(LocalMouse);
+        Handler_MouseUp(TsgeEventMouseUp(LocalMouse));
 
         //Сбросить флаг нажатия
         FPressed := False;
@@ -938,25 +941,25 @@ begin
       end;
 
       emetMove:
-         Handler_MouseMove(LocalMouse);
+         Handler_MouseMove(TsgeEventMouseMove(LocalMouse));
 
       emetScroll:
-        Handler_MouseScroll(LocalMouse);
+        Handler_MouseScroll(TsgeEventMouseScroll(LocalMouse));
 
       emetDblClick:
-        if PointInElement(Mouse.X, Mouse.Y) then
+        if PointInElement(MouseEvent.X, MouseEvent.Y) then
         begin
           if FEnableDoubleClick then
-            Handler_MouseDoubleClick(LocalMouse)
+            Handler_MouseDoubleClick(TsgeEventMouseDoubleClick(LocalMouse))
           else
             MouseHandler(emetDown, Mouse);
         end;
 
       emetLeave:
-        Handler_MouseLeave(LocalMouse);
+        Handler_MouseLeave(TsgeEventMouseLeave(LocalMouse));
 
       emetEnter:
-        Handler_MouseEnter(LocalMouse);
+        Handler_MouseEnter(TsgeEventMouseEnter(LocalMouse));
     end;
 
   finally

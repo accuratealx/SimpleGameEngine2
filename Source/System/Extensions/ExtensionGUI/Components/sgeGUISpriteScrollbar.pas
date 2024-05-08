@@ -17,7 +17,8 @@ interface
 
 uses
   sgeTypes, sgeSprite, sgeColor,
-  sgeGUIElement, sgeEventMouse,
+  sgeGUIElement,
+  sgeEventMouseDown, sgeEventMouseUp, sgeEventMouseMove, sgeEventMouseScroll,
   sgeDisplayElementRect, sgeDisplayElementSpriteNine;
 
 type
@@ -73,10 +74,10 @@ type
 
     procedure Handler_OnScroll(OldValue, NewValue: Integer);  //Обработчик изменения положения
 
-    procedure Handler_MouseDown(Mouse: TsgeEventMouse); override;
-    procedure Handler_MouseUp(Mouse: TsgeEventMouse); override;
-    procedure Handler_MouseMove(Mouse: TsgeEventMouse); override;
-    procedure Handler_MouseScroll(Mouse: TsgeEventMouse); override;
+    procedure Handler_MouseDown(Mouse: TsgeEventMouseDown); override;
+    procedure Handler_MouseUp(Mouse: TsgeEventMouseUp); override;
+    procedure Handler_MouseMove(Mouse: TsgeEventMouseMove); override;
+    procedure Handler_MouseScroll(Mouse: TsgeEventMouseScroll); override;
 
     procedure SetOrientation(AOrientation: TsgeOrientation);
     procedure SetSpriteOffset(AOffset: TsgeFloatRect);
@@ -309,7 +310,7 @@ begin
 end;
 
 
-procedure TsgeGUISpriteScrollbar.Handler_MouseDown(Mouse: TsgeEventMouse);
+procedure TsgeGUISpriteScrollbar.Handler_MouseDown(Mouse: TsgeEventMouseDown);
 begin
   if (mbLeft in Mouse.MouseButtons) then
   begin
@@ -338,7 +339,7 @@ begin
 end;
 
 
-procedure TsgeGUISpriteScrollbar.Handler_MouseUp(Mouse: TsgeEventMouse);
+procedure TsgeGUISpriteScrollbar.Handler_MouseUp(Mouse: TsgeEventMouseUp);
 begin
   if FMoving then
   begin
@@ -352,7 +353,7 @@ begin
 end;
 
 
-procedure TsgeGUISpriteScrollbar.Handler_MouseMove(Mouse: TsgeEventMouse);
+procedure TsgeGUISpriteScrollbar.Handler_MouseMove(Mouse: TsgeEventMouseMove);
 var
   AOffset: Integer;
 begin
@@ -374,7 +375,7 @@ begin
 end;
 
 
-procedure TsgeGUISpriteScrollbar.Handler_MouseScroll(Mouse: TsgeEventMouse);
+procedure TsgeGUISpriteScrollbar.Handler_MouseScroll(Mouse: TsgeEventMouseScroll);
 begin
   if Mouse.Delta < 0 then
     Position := Position + FPageStep

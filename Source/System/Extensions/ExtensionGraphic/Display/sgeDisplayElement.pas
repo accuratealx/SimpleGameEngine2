@@ -60,7 +60,8 @@ implementation
 
 uses
   sgeUniqueID, sgeCorePointerUtils,
-  sgeEventGraphic;
+  sgeEventGraphicElementVisible, sgeEventGraphicElementClipRect, sgeEventGraphicElementAdd,
+  sgeEventGraphicElementUpdate, sgeEventGraphicElementDelete;
 
 
 procedure TsgeDisplayElement.SetVisible(AVisible: Boolean);

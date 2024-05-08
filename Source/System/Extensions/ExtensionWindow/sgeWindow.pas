@@ -623,7 +623,7 @@ procedure TsgeWindow.SetWindowProc(Proc: Pointer);
 begin
   if Proc = nil then
     Exit;
-  Windows.SetWindowLongPtr(FHandle, GWLP_WNDPROC,  LONG_PTR(Proc));
+  Windows.SetWindowLongPtr(FHandle, GWLP_WNDPROC, PtrUInt(Proc));
 end;
 
 

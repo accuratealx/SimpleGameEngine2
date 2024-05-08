@@ -16,7 +16,7 @@ unit sgeGUIToggleSpriteButton;
 interface
 
 uses
-  sgeEventMouse,
+  sgeEventMouseDown,
   sgeGUISpriteButton;
 
 type
@@ -24,7 +24,7 @@ type
   protected
     FToggle: Boolean;
 
-    procedure Handler_MouseClick(Mouse: TsgeEventMouse); override;
+    procedure Handler_MouseClick(Mouse: TsgeEventMouseDown); override;
   public
 
     property Toggle: Boolean read FToggle;
@@ -34,7 +34,7 @@ type
 implementation
 
 
-procedure TsgeGUIToggleSpriteButton.Handler_MouseClick(Mouse: TsgeEventMouse);
+procedure TsgeGUIToggleSpriteButton.Handler_MouseClick(Mouse: TsgeEventMouseDown);
 begin
   FToggle := not FToggle;
   FDisplayElement.Column := Ord(FToggle);

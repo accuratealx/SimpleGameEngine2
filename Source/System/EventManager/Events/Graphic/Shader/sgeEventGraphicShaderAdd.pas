@@ -15,7 +15,7 @@ unit sgeEventGraphicShaderAdd;
 interface
 
 uses
-  sgeTypes, sgeMemoryStream, sgeEventBase;
+  sgeMemoryStream, sgeEventBase;
 
 
 const

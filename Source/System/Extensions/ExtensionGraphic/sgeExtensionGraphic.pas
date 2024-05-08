@@ -18,10 +18,9 @@ uses
   sgeTypes, sgeThread, sgeMemoryStream, sgeCounter, sgeAnsiFont, sgeSprite,
   sgeExtensionBase,
   sgeColor, sgeGraphicOpenGL, sgeGraphicOpenGLLayerList,
-  sgeGraphicOpenGLDrawObjectFade, sgeGraphicOpenGLDrawObjectFadeItem,
+  sgeGraphicOpenGLDrawObjectFade,
   sgeDisplayElementAnsiText, sgeGraphicOpenGLDrawObjectAnsiText,
   sgeDisplayElement, sgeGraphicOpenGLDrawObject,
-
   sgeEventList, sgeEventBase,
   sgeEventWindowSize,
   sgeEventGraphicShaderAdd,

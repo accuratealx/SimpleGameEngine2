@@ -75,7 +75,6 @@ implementation
 
 uses
   sgeErrors, sgeOSPlatform,
-  sgeEventBase,
   sgeEventWindowClose, sgeEventWindowSetFocus, sgeEventWindowLostFocus, sgeEventWindowShow,
   sgeEventWindowHide, sgeEventWindowDeactivate, sgeEventWindowActivate, sgeEventWindowSize,
   sgeEventWindowMaximize, sgeEventWindowMinimize, sgeEventWindowRestore,
