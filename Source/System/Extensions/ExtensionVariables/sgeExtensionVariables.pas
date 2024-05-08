@@ -33,7 +33,7 @@ const
 type
   TsgeExtensionVariables = class(TsgeExtensionBase)
   private
-    FExtFileSystem: TsgeExtensionFileSystem;                  //Расширение: Файловая система
+    FExtFileSystem: TsgeExtensionFileSystem;  //Расширение: Файловая система
 
     FVariableList: TsgeVariableList;
 

@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeEventMouse.pas
-Версия            1.2
+Версия            1.3
 Создан            14.09.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Классы событий: Мышь
@@ -20,29 +20,20 @@ uses
   sgeEventBase;
 
 
-const
-  Event_MouseDown         = 'Mouse.Down';
-  Event_MouseUp           = 'Mouse.Up';
-  Event_MouseLeave        = 'Mouse.Leave';
-  Event_MouseEnter        = 'Mouse.Enter';
-  Event_MouseDoubleClick  = 'Mouse.DoubleClick';
-  Event_MouseMove         = 'Mouse.Move';
-  Event_MouseScroll       = 'Mouse.Scroll';
-
-
 type
   TsgeEventMouse = class(TsgeEventBase)
   private
+    function GetPos: TsgeIntPoint;
+    function GetFloatPos: TsgeFloatPoint;
+  protected
     FX: Integer;
     FY: Integer;
-    FDelta: Integer;
     FMouseButtons: TsgeMouseButtons;
     FKeyboardButtons: TsgeKeyboardButtons;
 
-    function GetPos: TsgeIntPoint;
-    function GetFloatPos: TsgeFloatPoint;
+    function GetName: ShortString; override;
   public
-    constructor Create(Name: ShortString; X, Y: Integer; MouseButtons: TsgeMouseButtons; KeyboardButtons: TsgeKeyboardButtons; Delta: Integer = 0);
+    constructor Create(X, Y: Integer; MouseButtons: TsgeMouseButtons; KeyboardButtons: TsgeKeyboardButtons);
 
     function Copy: TsgeEventBase; override;
 
@@ -50,7 +41,6 @@ type
     property FloatPos: TsgeFloatPoint read GetFloatPos;
     property X: Integer read FX;
     property Y: Integer read FY;
-    property Delta: Integer read FDelta;
     property MouseButtons: TsgeMouseButtons read FMouseButtons;
     property KeyboardButtons: TsgeKeyboardButtons read FKeyboardButtons;
   end;
@@ -75,13 +65,16 @@ begin
 end;
 
 
-constructor TsgeEventMouse.Create(Name: ShortString; X, Y: Integer; MouseButtons: TsgeMouseButtons; KeyboardButtons: TsgeKeyboardButtons; Delta: Integer);
+function TsgeEventMouse.GetName: ShortString;
 begin
-  inherited Create(Name);
+  Result := 'Mouse';
+end;
 
+
+constructor TsgeEventMouse.Create(X, Y: Integer; MouseButtons: TsgeMouseButtons; KeyboardButtons: TsgeKeyboardButtons);
+begin
   FX := X;
   FY := Y;
-  FDelta := Delta;
   FMouseButtons := MouseButtons;
   FKeyboardButtons := KeyboardButtons;
 end;
@@ -89,7 +82,7 @@ end;
 
 function TsgeEventMouse.Copy: TsgeEventBase;
 begin
-  Result := TsgeEventMouse.Create(FName, FX, FY, FMouseButtons, FKeyboardButtons, FDelta);
+  Result := TsgeEventMouse.Create(FX, FY, FMouseButtons, FKeyboardButtons);
 end;
 
 

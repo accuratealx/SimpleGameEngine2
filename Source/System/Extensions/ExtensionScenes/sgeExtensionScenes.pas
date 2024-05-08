@@ -17,7 +17,7 @@ interface
 uses
   sgeTypes, sgeColor,
   sgeExtensionBase, sgeExtensionGraphic,
-  sgeEventBase, sgeEventGraphic,
+  sgeEventBase, sgeEventGraphicFade,
   sgeSceneList, sgeSceneBase;
 
 

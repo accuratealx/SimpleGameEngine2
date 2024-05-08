@@ -15,7 +15,7 @@ unit sgeTimeEventItem;
 interface
 
 uses
-  sgeEventTimeEvent;
+  sgeEventTime;
 
 
 type
@@ -23,16 +23,16 @@ type
   TsgeTimeEventItem = class
   private
     //Основные параметры
-    FDelay: Cardinal;                                               //Задержка между вызовами в ms
-    FEnable: Boolean;                                               //Активность
-    FTimes: Integer;                                                //Количество срабатываний, -1 - бесконечно
-    FProc: TsgeTimeEventProc;                                       //Указатель на метод
-    FStartDelay: Cardinal;                                          //Задержка перед первым выполнением
-    FAutoDelete: Boolean;                                           //Автоудаление при выполнении
+    FDelay: Cardinal;         //Задержка между вызовами в ms
+    FEnable: Boolean;         //Активность
+    FTimes: Integer;          //Количество срабатываний, -1 - бесконечно
+    FProc: TsgeTimeEventProc; //Указатель на метод
+    FStartDelay: Cardinal;    //Задержка перед первым выполнением
+    FAutoDelete: Boolean;     //Автоудаление при выполнении
 
     //Дополнительные параметры
-    FLastExecuteTime: Int64;                                        //Время последнего вызова
-    FTimesCount: Int64;                                             //Количество срабатываний
+    FLastExecuteTime: Int64;  //Время последнего вызова
+    FTimesCount: Int64;       //Количество срабатываний
 
     procedure SetTimes(ATimes: Integer);
     procedure SetEnable(AEnable: Boolean);

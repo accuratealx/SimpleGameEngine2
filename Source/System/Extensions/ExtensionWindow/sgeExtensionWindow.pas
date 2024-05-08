@@ -75,7 +75,13 @@ implementation
 
 uses
   sgeErrors, sgeOSPlatform,
-  sgeEventBase, sgeEventWindow, sgeEventKeyboard, sgeEventMouse;
+  sgeEventBase,
+  sgeEventWindowClose, sgeEventWindowSetFocus, sgeEventWindowLostFocus, sgeEventWindowShow,
+  sgeEventWindowHide, sgeEventWindowDeactivate, sgeEventWindowActivate, sgeEventWindowSize,
+  sgeEventWindowMaximize, sgeEventWindowMinimize, sgeEventWindowRestore,
+  sgeEventKeyboardChar, sgeEventKeyboardKeyDown, sgeEventKeyboardKeyUp,
+  sgeEventMouseDown, sgeEventMouseUp, sgeEventMouseDoubleClick, sgeEventMouseScroll,
+  sgeEventMouseEnter, sgeEventMouseMove, sgeEventMouseLeave;
 
 
 var
@@ -212,7 +218,7 @@ begin
 
       WM_MOUSELEAVE:
       begin
-        //Положение курсора относительно экрана, а не окна
+        //wparam и lparam тупо пустые, сами найдем
         Windows.GetCursorPos(Pos);
         Windows.ScreenToClient(Message.hwnd, Pos);
         Message.lParam := MAKELPARAM(Pos.X, Pos.Y);
@@ -345,57 +351,57 @@ begin
 
   case Msg of
     WM_CLOSE:
-      EventManager.Publish(TsgeEventBase.Create(Event_WindowClose));
+      EventManager.Publish(TsgeEventWindowClose.Create);
 
 
     WM_SETFOCUS:
-      EventManager.Publish(TsgeEventBase.Create(Event_WindowSetFocus));
+      EventManager.Publish(TsgeEventWindowSetFocus.Create);
 
 
     WM_KILLFOCUS:
-      EventManager.Publish(TsgeEventBase.Create(Event_WindowLostFocus));
+      EventManager.Publish(TsgeEventWindowLostFocus.Create);
 
 
     WM_SHOWWINDOW:
       if wParam = 1 then
-        EventManager.Publish(TsgeEventBase.Create(Event_WindowShow))
+        EventManager.Publish(TsgeEventWindowShow.Create)
       else
-        EventManager.Publish(TsgeEventBase.Create(Event_WindowHide));
+        EventManager.Publish(TsgeEventWindowHide.Create);
 
 
     WM_ACTIVATE:
       if wParam = WA_INACTIVE then
-        EventManager.Publish(TsgeEventBase.Create(Event_WindowDeActivate))
+        EventManager.Publish(TsgeEventWindowDeactivate.Create)
       else
-        EventManager.Publish(TsgeEventBase.Create(Event_WindowActivate));
+        EventManager.Publish(TsgeEventWindowActivate.Create);
 
 
     WM_CHAR:
-      EventManager.Publish(TsgeEventKeyboardChar.Create(Event_KeyboardChar, chr(wParam), GetKeyboardButtons));
+      EventManager.Publish(TsgeEventKeyboardChar.Create(chr(wParam), GetKeyboardButtons));
 
 
     WM_KEYDOWN, WM_SYSKEYDOWN:
-      EventManager.Publish(TsgeEventKeyboard.Create(Event_KeyboardDown, wParam, GetKeyboardButtons, (lParam shr 30) = 0));
+      EventManager.Publish(TsgeEventKeyboardKeyDown.Create(wParam, GetKeyboardButtons, (lParam shr 30) = 0));
 
 
     WM_KEYUP, WM_SYSKEYUP:
-      EventManager.Publish(TsgeEventKeyboard.Create(Event_KeyboardUp, wParam, GetKeyboardButtons, False));
+      EventManager.Publish(TsgeEventKeyboardKeyUp.Create(wParam, GetKeyboardButtons));
 
 
     WM_LBUTTONDOWN, WM_MBUTTONDOWN, WM_RBUTTONDOWN, WM_XBUTTONDOWN:
-      EventManager.Publish(TsgeEventMouse.Create(Event_MouseDown, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), GetMouseButtons(wParam), GetKeyboardButtons));
+      EventManager.Publish(TsgeEventMouseDown.Create(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), GetMouseButtons(wParam), GetKeyboardButtons));
 
 
     WM_LBUTTONUP, WM_MBUTTONUP, WM_RBUTTONUP, WM_XBUTTONUP:
-      EventManager.Publish(TsgeEventMouse.Create(Event_MouseUp, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), GetMouseButtons(wParam), GetKeyboardButtons));
+      EventManager.Publish(TsgeEventMouseUp.Create(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), GetMouseButtons(wParam), GetKeyboardButtons));
 
 
     WM_LBUTTONDBLCLK, WM_MBUTTONDBLCLK, WM_RBUTTONDBLCLK, WM_XBUTTONDBLCLK:
-      EventManager.Publish(TsgeEventMouse.Create(Event_MouseDoubleClick, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), GetMouseButtons(wParam), GetKeyboardButtons));
+      EventManager.Publish(TsgeEventMouseDoubleClick.Create(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), GetMouseButtons(wParam), GetKeyboardButtons));
 
 
     WM_MOUSEWHEEL:
-      EventManager.Publish(TsgeEventMouse.Create(Event_MouseScroll, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), GetMouseButtons(wParam), GetKeyboardButtons, GetMouseScrollDelta(wParam)));
+      EventManager.Publish(TsgeEventMouseScroll.Create(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), GetMouseButtons(wParam), GetKeyboardButtons, GetMouseScrollDelta(wParam)));
 
 
     WM_MOUSEMOVE:
@@ -409,28 +415,28 @@ begin
       begin
         FMouseOut := False;
         SetMouseTrackEvent;
-        EventManager.Publish(TsgeEventMouse.Create(Event_MouseEnter, CursorPos.X, CursorPos.Y, GetMouseButtons(wParam), GetKeyboardButtons));
+        EventManager.Publish(TsgeEventMouseEnter.Create(CursorPos.X, CursorPos.Y, GetMouseButtons(wParam), GetKeyboardButtons));
       end;
 
-      EventManager.Publish(TsgeEventMouse.Create(Event_MouseMove, CursorPos.X, CursorPos.Y, GetMouseButtons(wParam), GetKeyboardButtons));
+      EventManager.Publish(TsgeEventMouseMove.Create(CursorPos.X, CursorPos.Y, GetMouseButtons(wParam), GetKeyboardButtons));
     end;
 
 
     WM_MOUSELEAVE:
     begin
       FMouseOut := True;
-      EventManager.Publish(TsgeEventMouse.Create(Event_MouseLeave, GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), GetMouseButtons(wParam), GetKeyboardButtons));
+      EventManager.Publish(TsgeEventMouseLeave.Create(GET_X_LPARAM(lParam), GET_Y_LPARAM(lParam), GetMouseButtons(wParam), GetKeyboardButtons));
     end;
 
 
     WM_SIZE:
     begin
-      EventManager.Publish(TsgeEventWindow.Create(Event_WindowSize, LOWORD(lParam), HIWORD(lParam)));
+      EventManager.Publish(TsgeEventWindowSize.Create(LOWORD(lParam), HIWORD(lParam)));
 
       case wParam of
-        SIZE_RESTORED : EventManager.Publish(TsgeEventBase.Create(Event_WindowRestore));
-        SIZE_MINIMIZED: EventManager.Publish(TsgeEventBase.Create(Event_WindowMinimize));
-        SIZE_MAXIMIZED: EventManager.Publish(TsgeEventBase.Create(Event_WindowMaximize));
+        SIZE_RESTORED : EventManager.Publish(TsgeEventWindowRestore.Create);
+        SIZE_MINIMIZED: EventManager.Publish(TsgeEventWindowMinimize.Create);
+        SIZE_MAXIMIZED: EventManager.Publish(TsgeEventWindowMaximize.Create);
       end;
     end;
 

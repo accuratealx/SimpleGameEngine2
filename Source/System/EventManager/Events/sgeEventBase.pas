@@ -22,27 +22,28 @@ const
   Event_Priority_KeyCommand = $FFFD;
   Event_Priority_GUI        = $FFFC;
 
+  //События
+  Event_Empty = 'Empty';
+
 
 type
+  //Базовый класс события
+  TsgeEventBase = class
+  protected
+    function GetName: ShortString; virtual;
+
+  public
+    function Copy: TsgeEventBase; virtual;
+
+    property Name: ShortString read GetName;
+  end;
+
+
   //Результат вызова подписчика события
   TsgeEventHandlerResult = (
     ehrNormal,  //Посылать объект подписчикам дальше
     ehrBreak    //Не посылать объект подписчикам дальше
   );
-
-
-  //Базовый класс события
-  TsgeEventBase = class
-  protected
-    FName: ShortString;
-
-  public
-    constructor Create(Name: ShortString);
-
-    function Copy: TsgeEventBase; virtual;
-
-    property Name: ShortString read FName;
-  end;
 
 
   //Обработчик события
@@ -52,15 +53,15 @@ type
 implementation
 
 
-constructor TsgeEventBase.Create(Name: ShortString);
+function TsgeEventBase.GetName: ShortString;
 begin
-  FName := Name;
+  Result := Event_Empty;
 end;
 
 
 function TsgeEventBase.Copy: TsgeEventBase;
 begin
-  Result := TsgeEventBase.Create(FName);
+  Result := TsgeEventBase.Create;
 end;
 
 

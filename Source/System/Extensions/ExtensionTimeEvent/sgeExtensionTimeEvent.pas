@@ -16,7 +16,7 @@ interface
 
 uses
   sgeExtensionBase, sgeThread,
-  sgeTimeEventList, sgeTimeEventItem, sgeEventTimeEvent;
+  sgeTimeEventList, sgeTimeEventItem, sgeEventTime;
 
 
 const
@@ -96,7 +96,7 @@ begin
         El.IncTimes;
 
         //Событие срабатывания таймера
-        EventManager.Publish(TsgeEventTimeEvent.Create(Event_TimeEvent, El.Proc));
+        EventManager.Publish(TsgeEventTime.Create(El.Proc));
 
         //Проверить на предел по количеству выполнений
         if (El.Times <> -1) and (El.TimesCount >= El.Times) then

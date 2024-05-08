@@ -19,7 +19,7 @@ uses
   sgeExtensionWindow, sgeExtensionGraphic, sgeExtensionPackList, sgeExtensionFileSystem, sgeExtensionShell,
   sgeExtensionResourceList, sgeExtensionStartParameters, sgeExtensionSound, sgeExtensionControllers,
   sgeExtensionVariables, sgeExtensionKeyCommand, sgeExtensionTimeEvent, sgeExtensionGUI, sgeExtensionMusicPlayer,
-  sgeExtensionCursor, sgeExtensionScenes;
+  sgeExtensionCursor, sgeExtensionScenes, sgeEventWindowClose, sgeEventTime;
 
 
 const
@@ -88,8 +88,8 @@ type
     //Обработчики событий
     procedure RegisterEventHandlers;                                //Подписать системные обработчики событий
     procedure UnregisterEventHandlers;                              //Отписать системные обработчики событий
-    function  EventWindowClose(Obj: TsgeEventBase): TsgeEventHandlerResult; //Закрытие окна
-    function  EventTime(Obj: TsgeEventBase): TsgeEventHandlerResult;  //Таймерное событие
+    function  EventWindowClose(Obj: TsgeEventWindowClose): TsgeEventHandlerResult; //Закрытие окна
+    function  EventTime(Obj: TsgeEventTime): TsgeEventHandlerResult;  //Таймерное событие
   public
     constructor Create(Options: TsgeInitOptions = InitOptionsAll); virtual;
     destructor  Destroy; override;
@@ -140,8 +140,7 @@ implementation
 uses
   sgeErrors, sgeKeys, sgeMemoryStream,
   sgeOSPlatform, sgeDateUtils, sgeFileUtils, sgeShellCommands, sgeVariables,
-  sgeResourceItem, sgeAnsiFont, sgeSprite, sgeSpriteSaverBmp,
-  sgeEventWindow, sgeEventTimeEvent;
+  sgeResourceItem, sgeAnsiFont, sgeSprite, sgeSpriteSaverBmp;
 
 
 const
@@ -224,8 +223,8 @@ end;
 
 procedure TSimpleGameEngine.RegisterEventHandlers;
 begin
-  FEventManager.SubscriberGroupList.Subscribe(Event_WindowClose, @EventWindowClose);
-  FEventManager.SubscriberGroupList.Subscribe(Event_TimeEvent, @EventTime);
+  FEventManager.SubscriberGroupList.Subscribe(Event_WindowClose, TsgeEventHandler(@EventWindowClose));
+  FEventManager.SubscriberGroupList.Subscribe(Event_Time, TsgeEventHandler(@EventTime));
 end;
 
 
@@ -235,7 +234,7 @@ begin
 end;
 
 
-function TSimpleGameEngine.EventWindowClose(Obj: TsgeEventBase): TsgeEventHandlerResult;
+function TSimpleGameEngine.EventWindowClose(Obj: TsgeEventWindowClose): TsgeEventHandlerResult;
 var
   b: Boolean;
 begin
@@ -250,7 +249,7 @@ begin
 end;
 
 
-function TSimpleGameEngine.EventTime(Obj: TsgeEventBase): TsgeEventHandlerResult;
+function TSimpleGameEngine.EventTime(Obj: TsgeEventTime): TsgeEventHandlerResult;
 var
   Proc: TsgeTimeEventProc;
 begin
@@ -258,7 +257,7 @@ begin
   Result := ehrBreak;
 
   //Ссылка на метод
-  Proc := TsgeEventTimeEvent(Obj).Proc;
+  Proc := TsgeEventTime(Obj).Proc;
 
   //Проверка на пустой указатель
   if Proc = nil then
@@ -517,7 +516,7 @@ begin
   FWorking := False;
 
   //Разбудить основной поток
-  FEventManager.Publish(TsgeEventBase.Create(''));
+  FEventManager.Publish(TsgeEventBase.Create);
 end;
 
 

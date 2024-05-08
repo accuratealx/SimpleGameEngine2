@@ -16,7 +16,7 @@ interface
 
 uses
   sgeTypes, sgeThread, sgeSystemEvent, sgeSimpleCommand, sgeSimpleParameters, {sgeGraphic,} sgeColor,
-  {sgeGraphicFont,} sgeExtensionBase, sgeEventBase, sgeEventWindow, sgeEventKeyboard, sgeEventMouse, sgeEventSubscriber,
+  {sgeGraphicFont,} sgeExtensionBase, sgeEventBase, {sgeEventWindowSize, sgeEventKeyboard,} sgeEventMouse, sgeEventSubscriber,
   sgeShellCommandQueue, sgeShellScriptList, sgeShellCommandList, sgeLineEditor, sgeCommandHistory,
   sgeShellLineList, sgeExtensionGraphic, sgeShellCallStack, sgeExtensionVariables,
   {sgeGraphicSprite,} {sgeGraphicElementSpriteCashed,} sgeCriticalSection;
@@ -84,11 +84,11 @@ type
     FDestroying: Boolean;                                           //Флаг разрушения объекта
 
     //Обработчики событий
-    function  Event_WindowResize(Obj: TsgeEventWindow): TsgeEventHandlerResult;
+    //function  Event_WindowResize(Obj: TsgeEventWindow): TsgeEventHandlerResult;
 
-    function  Handler_KeyDown(EventObj: TsgeEventKeyboard): TsgeEventHandlerResult;
-    function  Handler_KeyUp(EventObj: TsgeEventKeyboard): TsgeEventHandlerResult;
-    function  Handler_KeyChar(EventObj: TsgeEventKeyboardChar): TsgeEventHandlerResult;
+    //function  Handler_KeyDown(EventObj: TsgeEventKeyboard): TsgeEventHandlerResult;
+    //function  Handler_KeyUp(EventObj: TsgeEventKeyboard): TsgeEventHandlerResult;
+    //function  Handler_KeyChar(EventObj: TsgeEventKeyboardChar): TsgeEventHandlerResult;
 
     function  Handler_MouseMove(EventObj: TsgeEventMouse): TsgeEventHandlerResult;
     function  Handler_MouseDown(EventObj: TsgeEventMouse): TsgeEventHandlerResult;
@@ -199,7 +199,7 @@ type
 
 
 
-function TsgeExtensionShell.Event_WindowResize(Obj: TsgeEventWindow): TsgeEventHandlerResult;
+{function TsgeExtensionShell.Event_WindowResize(Obj: TsgeEventWindow): TsgeEventHandlerResult;
 begin
   Result := ehrNormal;
 
@@ -209,10 +209,10 @@ begin
   FNewWidth := Obj.Width;
   FNewHeight := Obj.Height;
   FChangeSize := True;
-end;
+end;}
 
 
-function TsgeExtensionShell.Handler_KeyDown(EventObj: TsgeEventKeyboard): TsgeEventHandlerResult;
+{function TsgeExtensionShell.Handler_KeyDown(EventObj: TsgeEventKeyboard): TsgeEventHandlerResult;
 var
   s: String;
 begin
@@ -339,7 +339,7 @@ begin
 
   //Перерисовать
   RepaintInner;
-end;
+end;}
 
 
 function TsgeExtensionShell.Handler_MouseMove(EventObj: TsgeEventMouse): TsgeEventHandlerResult;
@@ -367,10 +367,10 @@ begin
   Result := ehrBreak;
 
   Page := (kbCtrl in EventObj.KeyboardButtons);
-  if EventObj.Delta > 0 then
+  {if EventObj.Delta > 0 then
     JournalUp(Page)
   else
-    JournalDown(Page);
+    JournalDown(Page);}
 end;
 
 
@@ -968,19 +968,19 @@ end;
 procedure TsgeExtensionShell.RegisterEventHandlers;
 begin
   //Клавиатура
-  FEventSubscriber[0] := EventManager.SubscriberGroupList.Subscribe(Event_KeyboardDown, TsgeEventHandler(@Handler_KeyDown), Event_Priority_Shell, False);
-  FEventSubscriber[1] := EventManager.SubscriberGroupList.Subscribe(Event_KeyboardUp, TsgeEventHandler(@Handler_KeyUp), Event_Priority_Shell, False);
-  FEventSubscriber[2] := EventManager.SubscriberGroupList.Subscribe(Event_KeyboardChar, TsgeEventHandler(@Handler_KeyChar), Event_Priority_KeyCommand, False);
+  //FEventSubscriber[0] := EventManager.SubscriberGroupList.Subscribe(Event_KeyboardDown, TsgeEventHandler(@Handler_KeyDown), Event_Priority_Shell, False);
+  //FEventSubscriber[1] := EventManager.SubscriberGroupList.Subscribe(Event_KeyboardUp, TsgeEventHandler(@Handler_KeyUp), Event_Priority_Shell, False);
+  //FEventSubscriber[2] := EventManager.SubscriberGroupList.Subscribe(Event_KeyboardChar, TsgeEventHandler(@Handler_KeyChar), Event_Priority_KeyCommand, False);
 
   //Мышь
-  FEventSubscriber[3] := EventManager.SubscriberGroupList.Subscribe(Event_MouseMove, TsgeEventHandler(@Handler_MouseMove), Event_Priority_Shell, False);
-  FEventSubscriber[4] := EventManager.SubscriberGroupList.Subscribe(Event_MouseDown, TsgeEventHandler(@Handler_MouseDown), Event_Priority_Shell, False);
-  FEventSubscriber[5] := EventManager.SubscriberGroupList.Subscribe(Event_MouseUp, TsgeEventHandler(@Handler_MouseUp), Event_Priority_Shell, False);
-  FEventSubscriber[6] := EventManager.SubscriberGroupList.Subscribe(Event_MouseScroll, TsgeEventHandler(@Handler_MouseWheel), Event_Priority_Shell, False);
-  FEventSubscriber[7] := EventManager.SubscriberGroupList.Subscribe(Event_MouseDoubleClick, TsgeEventHandler(@Handler_MouseDblClick), Event_Priority_Shell, False);
+  //FEventSubscriber[3] := EventManager.SubscriberGroupList.Subscribe(Event_MouseMove, TsgeEventHandler(@Handler_MouseMove), Event_Priority_Shell, False);
+  //FEventSubscriber[4] := EventManager.SubscriberGroupList.Subscribe(Event_MouseDown, TsgeEventHandler(@Handler_MouseDown), Event_Priority_Shell, False);
+  //FEventSubscriber[5] := EventManager.SubscriberGroupList.Subscribe(Event_MouseUp, TsgeEventHandler(@Handler_MouseUp), Event_Priority_Shell, False);
+  //FEventSubscriber[6] := EventManager.SubscriberGroupList.Subscribe(Event_MouseScroll, TsgeEventHandler(@Handler_MouseWheel), Event_Priority_Shell, False);
+  //FEventSubscriber[7] := EventManager.SubscriberGroupList.Subscribe(Event_MouseDoubleClick, TsgeEventHandler(@Handler_MouseDblClick), Event_Priority_Shell, False);
 
   //Измение размеров окна
-  EventManager.SubscriberGroupList.Subscribe(Event_WindowSize, TsgeEventHandler(@Event_WindowResize), Event_Priority_Shell, True);
+  //EventManager.SubscriberGroupList.Subscribe(Event_WindowSize, TsgeEventHandler(@Event_WindowResize), Event_Priority_Shell, True);
 end;
 
 

@@ -16,7 +16,10 @@ interface
 
 uses
   sgeTypes, sgeExtensionBase, sgeExtensionShell, sgeEventBase,
-  sgeEventKeyboard, sgeEventMouse, sgeEventControllers,
+  sgeEventKeyboardKeyUp, sgeEventKeyboardKeyDown, sgeEventKeyboardChar,
+  sgeEventMouseUp, sgeEventMouseDown, sgeEventMouseScroll, sgeEventMouseDoubleClick,
+  sgeEventControllerButtonDown, sgeEventControllerButtonUp, sgeEventControllerPovDown,
+  sgeEventControllerPovUp, sgeEventControllerAxisDown, sgeEventControllerAxisUp,
   sgeKeyCommandKeyboard, sgeKeyCommandMouse, sgeKeyCommandJoystick;
 
 
@@ -31,32 +34,32 @@ type
     FExtShell: TsgeExtensionShell;
 
     //Объекты
-    FKeyboard: TsgeKeyCommandKeyboard;                              //Кнопки клавиатуры
-    FMouse: TsgeKeyCommandMouse;                                    //Кнопки мыши
-    FJoystick: TsgeKeyCommandJoystick;                              //Кнопки, крестовина, оси джойстиков
+    FKeyboard: TsgeKeyCommandKeyboard;  //Кнопки клавиатуры
+    FMouse: TsgeKeyCommandMouse;        //Кнопки мыши
+    FJoystick: TsgeKeyCommandJoystick;  //Кнопки, крестовина, оси джойстиков
 
     //Вспомогательные переменные
     FBlockCharEvent: Boolean;
 
-    function GetMouseButtonIndex(Buttons: TsgeMouseButtons): Byte;  //Вернуть номер кнопки мышки из множества
+    function GetMouseButtonIndex(Buttons: TsgeMouseButtons): Byte;          //Вернуть номер кнопки мышки из множества
     function CommandHandler(const Command: String): TsgeEventHandlerResult; //Проверить команду и выполнить
 
     //Обработчики событий
-    function  Handler_KeyDown(EventObj: TsgeEventKeyboard): TsgeEventHandlerResult;
-    function  Handler_KeyUp(EventObj: TsgeEventKeyboard): TsgeEventHandlerResult;
+    function  Handler_KeyDown(EventObj: TsgeEventKeyboardKeyDown): TsgeEventHandlerResult;
+    function  Handler_KeyUp(EventObj: TsgeEventKeyboardKeyUp): TsgeEventHandlerResult;
     function  Handler_KeyChar(EventObj: TsgeEventKeyboardChar): TsgeEventHandlerResult;
 
-    function  Handler_MouseDown(EventObj: TsgeEventMouse): TsgeEventHandlerResult;
-    function  Handler_MouseUp(EventObj: TsgeEventMouse): TsgeEventHandlerResult;
-    function  Handler_MouseWheel(EventObj: TsgeEventMouse): TsgeEventHandlerResult;
-    function  Handler_MouseDblClick(EventObj: TsgeEventMouse): TsgeEventHandlerResult;
+    function  Handler_MouseDown(EventObj: TsgeEventMouseDown): TsgeEventHandlerResult;
+    function  Handler_MouseUp(EventObj: TsgeEventMouseUp): TsgeEventHandlerResult;
+    function  Handler_MouseWheel(EventObj: TsgeEventMouseScroll): TsgeEventHandlerResult;
+    function  Handler_MouseDblClick(EventObj: TsgeEventMouseDoubleClick): TsgeEventHandlerResult;
 
-    function  Handler_JoystickButtonDown(EventObj: TsgeEventControllerButton): TsgeEventHandlerResult;
-    function  Handler_JoystickButtonUp(EventObj: TsgeEventControllerButton): TsgeEventHandlerResult;
-    function  Handler_JoystickPadDown(EventObj: TsgeEventControllerPOV): TsgeEventHandlerResult;
-    function  Handler_JoystickPadUp(EventObj: TsgeEventControllerPOV): TsgeEventHandlerResult;
-    function  Handler_JoystickAxisDown(EventObj: TsgeEventControllerAxis): TsgeEventHandlerResult;
-    function  Handler_JoystickAxisUp(EventObj: TsgeEventControllerAxis): TsgeEventHandlerResult;
+    function  Handler_JoystickButtonDown(EventObj: TsgeEventControllerButtonDown): TsgeEventHandlerResult;
+    function  Handler_JoystickButtonUp(EventObj: TsgeEventControllerButtonUp): TsgeEventHandlerResult;
+    function  Handler_JoystickPadDown(EventObj: TsgeEventControllerPovDown): TsgeEventHandlerResult;
+    function  Handler_JoystickPadUp(EventObj: TsgeEventControllerPovUp): TsgeEventHandlerResult;
+    function  Handler_JoystickAxisDown(EventObj: TsgeEventControllerAxisDown): TsgeEventHandlerResult;
+    function  Handler_JoystickAxisUp(EventObj: TsgeEventControllerAxisUp): TsgeEventHandlerResult;
 
   protected
     function GetName: String; override;
@@ -116,7 +119,7 @@ begin
 end;
 
 
-function TsgeExtensionKeyCommand.Handler_KeyDown(EventObj: TsgeEventKeyboard): TsgeEventHandlerResult;
+function TsgeExtensionKeyCommand.Handler_KeyDown(EventObj: TsgeEventKeyboardKeyDown): TsgeEventHandlerResult;
 var
   KeyboardShifts: TsgeKeyboardShifts;
   Command: String;
@@ -139,7 +142,7 @@ begin
 end;
 
 
-function TsgeExtensionKeyCommand.Handler_KeyUp(EventObj: TsgeEventKeyboard): TsgeEventHandlerResult;
+function TsgeExtensionKeyCommand.Handler_KeyUp(EventObj: TsgeEventKeyboardKeyUp): TsgeEventHandlerResult;
 var
   KeyboardShifts: TsgeKeyboardShifts;
 begin
@@ -161,7 +164,7 @@ begin
 end;
 
 
-function TsgeExtensionKeyCommand.Handler_MouseDown(EventObj: TsgeEventMouse): TsgeEventHandlerResult;
+function TsgeExtensionKeyCommand.Handler_MouseDown(EventObj: TsgeEventMouseDown): TsgeEventHandlerResult;
 var
   MouseButtonIndex: TsgeMouseButton;
   KeyboardShifts: TsgeKeyboardShifts;
@@ -172,7 +175,7 @@ begin
 end;
 
 
-function TsgeExtensionKeyCommand.Handler_MouseUp(EventObj: TsgeEventMouse): TsgeEventHandlerResult;
+function TsgeExtensionKeyCommand.Handler_MouseUp(EventObj: TsgeEventMouseUp): TsgeEventHandlerResult;
 var
   MouseButtonIndex: TsgeMouseButton;
   KeyboardShifts: TsgeKeyboardShifts;
@@ -183,7 +186,7 @@ begin
 end;
 
 
-function TsgeExtensionKeyCommand.Handler_MouseWheel(EventObj: TsgeEventMouse): TsgeEventHandlerResult;
+function TsgeExtensionKeyCommand.Handler_MouseWheel(EventObj: TsgeEventMouseScroll): TsgeEventHandlerResult;
 const
   ckmUp = 0;
   ckmDown = 1;
@@ -215,7 +218,7 @@ begin
 end;
 
 
-function TsgeExtensionKeyCommand.Handler_MouseDblClick(EventObj: TsgeEventMouse): TsgeEventHandlerResult;
+function TsgeExtensionKeyCommand.Handler_MouseDblClick(EventObj: TsgeEventMouseDoubleClick): TsgeEventHandlerResult;
 var
   MouseButtonIndex: TsgeMouseButton;
   KeyboardShifts: TsgeKeyboardShifts;
@@ -226,37 +229,37 @@ begin
 end;
 
 
-function TsgeExtensionKeyCommand.Handler_JoystickButtonDown(EventObj: TsgeEventControllerButton): TsgeEventHandlerResult;
+function TsgeExtensionKeyCommand.Handler_JoystickButtonDown(EventObj: TsgeEventControllerButtonDown): TsgeEventHandlerResult;
 begin
   Result := CommandHandler(FJoystick.Item[EventObj.ID].Buttons.Item[EventObj.ButtonID].Down);
 end;
 
 
-function TsgeExtensionKeyCommand.Handler_JoystickButtonUp(EventObj: TsgeEventControllerButton): TsgeEventHandlerResult;
+function TsgeExtensionKeyCommand.Handler_JoystickButtonUp(EventObj: TsgeEventControllerButtonUp): TsgeEventHandlerResult;
 begin
   Result := CommandHandler(FJoystick.Item[EventObj.ID].Buttons.Item[EventObj.ButtonID].Up);
 end;
 
 
-function TsgeExtensionKeyCommand.Handler_JoystickPadDown(EventObj: TsgeEventControllerPOV): TsgeEventHandlerResult;
+function TsgeExtensionKeyCommand.Handler_JoystickPadDown(EventObj: TsgeEventControllerPovDown): TsgeEventHandlerResult;
 begin
   Result := CommandHandler(FJoystick.Item[EventObj.ID].Pad.Item[EventObj.Direction].Down);
 end;
 
 
-function TsgeExtensionKeyCommand.Handler_JoystickPadUp(EventObj: TsgeEventControllerPOV): TsgeEventHandlerResult;
+function TsgeExtensionKeyCommand.Handler_JoystickPadUp(EventObj: TsgeEventControllerPovUp): TsgeEventHandlerResult;
 begin
   Result := CommandHandler(FJoystick.Item[EventObj.ID].Pad.Item[EventObj.Direction].Up);
 end;
 
 
-function TsgeExtensionKeyCommand.Handler_JoystickAxisDown(EventObj: TsgeEventControllerAxis): TsgeEventHandlerResult;
+function TsgeExtensionKeyCommand.Handler_JoystickAxisDown(EventObj: TsgeEventControllerAxisDown): TsgeEventHandlerResult;
 begin
   Result := CommandHandler(FJoystick.Item[EventObj.ID].Axis.Item[EventObj.Axis].Tilt[EventObj.Tilt].Down);
 end;
 
 
-function TsgeExtensionKeyCommand.Handler_JoystickAxisUp(EventObj: TsgeEventControllerAxis): TsgeEventHandlerResult;
+function TsgeExtensionKeyCommand.Handler_JoystickAxisUp(EventObj: TsgeEventControllerAxisUp): TsgeEventHandlerResult;
 begin
   Result := CommandHandler(FJoystick.Item[EventObj.ID].Axis.Item[EventObj.Axis].Tilt[EventObj.Tilt].Up);
 end;

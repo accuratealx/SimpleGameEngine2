@@ -57,8 +57,8 @@ uses
 const
   _UNITNAME = 'ResourceList';
 
-  Err_IndexOutOfBounds = 'IndexOutOfBounds';
   Err_ResourceNotFound = 'ResourceNotFound';
+  //Err_IndexOutOfBounds = 'IndexOutOfBounds';
   //Err_ObjectIsEmpty    = 'ObjectIsEmpty';
 
 

@@ -1,17 +1,16 @@
 {
 Пакет             Simple Game Engine 2
-Файл              sgeEventTimeEvent.pas
-Версия            1.3
+Файл              sgeEventTime.pas
+Версия            1.4
 Создан            31.08.2021
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Классы событий: Таймер
 }
 {$Include Defines.inc}
 
-unit sgeEventTimeEvent;
+unit sgeEventTime;
 
 {$mode objfpc}{$H+}
-{$ModeSwitch duplicatelocals+}
 
 interface
 
@@ -20,7 +19,7 @@ uses
 
 
 const
-  Event_TimeEvent  = 'TimeEvent';
+  Event_Time  = 'Time';
 
 
 type
@@ -28,11 +27,13 @@ type
   TsgeTimeEventProc = procedure of object;
 
 
-  TsgeEventTimeEvent = class(TsgeEventBase)
+  TsgeEventTime = class(TsgeEventBase)
   private
     FProc: TsgeTimeEventProc;
+  protected
+    function GetName: ShortString; override;
   public
-    constructor Create(Name: ShortString; Proc: TsgeTimeEventProc);
+    constructor Create(Proc: TsgeTimeEventProc);
 
     function Copy: TsgeEventBase; override;
 
@@ -40,22 +41,26 @@ type
   end;
 
 
-
 implementation
 
 
-constructor TsgeEventTimeEvent.Create(Name: ShortString; Proc: TsgeTimeEventProc);
+function TsgeEventTime.GetName: ShortString;
 begin
-  inherited Create(Name);
+  Result := Event_Time;
+end;
 
+
+constructor TsgeEventTime.Create(Proc: TsgeTimeEventProc);
+begin
   FProc := Proc;
 end;
 
 
-function TsgeEventTimeEvent.Copy: TsgeEventBase;
+function TsgeEventTime.Copy: TsgeEventBase;
 begin
-  Result := TsgeEventTimeEvent.Create(FName, FProc);
+  Result := TsgeEventTime.Create(FProc);
 end;
+
 
 
 end.

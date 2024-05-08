@@ -15,7 +15,7 @@ unit sgeKeyCommandJoystickAxisInfoTilt;
 interface
 
 uses
-  sgeKeyCommandTypes, sgeEventControllers;
+  sgeTypes, sgeKeyCommandTypes;
 
 
 type

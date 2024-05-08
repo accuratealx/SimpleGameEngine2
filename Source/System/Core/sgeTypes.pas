@@ -61,6 +61,22 @@ type
   );
 
 
+  //Типы осей контроллеров
+  TsgeControllerAxisType = (catX, catY, catU, catV, catR, catZ);
+
+
+  //Тип наклона оси контроллера
+  TsgeControllerAxisTilt = (catMin, catMax);
+
+
+  //Направление крестовины контроллера
+  TsgeControllerPovDirection = (cpdUp, cpdRight, cpdDown, cpdLeft);
+
+
+  //Тип крестовины контроллера
+  TsgeControllerPovType = (cptVirtual, cptDirection, cptDegree);
+
+
   //Ориантация
   TsgeOrientation = (
     oHorizontal,  //Горизонтальная

@@ -30,7 +30,7 @@ implementation
 
 uses
   sgeCorePointerUtils,
-  sgeEventBase, sgeEventMusicPlayer,
+  sgeEventMusicPlayerStop,
   sgeExtensionMusicPlayer;
 
 type
@@ -65,7 +65,7 @@ begin
   ExtMusic.Fsource.Gain := 0;
 
   //Добавить событие останова
-  sgeCorePointer_GetSGE.EventManager.Publish(TsgeEventBase.Create(Event_MusicPLayerStop));
+  sgeCorePointer_GetSGE.EventManager.Publish(TsgeEventMusicPlayerStop.Create);
 end;
 
 

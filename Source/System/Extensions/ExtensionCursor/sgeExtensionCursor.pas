@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeExtensionCursor.pas
-Версия            1.0
+Версия            1.1
 Создан            03.01.2022
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Класс расширения: Курсоры
@@ -17,7 +17,7 @@ interface
 uses
   sgeTypes,
   sgeExtensionBase, sgeExtensionWindow, sgeExtensionGraphic,
-  sgeEventBase, sgeEventMouse,
+  sgeEventBase, sgeEventMouseMove, sgeEventMouseEnter, sgeEventMouseLeave,
   sgeDisplayLayer, sgeDisplayElementAnimationUnmanaged, sgeCursor;
 
 
@@ -28,26 +28,26 @@ const
 type
   TsgeExtensionCursor = class(TsgeExtensionBase)
   private
-    FExtWindow: TsgeExtensionWindow;              //Ссылка на расширение окна
-    FExtGraphic: TsgeExtensionGraphic;            //Ссылка на расширение графики
+    FExtWindow: TsgeExtensionWindow;    //Ссылка на расширение окна
+    FExtGraphic: TsgeExtensionGraphic;  //Ссылка на расширение графики
 
-    FDrawLayer: TsgeDisplayLayer;                 //Объект управления слоем графики
+    FDrawLayer: TsgeDisplayLayer;       //Объект управления слоем графики
     FDisplayElement: TsgeDisplayElementAnimationUnmanaged;  //Объект управления анимацией
 
-    FShowCursor: Boolean;                         //Показывать курсор
-    FCursor: TsgeCursor;                          //Текущий курсор
-    FCursorPos: TsgeIntPoint;                     //Последние координаты курсора
-    FScale: Single;                               //Масштаб курсора
-    FLeftHand: Boolean;                           //Курсор для левшей
+    FShowCursor: Boolean;               //Показывать курсор
+    FCursor: TsgeCursor;                //Текущий курсор
+    FCursorPos: TsgeIntPoint;           //Последние координаты курсора
+    FScale: Single;                     //Масштаб курсора
+    FLeftHand: Boolean;                 //Курсор для левшей
 
     procedure CorrectCoordinate;
     procedure CorrectVisible(AVisible: Boolean);
     procedure SetDisplayElementVisible(AVisible: Boolean);
     procedure CorrectLeftHand(ALeftHand: Boolean; X: Integer);
 
-    function Handler_MouseMove(EventObj: TsgeEventMouse): TsgeEventHandlerResult;
-    function Handler_MouseEnter(EventObj: TsgeEventMouse): TsgeEventHandlerResult;
-    function Handler_MouseLeave(EventObj: TsgeEventMouse): TsgeEventHandlerResult;
+    function Handler_MouseMove(EventObj: TsgeEventMouseMove): TsgeEventHandlerResult;
+    function Handler_MouseEnter(EventObj: TsgeEventMouseEnter): TsgeEventHandlerResult;
+    function Handler_MouseLeave(EventObj: TsgeEventMouseLeave): TsgeEventHandlerResult;
 
     procedure SetCursor(ACursor: TsgeCursor);
     procedure SetShowCursor(AShow: Boolean);
@@ -144,7 +144,7 @@ begin
 end;
 
 
-function TsgeExtensionCursor.Handler_MouseMove(EventObj: TsgeEventMouse): TsgeEventHandlerResult;
+function TsgeExtensionCursor.Handler_MouseMove(EventObj: TsgeEventMouseMove): TsgeEventHandlerResult;
 begin
   Result := ehrNormal;
 
@@ -156,7 +156,7 @@ begin
 end;
 
 
-function TsgeExtensionCursor.Handler_MouseEnter(EventObj: TsgeEventMouse): TsgeEventHandlerResult;
+function TsgeExtensionCursor.Handler_MouseEnter(EventObj: TsgeEventMouseEnter): TsgeEventHandlerResult;
 begin
   Result := ehrNormal;
 
@@ -165,7 +165,7 @@ begin
 end;
 
 
-function TsgeExtensionCursor.Handler_MouseLeave(EventObj: TsgeEventMouse): TsgeEventHandlerResult;
+function TsgeExtensionCursor.Handler_MouseLeave(EventObj: TsgeEventMouseLeave): TsgeEventHandlerResult;
 begin
   Result := ehrNormal;
 

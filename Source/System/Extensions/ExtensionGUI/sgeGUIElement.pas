@@ -16,7 +16,10 @@ interface
 
 uses
   sgeTypes, sgeTemplateCollection,
-  sgeEventBase, sgeEventMouse, sgeEventKeyboard,
+  sgeEventBase,
+  sgeEventKeyboardKeyDown, sgeEventKeyboardKeyUp, sgeEventKeyboardChar,
+  sgeEventMouseDoubleClick, sgeEventMouseMove, sgeEventMouseDown, sgeEventMouseUp,
+  sgeEventMouseLeave, sgeEventMouseEnter, sgeEventMouseScroll,
   sgeGUIPropertyConstrains;
 
 const
@@ -30,8 +33,18 @@ type
 
   //Обработчики событий
   TsgeGUIProcEvent = procedure(Obj: TsgeGUIElement) of Object;
-  TsgeGUIProcMouseEvent = procedure(Obj: TsgeGUIElement; Mouse: TsgeEventMouse) of object;
-  TsgeGUIProcButtonEvent = procedure(Obj: TsgeGUIElement; Keyboard: TsgeEventKeyboard) of object;
+
+  TsgeGUIProcMouseClickEvent = procedure(Obj: TsgeGUIElement; Mouse: TsgeEventMouseDown) of object;
+  TsgeGUIProcMouseDoubleClickEvent = procedure(Obj: TsgeGUIElement; Mouse: TsgeEventMouseDoubleClick) of object;
+  TsgeGUIProcMouseMouseMoveEvent = procedure(Obj: TsgeGUIElement; Mouse: TsgeEventMouseMove) of object;
+  TsgeGUIProcMouseMouseDownEvent = procedure(Obj: TsgeGUIElement; Mouse: TsgeEventMouseDown) of object;
+  TsgeGUIProcMouseMouseUpEvent = procedure(Obj: TsgeGUIElement; Mouse: TsgeEventMouseUp) of object;
+  TsgeGUIProcMouseMouseLeaveEvent = procedure(Obj: TsgeGUIElement; Mouse: TsgeEventMouseLeave) of object;
+  TsgeGUIProcMouseMouseEnterEvent = procedure(Obj: TsgeGUIElement; Mouse: TsgeEventMouseEnter) of object;
+  TsgeGUIProcMouseMouseScrollEvent = procedure(Obj: TsgeGUIElement; Mouse: TsgeEventMouseScroll) of object;
+
+  TsgeGUIProcButtonKeyUpEvent = procedure(Obj: TsgeGUIElement; Keyboard: TsgeEventKeyboardKeyUp) of object;
+  TsgeGUIProcButtonKeyDownEvent = procedure(Obj: TsgeGUIElement; Keyboard: TsgeEventKeyboardKeyDown) of object;
   TsgeGUIProcButtonCharEvent = procedure(Obj: TsgeGUIElement; Keyboard: TsgeEventKeyboardChar) of object;
 
 
@@ -72,32 +85,32 @@ type
     FOnHide: TsgeGUIProcEvent;
     FOnSetFocus: TsgeGUIProcEvent;
     FOnLostFocus: TsgeGUIProcEvent;
-    FOnMouseClick: TsgeGUIProcMouseEvent;
-    FOnMouseDoubleClick: TsgeGUIProcMouseEvent;
-    FOnMouseMove: TsgeGUIProcMouseEvent;
-    FOnMouseDown: TsgeGUIProcMouseEvent;
-    FOnMouseUp: TsgeGUIProcMouseEvent;
-    FOnMouseLeave: TsgeGUIProcMouseEvent;
-    FOnMouseEnter: TsgeGUIProcMouseEvent;
-    FOnMouseScroll: TsgeGUIProcMouseEvent;
-    FOnButtonDown: TsgeGUIProcButtonEvent;
-    FOnButtonUp: TsgeGUIProcButtonEvent;
+    FOnMouseClick: TsgeGUIProcMouseClickEvent;
+    FOnMouseDoubleClick: TsgeGUIProcMouseDoubleClickEvent;
+    FOnMouseMove: TsgeGUIProcMouseMouseMoveEvent;
+    FOnMouseDown: TsgeGUIProcMouseMouseDownEvent;
+    FOnMouseUp: TsgeGUIProcMouseMouseUpEvent;
+    FOnMouseLeave: TsgeGUIProcMouseMouseLeaveEvent;
+    FOnMouseEnter: TsgeGUIProcMouseMouseEnterEvent;
+    FOnMouseScroll: TsgeGUIProcMouseMouseScrollEvent;
+    FOnButtonDown: TsgeGUIProcButtonKeyDownEvent;
+    FOnButtonUp: TsgeGUIProcButtonKeyUpEvent;
     FOnButtonChar: TsgeGUIProcButtonCharEvent;
 
     procedure Handler_Show; virtual;
     procedure Handler_Hide; virtual;
     procedure Handler_SetFocus; virtual;
     procedure Handler_LostFocus; virtual;
-    procedure Handler_MouseClick(Mouse: TsgeEventMouse); virtual;
-    procedure Handler_MouseDoubleClick(Mouse: TsgeEventMouse); virtual;
-    procedure Handler_MouseMove(Mouse: TsgeEventMouse); virtual;
-    procedure Handler_MouseDown(Mouse: TsgeEventMouse); virtual;
-    procedure Handler_MouseUp(Mouse: TsgeEventMouse); virtual;
-    procedure Handler_MouseLeave(Mouse: TsgeEventMouse); virtual;
-    procedure Handler_MouseEnter(Mouse: TsgeEventMouse); virtual;
-    procedure Handler_MouseScroll(Mouse: TsgeEventMouse); virtual;
-    procedure Handler_ButtonDown(Keyboard: TsgeEventKeyboard); virtual;
-    procedure Handler_ButtonUp(Keyboard: TsgeEventKeyboard); virtual;
+    procedure Handler_MouseClick(Mouse: TsgeEventMouseDown); virtual;
+    procedure Handler_MouseDoubleClick(Mouse: TsgeEventMouseDoubleClick); virtual;
+    procedure Handler_MouseMove(Mouse: TsgeEventMouseMove); virtual;
+    procedure Handler_MouseDown(Mouse: TsgeEventMouseDown); virtual;
+    procedure Handler_MouseUp(Mouse: TsgeEventMouseUp); virtual;
+    procedure Handler_MouseLeave(Mouse: TsgeEventMouseLeave); virtual;
+    procedure Handler_MouseEnter(Mouse: TsgeEventMouseEnter); virtual;
+    procedure Handler_MouseScroll(Mouse: TsgeEventMouseScroll); virtual;
+    procedure Handler_ButtonDown(Keyboard: TsgeEventKeyboardKeyDown); virtual;
+    procedure Handler_ButtonUp(Keyboard: TsgeEventKeyboardKeyUp); virtual;
     procedure Handler_ButtonChar(Keyboard: TsgeEventKeyboardChar); virtual;
 
     //Вспомогательные методы
@@ -149,7 +162,7 @@ type
     constructor Create(Name: String; Left, Top, Width, Height: Integer; Visible: Boolean = True; Parent: TsgeGUIElement = nil);
     destructor  Destroy; override;
 
-    procedure MouseHandler(EventType: TsgeGUIElementMouseEventType; Mouse: TsgeEventMouse); virtual;
+    procedure MouseHandler(EventType: TsgeGUIElementMouseEventType; Mouse: TsgeEventBase); virtual;
     function  ButtonHandler(EventType: TsgeGUIElementButtonEventType; Keyboard: TsgeEventBase): Boolean; virtual;
     function  PointInElement(X, Y: Integer): Boolean;
     function  GetTopParent: TsgeGUIElement;
@@ -176,16 +189,16 @@ type
     property OnHide: TsgeGUIProcEvent read FOnHide write FOnHide;
     property OnSetFocus: TsgeGUIProcEvent read FOnSetFocus write FOnSetFocus;
     property OnLostFocus: TsgeGUIProcEvent read FOnLostFocus write FOnLostFocus;
-    property OnMouseClick: TsgeGUIProcMouseEvent read FOnMouseClick write FOnMouseClick;
-    property OnMouseDoubleClick: TsgeGUIProcMouseEvent read FOnMouseDoubleClick write FOnMouseDoubleClick;
-    property OnMouseMove: TsgeGUIProcMouseEvent read FOnMouseMove write FOnMouseMove;
-    property OnMouseDown: TsgeGUIProcMouseEvent read FOnMouseDown write FOnMouseDown;
-    property OnMouseUp: TsgeGUIProcMouseEvent read FOnMouseUp write FOnMouseUp;
-    property OnMouseLeave: TsgeGUIProcMouseEvent read FOnMouseLeave write FOnMouseLeave;
-    property OnMouseEnter: TsgeGUIProcMouseEvent read FOnMouseEnter write FOnMouseEnter;
-    property OnMouseScroll: TsgeGUIProcMouseEvent read FOnMouseScroll write FOnMouseScroll;
-    property OnButtonDown: TsgeGUIProcButtonEvent read FOnButtonDown write FOnButtonDown;
-    property OnButtonUp: TsgeGUIProcButtonEvent read FOnButtonUp write FOnButtonUp;
+    property OnMouseClick: TsgeGUIProcMouseClickEvent read FOnMouseClick write FOnMouseClick;
+    property OnMouseDoubleClick: TsgeGUIProcMouseDoubleClickEvent read FOnMouseDoubleClick write FOnMouseDoubleClick;
+    property OnMouseMove: TsgeGUIProcMouseMouseMoveEvent read FOnMouseMove write FOnMouseMove;
+    property OnMouseDown: TsgeGUIProcMouseMouseDownEvent read FOnMouseDown write FOnMouseDown;
+    property OnMouseUp: TsgeGUIProcMouseMouseUpEvent read FOnMouseUp write FOnMouseUp;
+    property OnMouseLeave: TsgeGUIProcMouseMouseLeaveEvent read FOnMouseLeave write FOnMouseLeave;
+    property OnMouseEnter: TsgeGUIProcMouseMouseEnterEvent read FOnMouseEnter write FOnMouseEnter;
+    property OnMouseScroll: TsgeGUIProcMouseMouseScrollEvent read FOnMouseScroll write FOnMouseScroll;
+    property OnButtonDown: TsgeGUIProcButtonKeyDownEvent read FOnButtonDown write FOnButtonDown;
+    property OnButtonUp: TsgeGUIProcButtonKeyUpEvent read FOnButtonUp write FOnButtonUp;
     property OnButtonChar: TsgeGUIProcButtonCharEvent read FOnButtonChar write FOnButtonChar;
   end;
 
@@ -202,7 +215,7 @@ type
 implementation
 
 uses
-  sgeCorePointerUtils;
+  sgeCorePointerUtils, sgeEventMouse;
 
 
 {$Region TsgeGUIElement}
@@ -234,70 +247,70 @@ begin
 end;
 
 
-procedure TsgeGUIElement.Handler_MouseClick(Mouse: TsgeEventMouse);
+procedure TsgeGUIElement.Handler_MouseClick(Mouse: TsgeEventMouseDown);
 begin
   if Assigned(FOnMouseClick) then
     FOnMouseClick(Self, Mouse);
 end;
 
 
-procedure TsgeGUIElement.Handler_MouseDoubleClick(Mouse: TsgeEventMouse);
+procedure TsgeGUIElement.Handler_MouseDoubleClick(Mouse: TsgeEventMouseDoubleClick);
 begin
   if Assigned(FOnMouseDoubleClick) then
     FOnMouseDoubleClick(Self, Mouse);
 end;
 
 
-procedure TsgeGUIElement.Handler_MouseMove(Mouse: TsgeEventMouse);
+procedure TsgeGUIElement.Handler_MouseMove(Mouse: TsgeEventMouseMove);
 begin
   if Assigned(FOnMouseMove) then
     FOnMouseMove(Self, Mouse);
 end;
 
 
-procedure TsgeGUIElement.Handler_MouseDown(Mouse: TsgeEventMouse);
+procedure TsgeGUIElement.Handler_MouseDown(Mouse: TsgeEventMouseDown);
 begin
   if Assigned(FOnMouseDown) then
     FOnMouseDown(Self, Mouse);
 end;
 
 
-procedure TsgeGUIElement.Handler_MouseUp(Mouse: TsgeEventMouse);
+procedure TsgeGUIElement.Handler_MouseUp(Mouse: TsgeEventMouseUp);
 begin
   if Assigned(FOnMouseUp) then
     FOnMouseUp(Self, Mouse);
 end;
 
 
-procedure TsgeGUIElement.Handler_MouseLeave(Mouse: TsgeEventMouse);
+procedure TsgeGUIElement.Handler_MouseLeave(Mouse: TsgeEventMouseLeave);
 begin
   if Assigned(FOnMouseLeave) then
     FOnMouseLeave(Self, Mouse);
 end;
 
 
-procedure TsgeGUIElement.Handler_MouseEnter(Mouse: TsgeEventMouse);
+procedure TsgeGUIElement.Handler_MouseEnter(Mouse: TsgeEventMouseEnter);
 begin
   if Assigned(FOnMouseEnter) then
     FOnMouseEnter(Self, Mouse);
 end;
 
 
-procedure TsgeGUIElement.Handler_MouseScroll(Mouse: TsgeEventMouse);
+procedure TsgeGUIElement.Handler_MouseScroll(Mouse: TsgeEventMouseScroll);
 begin
   if Assigned(FOnMouseScroll) then
     FOnMouseScroll(Self, Mouse);
 end;
 
 
-procedure TsgeGUIElement.Handler_ButtonDown(Keyboard: TsgeEventKeyboard);
+procedure TsgeGUIElement.Handler_ButtonDown(Keyboard: TsgeEventKeyboardKeyDown);
 begin
   if Assigned(FOnButtonDown) then
     FOnButtonDown(Self, Keyboard);
 end;
 
 
-procedure TsgeGUIElement.Handler_ButtonUp(Keyboard: TsgeEventKeyboard);
+procedure TsgeGUIElement.Handler_ButtonUp(Keyboard: TsgeEventKeyboardKeyUp);
 begin
   if Assigned(FOnButtonUp) then
     FOnButtonUp(Self, Keyboard);
@@ -851,8 +864,9 @@ begin
 end;
 
 
-procedure TsgeGUIElement.MouseHandler(EventType: TsgeGUIElementMouseEventType; Mouse: TsgeEventMouse);
+procedure TsgeGUIElement.MouseHandler(EventType: TsgeGUIElementMouseEventType; Mouse: TsgeEventBase);
 var
+  EventMouse: TsgeEventMouse;
   LocalMouse: TsgeEventMouse;
   Pt: TsgeIntPoint;
   X, Y: Integer;
@@ -864,6 +878,9 @@ begin
 
   //Реальное положение на экране
   Pt := GetGlobalPos;
+
+  //Приведем тип к базовому для мыши
+  EventMouse := Mouse as TsgeEventMouse;
 
   //Изменить координаты мыши под текущим элементом
   if FParent = nil then
@@ -959,10 +976,10 @@ begin
 
   case EventType of
     ebetDown:
-      Handler_ButtonDown(TsgeEventKeyboard(Keyboard));
+      Handler_ButtonDown(TsgeEventKeyboardKeyDown(Keyboard));
 
     ebetUp:
-      Handler_ButtonUp(TsgeEventKeyboard(Keyboard));
+      Handler_ButtonUp(TsgeEventKeyboardKeyUp(Keyboard));
 
     ebetChar:
       Handler_ButtonChar(TsgeEventKeyboardChar(Keyboard));

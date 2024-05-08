@@ -15,42 +15,42 @@ unit sgeController;
 interface
 
 uses
-  sgeEventControllers,
+  sgeTypes,
   MMSystem;
 
 
 type
   //Настройки Оси контроллера
   TsgeControllerAxisSettings = record
-    DeviceRange: Cardinal;                                          //Диапазон значений оси устройства
-    DeviceMiddleValue: Cardinal;                                    //Значение середины оси устройства
-    Step: Single;                                                   //Минимальный шаг приращения
-    MiddleValue: Integer;                                           //Среднее значение
-    MinValue: Integer;                                              //Наименьшее значение оси
-    MaxValue: Integer;                                              //Наибольшее значение оси
+    DeviceRange: Cardinal;        //Диапазон значений оси устройства
+    DeviceMiddleValue: Cardinal;  //Значение середины оси устройства
+    Step: Single;                 //Минимальный шаг приращения
+    MiddleValue: Integer;         //Среднее значение
+    MinValue: Integer;            //Наименьшее значение оси
+    MaxValue: Integer;            //Наибольшее значение оси
   end;
 
 
   //Крестовина контроллера
   TsgeControllerPovInfo = record
-    X: SmallInt;                                                    //Состояние X [-1, 0, 1]
-    Y: SmallInt;                                                    //Состояние Y [-1, 0, 1]
+    X: SmallInt;  //Состояние X [-1, 0, 1]
+    Y: SmallInt;  //Состояние Y [-1, 0, 1]
   end;
 
 
   //Кнопка контроллера
   TsgeControllerButtonInfo = record
-    Down: Boolean;                                                  //Состояние нажатия
-    DownOnce: Boolean;                                              //Нажата впервые
-    RepeatCount: Cardinal;                                          //Количество повторов
+    Down: Boolean;          //Состояние нажатия
+    DownOnce: Boolean;      //Нажата впервые
+    RepeatCount: Cardinal;  //Количество повторов
   end;
   PsgeControllerButtonInfo = ^TsgeControllerButtonInfo;
 
 
   //Ось контроллера
   TsgeControllerAxisInfo = record
-    RawValue: Cardinal;                                             //Реальное значение оси
-    Value: Integer;                                                 //Значение с учётом диапазона
+    RawValue: Cardinal; //Реальное значение оси
+    Value: Integer;     //Значение с учётом диапазона
   end;
 
 
@@ -65,26 +65,26 @@ type
   TsgeController = class
   private
     //Характеристики устройства
-    FDriverID: Byte;                                                //Идентификатор драйвера
-    FName: String;                                                  //Имя драйвера
-    FOEM: String;                                                   //OEM строка
-    FPovType: TsgeControllerPovType;                                //Тип крестовины
-    FZAxisExist: Boolean;                                           //Ось Z
-    FRAxisExist: Boolean;                                           //Ось Rudder
-    FUAxisExist: Boolean;                                           //Ось U
-    FVAxisExist: Boolean;                                           //Ось V
-    FButtonCount: Byte;                                             //Количество кнопок
-    FAxisCount: Byte;                                               //Количество осей
+    FDriverID: Byte;                  //Идентификатор драйвера
+    FName: String;                    //Имя драйвера
+    FOEM: String;                     //OEM строка
+    FPovType: TsgeControllerPovType;  //Тип крестовины
+    FZAxisExist: Boolean;             //Ось Z
+    FRAxisExist: Boolean;             //Ось Rudder
+    FUAxisExist: Boolean;             //Ось U
+    FVAxisExist: Boolean;             //Ось V
+    FButtonCount: Byte;               //Количество кнопок
+    FAxisCount: Byte;                 //Количество осей
 
     //Настройки Осей
     FAxisSettings: array[TsgeControllerAxisType] of TsgeControllerAxisSettings;
 
     //Общие настройки
-    FAxisSmooth: Boolean;                                           //Сглаживать значения
+    FAxisSmooth: Boolean;             //Сглаживать значения
 
     //Последнее состояние устройства
-    FLastInfo: TsgeControllerInfo;                                  //Предыдущее состояние
-    FCurrentInfo: TsgeControllerInfo;                               //Текущее состояние
+    FLastInfo: TsgeControllerInfo;    //Предыдущее состояние
+    FCurrentInfo: TsgeControllerInfo; //Текущее состояние
 
     //Свойства
     procedure SetMinValue(Index: Integer; AMinValue: Integer);
@@ -93,7 +93,7 @@ type
     function  GetMaxValue(Index: Integer): Integer;
 
     //Вспомогательные методы
-    procedure ZeroInfo(var Info: TsgeControllerInfo);               //Обнулить значения кнопок
+    procedure ZeroInfo(var Info: TsgeControllerInfo); //Обнулить значения кнопок
     procedure SetAxisSettings(var AxisSettings: TsgeControllerAxisSettings; MinVal, MaxVal: Integer);
     procedure SetAxisDefaultSettings(var AxisSettings: TsgeControllerAxisSettings; MinVal, MaxVal: Integer);
 
@@ -105,8 +105,8 @@ type
     destructor  Destroy; override;
 
     procedure Reset;
-    procedure GetInfo;                                              //Запросить состояние устройства
-    procedure SwapInfo;                                             //Записать текущее стостояние в последнее
+    procedure GetInfo;  //Запросить состояние устройства
+    procedure SwapInfo; //Записать текущее стостояние в последнее
 
     //Характеристики устройства
     property DriverID: Byte read FDriverID;

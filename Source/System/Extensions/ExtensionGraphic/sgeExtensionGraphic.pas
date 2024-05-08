@@ -21,7 +21,15 @@ uses
   sgeGraphicOpenGLDrawObjectFade, sgeGraphicOpenGLDrawObjectFadeItem,
   sgeDisplayElementAnsiText, sgeGraphicOpenGLDrawObjectAnsiText,
   sgeDisplayElement, sgeGraphicOpenGLDrawObject,
-  sgeEventList, sgeEventBase, sgeEventWindow, sgeEventGraphic,
+
+  sgeEventList, sgeEventBase,
+  sgeEventWindowSize,
+  sgeEventGraphicShaderAdd,
+  sgeEventGraphicFade, sgeEventGraphicFadeAdd,
+  sgeEventGraphicLayerAdd, sgeEventGraphicLayerDelete, sgeEventGraphicLayerUpdate,
+  sgeEventGraphicElementDelete, sgeEventGraphicElementVisible, sgeEventGraphicElementClipRect,
+  sgeEventGraphicElementUpdate, sgeEventGraphicElementAdd,
+
   sgeExtensionWindow;
 
 
@@ -78,9 +86,9 @@ type
     procedure ClearLayers;
 
     procedure ProcessEvents;
-    procedure ProcessEvent_WindowResize(Event: TsgeEventWindow);
+    procedure ProcessEvent_WindowResize(Event: TsgeEventWindowSize);
     procedure ProcessEvent_ShaderAdd(Event: TsgeEventGraphicShaderAdd);
-    procedure ProcessEvent_FadeNew(Event: TsgeEventGraphicFadeNew);
+    procedure ProcessEvent_FadeNew(Event: TsgeEventGraphicFadeAdd);
     procedure ProcessEvent_LayerAdd(Event: TsgeEventGraphicLayerAdd);
     procedure ProcessEvent_LayerUpdate(Event: TsgeEventGraphicLayerUpdate);
     procedure ProcessEvent_LayerDelete(Event: TsgeEventGraphicLayerDelete);
@@ -246,15 +254,15 @@ begin
 
         //Изменение размеров окна
         Event_WindowSize:
-          ProcessEvent_WindowResize(TsgeEventWindow(Event));
+          ProcessEvent_WindowResize(TsgeEventWindowSize(Event));
 
         //Добавление нового шейдера
         Event_Graphic_ShaderAdd:
           ProcessEvent_ShaderAdd(TsgeEventGraphicShaderAdd(Event));
 
         //Добавление нового затемнения
-        Event_Graphic_FadeNew:
-          ProcessEvent_FadeNew(TsgeEventGraphicFadeNew(Event));
+        Event_Graphic_FadeAdd:
+          ProcessEvent_FadeNew(TsgeEventGraphicFadeAdd(Event));
 
         //Добавление нового слоя
         Event_Graphic_LayerAdd:
@@ -289,12 +297,10 @@ begin
           ProcessEvent_ItemClipRect(TsgeEventGraphicElementClipRect(Event));
       end;
 
-
     except
       on E: EsgeException do
         ErrorManager.ProcessError(sgeCreateErrorString(_UNITNAME, Err_EventError, Event.Name, E.Message));
     end;
-
 
     //Удалить первый элемент
     FEventList.Delete(0);
@@ -302,7 +308,7 @@ begin
 end;
 
 
-procedure TsgeExtensionGraphic.ProcessEvent_WindowResize(Event: TsgeEventWindow);
+procedure TsgeExtensionGraphic.ProcessEvent_WindowResize(Event: TsgeEventWindowSize);
 begin
   //Запомнить размеры экрана
   FScreenSize := sgeGetFloatPoint(Event.Width, Event.Height);
@@ -324,7 +330,7 @@ begin
 end;
 
 
-procedure TsgeExtensionGraphic.ProcessEvent_FadeNew(Event: TsgeEventGraphicFadeNew);
+procedure TsgeExtensionGraphic.ProcessEvent_FadeNew(Event: TsgeEventGraphicFadeAdd);
 begin
   FFadeElement.Add(Event.Mode, Event.Color, Event.Time, Event.ID, Event.TimeProc);
 end;
@@ -495,7 +501,8 @@ begin
 
   //Отрисовка
   case FDrawControl of
-    gdcSync: Draw;
+    gdcSync:
+      Draw;
 
     gdcProgram:
     begin
@@ -738,7 +745,7 @@ begin
   //Установить обработчики
   EventManager.SubscriberGroupList.Subscribe(Event_WindowSize, TsgeEventHandler(@EventHandler), Event_Priority_Max - 0, True);
   EventManager.SubscriberGroupList.Subscribe(Event_Graphic_ShaderAdd, TsgeEventHandler(@EventHandler), Event_Priority_Max - 1, True);
-  EventManager.SubscriberGroupList.Subscribe(Event_Graphic_FadeNew, TsgeEventHandler(@EventHandler), Event_Priority_Max - 2, True);
+  EventManager.SubscriberGroupList.Subscribe(Event_Graphic_Fade, TsgeEventHandler(@EventHandler), Event_Priority_Max - 2, True);
   EventManager.SubscriberGroupList.Subscribe(Event_Graphic_LayerAdd, TsgeEventHandler(@EventHandler), Event_Priority_Max - 3, True);
   EventManager.SubscriberGroupList.Subscribe(Event_Graphic_LayerUpdate, TsgeEventHandler(@EventHandler), Event_Priority_Max - 4, True);
   EventManager.SubscriberGroupList.Subscribe(Event_Graphic_LayerDelete, TsgeEventHandler(@EventHandler), Event_Priority_Max - 5, True);
@@ -863,7 +870,7 @@ var
   Event: TsgeEventBase;
 begin
   //Создать событие
-  Event := TsgeEventGraphicFadeNew.Create(Mode, Color, Time, ID, @FadeCallBackProc);
+  Event := TsgeEventGraphicFadeAdd.Create(Mode, Color, Time, ID, @FadeCallBackProc);
 
   //Добавить в очередь
   FEventList.Add(Event);

@@ -15,8 +15,11 @@ unit sgeExtensionGUI;
 interface
 
 uses
-  sgeExtensionBase, sgeEventBase, sgeEventKeyboard, sgeEventMouse, sgeEventSubscriber,
-  sgeDisplayLayer, sgeGUIElement, sgeGUIFormList;
+  sgeExtensionBase, sgeEventBase,
+  sgeEventKeyboardChar, sgeEventKeyboardKeyUp, sgeEventKeyboardKeyDown,
+  sgeEventMouseLeave, sgeEventMouseMove, sgeEventMouseDown, sgeEventMouseUp,
+  sgeEventMouseScroll, sgeEventMouseDoubleClick,
+  sgeEventSubscriber, sgeDisplayLayer, sgeGUIElement, sgeGUIFormList;
 
 const
   Extension_GUI = 'GUI';
@@ -50,19 +53,19 @@ type
     procedure SetVisible(AVisible: Boolean);
 
     //Подписчики на события
-    function  Handler_KeyDown(EventObj: TsgeEventKeyboard): TsgeEventHandlerResult;
-    function  Handler_KeyUp(EventObj: TsgeEventKeyboard): TsgeEventHandlerResult;
+    function  Handler_KeyDown(EventObj: TsgeEventKeyboardKeyDown): TsgeEventHandlerResult;
+    function  Handler_KeyUp(EventObj: TsgeEventKeyboardKeyUp): TsgeEventHandlerResult;
     function  Handler_KeyChar(EventObj: TsgeEventKeyboardChar): TsgeEventHandlerResult;
 
-    function  Handler_MouseLeave(EventObj: TsgeEventMouse): TsgeEventHandlerResult;
-    function  Handler_MouseMove(EventObj: TsgeEventMouse): TsgeEventHandlerResult;
-    function  Handler_MouseDown(EventObj: TsgeEventMouse): TsgeEventHandlerResult;
-    function  Handler_MouseUp(EventObj: TsgeEventMouse): TsgeEventHandlerResult;
-    function  Handler_MouseWheel(EventObj: TsgeEventMouse): TsgeEventHandlerResult;
-    function  Handler_MouseDblClick(EventObj: TsgeEventMouse): TsgeEventHandlerResult;
+    function  Handler_MouseLeave(EventObj: TsgeEventMouseLeave): TsgeEventHandlerResult;
+    function  Handler_MouseMove(EventObj: TsgeEventMouseMove): TsgeEventHandlerResult;
+    function  Handler_MouseDown(EventObj: TsgeEventMouseDown): TsgeEventHandlerResult;
+    function  Handler_MouseUp(EventObj: TsgeEventMouseUp): TsgeEventHandlerResult;
+    function  Handler_MouseWheel(EventObj: TsgeEventMouseScroll): TsgeEventHandlerResult;
+    function  Handler_MouseDblClick(EventObj: TsgeEventMouseDoubleClick): TsgeEventHandlerResult;
 
     //Обработчики событий
-    function  MouseHandler(EventType: TsgeGUIElementMouseEventType; Mouse: TsgeEventMouse): TsgeEventHandlerResult;
+    function  MouseHandler(EventType: TsgeGUIElementMouseEventType; Mouse: TsgeEventBase): TsgeEventHandlerResult;
     function  ButtonHandler(EventType: TsgeGUIElementButtonEventType; Keyboard: TsgeEventBase): TsgeEventHandlerResult;
 
     //Вспомогательные функции
@@ -98,7 +101,7 @@ type
 implementation
 
 uses
-  sgeErrors, sgeOSPlatform, sgeGUIForm;
+  sgeErrors, sgeOSPlatform, sgeEventMouse, sgeGUIForm;
 
 type
   TsgeGUIElementExt = class(TsgeGUIElement);
@@ -137,13 +140,13 @@ begin
 end;
 
 
-function TsgeExtensionGUI.Handler_KeyDown(EventObj: TsgeEventKeyboard): TsgeEventHandlerResult;
+function TsgeExtensionGUI.Handler_KeyDown(EventObj: TsgeEventKeyboardKeyDown): TsgeEventHandlerResult;
 begin
   Result := ButtonHandler(ebetDown, EventObj);
 end;
 
 
-function TsgeExtensionGUI.Handler_KeyUp(EventObj: TsgeEventKeyboard): TsgeEventHandlerResult;
+function TsgeExtensionGUI.Handler_KeyUp(EventObj: TsgeEventKeyboardKeyUp): TsgeEventHandlerResult;
 begin
   Result := ButtonHandler(ebetUp, EventObj);
 end;
@@ -155,52 +158,54 @@ begin
 end;
 
 
-function TsgeExtensionGUI.Handler_MouseLeave(EventObj: TsgeEventMouse): TsgeEventHandlerResult;
+function TsgeExtensionGUI.Handler_MouseLeave(EventObj: TsgeEventMouseLeave): TsgeEventHandlerResult;
 begin
   Result := MouseHandler(emetMove, EventObj);
 end;
 
 
-function TsgeExtensionGUI.Handler_MouseMove(EventObj: TsgeEventMouse): TsgeEventHandlerResult;
+function TsgeExtensionGUI.Handler_MouseMove(EventObj: TsgeEventMouseMove): TsgeEventHandlerResult;
 begin
   Result := MouseHandler(emetMove, EventObj);
 end;
 
 
-function TsgeExtensionGUI.Handler_MouseDown(EventObj: TsgeEventMouse): TsgeEventHandlerResult;
+function TsgeExtensionGUI.Handler_MouseDown(EventObj: TsgeEventMouseDown): TsgeEventHandlerResult;
 begin
   Result := MouseHandler(emetDown, EventObj);
 end;
 
 
-function TsgeExtensionGUI.Handler_MouseUp(EventObj: TsgeEventMouse): TsgeEventHandlerResult;
+function TsgeExtensionGUI.Handler_MouseUp(EventObj: TsgeEventMouseUp): TsgeEventHandlerResult;
 begin
   Result := MouseHandler(emetUp, EventObj);
 end;
 
 
-function TsgeExtensionGUI.Handler_MouseWheel(EventObj: TsgeEventMouse): TsgeEventHandlerResult;
+function TsgeExtensionGUI.Handler_MouseWheel(EventObj: TsgeEventMouseScroll): TsgeEventHandlerResult;
 begin
   Result := MouseHandler(emetScroll, EventObj);
 end;
 
 
-function TsgeExtensionGUI.Handler_MouseDblClick(EventObj: TsgeEventMouse): TsgeEventHandlerResult;
+function TsgeExtensionGUI.Handler_MouseDblClick(EventObj: TsgeEventMouseDoubleClick): TsgeEventHandlerResult;
 begin
   Result := MouseHandler(emetDblClick, EventObj);
 end;
 
 
-function TsgeExtensionGUI.MouseHandler(EventType: TsgeGUIElementMouseEventType; Mouse: TsgeEventMouse): TsgeEventHandlerResult;
+function TsgeExtensionGUI.MouseHandler(EventType: TsgeGUIElementMouseEventType; Mouse: TsgeEventBase): TsgeEventHandlerResult;
 var
   Form: TsgeGUIForm;
   Element: TsgeGUIElement;
+  MouseEvent: TsgeEventMouse; //Ссылка на события мыши
 begin
   //Передавать событие
   Result := ehrNormal;
 
   //Узнать элемент под курсором
-  Element := ElementAtCursor(Mouse.X, Mouse.Y);
+  MouseEvent := Mouse as TsgeEventMouse;
+  Element := ElementAtCursor(MouseEvent.X, MouseEvent.Y);
 
   //Проверить событие MouseEnter, MouseLeave
   if EventType = emetMove then

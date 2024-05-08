@@ -15,7 +15,7 @@ unit sgeKeyCommandJoystickPadInfo;
 interface
 
 uses
-  sgeKeyCommandTypes, sgeEventControllers;
+  sgeTypes, sgeKeyCommandTypes;
 
 
 type
