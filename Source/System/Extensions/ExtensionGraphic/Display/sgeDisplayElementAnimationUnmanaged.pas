@@ -317,8 +317,6 @@ const
   SetAll = [deaucsPosition, deaucsSize, deaucsScale, deaucsOrigin, deaucsAngle, deaucsColor,
     deaucsSprite, deaucsReflect, deaucsFrames];
 begin
-  inherited Create;
-
   FChangeSet := SetAll;
 
   //Записать параметры
@@ -340,6 +338,8 @@ end;
 
 constructor TsgeDisplayElementAnimationUnmanaged.Create(X, Y, Width, Height: Single; Sprite: TsgeSprite; AnimationFrames: TsgeAnimationFrameList);
 begin
+  inherited Create;
+
   //Установить кадры анимации
   SetFrameList(AnimationFrames);
 

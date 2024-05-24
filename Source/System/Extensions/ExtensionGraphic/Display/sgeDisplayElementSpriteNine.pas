@@ -135,8 +135,6 @@ const
   SetAll = [desncsPosition, desncsSize, desncsScale, desncsOrigin, desncsAngle, desncsColor, desncsOffset,
     desncsSprite{, desncsReflect}];
 begin
-  inherited Create;
-
   FChangeSet := SetAll;
 
   //Записать параметры
@@ -363,6 +361,8 @@ end;
 
 constructor TsgeDisplayElementSpriteNine.Create(X, Y, Width, Height: Single; Sprite: TsgeSprite; Offset: TsgeFloatRect);
 begin
+  inherited Create;
+
   SetSprite(Sprite);
   FillData(X, Y, Width, Height, Offset);
 end;
@@ -370,6 +370,8 @@ end;
 
 constructor TsgeDisplayElementSpriteNine.Create(X, Y: Single; Sprite: TsgeSprite; Offset: TsgeFloatRect);
 begin
+  inherited Create;
+
   SetSprite(Sprite);
   FillData(X, Y, Sprite.Width, Sprite.Height, Offset);
 end;

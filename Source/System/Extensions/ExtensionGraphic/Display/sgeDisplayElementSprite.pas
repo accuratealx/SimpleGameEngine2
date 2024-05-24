@@ -288,8 +288,6 @@ procedure TsgeDisplayElementSprite.FillData(X, Y, Width, Height: Single);
 const
   SetAll = [descsPosition, descsSize, descsScale, descsOrigin, descsAngle, descsColor, descsSprite, descsReflect];
 begin
-  inherited Create;
-
   FChangeSet := SetAll;
 
   //Записать параметры
@@ -323,6 +321,8 @@ end;
 
 constructor TsgeDisplayElementSprite.Create(X, Y, Width, Height: Single; Sprite: TsgeSprite);
 begin
+  inherited Create;
+
   SetSprite(Sprite);
   FillData(X, Y, Width, Height);
 end;
@@ -330,6 +330,8 @@ end;
 
 constructor TsgeDisplayElementSprite.Create(X, Y: Single; Sprite: TsgeSprite);
 begin
+  inherited Create;
+
   SetSprite(Sprite);
   FillData(X, Y, Sprite.Width, Sprite.Height);
 end;

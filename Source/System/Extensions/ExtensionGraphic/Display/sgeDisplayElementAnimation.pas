@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeDisplayElementAnimation.pas
-Версия            1.3
+Версия            1.4
 Создан            16.01.2023
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Элемент рисования: Анимация
@@ -342,8 +342,6 @@ const
   SetAll = [deacsPosition, deacsSize, deacsScale, deacsOrigin, deacsAngle, deacsColor, deacsFrameIndex,
     deacsSprite, deacsReflect, deacsFrames];
 begin
-  inherited Create;
-
   FChangeSet := SetAll;
 
   //Записать параметры
@@ -366,6 +364,8 @@ end;
 
 constructor TsgeDisplayElementAnimation.Create(X, Y, Width, Height: Single; Sprite: TsgeSprite; AnimationFrames: TsgeAnimationFrameList);
 begin
+  inherited Create;
+
   //Создать анимацию из кадров
   FAnimation := TsgeAnimation.Create(AnimationFrames);
 
