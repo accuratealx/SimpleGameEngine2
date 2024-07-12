@@ -174,6 +174,7 @@ procedure sgeFindFoldersInFolder(Path: String; List: TsgeStringList);
 var
   o: TsgeSearchRec;
   Idx: Integer;
+  Dir: String;
 begin
   Path := sgeCheckPathDelimiter(Path);
 
@@ -183,7 +184,11 @@ begin
     if (o.Name <> '.') and (o.Name <> '..') then
     begin
       if (o.Attr and FileAttribDirectory) = FileAttribDirectory then
-        sgeFindFilesInFolder(Path + o.Name, List)
+      begin
+        Dir := Path + o.Name;
+        List.Add(Dir);
+        sgeFindFoldersInFolder(Dir, List);
+      end;
     end;
 
     Idx := sgeFindNext(o);
