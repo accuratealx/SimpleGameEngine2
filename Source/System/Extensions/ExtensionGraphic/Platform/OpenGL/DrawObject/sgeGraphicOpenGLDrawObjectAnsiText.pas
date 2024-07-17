@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGraphicOpenGLDrawObjectAnsiText.pas
-Версия            1.2
+Версия            1.3
 Создан            28.01.2023
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          OpenGL: Элемент отрисовки: Текст
@@ -43,7 +43,7 @@ implementation
 
 uses
   sgeAnsiFontGlyph,
-  sgeGraphicOpenGLShaderProgramTable, sgeGraphicOpenGLSpriteTable, sgeGraphicOpenGLCoordBuffer;
+  sgeGraphicOpenGLShaderProgramTable, sgeGraphicOpenGLSpriteTable;
 
 
 constructor TsgeGraphicOpenGLDrawObjectAnsiText.Create(Element: TsgeDisplayElement);
@@ -95,7 +95,6 @@ end;
 
 procedure TsgeGraphicOpenGLDrawObjectAnsiText.Update(AElement: TsgeDisplayElement);
 var
-  VertexBuff, TexBuff: TsgeGraphicOpenGLCoordBuffer;
   Element: TsgeDisplayElementAnsiText absolute AElement;
   c, i: Integer;
   Glyph: TsgeAnsiFontGlyph;
@@ -143,12 +142,13 @@ begin
   //Шрифт или Текст
   if (deatcsFont in Element.ChangeSet) or ((deatcsText in Element.ChangeSet)) then
   begin
-    VertexBuff := TsgeGraphicOpenGLCoordBuffer.Create;
-    TexBuff := TsgeGraphicOpenGLCoordBuffer.Create;
-
     //Подготовить данные
     X := 0;
     c := Length(FData.TextBytes) - 1;
+
+    FVertexBuffer.QuadCount := c + 1;
+    FTextureBuffer.QuadCount := c + 1;
+
     for i := 0 to c do
     begin
       //Ссылка на глиф
@@ -159,28 +159,22 @@ begin
       X2 := X1 + Glyph.Width;
       Y1 := Element.Font.Height - Element.Font.BaseLine - Glyph.Height - Glyph.BaseLine;
       Y2 := Y1 + Glyph.Height;
-      VertexBuff.AddQuad(X1, Y1, X2, Y2);
+      FVertexBuffer.Quad[i] := sgeGetFloatRect(X1, Y1, X2, Y2);
 
       //Текстуры
       X1 := Glyph.X1 * FGLSprite.GLPixelWidth;
       Y1 := 1 - Glyph.Y1 * FGLSprite.GLPixelHeight;
       X2 := Glyph.X2 * FGLSprite.GLPixelWidth;
       Y2 := 1 - Glyph.Y2 * FGLSprite.GLPixelHeight;
-      TexBuff.AddQuad(X1, Y1, X2, Y2);
+      FTextureBuffer.Quad[i] := sgeGetFloatRect(X1, Y1, X2, Y2);
 
       //Сместить X следующего глифа
       X := X + Glyph.Width + Element.Font.GlyphSpace;
     end;
 
-    //Координаты вершин
-    FVertexBuffer.SetData(VertexBuff);
-
-    //Текстурные координаты
-    FTextureBuffer.SetData(TexBuff);
-
-    //Почистить память
-    VertexBuff.Free;
-    TexBuff.Free;
+    //Залить данные в OpenGL
+    FVertexBuffer.UpdateOpenGLData;
+    FTextureBuffer.UpdateOpenGLData;
   end;
 end;
 

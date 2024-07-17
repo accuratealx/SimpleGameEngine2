@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGraphicOpenGLVertexArrayObject.pas
-Версия            1.1
+Версия            1.2
 Создан            27.01.2023
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          OpenGL: Класс вертексного объекта
@@ -58,7 +58,7 @@ const
 
 function TsgeGraphicOpenGLVertexArrayObject.GetVertexCount: Integer;
 begin
-  Result := FVertexBuffer.CoordCount;
+  Result := FVertexBuffer.GetCoordCount;
 end;
 
 

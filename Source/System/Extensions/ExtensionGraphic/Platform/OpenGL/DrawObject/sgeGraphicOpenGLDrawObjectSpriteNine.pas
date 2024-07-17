@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGraphicOpenGLDrawObjectSpriteNine.pas
-Версия            1.2
+Версия            1.3
 Создан            29.01.2023
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          OpenGL: Элемент отрисовки: Спрайт 9
@@ -43,7 +43,7 @@ type
 implementation
 
 uses
-  sgeGraphicOpenGLShaderProgramTable, sgeGraphicOpenGLSpriteTable, sgeGraphicOpenGLCoordBuffer;
+  sgeGraphicOpenGLShaderProgramTable, sgeGraphicOpenGLSpriteTable;
 
 
 constructor TsgeGraphicOpenGLDrawObjectSpriteNine.Create(Element: TsgeDisplayElement);
@@ -54,10 +54,10 @@ begin
   FShaderProgram := OpenGLShaderProgramTable.Get(SHADER_NAME);
 
   //Создать вершинный буфер
-  FVertexBuffer := TsgeGraphicOpenGLBuffer.Create;
+  FVertexBuffer := TsgeGraphicOpenGLBuffer.Create(9);
 
   //Подготовить буфер с текстурными координатами
-  FTextureBuffer := TsgeGraphicOpenGLBuffer.Create;
+  FTextureBuffer := TsgeGraphicOpenGLBuffer.Create(9);
 
   //Создать VAO
   FVAO := TsgeGraphicOpenGLVertexArrayObject.Create;
@@ -95,8 +95,8 @@ end;
 
 procedure TsgeGraphicOpenGLDrawObjectSpriteNine.Update(AElement: TsgeDisplayElement);
 var
-  Buff: TsgeGraphicOpenGLCoordBuffer;
   Element: TsgeDisplayElementSpriteNine absolute AElement;
+  X1, Y1, X2, Y2: Single;
 begin
   //Положение
   if desncsPosition in Element.ChangeSet then
@@ -122,15 +122,30 @@ begin
   begin
     FData.Offset := Element.Data.Offset;
 
-    Buff := TsgeGraphicOpenGLCoordBuffer.Create;
-    Buff.Add9QuadSprite(FGLSprite.GLPixelWidth, FGLSprite.GLPixelHeight, FData.Offset);
-
     //Проверить на отражение
     {if FData.Reflect <> [] then
       Rect := sgeGetReflectRect(Rect, FData.Reflect);}
 
-    FTextureBuffer.SetData(Buff);
-    Buff.Free;
+
+    //Перевести смещение в координаты OpenGL
+    X1 := FData.Offset.X1 * FGLSprite.GLPixelWidth;
+    Y1 := FData.Offset.Y1 * FGLSprite.GLPixelHeight;
+    X2 := FData.Offset.X2 * FGLSprite.GLPixelWidth;
+    Y2 := FData.Offset.Y2 * FGLSprite.GLPixelHeight;
+
+    //Подготовить буфер
+    FTextureBuffer.Quad[0] := sgeGetFloatRect(0, 1, X1, 1 - Y1);
+    FTextureBuffer.Quad[1] := sgeGetFloatRect(X1, 1, 1 - X2, 1 - Y1);
+    FTextureBuffer.Quad[2] := sgeGetFloatRect(1 - X2, 1, 1, 1 - Y1);
+    FTextureBuffer.Quad[3] := sgeGetFloatRect(0, 1 - Y1, X1, Y2);
+    FTextureBuffer.Quad[4] := sgeGetFloatRect(X1, 1 - Y1, 1 - X2, Y2);
+    FTextureBuffer.Quad[5] := sgeGetFloatRect(1 - X2, 1 - Y1, 1, Y2);
+    FTextureBuffer.Quad[6] := sgeGetFloatRect(0, Y2, X1, 0);
+    FTextureBuffer.Quad[7] := sgeGetFloatRect(X1, Y2, 1 - X2, 0);
+    FTextureBuffer.Quad[8] := sgeGetFloatRect(1 - X2, Y2, 1, 0);
+
+    //Залить данные в OpenGL
+    FTextureBuffer.UpdateOpenGLData;
   end;
 
   //Размеры
@@ -138,10 +153,25 @@ begin
   begin
     FData.Size := Element.Data.Size;
 
-    Buff := TsgeGraphicOpenGLCoordBuffer.Create;
-    Buff.Add9Quad(FData.Size.X, FData.Size.Y, FData.Offset);
-    FVertexBuffer.SetData(Buff);
-    Buff.Free;
+    //Перевести смещение в координаты OpenGL
+    X1 := FData.Offset.X1;
+    Y1 := FData.Offset.Y1;
+    X2 := FData.Offset.X2;
+    Y2 := FData.Offset.Y2;
+
+    //Подготовить буфер
+    FVertexBuffer.Quad[0] := sgeGetFloatRect(0, 0, X1, Y1);
+    FVertexBuffer.Quad[1] := sgeGetFloatRect(X1, 0, FData.Size.X - X2,Y1);
+    FVertexBuffer.Quad[2] := sgeGetFloatRect(FData.Size.X - X2, 0, FData.Size.X, Y1);
+    FVertexBuffer.Quad[3] := sgeGetFloatRect(0, Y1, X1, FData.Size.Y - Y2);
+    FVertexBuffer.Quad[4] := sgeGetFloatRect(X1, Y1, FData.Size.X - X2, FData.Size.Y - Y2);
+    FVertexBuffer.Quad[5] := sgeGetFloatRect(FData.Size.X - X2, Y1, FData.Size.X, FData.Size.Y - Y2);
+    FVertexBuffer.Quad[6] := sgeGetFloatRect(0, FData.Size.Y - Y2, X1, FData.Size.Y);
+    FVertexBuffer.Quad[7] := sgeGetFloatRect(X1, FData.Size.Y - Y2, FData.Size.X - X2, FData.Size.Y);
+    FVertexBuffer.Quad[8] := sgeGetFloatRect(FData.Size.X - X2, FData.Size.Y - Y2, FData.Size.X, FData.Size.Y);
+
+    //Залить данные в OpenGL
+    FVertexBuffer.UpdateOpenGLData;
   end;
 
   //Масштаб

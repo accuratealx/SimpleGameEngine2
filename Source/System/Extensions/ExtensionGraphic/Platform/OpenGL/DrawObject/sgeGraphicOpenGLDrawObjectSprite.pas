@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGraphicOpenGLDrawObjectSprite.pas
-Версия            1.3
+Версия            1.4
 Создан            29.01.2023
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          OpenGL: Элемент отрисовки: Спрайт
@@ -44,7 +44,7 @@ implementation
 
 uses
   sgeGraphicOpenGLUtils,
-  sgeGraphicOpenGLShaderProgramTable, sgeGraphicOpenGLSpriteTable, sgeGraphicOpenGLCoordBuffer;
+  sgeGraphicOpenGLShaderProgramTable, sgeGraphicOpenGLSpriteTable;
 
 
 constructor TsgeGraphicOpenGLDrawObjectSprite.Create(Element: TsgeDisplayElement);
@@ -55,10 +55,10 @@ begin
   FShaderProgram := OpenGLShaderProgramTable.Get(SHADER_NAME);
 
   //Создать вершинный буфер
-  FVertexBuffer := TsgeGraphicOpenGLBuffer.Create;
+  FVertexBuffer := TsgeGraphicOpenGLBuffer.Create(1);
 
   //Подготовить буфер с текстурными координатами
-  FTextureBuffer := TsgeGraphicOpenGLBuffer.Create;
+  FTextureBuffer := TsgeGraphicOpenGLBuffer.Create(1);
 
   //Создать VAO
   FVAO := TsgeGraphicOpenGLVertexArrayObject.Create;
@@ -100,7 +100,6 @@ end;
 procedure TsgeGraphicOpenGLDrawObjectSprite.Update(AElement: TsgeDisplayElement);
 var
   Element: TsgeDisplayElementSprite absolute AElement;
-  Buff: TsgeGraphicOpenGLCoordBuffer;
   Rect: TsgeFloatRect;
 begin
   //Положение
@@ -116,10 +115,11 @@ begin
     Rect := sgeGetFloatRect(0, 1, 1, 0);
     Rect := sgeGetReflectRect(Rect, FData.Reflect);
 
-    Buff := TsgeGraphicOpenGLCoordBuffer.Create;
-    Buff.AddQuad(Rect);
-    FTextureBuffer.SetData(Buff);
-    Buff.Free;
+    //Заполнить буфер
+    FTextureBuffer.Quad[0] := Rect;
+
+    //Залить данные в OpenGL
+    FTextureBuffer.UpdateOpenGLData;
   end;
 
   //Размеры
@@ -127,10 +127,11 @@ begin
   begin
     FData.Size := Element.Data.Size;
 
-    Buff := TsgeGraphicOpenGLCoordBuffer.Create;
-    Buff.AddQuad(0, 0, FData.Size.X, FData.Size.Y);
-    FVertexBuffer.SetData(Buff);
-    Buff.Free;
+    //Заполнить буфер
+    FVertexBuffer.Quad[0] := sgeGetFloatRect(0, 0, FData.Size.X, FData.Size.Y);
+
+    //Залить данные в OpenGL
+    FVertexBuffer.UpdateOpenGLData;
   end;
 
   //Масштаб

@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGraphicOpenGLDrawObjectRect.pas
-Версия            1.2
+Версия            1.3
 Создан            28.01.2023
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          OpenGL: Элемент отрисовки: Цветной прямоугольник
@@ -40,7 +40,7 @@ type
 implementation
 
 uses
-  sgeGraphicOpenGLShaderProgramTable, sgeGraphicOpenGLCoordBuffer;
+  sgeGraphicOpenGLShaderProgramTable;
 
 
 constructor TsgeGraphicOpenGLDrawObjectRect.Create(Element: TsgeDisplayElement);
@@ -51,7 +51,7 @@ begin
   FShaderProgram := OpenGLShaderProgramTable.Get(SHADER_NAME);
 
   //Создать вершинный буфер
-  FVertexBuffer := TsgeGraphicOpenGLBuffer.Create;
+  FVertexBuffer := TsgeGraphicOpenGLBuffer.Create(1);
 
   //Создать VAO
   FVAO := TsgeGraphicOpenGLVertexArrayObject.Create;
@@ -78,7 +78,6 @@ end;
 
 procedure TsgeGraphicOpenGLDrawObjectRect.Update(AElement: TsgeDisplayElement);
 var
-  Buff: TsgeGraphicOpenGLCoordBuffer;
   Element: TsgeDisplayElementRect absolute AElement;
 begin
   //Положение
@@ -90,10 +89,11 @@ begin
   begin
     FData.Size := Element.Data.Size;
 
-    Buff := TsgeGraphicOpenGLCoordBuffer.Create;
-    Buff.AddQuad(0, 0, FData.Size.X, FData.Size.Y);
-    FVertexBuffer.SetData(Buff);
-    Buff.Free;
+    //Заполнить буфер
+    FVertexBuffer.Quad[0] := sgeGetFloatRect(0, 0, FData.Size.X, FData.Size.Y);
+
+    //Залить данные в OpenGL
+    FVertexBuffer.UpdateOpenGLData;
   end;
 
   //Масштаб

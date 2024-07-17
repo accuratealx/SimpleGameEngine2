@@ -25,14 +25,13 @@ uses
   sgeDisplayElementSpritePart, sgeDisplayElementSpriteTile, sgeDisplayLayer, 
   sgeAnimationFrame, sgeAnimationFrameList, sgeAnsiFontGlyph, sgeSpriteLoader, 
   sgeSpriteLoaderGDIP, sgeSpriteSaver, sgeSpriteSaverBmp, 
-  sgeGraphicOpenGLBuffer, sgeGraphicOpenGLCoordBuffer, 
-  sgeGraphicOpenGLDrawObjectList, sgeGraphicOpenGLDrawObjectTable, 
-  sgeGraphicOpenGLLayer, sgeGraphicOpenGLLayerList, 
-  sgeGraphicOpenGLLayerTable, sgeGraphicOpenGLShader, 
-  sgeGraphicOpenGLShaderProgram, sgeGraphicOpenGLShaderProgramTable, 
-  sgeGraphicOpenGLSprite, sgeGraphicOpenGLSpriteTable, sgeGraphicOpenGLTypes, 
-  sgeGraphicOpenGLUtils, sgeGraphicOpenGLVertexArrayObject, 
-  sgeGraphicOpenGLDrawObjectAnimation, 
+  sgeGraphicOpenGLBuffer, sgeGraphicOpenGLDrawObjectList, 
+  sgeGraphicOpenGLDrawObjectTable, sgeGraphicOpenGLLayer, 
+  sgeGraphicOpenGLLayerList, sgeGraphicOpenGLLayerTable, 
+  sgeGraphicOpenGLShader, sgeGraphicOpenGLShaderProgram, 
+  sgeGraphicOpenGLShaderProgramTable, sgeGraphicOpenGLSprite, 
+  sgeGraphicOpenGLSpriteTable, sgeGraphicOpenGLTypes, sgeGraphicOpenGLUtils, 
+  sgeGraphicOpenGLVertexArrayObject, sgeGraphicOpenGLDrawObjectAnimation, 
   sgeGraphicOpenGLDrawObjectAnimationUnamnaged, 
   sgeGraphicOpenGLDrawObjectAnsiText, sgeGraphicOpenGLDrawObjectFrame, 
   sgeGraphicOpenGLDrawObjectRect, sgeGraphicOpenGLDrawObjectSprite, 
@@ -100,7 +99,7 @@ uses
   sgeEventControllerPovUp, sgeEventControllerPovDown, 
   sgeEventControllerAxisUp, sgeEventControllerAxisDown, 
   sgeEventControllerAxisValue, sgeEventTime, sgeEventMusicPlayer, 
-  sgeEventMusicPlayerStart, sgeEventMusicPlayerStop;
+  sgeEventMusicPlayerStart, sgeEventMusicPlayerStop, sgeDisplayElementTileSet;
 
 implementation
 

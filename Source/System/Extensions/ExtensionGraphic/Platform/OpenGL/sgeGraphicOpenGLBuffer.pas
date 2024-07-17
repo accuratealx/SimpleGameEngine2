@@ -4,7 +4,7 @@
 Версия            1.0
 Создан            22.01.2023
 Автор             Творческий человек  (accuratealx@gmail.com)
-Описание          OpenGL: Набор данных
+Описание          OpenGL: Набор данных для координат прямоугольников
 }
 {$Include Defines.inc}
 
@@ -16,7 +16,7 @@ interface
 
 uses
   dglOpenGL,
-  sgeGraphicOpenGLCoordBuffer;
+  sgeTypes;
 
 type
   //Шаблон использованных данных
@@ -27,43 +27,121 @@ type
   //Буфер в памяти OpenGL
   TsgeGraphicOpenGLBuffer = class
   private
-    FHandle: GLUint;
-    FUsage: TsgeGraphicOpenGLBufferUsage;
-    FSize: Int64;
-    FCoordCount: Int64;
+    const
+      COORD_SIZE = SizeOf(Single);    //Размер памяти под одну координату
+      POINT_SIZE = 2 * COORD_SIZE;    //Размер памяти для одной точки (X, Y)
+      QUAD_SIZE = 6 * POINT_SIZE;     //Размер памяти для одного прямоугольника (2 треугольника)
 
-    function GetGLUsageByBufferUsage(Usage: TsgeGraphicOpenGLBufferUsage): GLenum;
+  private
+    FBuffer: Pointer;                 //Указатель на область памяти с данными
+    FQuadCount: Integer;              //Количество прямоугольников
+    FHandle: GLUint;                  //Хэндл буфера в OpenGL
+    FUsage: TsgeGraphicOpenGLBufferUsage; //Тип используемой памяти OpenGL
+
+
+    procedure SetQuadCount(Count: Integer);
+    function  GetQuad(Index: Integer): TsgeFloatRect;
+    procedure SetQuad(Index: Integer; Rect: TsgeFloatRect);
+
+    function GetGLUsage: GLenum;  //Получить код OpenGL для использования памяти
   public
-    constructor Create;
-    constructor Create(Buffer: TsgeGraphicOpenGLCoordBuffer; Usage: TsgeGraphicOpenGLBufferUsage = buStaticDraw);
+    constructor Create(QuadCount: Integer = 0; Usage: TsgeGraphicOpenGLBufferUsage = buStaticDraw);
     destructor  Destroy; override;
-
-    procedure SetData(Buffer: TsgeGraphicOpenGLCoordBuffer; Usage: TsgeGraphicOpenGLBufferUsage = buStaticDraw);
 
     procedure Attach;
     procedure Detach;
 
+    function GetCoordCount: Integer;
+
+    procedure UpdateOpenGLData;                 //Обновить всю память в OpenGL
+    procedure UpdateOpenGLQuad(Index: Integer); //Обновить память одного прямоугольника
+
     property Handle: GLUInt read FHandle;
     property Usage: TsgeGraphicOpenGLBufferUsage read FUsage;
-    property Size: Int64 read FSize;
-    property CoordCount: Int64 read FCoordCount;
+
+    property QuadCount: Integer read FQuadCount write SetQuadCount;
+    property Quad[Index: Integer]: TsgeFloatRect read GetQuad write SetQuad;
   end;
 
 
 implementation
 
 uses
-  sgeErrors;
+  sgeErrors, sgeSystemUtils;
 
 const
   _UNITNAME = 'GraphicOpenGLBuffer';
 
-  Err_EmptyBuffer = 'EmptyBuffer';
+  Err_IndexOutOfBounds = 'IndexOutOfBounds';
 
 
-function TsgeGraphicOpenGLBuffer.GetGLUsageByBufferUsage(Usage: TsgeGraphicOpenGLBufferUsage): GLenum;
+procedure TsgeGraphicOpenGLBuffer.SetQuadCount(Count: Integer);
+var
+  cnt: Integer;
 begin
-  case Usage of
+  if FQuadCount = Count then
+    Exit;
+
+  //Запомним количество
+  FQuadCount := Count;
+
+  //Посчитаем память в байтах
+  cnt := FQuadCount * QUAD_SIZE;
+
+  //Поправим память
+  FBuffer := ReAllocMem(FBuffer, cnt);
+end;
+
+
+{$Hints Off}
+function TsgeGraphicOpenGLBuffer.GetQuad(Index: Integer): TsgeFloatRect;
+var
+  Offset: Int64;
+begin
+  if (Index < 0) or (Index > FQuadCount - 1) then
+    raise EsgeException.Create(_UNITNAME, Err_IndexOutOfBounds, sgeIntToStr(Index));
+
+  //Смещение в буфере до нужного прямоугольника
+  Offset := UIntPtr(FBuffer) + Index * QUAD_SIZE;
+
+  //Результат
+  Result.X1 := PSingle(Offset + COORD_SIZE * 0)^;  //0
+  Result.Y1 := PSingle(Offset + COORD_SIZE * 1)^;  //1
+  Result.X2 := PSingle(Offset + COORD_SIZE * 4)^;  //4
+  Result.Y2 := PSingle(Offset + COORD_SIZE * 5)^;  //5
+end;
+
+
+procedure TsgeGraphicOpenGLBuffer.SetQuad(Index: Integer; Rect: TsgeFloatRect);
+var
+  Offset: Int64;
+begin
+  if (Index < 0) or (Index > FQuadCount - 1) then
+    raise EsgeException.Create(_UNITNAME, Err_IndexOutOfBounds, sgeIntToStr(Index));
+
+  //Смещение в буфере до нужного прямоугольника
+  Offset := UIntPtr(FBuffer) + Index * QUAD_SIZE;
+
+  //Обновить память
+  PSingle(Offset + COORD_SIZE *  0)^ := Rect.X1;
+  PSingle(Offset + COORD_SIZE *  1)^ := Rect.Y1;
+  PSingle(Offset + COORD_SIZE *  2)^ := Rect.X1;
+  PSingle(Offset + COORD_SIZE *  3)^ := Rect.Y2;
+  PSingle(Offset + COORD_SIZE *  4)^ := Rect.X2;
+  PSingle(Offset + COORD_SIZE *  5)^ := Rect.Y2;
+  PSingle(Offset + COORD_SIZE *  6)^ := Rect.X1;
+  PSingle(Offset + COORD_SIZE *  7)^ := Rect.Y1;
+  PSingle(Offset + COORD_SIZE *  8)^ := Rect.X2;
+  PSingle(Offset + COORD_SIZE *  9)^ := Rect.Y2;
+  PSingle(Offset + COORD_SIZE * 10)^ := Rect.X2;
+  PSingle(Offset + COORD_SIZE * 11)^ := Rect.Y1;
+end;
+{$Hints On}
+
+
+function TsgeGraphicOpenGLBuffer.GetGLUsage: GLenum;
+begin
+  case FUsage of
     buStreamDraw  : Result := GL_STREAM_DRAW;
     buStreamRead  : Result := GL_STREAM_READ;
     buStreamCopy  : Result := GL_STREAM_COPY;
@@ -77,55 +155,25 @@ begin
 end;
 
 
-constructor TsgeGraphicOpenGLBuffer.Create;
+constructor TsgeGraphicOpenGLBuffer.Create(QuadCount: Integer; Usage: TsgeGraphicOpenGLBufferUsage);
 begin
-  //Запросить память
-  if FHandle = 0 then
-    glGenBuffers(1, @FHandle);
-end;
-
-
-constructor TsgeGraphicOpenGLBuffer.Create(Buffer: TsgeGraphicOpenGLCoordBuffer; Usage: TsgeGraphicOpenGLBufferUsage);
-begin
-  if Buffer = nil then
-    raise EsgeException.Create(_UNITNAME, Err_EmptyBuffer);
-
-  //Записать параметры
-  FUsage := Usage;
-  FSize := Buffer.Size;
-
-  //Запросить память
+  //Запросить память у OpenGL
   if FHandle = 0 then
     glGenBuffers(1, @FHandle);
 
-  //Залить данные
-  SetData(Buffer, Usage);
+  //Выделим память
+  SetQuadCount(QuadCount);
 end;
 
 
 destructor TsgeGraphicOpenGLBuffer.Destroy;
 begin
+  //Освободить память OpenGL
   if FHandle <> 0 then
     glDeleteBuffers(1, @FHandle);
-end;
 
-
-procedure TsgeGraphicOpenGLBuffer.SetData(Buffer: TsgeGraphicOpenGLCoordBuffer; Usage: TsgeGraphicOpenGLBufferUsage);
-begin
-  if Buffer = nil then
-    raise EsgeException.Create(_UNITNAME, Err_EmptyBuffer);
-
-  //Выбрать буфер для работы
-  Attach;
-
-  //Залить данные
-  glBufferData(GL_ARRAY_BUFFER, Buffer.Size, Buffer.Data, GetGLUsageByBufferUsage(FUsage));
-
-  //Отвязать буфер
-  Detach;
-
-  //Запомнить количество вершин
-  FCoordCount := Buffer.Size div (2 * SizeOf(GLfloat));
+  //Почистить буфер
+  SetQuadCount(0);
 end;
 
 
@@ -138,6 +186,46 @@ end;
 procedure TsgeGraphicOpenGLBuffer.Detach;
 begin
   glBindBuffer(GL_ARRAY_BUFFER, 0);
+end;
+
+
+function TsgeGraphicOpenGLBuffer.GetCoordCount: Integer;
+begin
+  Result := FQuadCount * 6; //В каждом прямоугольнике 6 вершин
+end;
+
+
+procedure TsgeGraphicOpenGLBuffer.UpdateOpenGLData;
+begin
+  //Выбрать буфер для работы
+  Attach;
+
+  //Залить данные
+  glBufferData(GL_ARRAY_BUFFER, QuadCount * QUAD_SIZE, FBuffer, GetGLUsage);
+
+  //Отвязать буфер
+  Detach;
+end;
+
+
+procedure TsgeGraphicOpenGLBuffer.UpdateOpenGLQuad(Index: Integer);
+var
+  Offset, Size: Integer;
+begin
+  if (Index < 0) or (Index > FQuadCount - 1) then
+    raise EsgeException.Create(_UNITNAME, Err_IndexOutOfBounds, sgeIntToStr(Index));
+
+  //Выбрать буфер для работы
+  Attach;
+
+  //Смещение в байтах от начала данных
+  Offset := Index * QUAD_SIZE;
+
+  //Залить часть данных
+  glBufferSubData(GL_ARRAY_BUFFER, Offset, QUAD_SIZE, Pointer(FBuffer + Offset));
+
+  //Отвязать буфер
+  Detach;
 end;
 
 

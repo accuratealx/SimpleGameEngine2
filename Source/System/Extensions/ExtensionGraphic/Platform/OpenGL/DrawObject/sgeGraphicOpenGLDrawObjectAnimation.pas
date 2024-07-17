@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGraphicOpenGLDrawObjectAnimation.pas
-Версия            1.2
+Версия            1.3
 Создан            29.01.2023
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          OpenGL: Элемент отрисовки: Анимация
@@ -44,7 +44,7 @@ implementation
 
 uses
   sgeGraphicOpenGLUtils,
-  sgeGraphicOpenGLShaderProgramTable, sgeGraphicOpenGLSpriteTable, sgeGraphicOpenGLCoordBuffer;
+  sgeGraphicOpenGLShaderProgramTable, sgeGraphicOpenGLSpriteTable;
 
 
 constructor TsgeGraphicOpenGLDrawObjectAnimation.Create(Element: TsgeDisplayElement);
@@ -96,7 +96,6 @@ end;
 
 procedure TsgeGraphicOpenGLDrawObjectAnimation.Update(AElement: TsgeDisplayElement);
 var
-  Buff: TsgeGraphicOpenGLCoordBuffer;
   Element: TsgeDisplayElementAnimation absolute AElement;
   Rect: TsgeFloatRect;
   i: Integer;
@@ -129,7 +128,7 @@ begin
   begin
     FData.Frames := Element.Data.Frames;
 
-    Buff := TsgeGraphicOpenGLCoordBuffer.Create;
+    FTextureBuffer.QuadCount := FData.Frames.Count;
     for i := 0 to FData.Frames.Count - 1 do
     begin
       Rect := sgeGetTextureTileRect(
@@ -143,21 +142,26 @@ begin
       if FData.Reflect <> [] then
         Rect := sgeGetReflectRect(Rect, FData.Reflect);
 
-      Buff.AddQuad(Rect);
+      //Подготовить буфер
+      FTextureBuffer.Quad[i] := Rect;
     end;
-    FTextureBuffer.SetData(Buff);
-    Buff.Free;
+
+    //Залить данные в OpenGL
+    FTextureBuffer.UpdateOpenGLData;
   end;
 
   //Размеры
   if deacsSize in Element.ChangeSet then
   begin
     FData.Size := Element.Data.Size;
-    Buff := TsgeGraphicOpenGLCoordBuffer.Create;
+
+    //Подготовить буферы
+    FVertexBuffer.QuadCount := FData.Frames.Count;
     for i := 0 to FData.Frames.Count - 1 do
-      Buff.AddQuad(0, 0, FData.Size.X, FData.Size.Y);
-    FVertexBuffer.SetData(Buff);
-    Buff.Free;
+      FVertexBuffer.Quad[i] := sgeGetFloatRect(0, 0, FData.Size.X, FData.Size.Y);
+
+    //Залить данные в OpenGL
+    FVertexBuffer.UpdateOpenGLData;
   end;
 
   //Масштаб

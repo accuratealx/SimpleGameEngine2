@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGraphicOpenGLDrawObjectItemSpriteTile.pas
-Версия            1.2
+Версия            1.3
 Создан            15.03.2023
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          OpenGL: Элемент отрисовки: Плитка спрайта
@@ -43,8 +43,7 @@ type
 implementation
 
 uses
-  sgeGraphicOpenGLUtils, sgeGraphicOpenGLShaderProgramTable, sgeGraphicOpenGLSpriteTable,
-  sgeGraphicOpenGLCoordBuffer;
+  sgeGraphicOpenGLUtils, sgeGraphicOpenGLShaderProgramTable, sgeGraphicOpenGLSpriteTable;
 
 
 constructor TsgeGraphicOpenGLDrawObjectSpriteTile.Create(Element: TsgeDisplayElement);
@@ -55,10 +54,10 @@ begin
   FShaderProgram := OpenGLShaderProgramTable.Get(SHADER_NAME);
 
   //Создать вершинный буфер
-  FVertexBuffer := TsgeGraphicOpenGLBuffer.Create;
+  FVertexBuffer := TsgeGraphicOpenGLBuffer.Create(1);
 
   //Подготовить буфер с текстурными координатами
-  FTextureBuffer := TsgeGraphicOpenGLBuffer.Create;
+  FTextureBuffer := TsgeGraphicOpenGLBuffer.Create(1);
 
   //Создать VAO
   FVAO := TsgeGraphicOpenGLVertexArrayObject.Create;
@@ -96,7 +95,6 @@ end;
 
 procedure TsgeGraphicOpenGLDrawObjectSpriteTile.Update(AElement: TsgeDisplayElement);
 var
-  Buff: TsgeGraphicOpenGLCoordBuffer;
   Element: TsgeDisplayElementSpriteTile absolute AElement;
   Rect: TsgeFloatRect;
 begin
@@ -113,10 +111,11 @@ begin
   begin
     FData.Size := Element.Data.Size;
 
-    Buff := TsgeGraphicOpenGLCoordBuffer.Create;
-    Buff.AddQuad(0, 0, FData.Size.X, FData.Size.Y);
-    FVertexBuffer.SetData(Buff);
-    Buff.Free;
+    //Заполнить буфер
+    FVertexBuffer.Quad[0] := sgeGetFloatRect(0, 0, FData.Size.X, FData.Size.Y);
+
+    //Залить данные в OpenGL
+    FVertexBuffer.UpdateOpenGLData;
   end;
 
   //Масштаб
@@ -156,16 +155,17 @@ begin
     FData.Column := Element.Data.Column;
     FData.Row := Element.Data.Row;
 
-    Buff := TsgeGraphicOpenGLCoordBuffer.Create;
     Rect := sgeGetTextureTileRect(FGLSprite.GLTileWidth, FGLSprite.GLTileHeight, FData.Column, FData.Row);
 
     //Проверить на отражение
     if FData.Reflect <> [] then
       Rect := sgeGetReflectRect(Rect, FData.Reflect);
 
-    Buff.AddQuad(Rect);
-    FTextureBuffer.SetData(Buff);
-    Buff.Free;
+    //Заполнить буфер
+    FTextureBuffer.Quad[0] := Rect;
+
+    //Залить данные в OpenGL
+    FTextureBuffer.UpdateOpenGLData;
   end;
 end;
 

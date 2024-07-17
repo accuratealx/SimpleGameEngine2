@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGraphicOpenGLDrawObjectFade.pas
-Версия            1.0
+Версия            1.1
 Создан            27.01.2023
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          OpenGL: Элемент отрисовки: Затемнение экрана
@@ -39,20 +39,18 @@ type
 implementation
 
 uses
-  sgeGraphicOpenGLTypes, sgeGraphicOpenGLShaderProgramTable, sgeGraphicOpenGLCoordBuffer;
+  sgeGraphicOpenGLTypes, sgeGraphicOpenGLShaderProgramTable;
 
 
 constructor TsgeGraphicOpenGLDrawObjectFade.Create;
 const
   SHADER_NAME = 'Fade';
-var
-  Buff: TsgeGraphicOpenGLCoordBuffer;
 begin
   //Найти шейдерную программу в таблице
   FShaderProgram := OpenGLShaderProgramTable.Get(SHADER_NAME);
 
   //Создать вершинный буфер
-  FVertexBuffer := TsgeGraphicOpenGLBuffer.Create;
+  FVertexBuffer := TsgeGraphicOpenGLBuffer.Create(1);
 
   //Создать VAO
   FVAO := TsgeGraphicOpenGLVertexArrayObject.Create;
@@ -63,10 +61,7 @@ begin
   FVAO.BindVertexCoord(FVertexBuffer);
 
   //Заполнить вершины
-  Buff := TsgeGraphicOpenGLCoordBuffer.Create;
-  Buff.AddQuad(1, -1, -1, 1);
-  FVertexBuffer.SetData(Buff);
-  Buff.Free;
+  FVertexBuffer.Quad[0] := sgeGetFloatRect(1, -1, -1, 1);
 
   //Создать список затемнений
   FFadeList := TsgeGraphicOpenGLDrawObjectFadeItemList.Create(True);
