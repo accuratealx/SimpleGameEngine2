@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGraphicOpenGLDrawObjectRect.pas
-Версия            1.3
+Версия            1.4
 Создан            28.01.2023
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          OpenGL: Элемент отрисовки: Цветной прямоугольник
@@ -23,7 +23,7 @@ uses
 type
   TsgeGraphicOpenGLDrawObjectRect = class(TsgeGraphicOpenGLDrawObject)
   private
-    FData: TsgeDisplayElementRectData;
+    FData: TsgeDisplayElementRect.TData;
     FVAO: TsgeGraphicOpenGLVertexArrayObject;
     FShaderProgram: TsgeGraphicOpenGLShaderProgram;
     FVertexBuffer: TsgeGraphicOpenGLBuffer;
@@ -81,11 +81,11 @@ var
   Element: TsgeDisplayElementRect absolute AElement;
 begin
   //Положение
-  if dercsPosition in Element.ChangeSet then
+  if csPosition in Element.ChangeSet then
     FData.Position := Element.Data.Position;
 
   //Размеры
-  if dercsSize in Element.ChangeSet then
+  if csSize in Element.ChangeSet then
   begin
     FData.Size := Element.Data.Size;
 
@@ -97,19 +97,19 @@ begin
   end;
 
   //Масштаб
-  if dercsScale in Element.ChangeSet then
+  if csScale in Element.ChangeSet then
     FData.Scale := Element.Data.Scale;
 
   //Точка поворота
-  if dercsOrigin in Element.ChangeSet then
+  if csOrigin in Element.ChangeSet then
     FData.Origin := Element.Data.Origin;
 
   //Угол
-  if dercsAngle in Element.ChangeSet then
+  if csAngle in Element.ChangeSet then
     FData.Angle := Element.Data.Angle;
 
   //Цвет
-  if dercsColor in Element.ChangeSet then
+  if csColor in Element.ChangeSet then
     FData.Color := Element.Data.Color;
 end;
 

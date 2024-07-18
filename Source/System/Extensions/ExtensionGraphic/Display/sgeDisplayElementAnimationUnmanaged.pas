@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeDisplayElementAnimationUnmanaged.pas
-Версия            1.1
+Версия            1.2
 Создан            15.07.2023
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Элемент рисования: Неуправляемая анимация
@@ -20,38 +20,41 @@ uses
   sgeDisplayElement;
 
 type
-  //Набор измененных параметров
-  TsgeDisplayElementAnimationUnmanagedChangeSet = set of (
-    deaucsPosition,    //Положение на экране
-    deaucsSize,        //Размеры элемента
-    deaucsScale,       //Масштаб
-    deaucsOrigin,      //Точка поворота
-    deaucsAngle,       //Угол в радианах
-    deaucsColor,       //Цвет
-    deaucsSprite,      //Спрайт
-    deaucsReflect,     //Отражение
-    deaucsFrames       //Кадры анимации
-  );
-
-
-  //Настройки отображения
-  TsgeDisplayElementAnimationUnmanagedData = record
-    Position: TsgeFloatPoint;       //Положение на экране
-    Size: TsgeFloatPoint;           //Размеры элемента
-    Scale: TsgeFloatPoint;          //Масштаб
-    Origin: TsgeFloatPoint;         //Точка поворота
-    Angle: Single;                  //Угол в радианах
-    Color: TsgeColor;               //Цвет
-    Sprite: TsgeSprite;             //Спрайт
-    Reflect: TsgeReflectSet;        //Отражение
-    Frames: TsgeAnimationFrameList; //Список кадров анимации
-  end;
-
-
   TsgeDisplayElementAnimationUnmanaged = class(TsgeDisplayElement)
+  public
+    type
+      //Типы измененных параметров
+      TChange = (
+        csPosition, //Положение на экране
+        csSize,     //Размеры элемента
+        csScale,    //Масштаб
+        csOrigin,   //Точка поворота
+        csAngle,    //Угол в радианах
+        csColor,    //Цвет
+        csSprite,   //Спрайт
+        csReflect,  //Отражение
+        csFrames    //Кадры анимации
+      );
+
+      //Набор измененных параметров
+      TChangeSet = set of TChange;
+
+      //Настройки отображения
+      TData = record
+        Position: TsgeFloatPoint;       //Положение на экране
+        Size: TsgeFloatPoint;           //Размеры элемента
+        Scale: TsgeFloatPoint;          //Масштаб
+        Origin: TsgeFloatPoint;         //Точка поворота
+        Angle: Single;                  //Угол в радианах
+        Color: TsgeColor;               //Цвет
+        Sprite: TsgeSprite;             //Спрайт
+        Reflect: TsgeReflectSet;        //Отражение
+        Frames: TsgeAnimationFrameList; //Список кадров анимации
+      end;
+
   private
-    FData: TsgeDisplayElementAnimationUnmanagedData;
-    FChangeSet: TsgeDisplayElementAnimationUnmanagedChangeSet;
+    FData: TData;
+    FChangeSet: TChangeSet;
 
     procedure SetPosition(APosition: TsgeFloatPoint);
     procedure SetPositionX(APositionX: Single);
@@ -87,8 +90,8 @@ type
 
     function GetCopy: TsgeDisplayElement; override;
 
-    property Data: TsgeDisplayElementAnimationUnmanagedData read FData;
-    property ChangeSet: TsgeDisplayElementAnimationUnmanagedChangeSet read FChangeSet;
+    property Data: TData read FData;
+    property ChangeSet: TChangeSet read FChangeSet;
 
     property Position: TsgeFloatPoint read FData.Position write SetPosition;
     property PositionX: Single read FData.Position.X write SetPositionX;
@@ -141,35 +144,35 @@ end;
 procedure TsgeDisplayElementAnimationUnmanaged.SetPosition(APosition: TsgeFloatPoint);
 begin
   FData.Position := APosition;
-  Include(FChangeSet, deaucsPosition);
+  Include(FChangeSet, csPosition);
 end;
 
 
 procedure TsgeDisplayElementAnimationUnmanaged.SetPositionX(APositionX: Single);
 begin
   FData.Position.X := APositionX;
-  Include(FChangeSet, deaucsPosition);
+  Include(FChangeSet, csPosition);
 end;
 
 
 procedure TsgeDisplayElementAnimationUnmanaged.SetPositionY(APositionY: Single);
 begin
   FData.Position.Y := APositionY;
-  Include(FChangeSet, deaucsPosition);
+  Include(FChangeSet, csPosition);
 end;
 
 
 procedure TsgeDisplayElementAnimationUnmanaged.SetWidth(AWidth: Single);
 begin
   FData.Size.X := AWidth;
-  Include(FChangeSet, deaucsSize);
+  Include(FChangeSet, csSize);
 end;
 
 
 procedure TsgeDisplayElementAnimationUnmanaged.SetHeight(AHeight: Single);
 begin
   FData.Size.Y := AHeight;
-  Include(FChangeSet, deaucsSize);
+  Include(FChangeSet, csSize);
 end;
 
 
@@ -177,56 +180,56 @@ procedure TsgeDisplayElementAnimationUnmanaged.SetScale(AScale: Single);
 begin
   FData.Scale.X := AScale;
   FData.Scale.Y := AScale;
-  Include(FChangeSet, deaucsScale);
+  Include(FChangeSet, csScale);
 end;
 
 
 procedure TsgeDisplayElementAnimationUnmanaged.SetScaleX(AScaleX: Single);
 begin
   FData.Scale.X := AScaleX;
-  Include(FChangeSet, deaucsScale);
+  Include(FChangeSet, csScale);
 end;
 
 
 procedure TsgeDisplayElementAnimationUnmanaged.SetScaleY(AScaleY: Single);
 begin
   FData.Scale.Y := AScaleY;
-  Include(FChangeSet, deaucsScale);
+  Include(FChangeSet, csScale);
 end;
 
 
 procedure TsgeDisplayElementAnimationUnmanaged.SetOrigin(AOrigin: TsgeFloatPoint);
 begin
   FData.Origin := AOrigin;
-  Include(FChangeSet, deaucsOrigin);
+  Include(FChangeSet, csOrigin);
 end;
 
 
 procedure TsgeDisplayElementAnimationUnmanaged.SetOriginX(AOriginX: Single);
 begin
   FData.Origin.X := AOriginX;
-  Include(FChangeSet, deaucsOrigin);
+  Include(FChangeSet, csOrigin);
 end;
 
 
 procedure TsgeDisplayElementAnimationUnmanaged.SetOriginY(AOriginY: Single);
 begin
   FData.Origin.Y := AOriginY;
-  Include(FChangeSet, deaucsOrigin);
+  Include(FChangeSet, csOrigin);
 end;
 
 
 procedure TsgeDisplayElementAnimationUnmanaged.SetAngle(AAngle: Single);
 begin
   FData.Angle := AAngle;
-  Include(FChangeSet, deaucsAngle);
+  Include(FChangeSet, csAngle);
 end;
 
 
 procedure TsgeDisplayElementAnimationUnmanaged.SetAngleDegree(AAngle: Single);
 begin
   FData.Angle := sgeDegToRad(AAngle);
-  Include(FChangeSet, deaucsAngle);
+  Include(FChangeSet, csAngle);
 end;
 
 
@@ -243,7 +246,7 @@ begin
   sgeFitToRange(AColor.Blue);
   sgeFitToRange(AColor.Alpha);
   FData.Color := AColor;
-  Include(FChangeSet, deaucsColor);
+  Include(FChangeSet, csColor);
 end;
 
 
@@ -251,7 +254,7 @@ procedure TsgeDisplayElementAnimationUnmanaged.SetColorRed(ARed: Single);
 begin
   sgeFitToRange(ARed);
   FData.Color.Red := ARed;
-  Include(FChangeSet, deaucsColor);
+  Include(FChangeSet, csColor);
 end;
 
 
@@ -259,7 +262,7 @@ procedure TsgeDisplayElementAnimationUnmanaged.SetColorGreen(AGreen: Single);
 begin
   sgeFitToRange(AGreen);
   FData.Color.Green := AGreen;
-  Include(FChangeSet, deaucsColor);
+  Include(FChangeSet, csColor);
 end;
 
 
@@ -267,7 +270,7 @@ procedure TsgeDisplayElementAnimationUnmanaged.SetColorBlue(ABlue: Single);
 begin
   sgeFitToRange(ABlue);
   FData.Color.Blue := ABlue;
-  Include(FChangeSet, deaucsColor);
+  Include(FChangeSet, csColor);
 end;
 
 
@@ -275,7 +278,7 @@ procedure TsgeDisplayElementAnimationUnmanaged.SetColorAlpha(AAlpha: Single);
 begin
   sgeFitToRange(AAlpha);
   FData.Color.Alpha := AAlpha;
-  Include(FChangeSet, deaucsColor);
+  Include(FChangeSet, csColor);
 end;
 
 
@@ -286,7 +289,7 @@ begin
     raise EsgeException.Create(_UNITNAME, Err_EmptySprite);
 
   FData.Sprite := ASprite;
-  Include(FChangeSet, deaucsSprite);
+  Include(FChangeSet, csSprite);
 end;
 
 
@@ -296,7 +299,7 @@ begin
     Exit;
 
   FData.Reflect := AReflect;
-  Include(FChangeSet, deaucsReflect);
+  Include(FChangeSet, csReflect);
 end;
 
 
@@ -308,16 +311,17 @@ begin
 
   //Сохранить указатель на кадры
   FData.Frames := AFrameList;
-  Include(FChangeSet, deaucsFrames);
+  Include(FChangeSet, csFrames);
 end;
 
 
 procedure TsgeDisplayElementAnimationUnmanaged.FillData(X, Y, Width, Height: Single);
-const
-  SetAll = [deaucsPosition, deaucsSize, deaucsScale, deaucsOrigin, deaucsAngle, deaucsColor,
-    deaucsSprite, deaucsReflect, deaucsFrames];
+var
+  i: TChange;
 begin
-  FChangeSet := SetAll;
+  //Заполнить набор изменений
+  for i := Low(TChange) to High(TChange) do
+    Include(FChangeSet, i);
 
   //Записать параметры
   FData.Position := sgeGetFloatPoint(X, Y);

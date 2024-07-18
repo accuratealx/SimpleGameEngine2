@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeDisplayElementRect.pas
-Версия            1.2
+Версия            1.3
 Создан            27.01.2023
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Элемент отображения: Цветной прямоугольник
@@ -19,33 +19,35 @@ uses
   sgeDisplayElement;
 
 type
-  //Набор измененных параметров
-  TsgeDisplayElementRectChangeSet = set of (
-    dercsPosition,  //Положение на экране
-    dercsSize,      //Размеры элемента
-    dercsScale,     //Масштаб
-    dercsOrigin,    //Точка поворота
-    dercsAngle,     //Угол в радианах
-    dercsColor      //Цвет
-  );
-
-
-  //Настройки отображения
-  TsgeDisplayElementRectData = record
-    Position: TsgeFloatPoint; //Положение на экране
-    Size: TsgeFloatPoint;     //Размеры элемента
-    Scale: TsgeFloatPoint;    //Масштаб
-    Origin: TsgeFloatPoint;   //Точка поворота
-    Angle: Single;            //Угол в радианах
-    Color: TsgeColor;         //Цвет
-  end;
-
-
   //Элемент отображения
   TsgeDisplayElementRect = class(TsgeDisplayElement)
+  public
+    type
+      TChange =  (
+        csPosition, //Положение на экране
+        csSize,     //Размеры элемента
+        csScale,    //Масштаб
+        csOrigin,   //Точка поворота
+        csAngle,    //Угол в радианах
+        csColor     //Цвет
+      );
+
+      //Набор измененных параметров
+      TChangeSet = set of TChange;
+
+      //Настройки отображения
+      TData = record
+        Position: TsgeFloatPoint; //Положение на экране
+        Size: TsgeFloatPoint;     //Размеры элемента
+        Scale: TsgeFloatPoint;    //Масштаб
+        Origin: TsgeFloatPoint;   //Точка поворота
+        Angle: Single;            //Угол в радианах
+        Color: TsgeColor;         //Цвет
+      end;
+
   private
-    FData: TsgeDisplayElementRectData;
-    FChangeSet: TsgeDisplayElementRectChangeSet;
+    FData: TData;
+    FChangeSet: TChangeSet;
 
     procedure SetPosition(APosition: TsgeFloatPoint);
     procedure SetPositionX(APositionX: Single);
@@ -76,8 +78,8 @@ type
 
     function GetCopy: TsgeDisplayElement; override;
 
-    property Data: TsgeDisplayElementRectData read FData;
-    property ChangeSet: TsgeDisplayElementRectChangeSet read FChangeSet;
+    property Data: TData read FData;
+    property ChangeSet: TChangeSet read FChangeSet;
 
     property Position: TsgeFloatPoint read FData.Position write SetPosition;
     property PositionX: Single read FData.Position.X write SetPositionX;
@@ -109,34 +111,34 @@ uses
 procedure TsgeDisplayElementRect.SetPosition(APosition: TsgeFloatPoint);
 begin
   FData.Position := APosition;
-  Include(FChangeSet, dercsPosition);
+  Include(FChangeSet, csPosition);
 end;
 
 procedure TsgeDisplayElementRect.SetPositionX(APositionX: Single);
 begin
   FData.Position.X := APositionX;
-  Include(FChangeSet, dercsPosition);
+  Include(FChangeSet, csPosition);
 end;
 
 
 procedure TsgeDisplayElementRect.SetPositionY(APositionY: Single);
 begin
   FData.Position.Y := APositionY;
-  Include(FChangeSet, dercsPosition);
+  Include(FChangeSet, csPosition);
 end;
 
 
 procedure TsgeDisplayElementRect.SetWidth(AWidth: Single);
 begin
   FData.Size.X := AWidth;
-  Include(FChangeSet, dercsSize);
+  Include(FChangeSet, csSize);
 end;
 
 
 procedure TsgeDisplayElementRect.SetHeight(AHeight: Single);
 begin
   FData.Size.Y := AHeight;
-  Include(FChangeSet, dercsSize);
+  Include(FChangeSet, csSize);
 end;
 
 
@@ -144,56 +146,56 @@ procedure TsgeDisplayElementRect.SetScale(AScale: Single);
 begin
   FData.Scale.X := AScale;
   FData.Scale.Y := AScale;
-  Include(FChangeSet, dercsScale);
+  Include(FChangeSet, csScale);
 end;
 
 
 procedure TsgeDisplayElementRect.SetScaleX(AScaleX: Single);
 begin
   FData.Scale.X := AScaleX;
-  Include(FChangeSet, dercsScale);
+  Include(FChangeSet, csScale);
 end;
 
 
 procedure TsgeDisplayElementRect.SetScaleY(AScaleY: Single);
 begin
   FData.Scale.Y := AScaleY;
-  Include(FChangeSet, dercsScale);
+  Include(FChangeSet, csScale);
 end;
 
 
 procedure TsgeDisplayElementRect.SetOrigin(AOrigin: TsgeFloatPoint);
 begin
   FData.Origin := AOrigin;
-  Include(FChangeSet, dercsOrigin);
+  Include(FChangeSet, csOrigin);
 end;
 
 
 procedure TsgeDisplayElementRect.SetOriginX(AOriginX: Single);
 begin
   FData.Origin.X := AOriginX;
-  Include(FChangeSet, dercsOrigin);
+  Include(FChangeSet, csOrigin);
 end;
 
 
 procedure TsgeDisplayElementRect.SetOriginY(AOriginY: Single);
 begin
   FData.Origin.Y := AOriginY;
-  Include(FChangeSet, dercsOrigin);
+  Include(FChangeSet, csOrigin);
 end;
 
 
 procedure TsgeDisplayElementRect.SetAngle(AAngle: Single);
 begin
   FData.Angle := AAngle;
-  Include(FChangeSet, dercsAngle);
+  Include(FChangeSet, csAngle);
 end;
 
 
 procedure TsgeDisplayElementRect.SetAngleDegree(AAngle: Single);
 begin
   FData.Angle := sgeDegToRad(AAngle);
-  Include(FChangeSet, dercsAngle);
+  Include(FChangeSet, csAngle);
 end;
 
 
@@ -210,7 +212,7 @@ begin
   sgeFitToRange(AColor.Blue);
   sgeFitToRange(AColor.Alpha);
   FData.Color := AColor;
-  Include(FChangeSet, dercsColor);
+  Include(FChangeSet, csColor);
 end;
 
 
@@ -218,7 +220,7 @@ procedure TsgeDisplayElementRect.SetColorRed(ARed: Single);
 begin
   sgeFitToRange(ARed);
   FData.Color.Red := ARed;
-  Include(FChangeSet, dercsColor);
+  Include(FChangeSet, csColor);
 end;
 
 
@@ -226,7 +228,7 @@ procedure TsgeDisplayElementRect.SetColorGreen(AGreen: Single);
 begin
   sgeFitToRange(AGreen);
   FData.Color.Green := AGreen;
-  Include(FChangeSet, dercsColor);
+  Include(FChangeSet, csColor);
 end;
 
 
@@ -234,7 +236,7 @@ procedure TsgeDisplayElementRect.SetColorBlue(ABlue: Single);
 begin
   sgeFitToRange(ABlue);
   FData.Color.Blue := ABlue;
-  Include(FChangeSet, dercsColor);
+  Include(FChangeSet, csColor);
 end;
 
 
@@ -242,7 +244,7 @@ procedure TsgeDisplayElementRect.SetColorAlpha(AAlpha: Single);
 begin
   sgeFitToRange(AAlpha);
   FData.Color.Alpha := AAlpha;
-  Include(FChangeSet, dercsColor);
+  Include(FChangeSet, csColor);
 end;
 
 
@@ -265,12 +267,14 @@ end;
 
 
 constructor TsgeDisplayElementRect.Create(X1, Y1, X2, Y2: Single; Color: TsgeColor);
-const
-  SetAll = [dercsPosition, dercsSize, dercsScale, dercsOrigin, dercsAngle, dercsColor];
+var
+  i: TChange;
 begin
   inherited Create;
 
-  FChangeSet := SetAll;
+  //Заполнить набор изменений
+  for i := Low(TChange) to High(TChange) do
+    Include(FChangeSet, i);
 
   //Записать параметры
   FData.Position := sgeGetFloatPoint(X1, Y1);

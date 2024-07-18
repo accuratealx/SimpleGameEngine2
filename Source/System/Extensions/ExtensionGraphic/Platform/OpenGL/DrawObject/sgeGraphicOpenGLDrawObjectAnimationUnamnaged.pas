@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGraphicOpenGLDrawObjectAnimationUnamnaged.pas
-Версия            1.1
+Версия            1.2
 Создан            15.07.2023
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          OpenGL: Элемент отрисовки: Неуправляемая анимация
@@ -24,7 +24,7 @@ uses
 type
   TsgeGraphicOpenGLDrawObjectAnimationUnamnaged = class(TsgeGraphicOpenGLDrawObject)
   private
-    FData: TsgeDisplayElementAnimationUnmanagedData;
+    FData: TsgeDisplayElementAnimationUnmanaged.TData;
     FVAO: TsgeGraphicOpenGLVertexArrayObject;
     FShaderProgram: TsgeGraphicOpenGLShaderProgram;
     FVertexBuffer: TsgeGraphicOpenGLBuffer;
@@ -108,15 +108,15 @@ var
   i: Integer;
 begin
   //Положение
-  if deaucsPosition in Element.ChangeSet then
+  if csPosition in Element.ChangeSet then
     FData.Position := Element.Data.Position;
 
   //Отражение
-  if deaucsReflect in Element.ChangeSet then
+  if csReflect in Element.ChangeSet then
     FData.Reflect := Element.Data.Reflect;
 
   //Спрайт
-  if deaucsSprite in Element.ChangeSet then
+  if csSprite in Element.ChangeSet then
   begin
     if FData.Sprite <> Element.Data.Sprite then
     begin
@@ -131,7 +131,7 @@ begin
   end;
 
   //Кадры анимации
-  if (deaucsFrames in Element.ChangeSet) or (deaucsReflect in Element.ChangeSet) then
+  if (csFrames in Element.ChangeSet) or (csReflect in Element.ChangeSet) then
   begin
     FData.Frames := Element.Data.Frames;
 
@@ -162,7 +162,7 @@ begin
   end;
 
   //Размеры
-  if deaucsSize in Element.ChangeSet then
+  if csSize in Element.ChangeSet then
   begin
     FData.Size := Element.Data.Size;
 
@@ -176,19 +176,19 @@ begin
   end;
 
   //Масштаб
-  if deaucsScale in Element.ChangeSet then
+  if csScale in Element.ChangeSet then
     FData.Scale := Element.Data.Scale;
 
   //Точка поворота
-  if deaucsOrigin in Element.ChangeSet then
+  if csOrigin in Element.ChangeSet then
     FData.Origin := Element.Data.Origin;
 
   //Угол
-  if deaucsAngle in Element.ChangeSet then
+  if csAngle in Element.ChangeSet then
     FData.Angle := Element.Data.Angle;
 
   //Цвет
-  if deaucsColor in Element.ChangeSet then
+  if csColor in Element.ChangeSet then
     FData.Color := Element.Data.Color;
 end;
 

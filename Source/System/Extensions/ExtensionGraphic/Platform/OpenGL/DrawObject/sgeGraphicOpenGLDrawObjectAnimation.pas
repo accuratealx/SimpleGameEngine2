@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGraphicOpenGLDrawObjectAnimation.pas
-Версия            1.3
+Версия            1.4
 Создан            29.01.2023
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          OpenGL: Элемент отрисовки: Анимация
@@ -24,7 +24,7 @@ uses
 type
   TsgeGraphicOpenGLDrawObjectAnimation = class(TsgeGraphicOpenGLDrawObject)
   private
-    FData: TsgeDisplayElementAnimationData;
+    FData: TsgeDisplayElementAnimation.TData;
     FVAO: TsgeGraphicOpenGLVertexArrayObject;
     FShaderProgram: TsgeGraphicOpenGLShaderProgram;
     FVertexBuffer: TsgeGraphicOpenGLBuffer;
@@ -101,15 +101,15 @@ var
   i: Integer;
 begin
   //Положение
-  if deacsPosition in Element.ChangeSet then
+  if csPosition in Element.ChangeSet then
     FData.Position := Element.Data.Position;
 
   //Отражение
-  if deacsReflect in Element.ChangeSet then
+  if csReflect in Element.ChangeSet then
     FData.Reflect := Element.Data.Reflect;
 
   //Спрайт
-  if deacsSprite in Element.ChangeSet then
+  if csSprite in Element.ChangeSet then
   begin
     if FData.Sprite <> Element.Data.Sprite then
     begin
@@ -124,7 +124,7 @@ begin
   end;
 
   //Кадры анимации
-  if (deacsFrames in Element.ChangeSet) or (deacsReflect in Element.ChangeSet) then
+  if (csFrames in Element.ChangeSet) or (csReflect in Element.ChangeSet) then
   begin
     FData.Frames := Element.Data.Frames;
 
@@ -151,7 +151,7 @@ begin
   end;
 
   //Размеры
-  if deacsSize in Element.ChangeSet then
+  if csSize in Element.ChangeSet then
   begin
     FData.Size := Element.Data.Size;
 
@@ -165,23 +165,23 @@ begin
   end;
 
   //Масштаб
-  if deacsScale in Element.ChangeSet then
+  if csScale in Element.ChangeSet then
     FData.Scale := Element.Data.Scale;
 
   //Точка поворота
-  if deacsOrigin in Element.ChangeSet then
+  if csOrigin in Element.ChangeSet then
     FData.Origin := Element.Data.Origin;
 
   //Угол
-  if deacsAngle in Element.ChangeSet then
+  if csAngle in Element.ChangeSet then
     FData.Angle := Element.Data.Angle;
 
   //Цвет
-  if deacsColor in Element.ChangeSet then
+  if csColor in Element.ChangeSet then
     FData.Color := Element.Data.Color;
 
   //Номер кадра
-  if deacsFrameIndex in Element.ChangeSet then
+  if csFrameIndex in Element.ChangeSet then
     FData.FrameIndex := Element.Data.FrameIndex;
 end;
 

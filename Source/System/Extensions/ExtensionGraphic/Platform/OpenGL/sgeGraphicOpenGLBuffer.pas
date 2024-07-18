@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGraphicOpenGLBuffer.pas
-Версия            1.0
+Версия            1.1
 Создан            22.01.2023
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          OpenGL: Набор данных для координат прямоугольников
@@ -37,7 +37,6 @@ type
     FQuadCount: Integer;              //Количество прямоугольников
     FHandle: GLUint;                  //Хэндл буфера в OpenGL
     FUsage: TsgeGraphicOpenGLBufferUsage; //Тип используемой памяти OpenGL
-
 
     procedure SetQuadCount(Count: Integer);
     function  GetQuad(Index: Integer): TsgeFloatRect;

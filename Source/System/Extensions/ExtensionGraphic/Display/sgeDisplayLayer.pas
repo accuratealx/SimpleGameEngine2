@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeDisplayLayer.pas
-Версия            1.0
+Версия            1.1
 Создан            07.07.2023
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Слой для элементов отображения
@@ -18,33 +18,36 @@ uses
   sgeTypes, sgeEventManager;
 
 type
-  //Набор измененных параметров
-  TsgeDisplayLayerChangeSet = set of (
-    dlcsName,     //Имя слоя
-    dlcsIndex,    //Приоритет вывода
-    dlcsVisible,  //Видимость
-    dlcsOffset,   //Смещение от левого-верхнего угла экрана
-    dlcsScale     //Масштаб
-  );
-
-
-  //Настройки отображения
-  TsgeDisplayLayerData = record
-    Name: String;           //Имя слоя
-    Index: Word;            //Приоритет вывода (Чем меньше число, там раньше вывод)
-    Visible: Boolean;       //Видимость
-    Offset: TsgeFloatPoint; //Смещение относительно левого-верхнего угла экрана
-    Scale: TsgeFloatPoint;  //Масштаб
-  end;
-
-
   TsgeDisplayLayer = class
+  public
+    type
+      //Типы измененных параметров
+      TChange = (
+        csName,     //Имя слоя
+        csIndex,    //Приоритет вывода
+        csVisible,  //Видимость
+        csOffset,   //Смещение от левого-верхнего угла экрана
+        csScale     //Масштаб
+      );
+
+      //Набор измененных параметров
+      TChangeSet = set of TChange;
+
+      //Настройки отображения
+      TData = record
+        Name: String;           //Имя слоя
+        Index: Word;            //Приоритет вывода (Чем меньше число, там раньше вывод)
+        Visible: Boolean;       //Видимость
+        Offset: TsgeFloatPoint; //Смещение относительно левого-верхнего угла экрана
+        Scale: TsgeFloatPoint;  //Масштаб
+      end;
+
   private
     FEventManager: TsgeEventManager;        //Ссылка на менеджер событий
 
     FID: Integer;                           //Уникальный номер элемента
-    FData: TsgeDisplayLayerData;
-    FChangeSet: TsgeDisplayLayerChangeSet;
+    FData: TData;
+    FChangeSet: TChangeSet;
 
     procedure SetName(AName: String);
     procedure SetIndex(AIndex: Word);
@@ -68,8 +71,8 @@ type
     procedure Update;
     procedure Delete;
 
-    property Data: TsgeDisplayLayerData read FData;
-    property ChangeSet: TsgeDisplayLayerChangeSet read FChangeSet;
+    property Data: TData read FData;
+    property ChangeSet: TChangeSet read FChangeSet;
 
     property ID: Integer read FID;
     property Name: String read FData.Name write SetName;
@@ -97,7 +100,7 @@ begin
     Exit;
 
   FData.Name := AName;
-  Include(FChangeSet, dlcsName);
+  Include(FChangeSet, csName);
 end;
 
 
@@ -107,7 +110,7 @@ begin
     Exit;
 
   FData.Index := AIndex;
-  Include(FChangeSet, dlcsIndex);
+  Include(FChangeSet, csIndex);
 end;
 
 
@@ -117,49 +120,49 @@ begin
     Exit;
 
   FData.Visible := AVisible;
-  Include(FChangeSet, dlcsVisible);
+  Include(FChangeSet, csVisible);
 end;
 
 
 procedure TsgeDisplayLayer.SetOffset(AOffset: TsgeFloatPoint);
 begin
   FData.Offset := AOffset;
-  Include(FChangeSet, dlcsOffset);
+  Include(FChangeSet, csOffset);
 end;
 
 
 procedure TsgeDisplayLayer.SetOffsetX(AOffsetX: Single);
 begin
   FData.Offset.X := AOffsetX;
-  Include(FChangeSet, dlcsOffset);
+  Include(FChangeSet, csOffset);
 end;
 
 
 procedure TsgeDisplayLayer.SetOffsetY(AOffsetY: Single);
 begin
   FData.Offset.Y := AOffsetY;
-  Include(FChangeSet, dlcsOffset);
+  Include(FChangeSet, csOffset);
 end;
 
 
 procedure TsgeDisplayLayer.SetScale(AScale: TsgeFloatPoint);
 begin
   FData.Scale := AScale;
-  Include(FChangeSet, dlcsScale);
+  Include(FChangeSet, csScale);
 end;
 
 
 procedure TsgeDisplayLayer.SetScaleX(AScaleX: Single);
 begin
   FData.Scale.X := AScaleX;
-  Include(FChangeSet, dlcsScale);
+  Include(FChangeSet, csScale);
 end;
 
 
 procedure TsgeDisplayLayer.SetScaleY(AScaleY: Single);
 begin
   FData.Scale.Y := AScaleY;
-  Include(FChangeSet, dlcsScale);
+  Include(FChangeSet, csScale);
 end;
 
 
@@ -176,8 +179,12 @@ end;
 
 
 constructor TsgeDisplayLayer.Create(Name: String; Index: Word; Visible: Boolean);
+var
+  i: TChange;
 begin
-  FChangeSet := [dlcsName, dlcsIndex, dlcsVisible, dlcsOffset, dlcsScale];
+  //Заполнить набор изменений
+  for i := Low(TChange) to High(TChange) do
+    Include(FChangeSet, i);
 
   //Задать параметры
   FData.Name := Name;

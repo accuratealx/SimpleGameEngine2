@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGraphicOpenGLDrawObjectSpriteNine.pas
-Версия            1.3
+Версия            1.4
 Создан            29.01.2023
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          OpenGL: Элемент отрисовки: Спрайт 9
@@ -24,7 +24,7 @@ uses
 type
   TsgeGraphicOpenGLDrawObjectSpriteNine = class(TsgeGraphicOpenGLDrawObject)
   private
-    FData: TsgeDisplayElementSptiteNineData;
+    FData: TsgeDisplayElementSpriteNine.TData;
     FVAO: TsgeGraphicOpenGLVertexArrayObject;
     FShaderProgram: TsgeGraphicOpenGLShaderProgram;
     FVertexBuffer: TsgeGraphicOpenGLBuffer;
@@ -99,11 +99,11 @@ var
   X1, Y1, X2, Y2: Single;
 begin
   //Положение
-  if desncsPosition in Element.ChangeSet then
+  if csPosition in Element.ChangeSet then
     FData.Position := Element.Data.Position;
 
   //Спрайт
-  if desncsSprite in Element.ChangeSet then
+  if csSprite in Element.ChangeSet then
   begin
     if FData.Sprite <> Element.Data.Sprite then
     begin
@@ -118,7 +118,7 @@ begin
   end;
 
   //Координаты спрайта
-  if (desncsOffset in Element.ChangeSet) then
+  if csOffset in Element.ChangeSet then
   begin
     FData.Offset := Element.Data.Offset;
 
@@ -149,7 +149,7 @@ begin
   end;
 
   //Размеры
-  if desncsSize in Element.ChangeSet then
+  if csSize in Element.ChangeSet then
   begin
     FData.Size := Element.Data.Size;
 
@@ -175,19 +175,19 @@ begin
   end;
 
   //Масштаб
-  if desncsScale in Element.ChangeSet then
+  if csScale in Element.ChangeSet then
     FData.Scale := Element.Data.Scale;
 
   //Точка поворота
-  if desncsOrigin in Element.ChangeSet then
+  if csOrigin in Element.ChangeSet then
     FData.Origin := Element.Data.Origin;
 
   //Угол
-  if desncsAngle in Element.ChangeSet then
+  if csAngle in Element.ChangeSet then
     FData.Angle := Element.Data.Angle;
 
   //Цвет
-  if desncsColor in Element.ChangeSet then
+  if csColor in Element.ChangeSet then
     FData.Color := Element.Data.Color;
 end;
 

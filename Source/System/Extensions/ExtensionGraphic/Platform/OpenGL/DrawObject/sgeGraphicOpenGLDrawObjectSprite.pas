@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGraphicOpenGLDrawObjectSprite.pas
-Версия            1.4
+Версия            1.5
 Создан            29.01.2023
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          OpenGL: Элемент отрисовки: Спрайт
@@ -24,7 +24,7 @@ uses
 type
   TsgeGraphicOpenGLDrawObjectSprite = class(TsgeGraphicOpenGLDrawObject)
   private
-    FData: TsgeDisplayElementSptiteData;
+    FData: TsgeDisplayElementSprite.TData;
     FVAO: TsgeGraphicOpenGLVertexArrayObject;
     FShaderProgram: TsgeGraphicOpenGLShaderProgram;
     FVertexBuffer: TsgeGraphicOpenGLBuffer;
@@ -103,11 +103,11 @@ var
   Rect: TsgeFloatRect;
 begin
   //Положение
-  if descsPosition in Element.ChangeSet then
+  if csPosition in Element.ChangeSet then
     FData.Position := Element.Data.Position;
 
   //Отражение
-  if descsReflect in Element.ChangeSet then
+  if csReflect in Element.ChangeSet then
   begin
     FData.Reflect := Element.Data.Reflect;
 
@@ -123,7 +123,7 @@ begin
   end;
 
   //Размеры
-  if descsSize in Element.ChangeSet then
+  if csSize in Element.ChangeSet then
   begin
     FData.Size := Element.Data.Size;
 
@@ -135,23 +135,23 @@ begin
   end;
 
   //Масштаб
-  if descsScale in Element.ChangeSet then
+  if csScale in Element.ChangeSet then
     FData.Scale := Element.Data.Scale;
 
   //Точка поворота
-  if descsOrigin in Element.ChangeSet then
+  if csOrigin in Element.ChangeSet then
     FData.Origin := Element.Data.Origin;
 
   //Угол
-  if descsAngle in Element.ChangeSet then
+  if csAngle in Element.ChangeSet then
     FData.Angle := Element.Data.Angle;
 
   //Цвет
-  if descsColor in Element.ChangeSet then
+  if csColor in Element.ChangeSet then
     FData.Color := Element.Data.Color;
 
   //Спрайт
-  if descsSprite in Element.ChangeSet then
+  if csSprite in Element.ChangeSet then
   begin
     if FData.Sprite <> Element.Data.Sprite then
     begin

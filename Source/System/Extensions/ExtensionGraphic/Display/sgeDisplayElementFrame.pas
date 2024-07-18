@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeDisplayElementFrame.pas
-Версия            1.2
+Версия            1.3
 Создан            11.02.2023
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Элемент рисования: Цветная рамка
@@ -20,38 +20,41 @@ uses
   sgeDisplayElement;
 
 type
-  //Набор измененных параметров
-  TsgeDisplayElementFrameChangeSet = set of (
-    defcsPosition,     //Положение на экране
-    defcsSize,         //Размеры элемента
-    defcsScale,        //Масштаб
-    defcsOrigin,       //Точка поворота
-    defcsAngle,        //Угол в радианах
-    defcsColor,        //Цвет
-    defcsThickness,    //Толщина линии
-    defcsStipple,      //Тип штриховки
-    defcsStippleScale  //Масштаб штриховки
-  );
-
-
-  //Настройки отображения
-  TsgeDisplayElementFrameData = record
-    Position: TsgeFloatPoint; //Положение на экране
-    Size: TsgeFloatPoint;     //Размеры элемента
-    Scale: TsgeFloatPoint;    //Масштаб
-    Origin: TsgeFloatPoint;   //Точка поворота
-    Angle: Single;            //Угол в радианах
-    Color: TsgeColor;         //Цвет
-    Thickness: Single;        //Толщина линии
-    Stipple: TsgeLineStipple; //Штриховка
-    StippleScale: Word;       //Масштаб штриховки
-  end;
-
-
   TsgeDisplayElementFrame = class(TsgeDisplayElement)
+  public
+    type
+      //Типы измененных параметров
+      TChange = (
+        csPosition,     //Положение на экране
+        csSize,         //Размеры элемента
+        csScale,        //Масштаб
+        csOrigin,       //Точка поворота
+        csAngle,        //Угол в радианах
+        csColor,        //Цвет
+        csThickness,    //Толщина линии
+        csStipple,      //Тип штриховки
+        csStippleScale  //Масштаб штриховки
+      );
+
+      //Набор измененных параметров
+      TChangeSet = set of TChange;
+
+      //Настройки отображения
+      TData = record
+        Position: TsgeFloatPoint; //Положение на экране
+        Size: TsgeFloatPoint;     //Размеры элемента
+        Scale: TsgeFloatPoint;    //Масштаб
+        Origin: TsgeFloatPoint;   //Точка поворота
+        Angle: Single;            //Угол в радианах
+        Color: TsgeColor;         //Цвет
+        Thickness: Single;        //Толщина линии
+        Stipple: TsgeLineStipple; //Штриховка
+        StippleScale: Word;       //Масштаб штриховки
+      end;
+
   protected
-    FData: TsgeDisplayElementFrameData;
-    FChangeSet: TsgeDisplayElementFrameChangeSet;
+    FData: TData;
+    FChangeSet: TChangeSet;
 
     procedure SetPosition(APosition: TsgeFloatPoint);
     procedure SetPositionX(APositionX: Single);
@@ -85,8 +88,8 @@ type
 
     function  GetCopy: TsgeDisplayElement; override;
 
-    property Data: TsgeDisplayElementFrameData read FData;
-    property ChangeSet: TsgeDisplayElementFrameChangeSet read FChangeSet;
+    property Data: TData read FData;
+    property ChangeSet: TChangeSet read FChangeSet;
 
     property Position: TsgeFloatPoint read FData.Position write SetPosition;
     property PositionX: Single read FData.Position.X write SetPositionX;
@@ -121,35 +124,35 @@ uses
 procedure TsgeDisplayElementFrame.SetPosition(APosition: TsgeFloatPoint);
 begin
   FData.Position := APosition;
-  Include(FChangeSet, defcsPosition);
+  Include(FChangeSet, csPosition);
 end;
 
 
 procedure TsgeDisplayElementFrame.SetPositionX(APositionX: Single);
 begin
   FData.Position.X := APositionX;
-  Include(FChangeSet, defcsPosition);
+  Include(FChangeSet, csPosition);
 end;
 
 
 procedure TsgeDisplayElementFrame.SetPositionY(APositionY: Single);
 begin
   FData.Position.Y := APositionY;
-  Include(FChangeSet, defcsPosition);
+  Include(FChangeSet, csPosition);
 end;
 
 
 procedure TsgeDisplayElementFrame.SetWidth(AWidth: Single);
 begin
   FData.Size.X := AWidth;
-  Include(FChangeSet, defcsSize);
+  Include(FChangeSet, csSize);
 end;
 
 
 procedure TsgeDisplayElementFrame.SetHeight(AHeight: Single);
 begin
   FData.Size.Y := AHeight;
-  Include(FChangeSet, defcsSize);
+  Include(FChangeSet, csSize);
 end;
 
 
@@ -157,56 +160,56 @@ procedure TsgeDisplayElementFrame.SetScale(AScale: Single);
 begin
   FData.Scale.X := AScale;
   FData.Scale.Y := AScale;
-  Include(FChangeSet, defcsScale);
+  Include(FChangeSet, csScale);
 end;
 
 
 procedure TsgeDisplayElementFrame.SetScaleX(AScaleX: Single);
 begin
   FData.Scale.X := AScaleX;
-  Include(FChangeSet, defcsScale);
+  Include(FChangeSet, csScale);
 end;
 
 
 procedure TsgeDisplayElementFrame.SetScaleY(AScaleY: Single);
 begin
   FData.Scale.Y := AScaleY;
-  Include(FChangeSet, defcsScale);
+  Include(FChangeSet, csScale);
 end;
 
 
 procedure TsgeDisplayElementFrame.SetOrigin(AOrigin: TsgeFloatPoint);
 begin
   FData.Origin := AOrigin;
-  Include(FChangeSet, defcsOrigin);
+  Include(FChangeSet, csOrigin);
 end;
 
 
 procedure TsgeDisplayElementFrame.SetOriginX(AOriginX: Single);
 begin
   FData.Origin.X := AOriginX;
-  Include(FChangeSet, defcsOrigin);
+  Include(FChangeSet, csOrigin);
 end;
 
 
 procedure TsgeDisplayElementFrame.SetOriginY(AOriginY: Single);
 begin
   FData.Origin.Y := AOriginY;
-  Include(FChangeSet, defcsOrigin);
+  Include(FChangeSet, csOrigin);
 end;
 
 
 procedure TsgeDisplayElementFrame.SetAngle(AAngle: Single);
 begin
   FData.Angle := AAngle;
-  Include(FChangeSet, defcsAngle);
+  Include(FChangeSet, csAngle);
 end;
 
 
 procedure TsgeDisplayElementFrame.SetAngleDegree(AAngle: Single);
 begin
   FData.Angle := sgeDegToRad(AAngle);
-  Include(FChangeSet, defcsAngle);
+  Include(FChangeSet, csAngle);
 end;
 
 
@@ -223,7 +226,7 @@ begin
   sgeFitToRange(AColor.Blue);
   sgeFitToRange(AColor.Alpha);
   FData.Color := AColor;
-  Include(FChangeSet, defcsColor);
+  Include(FChangeSet, csColor);
 end;
 
 
@@ -231,7 +234,7 @@ procedure TsgeDisplayElementFrame.SetColorRed(ARed: Single);
 begin
   sgeFitToRange(ARed);
   FData.Color.Red := ARed;
-  Include(FChangeSet, defcsColor);
+  Include(FChangeSet, csColor);
 end;
 
 
@@ -239,7 +242,7 @@ procedure TsgeDisplayElementFrame.SetColorGreen(AGreen: Single);
 begin
   sgeFitToRange(AGreen);
   FData.Color.Green := AGreen;
-  Include(FChangeSet, defcsColor);
+  Include(FChangeSet, csColor);
 end;
 
 
@@ -247,7 +250,7 @@ procedure TsgeDisplayElementFrame.SetColorBlue(ABlue: Single);
 begin
   sgeFitToRange(ABlue);
   FData.Color.Blue := ABlue;
-  Include(FChangeSet, defcsColor);
+  Include(FChangeSet, csColor);
 end;
 
 
@@ -255,28 +258,28 @@ procedure TsgeDisplayElementFrame.SetColorAlpha(AAlpha: Single);
 begin
   sgeFitToRange(AAlpha);
   FData.Color.Alpha := AAlpha;
-  Include(FChangeSet, defcsColor);
+  Include(FChangeSet, csColor);
 end;
 
 
 procedure TsgeDisplayElementFrame.SetThickness(AThickness: Single);
 begin
   FData.Thickness := AThickness;
-  Include(FChangeSet, defcsThickness);
+  Include(FChangeSet, csThickness);
 end;
 
 
 procedure TsgeDisplayElementFrame.SetStipple(AStipple: TsgeLineStipple);
 begin
   FData.Stipple := AStipple;
-  Include(FChangeSet, defcsStipple);
+  Include(FChangeSet, csStipple);
 end;
 
 
 procedure TsgeDisplayElementFrame.SetStippleScale(AStippleScale: Word);
 begin
   FData.StippleScale := AStippleScale;
-  Include(FChangeSet, defcsStippleScale);
+  Include(FChangeSet, csStippleScale);
 end;
 
 
@@ -299,13 +302,14 @@ end;
 
 
 constructor TsgeDisplayElementFrame.Create(X1, Y1, X2, Y2: Single; Color: TsgeColor; Thickness: Single = 1);
-const
-  SetAll = [defcsPosition, defcsSize, defcsScale, defcsOrigin, defcsAngle, defcsColor, defcsThickness,
-    defcsStipple, defcsStippleScale];
+var
+  i: TChange;
 begin
   inherited Create;
 
-  FChangeSet := SetAll;
+  //Заполнить набор изменений
+  for i := Low(TChange) to High(TChange) do
+    Include(FChangeSet, i);
 
   //Записать параметры
   FData.Position := sgeGetFloatPoint(X1, Y1);

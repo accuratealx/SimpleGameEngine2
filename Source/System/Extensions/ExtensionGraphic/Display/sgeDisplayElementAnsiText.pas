@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeDisplayElementAnsiText.pas
-Версия            1.0
+Версия            1.1
 Создан            16.03.2023
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          Элемент рисования: Текст Ansi
@@ -19,34 +19,37 @@ uses
   sgeDisplayElement;
 
 type
-  //Набор измененных параметров
-  TsgeDisplayElementAnsiTextChangeSet = set of (
-    deatcsPosition, //Положение на экране
-    deatcsScale,    //Масштаб
-    deatcsOrigin,   //Точка поворота
-    deatcsAngle,    //Угол в радианах
-    deatcsColor,    //Цвет
-    deatcsText,     //Текст
-    deatcsFont      //Шрифт
-  );
-
-
-  //Настройки отображения
-  TsgeDisplayElementAnsiTextData = record
-    Position: TsgeFloatPoint; //Положение на экране
-    Scale: TsgeFloatPoint;    //Масштаб
-    Origin: TsgeFloatPoint;   //Точка поворота
-    Angle: Single;            //Угол в радианах
-    Color: TsgeColor;         //Цвет
-    TextBytes: TsgeByteArray; //Байты для вывода
-    Font: TsgeAnsiFont;       //Шрифт
-  end;
-
-type
   TsgeDisplayElementAnsiText = class(TsgeDisplayElement)
+  public
+    type
+      //Набор измененных параметров
+      TChange = (
+        csPosition, //Положение на экране
+        csScale,    //Масштаб
+        csOrigin,   //Точка поворота
+        csAngle,    //Угол в радианах
+        csColor,    //Цвет
+        csText,     //Текст
+        csFont      //Шрифт
+      );
+
+      //Набор измененных параметров
+      TChangeSet = set of TChange;
+
+      //Настройки отображения
+      TData = record
+        Position: TsgeFloatPoint; //Положение на экране
+        Scale: TsgeFloatPoint;    //Масштаб
+        Origin: TsgeFloatPoint;   //Точка поворота
+        Angle: Single;            //Угол в радианах
+        Color: TsgeColor;         //Цвет
+        TextBytes: TsgeByteArray; //Байты для вывода
+        Font: TsgeAnsiFont;       //Шрифт
+      end;
+
   private
-    FData: TsgeDisplayElementAnsiTextData;
-    FChangeSet: TsgeDisplayElementAnsiTextChangeSet;
+    FData: TData;
+    FChangeSet: TChangeSet;
     FText: String;
 
     procedure SetPosition(APosition: TsgeFloatPoint);
@@ -79,8 +82,8 @@ type
 
     function  GetCopy: TsgeDisplayElement; override;
 
-    property Data: TsgeDisplayElementAnsiTextData read FData;
-    property ChangeSet: TsgeDisplayElementAnsiTextChangeSet read FChangeSet;
+    property Data: TData read FData;
+    property ChangeSet: TChangeSet read FChangeSet;
 
     property Position: TsgeFloatPoint read FData.Position write SetPosition;
     property PositionX: Single read FData.Position.X write SetPositionX;
@@ -117,21 +120,21 @@ const
 procedure TsgeDisplayElementAnsiText.SetPosition(APosition: TsgeFloatPoint);
 begin
   FData.Position := APosition;
-  Include(FChangeSet, deatcsPosition);
+  Include(FChangeSet, csPosition);
 end;
 
 
 procedure TsgeDisplayElementAnsiText.SetPositionX(APositionX: Single);
 begin
   FData.Position.X := APositionX;
-  Include(FChangeSet, deatcsPosition);
+  Include(FChangeSet, csPosition);
 end;
 
 
 procedure TsgeDisplayElementAnsiText.SetPositionY(APositionY: Single);
 begin
   FData.Position.Y := APositionY;
-  Include(FChangeSet, deatcsPosition);
+  Include(FChangeSet, csPosition);
 end;
 
 
@@ -139,56 +142,56 @@ procedure TsgeDisplayElementAnsiText.SetScale(AScale: Single);
 begin
   FData.Scale.X := AScale;
   FData.Scale.Y := AScale;
-  Include(FChangeSet, deatcsScale);
+  Include(FChangeSet, csScale);
 end;
 
 
 procedure TsgeDisplayElementAnsiText.SetScaleX(AScaleX: Single);
 begin
   FData.Scale.X := AScaleX;
-  Include(FChangeSet, deatcsScale);
+  Include(FChangeSet, csScale);
 end;
 
 
 procedure TsgeDisplayElementAnsiText.SetScaleY(AScaleY: Single);
 begin
   FData.Scale.Y := AScaleY;
-  Include(FChangeSet, deatcsScale);
+  Include(FChangeSet, csScale);
 end;
 
 
 procedure TsgeDisplayElementAnsiText.SetOrigin(AOrigin: TsgeFloatPoint);
 begin
   FData.Origin := AOrigin;
-  Include(FChangeSet, deatcsOrigin);
+  Include(FChangeSet, csOrigin);
 end;
 
 
 procedure TsgeDisplayElementAnsiText.SetOriginX(AOriginX: Single);
 begin
   FData.Origin.X := AOriginX;
-  Include(FChangeSet, deatcsOrigin);
+  Include(FChangeSet, csOrigin);
 end;
 
 
 procedure TsgeDisplayElementAnsiText.SetOriginY(AOriginY: Single);
 begin
   FData.Origin.Y := AOriginY;
-  Include(FChangeSet, deatcsOrigin);
+  Include(FChangeSet, csOrigin);
 end;
 
 
 procedure TsgeDisplayElementAnsiText.SetAngle(AAngle: Single);
 begin
   FData.Angle := AAngle;
-  Include(FChangeSet, deatcsAngle);
+  Include(FChangeSet, csAngle);
 end;
 
 
 procedure TsgeDisplayElementAnsiText.SetAngleDegree(AAngle: Single);
 begin
   FData.Angle := sgeDegToRad(AAngle);
-  Include(FChangeSet, deatcsAngle);
+  Include(FChangeSet, csAngle);
 end;
 
 
@@ -205,7 +208,7 @@ begin
   sgeFitToRange(AColor.Blue);
   sgeFitToRange(AColor.Alpha);
   FData.Color := AColor;
-  Include(FChangeSet, deatcsColor);
+  Include(FChangeSet, csColor);
 end;
 
 
@@ -213,7 +216,7 @@ procedure TsgeDisplayElementAnsiText.SetColorRed(ARed: Single);
 begin
   sgeFitToRange(ARed);
   FData.Color.Red := ARed;
-  Include(FChangeSet, deatcsColor);
+  Include(FChangeSet, csColor);
 end;
 
 
@@ -221,7 +224,7 @@ procedure TsgeDisplayElementAnsiText.SetColorGreen(AGreen: Single);
 begin
   sgeFitToRange(AGreen);
   FData.Color.Green := AGreen;
-  Include(FChangeSet, deatcsColor);
+  Include(FChangeSet, csColor);
 end;
 
 
@@ -229,7 +232,7 @@ procedure TsgeDisplayElementAnsiText.SetColorBlue(ABlue: Single);
 begin
   sgeFitToRange(ABlue);
   FData.Color.Blue := ABlue;
-  Include(FChangeSet, deatcsColor);
+  Include(FChangeSet, csColor);
 end;
 
 
@@ -237,7 +240,7 @@ procedure TsgeDisplayElementAnsiText.SetColorAlpha(AAlpha: Single);
 begin
   sgeFitToRange(AAlpha);
   FData.Color.Alpha := AAlpha;
-  Include(FChangeSet, deatcsColor);
+  Include(FChangeSet, csColor);
 end;
 
 
@@ -248,7 +251,7 @@ begin
     raise EsgeException.Create(_UNITNAME, Err_EmptyFont);
 
   FData.Font := AFont;
-  Include(FChangeSet, deatcsFont);
+  Include(FChangeSet, csFont);
 end;
 
 
@@ -262,7 +265,7 @@ begin
 
   //Шрифт не понимает utf-8, только Ansi. Поэтому переведем тут
   FData.TextBytes := sgeUtf8ToAnsiBytes(FText);
-  Include(FChangeSet, deatcsText);
+  Include(FChangeSet, csText);
 end;
 
 
@@ -285,12 +288,14 @@ end;
 
 
 constructor TsgeDisplayElementAnsiText.Create(X, Y: Single; Color: TsgeColor; Font: TsgeAnsiFont; Text: String);
-const
-  SetAll = [deatcsPosition, deatcsScale, deatcsOrigin, deatcsAngle, deatcsColor, deatcsText, deatcsFont];
+var
+  i: TChange;
 begin
   inherited Create;
 
-  FChangeSet := SetAll;
+  //Заполнить набор изменений
+  for i := Low(TChange) to High(TChange) do
+    Include(FChangeSet, i);
 
   //Записать параметры
   FData.Position := sgeGetFloatPoint(X, Y);

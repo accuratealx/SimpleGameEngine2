@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGraphicOpenGLDrawObjectItemFrame.pas
-Версия            1.3
+Версия            1.4
 Создан            11.02.2023
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          OpenGL: Элемент отрисовки: Цветная рамка
@@ -23,7 +23,7 @@ uses
 type
   TsgeGraphicOpenGLDrawObjectFrame = class(TsgeGraphicOpenGLDrawObject)
   private
-    FData: TsgeDisplayElementFrameData;
+    FData: TsgeDisplayElementFrame.TData;
     FVAO: TsgeGraphicOpenGLVertexArrayObject;
     FShaderProgram: TsgeGraphicOpenGLShaderProgram;
     FVertexBuffer: TsgeGraphicOpenGLBuffer;
@@ -80,11 +80,11 @@ var
   Element: TsgeDisplayElementFrame absolute AElement;
 begin
   //Положение
-  if defcsPosition in Element.ChangeSet then
+  if csPosition in Element.ChangeSet then
     FData.Position := Element.Data.Position;
 
   //Размеры
-  if defcsSize in Element.ChangeSet then
+  if csSize in Element.ChangeSet then
   begin
     FData.Size := Element.Data.Size;
 
@@ -96,31 +96,31 @@ begin
   end;
 
   //Масштаб
-  if defcsScale in Element.ChangeSet then
+  if csScale in Element.ChangeSet then
     FData.Scale := Element.Data.Scale;
 
   //Точка поворота
-  if defcsOrigin in Element.ChangeSet then
+  if csOrigin in Element.ChangeSet then
     FData.Origin := Element.Data.Origin;
 
   //Угол
-  if defcsAngle in Element.ChangeSet then
+  if csAngle in Element.ChangeSet then
     FData.Angle := Element.Data.Angle;
 
   //Цвет
-  if defcsColor in Element.ChangeSet then
+  if csColor in Element.ChangeSet then
     FData.Color := Element.Data.Color;
 
   //Толщина
-  if defcsThickness in Element.ChangeSet then
+  if csThickness in Element.ChangeSet then
     FData.Thickness := Element.Data.Thickness;
 
   //Штриховка
-  if defcsStipple in Element.ChangeSet then
+  if csStipple in Element.ChangeSet then
     FData.Stipple := Element.Data.Stipple;
 
   //масштаб штриховки
-  if defcsStippleScale in Element.ChangeSet then
+  if csStippleScale in Element.ChangeSet then
     FData.StippleScale := Element.Data.StippleScale;
 end;
 

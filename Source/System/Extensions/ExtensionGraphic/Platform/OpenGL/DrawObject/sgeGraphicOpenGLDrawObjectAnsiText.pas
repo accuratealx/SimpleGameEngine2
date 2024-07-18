@@ -1,7 +1,7 @@
 {
 Пакет             Simple Game Engine 2
 Файл              sgeGraphicOpenGLDrawObjectAnsiText.pas
-Версия            1.3
+Версия            1.4
 Создан            28.01.2023
 Автор             Творческий человек  (accuratealx@gmail.com)
 Описание          OpenGL: Элемент отрисовки: Текст
@@ -23,7 +23,7 @@ uses
 type
   TsgeGraphicOpenGLDrawObjectAnsiText = class(TsgeGraphicOpenGLDrawObject)
   private
-    FData: TsgeDisplayElementAnsiTextData;
+    FData: TsgeDisplayElementAnsiText.TData;
     FVAO: TsgeGraphicOpenGLVertexArrayObject;
     FShaderProgram: TsgeGraphicOpenGLShaderProgram;
     FVertexBuffer: TsgeGraphicOpenGLBuffer;
@@ -101,31 +101,31 @@ var
   X, X1, Y1, X2, Y2: Single;
 begin
   //Положение
-  if deatcsPosition in Element.ChangeSet then
+  if csPosition in Element.ChangeSet then
     FData.Position := Element.Data.Position;
 
   //Масштаб
-  if deatcsScale in Element.ChangeSet then
+  if csScale in Element.ChangeSet then
     FData.Scale := Element.Data.Scale;
 
   //Точка поворота
-  if deatcsOrigin in Element.ChangeSet then
+  if csOrigin in Element.ChangeSet then
     FData.Origin := Element.Data.Origin;
 
   //Угол
-  if deatcsAngle in Element.ChangeSet then
+  if csAngle in Element.ChangeSet then
     FData.Angle := Element.Data.Angle;
 
   //Цвет
-  if deatcsColor in Element.ChangeSet then
+  if csColor in Element.ChangeSet then
     FData.Color := Element.Data.Color;
 
   //Текст
-  if deatcsText in Element.ChangeSet then
+  if csText in Element.ChangeSet then
     FData.TextBytes := Element.Data.TextBytes;
 
   //Шрифт
-  if deatcsFont in Element.ChangeSet then
+  if csFont in Element.ChangeSet then
   begin
     if FData.Font <> Element.Data.Font then
     begin
@@ -140,7 +140,7 @@ begin
   end;
 
   //Шрифт или Текст
-  if (deatcsFont in Element.ChangeSet) or ((deatcsText in Element.ChangeSet)) then
+  if (csFont in Element.ChangeSet) or ((csText in Element.ChangeSet)) then
   begin
     //Подготовить данные
     X := 0;
